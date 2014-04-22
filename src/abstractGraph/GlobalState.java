@@ -1,6 +1,6 @@
-package Graph;
+package abstractGraph;
 
-import Graph.Conditions.AbstractVariable;
+import abstractGraph.Conditions.AbstractVariable;
 
 public abstract class GlobalState {
 

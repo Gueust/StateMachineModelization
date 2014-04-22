@@ -1,8 +1,8 @@
-package Graph;
+package abstractGraph;
 
 import java.util.Iterator;
 
-import Graph.Events.Event;
+import abstractGraph.Events.Event;
 
 public abstract class State_Machine {
 

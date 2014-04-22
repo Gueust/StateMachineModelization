@@ -1,4 +1,4 @@
-package Graph.Conditions;
+package abstractGraph.Conditions;
 
 public abstract class AbstractVariable {
 

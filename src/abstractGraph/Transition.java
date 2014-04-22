@@ -1,6 +1,6 @@
-package Graph;
+package abstractGraph;
 
-import Graph.Conditions.Condition;
+import abstractGraph.Conditions.Condition;
 
 public abstract class Transition {
 
