@@ -1,16 +1,17 @@
 package abstractGraph;
 
 import abstractGraph.Conditions.Condition;
+import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
 public abstract class AbstractTransition {
   protected AbstractState from, to;
   protected Event event;
   protected Condition condition;
-  protected Actions actions;
+  protected AbstractActions actions;
 
   public AbstractTransition(AbstractState from, AbstractState to, Event event,
-      Condition condition, Actions actions) {
+      Condition condition, AbstractActions actions) {
     this.from = from;
     this.to = to;
     this.event = event;
@@ -36,7 +37,7 @@ public abstract class AbstractTransition {
     return condition;
   }
 
-  public Actions getActions() {
+  public AbstractActions getActions() {
     return actions;
   }
 }

@@ -7,8 +7,8 @@ import java.util.NoSuchElementException;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractTransition;
-import abstractGraph.Actions;
 import abstractGraph.Conditions.Condition;
+import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
 public class StateMachine extends AbstractStateMachine {
@@ -83,7 +83,7 @@ public class StateMachine extends AbstractStateMachine {
 
   @Override
   public void addTransition(AbstractState from, AbstractState to, Event event,
-      Condition guard, Actions actions) {
+      Condition guard, AbstractActions actions) {
     State s1 = (State) states.get(from.getId());
     if (s1 == null) {
       states.put(from.getId(), from);

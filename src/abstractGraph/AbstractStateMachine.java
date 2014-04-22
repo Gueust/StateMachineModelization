@@ -3,6 +3,7 @@ package abstractGraph;
 import java.util.Iterator;
 
 import abstractGraph.Conditions.Condition;
+import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
 public abstract class AbstractStateMachine {
@@ -45,7 +46,7 @@ public abstract class AbstractStateMachine {
    */
   public abstract void addTransition(AbstractState from, AbstractState to,
       Event event,
-      Condition guard, Actions actions);
+      Condition guard, AbstractActions actions);
 
   public String getName() {
     return name;
