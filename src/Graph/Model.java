@@ -1,16 +1,23 @@
 package Graph;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.HashMap;
 
 import abstractGraph.AbstractModel;
 import abstractGraph.AbstractStateMachine;
+import abstractGraph.Conditions.AbstractVariable;
 
 public class Model extends AbstractModel {
   private LinkedHashMap<String, StateMachine> state_machines;
+  private LinkedHashSet<AbstractVariable> variables;
+  /* Every variable should be written by only state machine. This keeps the record */
+  private HashMap<AbstractVariable, StateMachine> writting_rights;
 
   public Model(String name) {
     super(name);
     state_machines = new LinkedHashMap<String, StateMachine>(100);
+    variables = new LinkedHashSet<AbstractVariable>();
   }
 
   @Override

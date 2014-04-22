@@ -2,11 +2,13 @@ package Graph;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractTransition;
+import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
@@ -14,7 +16,9 @@ import abstractGraph.Events.Event;
 public class StateMachine extends AbstractStateMachine {
   protected AbstractState initial_sate;
   protected HashMap<Integer, AbstractState> states;
-
+  protected LinkedHashSet<AbstractVariable> read_variables;
+  protected LinkedHashSet<AbstractVariable> write_variables;
+  
   public StateMachine(String name) {
     super(name);
     states = new HashMap<Integer, AbstractState>(10);
