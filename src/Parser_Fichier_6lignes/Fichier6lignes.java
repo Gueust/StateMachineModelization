@@ -13,13 +13,13 @@ import java.io.IOException;
  */
 public class Fichier6lignes {
   // Declaration of the variables.
-  public String graph_name;
-  public String event;
-  public String condition;
-  public String action;
-  public String source_state;
-  public String destination_state;
-  public BufferedReader buff = null;
+  private String graph_name;
+  private String event;
+  private String condition;
+  private String action;
+  private String source_state;
+  private String destination_state;
+  private BufferedReader buff = null;
 
   /**
    * Verify that `input` ends with `tested_string`.
@@ -97,6 +97,7 @@ public class Fichier6lignes {
   }
 
   
+  
   @Override
   public String toString() {
     String out = "graph_name: " + graph_name + "\n" +
@@ -108,4 +109,52 @@ public class Fichier6lignes {
     return out;
   }
 
+  //getters and setters of the differents variables
+  public String getGraphName() {
+    return graph_name;
+  }
+
+  public void setGraphName(String graph_name) {
+    this.graph_name = graph_name;
+  }
+  
+  public String getEvent() {
+    return event;
+  }
+
+  public void setEvent(String event) {
+    this.event = event;
+  }
+  
+  public String getCondition() {
+    return condition;
+  }
+
+  public void setCondtion(String condition) {
+    this.condition = condition;
+  }
+  
+  public String getAction() {
+    return action;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+  
+  public String getSourceState() {
+    return source_state;
+  }
+
+  public void setSourceState(String source_state) {
+    this.source_state = source_state;
+  }
+  
+  public String getDestinationState() {
+    return destination_state;
+  }
+
+  public void setDestinationState(String destination_state) {
+    this.destination_state = destination_state;
+  }
 }
