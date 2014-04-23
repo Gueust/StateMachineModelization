@@ -1,7 +1,6 @@
 package Parser_Fichier_6lignes;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -36,12 +35,25 @@ public class Fichier6lignes {
     return temp.equals(tested_string);
   }
 
+  /**
+   * Constructor that read the file 'file_location'
+   * 
+   * @param file_location
+   *          The file to open
+   * @throws IOException
+   *           In case of error, call the IOException
+   */
   public Fichier6lignes(String file_location) throws IOException {
     buff = new BufferedReader(new FileReader(file_location));
   }
 
+  /**
+   * Function that will read the file 6 lines by 6 lines and affect the differents 
+   * values of the transitions to the right variable.
+   * @throws IOException
+   */
   public void get6Lines() throws IOException {
-
+    //Read the file line by line and affect the correct value to the correct variable
     graph_name = buff.readLine();
     source_state = buff.readLine();
     destination_state = buff.readLine();
@@ -49,11 +61,14 @@ public class Fichier6lignes {
     condition = buff.readLine();
     action = buff.readLine();
 
+    //Test that nether of the variables are equal to null
     if (graph_name == null || source_state == null ||
         destination_state == null || event == null ||
         condition == null || action == null) {
       throw new IOException("There has less than 6 lines to read");
     }
+    
+    //Remove the blanks at the beginning and the end of the string
     graph_name = graph_name.trim();
     source_state = source_state.trim();
     destination_state = destination_state.trim();
@@ -61,6 +76,7 @@ public class Fichier6lignes {
     condition = condition.trim();
     action = action.trim();
 
+    //Test that the event, condition and action end with the right key word. 
     if (!checkSuffix(event, "Evenement")) {
       System.out.println("Error, event expected");
       System.exit(-1);
@@ -80,14 +96,15 @@ public class Fichier6lignes {
     action = action.substring(0, action.length() - 6).trim();
   }
 
+  
   @Override
   public String toString() {
-    String out = "Event: " + event + "\n" +
-        "Condition: " + condition + "\n" +
-        "Action: " + action + "\n" +
+    String out = "graph_name: " + graph_name + "\n" +
         "source_state: " + source_state + "\n" +
         "destination_state: " + destination_state + "\n" +
-        "graph_name: " + graph_name;
+        "Event: " + event + "\n" +
+        "Condition: " + condition + "\n" +
+        "Action: " + action + "\n";
     return out;
   }
 
