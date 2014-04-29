@@ -7,7 +7,7 @@ import java.util.HashMap;
 import abstractGraph.AbstractModel;
 import abstractGraph.Conditions.AbstractVariable;
 
-public class Model extends AbstractModel<StateMachine> {
+public class Model extends AbstractModel<StateMachine, State, Transition> {
   private LinkedHashMap<String, StateMachine> state_machines;
   private LinkedHashSet<AbstractVariable> variables;
   /* Every variable should be written by only state machine. This keeps the record */

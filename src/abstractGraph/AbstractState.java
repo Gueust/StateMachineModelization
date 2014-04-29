@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import abstractGraph.Events.Event;
 
-public abstract class AbstractState<T extends AbstractTransition> {
+public abstract class AbstractState<T extends AbstractTransition<? extends AbstractState<T>>> {
   protected int id;
 
   public AbstractState(int id) {

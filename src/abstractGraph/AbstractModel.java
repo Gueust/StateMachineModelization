@@ -1,6 +1,6 @@
 package abstractGraph;
 
-public abstract class AbstractModel<M extends AbstractStateMachine> {
+public abstract class AbstractModel<M extends AbstractStateMachine<S,T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
   protected String model_name;
 
   public AbstractModel(String name) {

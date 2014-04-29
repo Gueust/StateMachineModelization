@@ -4,7 +4,7 @@ import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
-public abstract class AbstractTransition<S extends AbstractState> {
+public abstract class AbstractTransition<S extends AbstractState<? extends AbstractTransition<S>>> {
   protected S from, to;
   protected Event event;
   protected Condition condition;
