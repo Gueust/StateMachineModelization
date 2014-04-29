@@ -48,12 +48,15 @@ public class Fichier6lignes {
   }
 
   /**
-   * Function that will read the file 6 lines by 6 lines and affect the differents 
+   * Function that will read the file 6 lines by 6 lines and affect the
+   * differents
    * values of the transitions to the right variable.
+   * 
    * @throws IOException
    */
-  public void get6Lines() throws IOException {
-    //Read the file line by line and affect the correct value to the correct variable
+  public boolean get6Lines() throws IOException {
+    // Read the file line by line and affect the correct value to the correct
+    // variable
     graph_name = buff.readLine();
     source_state = buff.readLine();
     destination_state = buff.readLine();
@@ -61,43 +64,48 @@ public class Fichier6lignes {
     condition = buff.readLine();
     action = buff.readLine();
 
-    //Test that nether of the variables are equal to null
-    if (graph_name == null || source_state == null ||
-        destination_state == null || event == null ||
-        condition == null || action == null) {
-      throw new IOException("There has less than 6 lines to read");
-    }
-    
-    //Remove the blanks at the beginning and the end of the string
-    graph_name = graph_name.trim();
-    source_state = source_state.trim();
-    destination_state = destination_state.trim();
-    event = event.trim();
-    condition = condition.trim();
-    action = action.trim();
+    // Test that nether of the variables are equal to null
 
-    //Test that the event, condition and action end with the right key word. 
-    if (!checkSuffix(event, "Evenement")) {
-      System.out.println("Error, event expected");
-      System.exit(-1);
-    }
-    event = event.substring(0, event.length() - 9).trim();
+    if (graph_name != null) {
+      if (source_state == null ||
+          destination_state == null || event == null ||
+          condition == null || action == null) {
+        throw new IOException("There has less than 6 lines to read");
+      }
 
-    if (!checkSuffix(condition, "Condition")) {
-      System.out.println("Error, condition expected");
-      System.exit(-1);
-    }
-    condition = condition.substring(0, condition.length() - 9).trim();
+      // Remove the blanks at the beginning and the end of the string
+      graph_name = graph_name.trim();
+      source_state = source_state.trim();
+      destination_state = destination_state.trim();
+      event = event.trim();
+      condition = condition.trim();
+      action = action.trim();
 
-    if (!checkSuffix(action, "Action")) {
-      System.out.println("Error, action expected");
-      System.exit(-1);
+      // Test that the event, condition and action end with the right key word.
+      if (!checkSuffix(event, "Evenement")) {
+        System.out.println("Error, event expected");
+        System.exit(-1);
+      }
+      event = event.substring(0, event.length() - 9).trim();
+
+      if (!checkSuffix(condition, "Condition")) {
+        System.out.println("Error, condition expected");
+        System.exit(-1);
+      }
+      condition = condition.substring(0, condition.length() - 9).trim();
+
+      if (!checkSuffix(action, "Action")) {
+        System.out.println("Error, action expected");
+        System.exit(-1);
+      }
+      action = action.substring(0, action.length() - 6).trim();
+      return true;
+    } else {
+      return false;
     }
-    action = action.substring(0, action.length() - 6).trim();
+
   }
 
-  
-  
   @Override
   public String toString() {
     String out = "graph_name: " + graph_name + "\n" +
@@ -109,7 +117,7 @@ public class Fichier6lignes {
     return out;
   }
 
-  //getters and setters of the differents variables
+  // getters and setters of the differents variables
   public String getGraphName() {
     return graph_name;
   }
@@ -117,7 +125,7 @@ public class Fichier6lignes {
   public void setGraphName(String graph_name) {
     this.graph_name = graph_name;
   }
-  
+
   public String getEvent() {
     return event;
   }
@@ -125,7 +133,7 @@ public class Fichier6lignes {
   public void setEvent(String event) {
     this.event = event;
   }
-  
+
   public String getCondition() {
     return condition;
   }
@@ -133,7 +141,7 @@ public class Fichier6lignes {
   public void setCondtion(String condition) {
     this.condition = condition;
   }
-  
+
   public String getAction() {
     return action;
   }
@@ -141,7 +149,7 @@ public class Fichier6lignes {
   public void setAction(String action) {
     this.action = action;
   }
-  
+
   public String getSourceState() {
     return source_state;
   }
@@ -149,7 +157,7 @@ public class Fichier6lignes {
   public void setSourceState(String source_state) {
     this.source_state = source_state;
   }
-  
+
   public String getDestinationState() {
     return destination_state;
   }
