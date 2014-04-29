@@ -11,7 +11,7 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 
 public class StateMachine extends AbstractStateMachine<State, Transition> {
   protected State initial_sate;
@@ -86,7 +86,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public void addTransition(State from, State to, Event event,
+  public void addTransition(State from, State to, SingleEvent event,
       Condition guard, AbstractActions actions) {
     State s1 = states.get(from.getId());
     if (s1 == null) {
@@ -102,7 +102,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public Iterator<Transition> get_transition(Event E) {
+  public Iterator<Transition> get_transition(SingleEvent E) {
     // TODO Auto-generated method stub
     return null;
   }

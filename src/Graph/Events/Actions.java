@@ -3,18 +3,18 @@ package Graph.Events;
 import java.util.LinkedList;
 
 import abstractGraph.Events.AbstractActions;
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 
 public class Actions extends AbstractActions {
 
-  private LinkedList<Event> events;
+  private LinkedList<SingleEvent> events;
 
   public Actions() {
-    events = new LinkedList<Event>();
+    events = new LinkedList<SingleEvent>();
   }
 
   @Override
-  public void addEvent(Event e) {
+  public void addEvent(SingleEvent e) {
     events.add(e);
   }
 

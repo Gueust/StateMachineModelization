@@ -2,7 +2,7 @@ package abstractGraph;
 
 import java.util.Iterator;
 
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 
 public abstract class AbstractState<T extends AbstractTransition<? extends AbstractState<T>>> {
   protected String id;
@@ -20,5 +20,5 @@ public abstract class AbstractState<T extends AbstractTransition<? extends Abstr
 
   public abstract Iterator<T> transitions();
 
-  public abstract Iterator<T> get_transitions(Event E);
+  public abstract Iterator<T> get_transitions(SingleEvent E);
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import abstractGraph.Conditions.Condition;
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 import Graph.Events.Actions;
 import Parser_Fichier_6lignes.Fichier6lignes;
 
@@ -60,7 +60,7 @@ public class GraphFactory {
     }
   }
 
-  private Event getEvent(String event) {
+  private SingleEvent getEvent(String event) {
     return null;
   }
 

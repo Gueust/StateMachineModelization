@@ -2,15 +2,15 @@ package abstractGraph;
 
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 
 public abstract class AbstractTransition<S extends AbstractState<? extends AbstractTransition<S>>> {
   protected S from, to;
-  protected Event event;
+  protected SingleEvent event;
   protected Condition condition;
   protected AbstractActions actions;
 
-  public AbstractTransition(S from, S to, Event event,
+  public AbstractTransition(S from, S to, SingleEvent event,
       Condition condition, AbstractActions actions) {
     this.from = from;
     this.to = to;
@@ -29,7 +29,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
     return to;
   }
 
-  public Event getEvent() {
+  public SingleEvent getEvent() {
     return event;
   }
 

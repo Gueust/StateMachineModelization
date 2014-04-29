@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import abstractGraph.AbstractState;
-import abstractGraph.Events.Event;
+import abstractGraph.Events.SingleEvent;
 
 public class State extends AbstractState<Transition> {
   LinkedList<Transition> transitions;
@@ -23,7 +23,7 @@ public class State extends AbstractState<Transition> {
   }
 
   @Override
-  public Iterator<Transition> get_transitions(Event E) {
+  public Iterator<Transition> get_transitions(SingleEvent E) {
     return null;
   }
 
