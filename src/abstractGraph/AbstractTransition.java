@@ -4,13 +4,13 @@ import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
-public abstract class AbstractTransition {
-  protected AbstractState from, to;
+public abstract class AbstractTransition<S extends AbstractState> {
+  protected S from, to;
   protected Event event;
   protected Condition condition;
   protected AbstractActions actions;
 
-  public AbstractTransition(AbstractState from, AbstractState to, Event event,
+  public AbstractTransition(S from, S to, Event event,
       Condition condition, AbstractActions actions) {
     this.from = from;
     this.to = to;
@@ -21,11 +21,11 @@ public abstract class AbstractTransition {
 
   public abstract boolean evalCondition(GlobalState env);
 
-  public AbstractState getSource() {
+  public S getSource() {
     return from;
   }
 
-  public AbstractState getDestination() {
+  public S getDestination() {
     return to;
   }
 

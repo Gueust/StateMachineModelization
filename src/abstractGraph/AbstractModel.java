@@ -1,6 +1,6 @@
 package abstractGraph;
 
-public abstract class AbstractModel {
+public abstract class AbstractModel<M extends AbstractStateMachine> {
   protected String model_name;
 
   public AbstractModel(String name) {
@@ -23,5 +23,5 @@ public abstract class AbstractModel {
    * @param state_machine
    *          The state machine to add to the model
    */
-  public abstract void addStateMachine(AbstractStateMachine state_machine);
+  public abstract void addStateMachine(M state_machine);
 }

@@ -5,10 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.HashMap;
 
 import abstractGraph.AbstractModel;
-import abstractGraph.AbstractStateMachine;
 import abstractGraph.Conditions.AbstractVariable;
 
-public class Model extends AbstractModel {
+public class Model extends AbstractModel<StateMachine> {
   private LinkedHashMap<String, StateMachine> state_machines;
   private LinkedHashSet<AbstractVariable> variables;
   /* Every variable should be written by only state machine. This keeps the record */
@@ -21,7 +20,7 @@ public class Model extends AbstractModel {
   }
 
   @Override
-  public void addStateMachine(AbstractStateMachine state_machine) {
+  public void addStateMachine(StateMachine state_machine) {
     state_machines.put(state_machine.getName(), (StateMachine) state_machine);
   }
 

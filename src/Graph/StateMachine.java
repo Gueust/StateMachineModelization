@@ -6,31 +6,29 @@ import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 
 import abstractGraph.AbstractStateMachine;
-import abstractGraph.AbstractState;
-import abstractGraph.AbstractTransition;
 import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
-public class StateMachine extends AbstractStateMachine {
-  protected AbstractState initial_sate;
-  protected HashMap<Integer, AbstractState> states;
+public class StateMachine extends AbstractStateMachine<State, Transition> {
+  protected State initial_sate;
+  protected HashMap<Integer, State> states;
   protected LinkedHashSet<AbstractVariable> read_variables;
   protected LinkedHashSet<AbstractVariable> write_variables;
-  
+
   public StateMachine(String name) {
     super(name);
-    states = new HashMap<Integer, AbstractState>(10);
+    states = new HashMap<Integer, State>(10);
   }
 
   @Override
-  public Iterator<AbstractTransition> transitions() {
+  public Iterator<Transition> transitions() {
     /* We iterate over the states, and over the transitions within a state */
     /* TODO: the algorithm can be improved */
-    class TransitionsIterator implements Iterator<AbstractTransition> {
-      Iterator<AbstractState> states_iterator = states.values().iterator();
-      Iterator<AbstractTransition> transitions_iterator = null;
+    class TransitionsIterator implements Iterator<Transition> {
+      Iterator<State> states_iterator = states.values().iterator();
+      Iterator<Transition> transitions_iterator = null;
 
       public TransitionsIterator() {
         if (states_iterator.hasNext()) {
@@ -55,7 +53,7 @@ public class StateMachine extends AbstractStateMachine {
       }
 
       @Override
-      public AbstractTransition next() {
+      public Transition next() {
         if (transitions_iterator == null) {
           throw new NoSuchElementException();
         }
@@ -81,14 +79,14 @@ public class StateMachine extends AbstractStateMachine {
   }
 
   @Override
-  public Iterator<AbstractState> states() {
+  public Iterator<State> states() {
     return states.values().iterator();
   }
 
   @Override
-  public void addTransition(AbstractState from, AbstractState to, Event event,
+  public void addTransition(State from, State to, Event event,
       Condition guard, AbstractActions actions) {
-    State s1 = (State) states.get(from.getId());
+    State s1 = states.get(from.getId());
     if (s1 == null) {
       states.put(from.getId(), from);
     }
@@ -102,7 +100,13 @@ public class StateMachine extends AbstractStateMachine {
   }
 
   @Override
-  public Iterator<AbstractTransition> get_transition(Event E) {
+  public Iterator<Transition> get_transition(Event E) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public State getState(String name) {
     // TODO Auto-generated method stub
     return null;
   }

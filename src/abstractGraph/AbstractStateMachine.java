@@ -6,7 +6,15 @@ import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
 
-public abstract class AbstractStateMachine {
+/**
+ * 
+ * @author 9009183R
+ * 
+ * @param <S>
+ *          A state class extending AbstractState
+ * @param <T>
+ */
+public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   protected String name;
 
@@ -14,21 +22,27 @@ public abstract class AbstractStateMachine {
     this.name = name;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public abstract S getState(String name);
+
   /**
    * The order of the elements is not specified.
    * 
    * @return An iterator over all the sates
    */
-  public abstract Iterator<AbstractState> states();
+  public abstract Iterator<S> states();
 
   /**
    * The order of the elements is not specified.
    * 
    * @return An iterator over all the transitions
    */
-  public abstract Iterator<AbstractTransition> transitions();
+  public abstract Iterator<T> transitions();
 
-  public abstract Iterator<AbstractTransition> get_transition(Event E);
+  public abstract Iterator<T> get_transition(Event E);
 
   /**
    * Add a transition to a state machine
@@ -44,11 +58,8 @@ public abstract class AbstractStateMachine {
    * @param actions
    *          The actions
    */
-  public abstract void addTransition(AbstractState from, AbstractState to,
+  public abstract void addTransition(S from, S to,
       Event event,
       Condition guard, AbstractActions actions);
 
-  public String getName() {
-    return name;
-  }
 }
