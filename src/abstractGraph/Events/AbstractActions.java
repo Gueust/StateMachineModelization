@@ -8,5 +8,5 @@ public abstract class AbstractActions {
    * @param e
    *          An event to add to the list of actions
    */
-  public abstract void addEvent(SingleEvent e);
+  public abstract void add(SingleEvent e);
 }

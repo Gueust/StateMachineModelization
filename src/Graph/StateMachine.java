@@ -11,6 +11,7 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
+import abstractGraph.Events.Events;
 import abstractGraph.Events.SingleEvent;
 
 public class StateMachine extends AbstractStateMachine<State, Transition> {
@@ -86,7 +87,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public void addTransition(State from, State to, SingleEvent event,
+  public void addTransition(State from, State to, Events events,
       Condition guard, AbstractActions actions) {
     State s1 = states.get(from.getId());
     if (s1 == null) {
@@ -97,7 +98,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
       states.put(to.getId(), to);
     }
 
-    Transition t = new Transition(from, to, event, guard, actions);
+    Transition t = new Transition(from, to, events, guard, actions);
     s1.addTransition(t);
   }
 

@@ -14,7 +14,7 @@ public class Actions extends AbstractActions {
   }
 
   @Override
-  public void addEvent(SingleEvent e) {
+  public void add(SingleEvent e) {
     events.add(e);
   }
 

@@ -4,7 +4,9 @@ import java.util.Iterator;
 
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
+import abstractGraph.Events.Events;
 import abstractGraph.Events.SingleEvent;
+
 import javax.management.openmbean.KeyAlreadyExistsException;
 
 /**
@@ -50,7 +52,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    *          The source of the transition
    * @param to
    *          The destination of the transition
-   * @param event
+   * @param events
    *          The event (eventually null) of the transition
    * @param guard
    *          The guard of the transition
@@ -58,7 +60,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    *          The actions
    */
   public abstract void addTransition(S from, S to,
-      SingleEvent event,
+      Events events,
       Condition guard, AbstractActions actions);
 
   /**

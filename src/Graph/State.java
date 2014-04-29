@@ -27,4 +27,9 @@ public class State extends AbstractState<Transition> {
     return null;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    State s2 = (State) obj;
+    return getId().equals(s2.getId());
+  }
 }

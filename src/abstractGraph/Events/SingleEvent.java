@@ -24,4 +24,10 @@ public abstract class SingleEvent {
   public String getName() {
     return name;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    SingleEvent e2 = (SingleEvent) obj;
+    return this.name.equals(e2.name);
+  }
 }
