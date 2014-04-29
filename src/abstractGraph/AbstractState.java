@@ -5,16 +5,16 @@ import java.util.Iterator;
 import abstractGraph.Events.Event;
 
 public abstract class AbstractState<T extends AbstractTransition<? extends AbstractState<T>>> {
-  protected int id;
+  protected String id;
 
-  public AbstractState(int id) {
+  public AbstractState(String id) {
     this.id = id;
   }
 
   /**
    * @return the unique id of the state
    */
-  public int getId() {
+  public String getId() {
     return id;
   }
 

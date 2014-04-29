@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
+
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Conditions.Condition;
@@ -13,13 +15,13 @@ import abstractGraph.Events.Event;
 
 public class StateMachine extends AbstractStateMachine<State, Transition> {
   protected State initial_sate;
-  protected HashMap<Integer, State> states;
+  protected HashMap<String, State> states;
   protected LinkedHashSet<AbstractVariable> read_variables;
   protected LinkedHashSet<AbstractVariable> write_variables;
 
   public StateMachine(String name) {
     super(name);
-    states = new HashMap<Integer, State>(10);
+    states = new HashMap<String, State>(10);
   }
 
   @Override
@@ -107,7 +109,17 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
   @Override
   public State getState(String name) {
-    // TODO Auto-generated method stub
-    return null;
+    return states.get(name);
+  }
+
+  @Override
+  public State addState(String state_name) throws KeyAlreadyExistsException {
+    if (states.get(state_name) == null) {
+      throw new KeyAlreadyExistsException("The state " + state_name
+          + " already exists");
+    }
+    State new_state =  new State(state_name);
+    states.put(state_name, new_state);
+    return new_state;
   }
 }

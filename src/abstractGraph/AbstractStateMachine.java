@@ -5,6 +5,7 @@ import java.util.Iterator;
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Event;
+import javax.management.openmbean.KeyAlreadyExistsException;
 
 /**
  * 
@@ -25,8 +26,6 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
   public String getName() {
     return name;
   }
-
-  public abstract S getState(String name);
 
   /**
    * The order of the elements is not specified.
@@ -61,5 +60,24 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
   public abstract void addTransition(S from, S to,
       Event event,
       Condition guard, AbstractActions actions);
+
+  /**
+   * Add a new state to the state machine, and throws an exception if the state
+   * already exists.
+   * 
+   * @param state_name
+   *          The name of the state to create
+   * @return The new state created.
+   */
+  public abstract S addState(String state_name)
+      throws KeyAlreadyExistsException;
+
+  /**
+   * Return the state entitled `state_name`.
+   * 
+   * @param state_name
+   * @return The state associated to the name if it exists. null otherwise.
+   */
+  public abstract S getState(String state_name);
 
 }

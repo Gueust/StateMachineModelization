@@ -9,7 +9,7 @@ import abstractGraph.Events.Event;
 public class State extends AbstractState<Transition> {
   LinkedList<Transition> transitions;
 
-  public State(int id) {
+  public State(String id) {
     super(id);
   }
 
