@@ -1,5 +1,6 @@
 package abstractGraph.Conditions;
 
-public class Variable extends AbstractVariable {
+public class Variable extends Formula {
 
+  String varname;
 }
