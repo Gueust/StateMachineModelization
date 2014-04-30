@@ -337,11 +337,11 @@ public class GraphFactoryAEFD {
     case "ATP":
     case "CMD":
     case "FCI":
+    case "P":
       new_event = new CommandEvent(event_name);
       commands_events.put(new_event.getName(), (CommandEvent) new_event);
       break;
     case "IND":
-    case "P":
       new_event = new InternalEvent(event_name);
       internal_events.put(new_event.getName(), (InternalEvent) new_event);
       break;
