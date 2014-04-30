@@ -40,34 +40,36 @@ public class GraphFactoryAEFD {
      * - the first one to identify the ACT not FCI in the action fields
      * - the second one to load the file
      */
-    parsingInternalEvents(file);
+    // parsingInternalEvents(file);
 
     Fichier6lignes parser = new Fichier6lignes(file);
 
     while (parser.get6Lines()) {
       StateMachine state_machine = retrieveStateMachine(parser.getGraphName());
       // Get the source state
-      State from = retrieveState(state_machine.getName(), parser
-          .getSourceState());
+      State from =
+          retrieveState(state_machine.getName(), parser.getSourceState());
       // Get the destination state
-      State to = retrieveState(state_machine.getName(), parser
-          .getDestinationState());
+      State to = retrieveState(state_machine.getName(),
+          parser.getDestinationState());
 
       state_machine.addTransition(from, to, getEvents(parser.getEvent()),
           getCondition(parser.getCondition()), getActions(parser.getAction()));
     }
 
-    saveInFile("temporary_file");
-    boolean is_build_coherent = compareFiles("temporary_file", file);
-    if (is_build_coherent) {
+    
+      saveInFile("temporary_file");
+     boolean is_build_coherent = compareFiles("temporary_file", file);
+      if (is_build_coherent) {
       System.out
-          .println("Comparing the initial model with the built model... OK");
-    } else {
-      System.out
-          .println("File generated from the loaded model is different from the"
-              + "initial model. Aborting");
+      .println("Comparing the initial model with the built model... OK");
+      } else {
+     System.out
+      .println("File generated from the loaded model is different from the"
+      + "initial model. Aborting");
       System.exit(-1);
-    }
+      }
+     
   }
 
   public Model buildModel(String model_name) {
@@ -153,7 +155,7 @@ public class GraphFactoryAEFD {
   }
 
   /**
-   * Return an Events object reprenseting the events listed in the `events`
+   * Return an Events object representing the events listed in the `events`
    * String
    * 
    * @param events
@@ -166,7 +168,10 @@ public class GraphFactoryAEFD {
 
     for (int i = 0; i < array_of_events.length; i++) {
       String event_string = array_of_events[i].trim();
-
+      if (event_string.lastIndexOf(' ') != -1) {
+        throw new UnsupportedOperationException(
+            "When parsing the single event : " + event_string);
+      }
       if (!event_string.equals("")) {
         SingleEvent new_event = eventFactory(event_string);
         result.addEvent(new_event);
@@ -176,7 +181,7 @@ public class GraphFactoryAEFD {
   }
 
   /**
-   * Return an Actions object reprenseting the events listed in the `actions`
+   * Return an Actions object representing the events listed in the `actions`
    * String
    * 
    * @param actions
@@ -245,9 +250,9 @@ public class GraphFactoryAEFD {
       external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
     default:
-      // throw new UnsupportedOperationException(
-      // "When parsing the events field : " + event_name);
-      new_event = new UnknownEvent("CONDITION_" + event_name);
+      System.out.println(toString());
+      throw new UnsupportedOperationException(
+          "When parsing the events field : " + event_name);
     }
     return new_event;
 
@@ -279,16 +284,21 @@ public class GraphFactoryAEFD {
       commands_events.put(new_event.getName(), (CommandEvent) new_event);
       break;
     case "IND":
+    case "P":
       new_event = new InternalEvent(event_name);
       internal_events.put(new_event.getName(), (InternalEvent) new_event);
       break;
     case "ACT":
-      throw new Exception("The ACT " + event_name
-          + " is not already an internal event");
+      /*
+       * It is necessarily an external event since it has not been identified as
+       * an internal event during the first parsing
+       */
+      new_event = new ExternalEvent(event_name);
+      external_events.put(new_event.getName(), (ExternalEvent) new_event);
+      break;
     default:
-      // throw new UnsupportedOperationException(
-      // "When parsing the events field : " + event_name);
-      new_event = new UnknownEvent(event_name);
+      throw new UnsupportedOperationException(
+          "When parsing the events field : " + event_name);
     }
     return new_event;
   }

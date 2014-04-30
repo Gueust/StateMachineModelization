@@ -89,13 +89,16 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   @Override
   public void addTransition(State from, State to, Events events,
       AbstractCondition guard, AbstractActions actions) {
+
     State s1 = states.get(from.getId());
     if (s1 == null) {
       states.put(from.getId(), from);
+      s1 = from;
     }
     State s2 = (State) states.get(to.getId());
     if (s2 == null) {
       states.put(to.getId(), to);
+      s2 = from;
     }
 
     Transition t = new Transition(from, to, events, guard, actions);
@@ -115,12 +118,24 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
   @Override
   public State addState(String state_name) throws KeyAlreadyExistsException {
-    if (states.get(state_name) == null) {
+    if (states.get(state_name) != null) {
       throw new KeyAlreadyExistsException("The state " + state_name
           + " already exists");
     }
-    State new_state =  new State(state_name);
+    State new_state = new State(state_name);
     states.put(state_name, new_state);
     return new_state;
+  }
+
+  @Override
+  public String toString() {
+    String result = "STATE MACHINE: " + getName() + " \n";
+    Iterator<State> states_iterator = states();
+    while (states_iterator.hasNext()) {
+      State s = states_iterator.next();
+      result += s.toString();
+    }
+    result += "\n";
+    return result;
   }
 }
