@@ -9,7 +9,7 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.Conditions.AbstractVariable;
-import abstractGraph.Conditions.Condition;
+import abstractGraph.Conditions.AbstractCondition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Events;
 import abstractGraph.Events.SingleEvent;
@@ -88,7 +88,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
   @Override
   public void addTransition(State from, State to, Events events,
-      Condition guard, AbstractActions actions) {
+      AbstractCondition guard, AbstractActions actions) {
     State s1 = states.get(from.getId());
     if (s1 == null) {
       states.put(from.getId(), from);

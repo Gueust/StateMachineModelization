@@ -3,7 +3,6 @@ package Graph.Events;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import Graph.StateMachine;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.SingleEvent;
 

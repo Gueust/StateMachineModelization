@@ -2,9 +2,10 @@ package abstractGraph.Conditions;
 
 import abstractGraph.GlobalState;
 
-public class OR extends Condition {
+public class OR extends AbstractCondition {
 
-  public OR() {
+  public OR(String condition) {
+    super(condition);
     // TODO Auto-generated constructor stub
   }
 

@@ -2,14 +2,14 @@ package Graph;
 
 import abstractGraph.AbstractTransition;
 import abstractGraph.GlobalState;
-import abstractGraph.Conditions.Condition;
+import abstractGraph.Conditions.AbstractCondition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Events;
 
 public class Transition extends AbstractTransition<State> {
 
   public Transition(State from, State to, Events event,
-      Condition condition, AbstractActions actions) {
+      AbstractCondition condition, AbstractActions actions) {
     super(from, to, event, condition, actions);
   }
 

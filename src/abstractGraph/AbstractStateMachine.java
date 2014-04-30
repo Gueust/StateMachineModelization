@@ -2,7 +2,7 @@ package abstractGraph;
 
 import java.util.Iterator;
 
-import abstractGraph.Conditions.Condition;
+import abstractGraph.Conditions.AbstractCondition;
 import abstractGraph.Events.AbstractActions;
 import abstractGraph.Events.Events;
 import abstractGraph.Events.SingleEvent;
@@ -61,7 +61,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    */
   public abstract void addTransition(S from, S to,
       Events events,
-      Condition guard, AbstractActions actions);
+      AbstractCondition guard, AbstractActions actions);
 
   /**
    * Add a new state to the state machine, and throws an exception if the state
