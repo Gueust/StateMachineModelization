@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import abstractGraph.Conditions.AbstractCondition;
@@ -39,7 +40,7 @@ public class GraphFactoryAEFD {
     }
   }
 
-  LinkedList<InitialTransition> initial_transition_order;
+  LinkedHashMap<Transition, InitialTransition> initial_transition_order;
 
   public GraphFactoryAEFD(String file) throws Exception {
 
@@ -48,13 +49,13 @@ public class GraphFactoryAEFD {
     commands_events = new HashMap<String, CommandEvent>();
     internal_events = new HashMap<String, InternalEvent>();
 
-    initial_transition_order = new LinkedList<InitialTransition>();
+    initial_transition_order = new LinkedHashMap<Transition, InitialTransition>();
     /*
      * We do two parsings
      * - the first one to identify the ACT not FCI in the action fields
      * - the second one to load the file
      */
-    // parsingInternalEvents(file);
+    parsingInternalEvents(file);
 
     Fichier6lignes parser = new Fichier6lignes(file);
 
@@ -74,7 +75,7 @@ public class GraphFactoryAEFD {
               getActions(parser.getAction()));
 
       initial_transition_order
-          .add(new InitialTransition(state_machine, transition));
+          .put(transition, new InitialTransition(state_machine, transition));
 
       /*
        * Adding the transition in the linked list to be able to right the file
@@ -82,6 +83,9 @@ public class GraphFactoryAEFD {
        */
     }
 
+    /**
+     * We check that we can generate the same file as the input file
+     */
     saveInFile("temporary_file");
     boolean is_build_coherent = compareFiles("temporary_file", file);
     if (is_build_coherent) {
@@ -106,6 +110,35 @@ public class GraphFactoryAEFD {
     result.external_events = external_events;
     result.commands_events = commands_events;
     result.internal_events = internal_events;
+
+    /**
+     * We check that the list of added transitions is exactly the transitions
+     * added in the model
+     */
+    sm_iterator = result.statesMachines();
+    int number_of_transitions = 0;
+    while (sm_iterator.hasNext()) {
+      StateMachine sm = sm_iterator.next();
+      Iterator<Transition> transitions_iterator = sm.transitions();
+      while (transitions_iterator.hasNext()) {
+        Transition t = transitions_iterator.next();
+        number_of_transitions++;
+        /* We check that the transition is in initial_transition_order */
+        if (initial_transition_order.get(t) == null) {
+          System.out.println("Error 1 in the building of the model");
+          System.exit(-1);
+        }
+      }
+    }
+
+    /*
+     * We check that the number of transition added is equal to the number of
+     * transitions in initial_transition_order
+     */
+    if (initial_transition_order.size() != number_of_transitions) {
+      System.out.println("Error 2 in the building of the model");
+      System.exit(-1);
+    }
 
     return result;
   }
@@ -330,7 +363,8 @@ public class GraphFactoryAEFD {
   public void saveInFile(String file) throws IOException {
     File selected_file = new File(file);
     BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));
-    Iterator<InitialTransition> iterator = initial_transition_order.iterator();
+    Iterator<InitialTransition> iterator =
+        initial_transition_order.values().iterator();
     while (iterator.hasNext()) {
       InitialTransition init_transition = iterator.next();
 

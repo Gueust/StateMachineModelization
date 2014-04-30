@@ -40,9 +40,8 @@ public class State extends AbstractState<Transition> {
     Iterator<Transition> transitions_iterator = transitions();
     while (transitions_iterator.hasNext()) {
       Transition t = transitions_iterator.next();
-      sb.append("  ¤ " + t.toString());
+      sb.append("  ¤ " + t.toString() + "\n");
     }
-    sb.append("\n");
     return sb.toString();
   }
 }

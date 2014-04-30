@@ -53,4 +53,9 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     sb.append("\n");
     return sb.toString();
   }
+
+  @Override
+  public Iterator<StateMachine> statesMachines() {
+    return state_machines.values().iterator();
+  }
 }

@@ -1,6 +1,8 @@
 package abstractGraph;
 
-public abstract class AbstractModel<M extends AbstractStateMachine<S,T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+import java.util.Iterator;
+
+public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
   protected String model_name;
 
   public AbstractModel(String name) {
@@ -24,4 +26,11 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S,T>, S exten
    *          The state machine to add to the model
    */
   public abstract void addStateMachine(M state_machine);
+
+  /**
+   * The order of the elements is not specified.
+   * 
+   * @return An iterator over all the state machines
+   */
+  public abstract Iterator<M> statesMachines();
 }
