@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import abstractGraph.Conditions.AbstractCondition;
 import abstractGraph.Events.CommandEvent;
@@ -28,6 +29,18 @@ public class GraphFactoryAEFD {
   private HashMap<String, CommandEvent> commands_events;
   private HashMap<String, InternalEvent> internal_events;
 
+  class InitialTransition {
+    public StateMachine state_machine;
+    public Transition t;
+
+    public InitialTransition(StateMachine sm, Transition t) {
+      this.state_machine = sm;
+      this.t = t;
+    }
+  }
+
+  LinkedList<InitialTransition> initial_transition_order;
+
   public GraphFactoryAEFD(String file) throws Exception {
 
     state_machines = new HashMap<String, StateMachine>();
@@ -35,6 +48,7 @@ public class GraphFactoryAEFD {
     commands_events = new HashMap<String, CommandEvent>();
     internal_events = new HashMap<String, InternalEvent>();
 
+    initial_transition_order = new LinkedList<InitialTransition>();
     /*
      * We do two parsings
      * - the first one to identify the ACT not FCI in the action fields
@@ -45,31 +59,41 @@ public class GraphFactoryAEFD {
     Fichier6lignes parser = new Fichier6lignes(file);
 
     while (parser.get6Lines()) {
-      StateMachine state_machine = retrieveStateMachine(parser.getGraphName());
-      // Get the source state
-      State from =
-          retrieveState(state_machine.getName(), parser.getSourceState());
-      // Get the destination state
-      State to = retrieveState(state_machine.getName(),
-          parser.getDestinationState());
+      String sm_name = parser.getGraphName();
+      String from_name = parser.getSourceState();
+      String to_name = parser.getDestinationState();
 
-      state_machine.addTransition(from, to, getEvents(parser.getEvent()),
-          getCondition(parser.getCondition()), getActions(parser.getAction()));
+      StateMachine state_machine = retrieveStateMachine(sm_name);
+      State from = retrieveState(state_machine.getName(), from_name);
+      State to = retrieveState(state_machine.getName(), to_name);
+
+      Transition transition =
+          state_machine.addTransition(from, to,
+              getEvents(parser.getEvent()),
+              getCondition(parser.getCondition()),
+              getActions(parser.getAction()));
+
+      initial_transition_order
+          .add(new InitialTransition(state_machine, transition));
+
+      /*
+       * Adding the transition in the linked list to be able to right the file
+       * in the same order
+       */
     }
 
-    
-      saveInFile("temporary_file");
-     boolean is_build_coherent = compareFiles("temporary_file", file);
-      if (is_build_coherent) {
+    saveInFile("temporary_file");
+    boolean is_build_coherent = compareFiles("temporary_file", file);
+    if (is_build_coherent) {
       System.out
-      .println("Comparing the initial model with the built model... OK");
-      } else {
-     System.out
-      .println("File generated from the loaded model is different from the"
-      + "initial model. Aborting");
+          .println("Comparing the initial model with the built model... OK");
+    } else {
+      System.out
+          .println("File generated from the loaded model is different from the"
+              + " initial model. Aborting");
       System.exit(-1);
-      }
-     
+    }
+
   }
 
   public Model buildModel(String model_name) {
@@ -306,32 +330,26 @@ public class GraphFactoryAEFD {
   public void saveInFile(String file) throws IOException {
     File selected_file = new File(file);
     BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));
-    Iterator<StateMachine> state_machine_iterator = state_machines
-        .values()
-        .iterator();
-    while (state_machine_iterator.hasNext()) {
-      StateMachine state_machine_reader = state_machine_iterator.next();
-      Iterator<State> state_iterator = state_machine_reader.states();
-      while (state_iterator.hasNext()) {
-        State state_reader = state_iterator.next();
-        Iterator<Transition> transition_iterator = state_reader.transitions();
-        while (transition_iterator.hasNext()) {
-          Transition transition_reader = transition_iterator.next();
-          writer.write(state_machine_reader.getName().trim());
-          writer.newLine();
-          writer.write(transition_reader.getSource().getId().trim());
-          writer.newLine();
-          writer.write(transition_reader.getDestination().getId().trim());
-          writer.newLine();
-          Events events_to_write = transition_reader.getEvent();
-          writer.write(concatenateEventsWithOU(events_to_write));
-          writer.newLine();
-          writer.write(transition_reader.getCondition().toString().trim());
-          writer.newLine();
-          writer.write(transition_reader.getActions().toString().trim());
-          writer.newLine();
-        }
-      }
+    Iterator<InitialTransition> iterator = initial_transition_order.iterator();
+    while (iterator.hasNext()) {
+      InitialTransition init_transition = iterator.next();
+
+      writer.write(init_transition.state_machine.getName());
+      writer.write("\r\n");
+      writer.write(init_transition.t.getSource().getId());
+      writer.write("\r\n");
+      writer.write(init_transition.t.getDestination().getId());
+      writer.write("\r\n");
+      writer.write(concatenateEventsWithOU(init_transition.t.getEvent()));
+      writer.write(" Evenement");
+      writer.write("\r\n");
+      writer.write(init_transition.t.getCondition().toString());
+      writer.write(" Condition");
+      writer.write("\r\n");
+      writer.write(init_transition.t.getActions().toString());
+      writer.write(" Action");
+      if (iterator.hasNext())
+        writer.write("\r\n");
     }
 
     writer.close();
@@ -340,9 +358,17 @@ public class GraphFactoryAEFD {
   private String concatenateEventsWithOU(Events events) {
     StringBuilder sb = new StringBuilder();
     Iterator<SingleEvent> single_event_iterator = events.singleEvent();
+    boolean first = true;
     while (single_event_iterator.hasNext()) {
+
       SingleEvent single_event = single_event_iterator.next();
-      sb.append(single_event.toString() + " OU ");
+      if (first) {
+        sb.append(single_event.toString());
+      } else {
+        sb.append(" OU " + single_event.toString());
+      }
+
+      first = false;
     }
     return sb.toString();
   }

@@ -43,7 +43,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    */
   public abstract Iterator<T> transitions();
 
-  public abstract Iterator<T> get_transition(SingleEvent E);
+  public abstract Iterator<T> getTransition(SingleEvent E);
 
   /**
    * Add a transition to a state machine
@@ -59,7 +59,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    * @param actions
    *          The actions
    */
-  public abstract void addTransition(S from, S to,
+  public abstract T addTransition(S from, S to,
       Events events,
       AbstractCondition guard, AbstractActions actions);
 

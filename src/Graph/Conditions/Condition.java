@@ -18,7 +18,11 @@ public class Condition extends AbstractCondition {
     return false;
   }
 
-  public String AEFDFormat() {
+  /**
+   * Returns the AEFDFormat
+   */
+  @Override
+  public String toString() {
     return condition;
   }
 }

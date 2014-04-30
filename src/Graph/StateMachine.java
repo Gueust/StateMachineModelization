@@ -87,7 +87,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public void addTransition(State from, State to, Events events,
+  public Transition addTransition(State from, State to, Events events,
       AbstractCondition guard, AbstractActions actions) {
 
     State s1 = states.get(from.getId());
@@ -103,10 +103,11 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
     Transition t = new Transition(from, to, events, guard, actions);
     s1.addTransition(t);
+    return t;
   }
 
   @Override
-  public Iterator<Transition> get_transition(SingleEvent E) {
+  public Iterator<Transition> getTransition(SingleEvent E) {
     // TODO Auto-generated method stub
     return null;
   }
