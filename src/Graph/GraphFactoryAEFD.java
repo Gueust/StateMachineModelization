@@ -1,5 +1,8 @@
 package Graph;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +17,7 @@ import Graph.Events.Actions;
 import Graph.Events.UnknownEvent;
 import Parser_Fichier_6lignes.Fichier6lignes;
 
-public class GraphFactory {
+public class GraphFactoryAEFD {
 
   private HashMap<String, StateMachine> state_machines;
   private HashMap<String, ExternalEvent> external_events;
@@ -22,7 +25,7 @@ public class GraphFactory {
   private HashMap<String, InternalEvent> internal_events;
   private HashMap<String, UnknownEvent> unknown_events;
 
-  public GraphFactory(String file) throws IOException {
+  public GraphFactoryAEFD(String file) throws IOException {
 
     state_machines = new HashMap<String, StateMachine>();
     external_events = new HashMap<String, ExternalEvent>();
@@ -236,6 +239,50 @@ public class GraphFactory {
 
   }
 
+  public void saveInFile(File selected_file) throws IOException {
+    BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));
+    Iterator<StateMachine> state_machine_iterator = state_machines
+        .values()
+        .iterator();
+    while (state_machine_iterator.hasNext()) {
+      StateMachine state_machine_reader = state_machine_iterator.next();
+      Iterator<State> state_iterator = state_machine_reader.states();
+      while (state_iterator.hasNext()) {
+        State state_reader = state_iterator.next();
+        Iterator<Transition> transition_iterator = state_reader.transitions();
+        while (transition_iterator.hasNext()) {
+          Transition transition_reader = transition_iterator.next();
+          writer.write(state_machine_reader.getName().trim());
+          writer.newLine();
+          writer.write(transition_reader.getSource().getId().trim());
+          writer.newLine();
+          writer.write(transition_reader.getDestination().getId().trim());
+          writer.newLine();
+          Events events_to_write = transition_reader.getEvent();
+          writer.write(concatenateEventsWithOU(events_to_write));
+          writer.newLine();
+          writer.write(transition_reader.getCondition().toString().trim());
+          writer.newLine();
+          writer.write(transition_reader.getActions().toString().trim());
+          writer.newLine();
+        }
+      }
+    }
+
+    writer.close();
+  }
+
+  public String concatenateEventsWithOU(Events events) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<SingleEvent> single_event_iterator = events.singleEvent();
+    while (single_event_iterator.hasNext()) {
+      SingleEvent single_event = single_event_iterator.next();
+      sb.append(single_event.toString() + " OU ");
+    }
+    return sb.toString();
+  }
+  
+  
   @Override
   public String toString() {
     return state_machines.toString();
