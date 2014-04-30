@@ -18,4 +18,12 @@ public class Transition extends AbstractTransition<State> {
     // TODO Auto-generated method stub
     return false;
   }
+
+  @Override
+  public String toString() {
+    return from.getId() + " --> " + to.getId() + " -- EVENT:"
+        + events.toString() +
+        //" CONDITION: " + condition.toString() +
+        " ACTIONS: " + actions.toString() + "\n";
+  }
 }

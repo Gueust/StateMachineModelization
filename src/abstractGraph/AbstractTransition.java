@@ -6,7 +6,7 @@ import abstractGraph.Events.Events;
 
 public abstract class AbstractTransition<S extends AbstractState<? extends AbstractTransition<S>>> {
   protected S from, to;
-  protected Events event;
+  protected Events events;
   protected Condition condition;
   protected AbstractActions actions;
 
@@ -14,7 +14,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
       Condition condition, AbstractActions actions) {
     this.from = from;
     this.to = to;
-    this.event = events;
+    this.events = events;
     this.condition = condition;
     this.actions = actions;
   }
@@ -30,7 +30,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
   }
 
   public Events getEvent() {
-    return event;
+    return events;
   }
 
   public Condition getCondition() {

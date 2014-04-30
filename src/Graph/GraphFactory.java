@@ -2,6 +2,7 @@ package Graph;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import abstractGraph.Conditions.Condition;
 import abstractGraph.Events.CommandEvent;
@@ -32,7 +33,6 @@ public class GraphFactory {
     Fichier6lignes parser = new Fichier6lignes(file);
 
     while (parser.get6Lines()) {
-      // Get the name of the state_machine
       StateMachine state_machine = getStateMachine(parser.getGraphName());
       // Get the source state
       State from = retrieveState(state_machine.getName(), parser
@@ -46,13 +46,20 @@ public class GraphFactory {
     }
   }
 
-  /**
-   * Get the state machine with the name. And if it doesn't exist, it creates
-   * one.
-   * 
-   * @param name
-   * @return
-   */
+  public Model buildModel(String model_name) {
+    Model result = new Model(model_name);
+    Iterator<StateMachine> sm_iterator = state_machines.values().iterator();
+    while (sm_iterator.hasNext()) {
+      StateMachine sm = sm_iterator.next();
+      result.addStateMachine(sm);
+    }
+    result.external_events = external_events;
+    result.commands_events = commands_events;
+    result.internal_events = internal_events;
+
+    return result;
+  }
+
   private StateMachine getStateMachine(String name) {
     StateMachine result = state_machines.get(name);
     if (result != null) {
@@ -89,9 +96,11 @@ public class GraphFactory {
 
     for (int i = 0; i < array_of_events.length; i++) {
       String event_string = array_of_events[i].trim();
-      SingleEvent new_event = eventFactory(event_string);
 
-      result.addEvent(new_event);
+      if (!event_string.equals("")) {
+        SingleEvent new_event = eventFactory(event_string);
+        result.addEvent(new_event);
+      }
     }
     return result;
   }
@@ -112,8 +121,11 @@ public class GraphFactory {
     for (int i = 0; i < array_of_actions.length; i++) {
       String event_string = array_of_actions[i].trim();
 
-      SingleEvent new_action = actionFactory(event_string);
-      result.add(new_action);
+      if (!event_string.equals("")) {
+        SingleEvent new_action = actionFactory(event_string);
+        result.add(new_action);
+      }
+
     }
     return result;
   }
@@ -162,8 +174,9 @@ public class GraphFactory {
       unknown_events.put(new_event.getName(), (UnknownEvent) new_event);
       break;
     default:
-      throw new UnsupportedOperationException(
-          "When parsing the events field : " + event_name);
+      // throw new UnsupportedOperationException(
+      // "When parsing the events field : " + event_name);
+      new_event = new UnknownEvent("CONDITION_" + event_name);
     }
     return new_event;
 
@@ -215,10 +228,16 @@ public class GraphFactory {
       internal_events.put(new_event.getName(), (InternalEvent) new_event);
       break;
     default:
-      throw new UnsupportedOperationException(
-          "When parsing the events field : " + event_name);
+      // throw new UnsupportedOperationException(
+      // "When parsing the events field : " + event_name);
+      new_event = new UnknownEvent(event_name);
     }
     return new_event;
 
+  }
+
+  @Override
+  public String toString() {
+    return state_machines.toString();
   }
 }

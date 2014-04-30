@@ -1,6 +1,7 @@
 package abstractGraph.Events;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
@@ -12,7 +13,7 @@ public class Events {
     events = new HashMap<String, SingleEvent>();
   }
   public boolean containsEvent(SingleEvent name_event) {
-    return events.get(name_event) == null;
+    return events.get(name_event) != null;
   }
 
   public void addEvent(SingleEvent event) throws KeyAlreadyExistsException {
@@ -21,5 +22,16 @@ public class Events {
     } else {
       events.put(event.name, event);
     }
+  }
+  
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    Iterator<SingleEvent> iterator = events.values().iterator();
+    while (iterator.hasNext()) {
+      SingleEvent single_event = iterator.next();
+      sb.append(single_event.toString() + ";");
+    }
+    return sb.toString();
   }
 }

@@ -10,7 +10,8 @@ public abstract class SingleEvent {
    * occurence of an underscore (i.e. '_') will be taken at the prefix of the
    * event.
    * 
-   * @param name The name of the event
+   * @param name
+   *          The name of the event
    */
   public SingleEvent(String name) {
     this.name = name;
@@ -29,5 +30,10 @@ public abstract class SingleEvent {
   public boolean equals(Object obj) {
     SingleEvent e2 = (SingleEvent) obj;
     return this.name.equals(e2.name);
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }

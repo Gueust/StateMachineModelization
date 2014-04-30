@@ -1,21 +1,16 @@
-
 import java.io.IOException;
 
+import Graph.GraphFactory;
+import Graph.Model;
 import Graph.Events.SynchronisationEvent;
-import Parser_Fichier_6lignes.Fichier6lignes;
-
 
 public class Main {
 
   public static void main(String[] args) throws IOException {
 
-    SynchronisationEvent syn = new SynchronisationEvent("SYN_AUTO_3");
-    System.out.println("Event: " + syn.getPrefix());
-    Fichier6lignes test = new Fichier6lignes("Automate_xxxx_xxxx.txt");
-    while (test.get6Lines()){
-    System.out.println(test);
-    }
-    
+    GraphFactory test = new GraphFactory("AP_P5_ITI_f_Instance_3411_3421.txt");
+    Model model = test.buildModel("Testing model");
+    System.out.println(model);
 
   }
 
