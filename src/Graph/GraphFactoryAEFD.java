@@ -374,14 +374,26 @@ public class GraphFactoryAEFD {
       writer.write("\r\n");
       writer.write(init_transition.t.getDestination().getId());
       writer.write("\r\n");
-      writer.write(concatenateEventsWithOU(init_transition.t.getEvent()));
-      writer.write(" Evenement");
+      String temp = concatenateEventsWithOU(init_transition.t.getEvent());
+      if (temp != null) {
+        writer.write(temp + " Evenement");
+      } else {
+        writer.write("Evenement");
+      }
       writer.write("\r\n");
-      writer.write(init_transition.t.getCondition().toString());
-      writer.write(" Condition");
+      temp = init_transition.t.getCondition().toString();
+      if (!temp.equals("")) {
+        writer.write(temp + " Condition");
+      } else {
+      writer.write("Condition");
+      }
       writer.write("\r\n");
-      writer.write(init_transition.t.getActions().toString());
+      temp = init_transition.t.getActions().toString();
+      if (temp != null) {
+        writer.write(temp + " Action");
+      } else {
       writer.write(" Action");
+      }
       if (iterator.hasNext())
         writer.write("\r\n");
     }
