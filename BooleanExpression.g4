@@ -17,7 +17,7 @@ booleanExpression : booleanExpression AND booleanExpression
 expression : ID ;
  
 //Tokens
-ID : [a-zA-Z|0-9]+ ;
+ID : [a-z|0-9]+ ;
 AND : 'AND' | 'ET' |'&&' | '&' ;
 OR : 'OR' | 'OU' | '||' | '|' ;
 //Specify to ignore the whitespace and new line character in the parsed file.
