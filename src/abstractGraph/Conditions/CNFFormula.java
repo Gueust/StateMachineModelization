@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import abstractGraph.GlobalState;
+
 /**
  * A conjunction of clauses.
  */
@@ -23,6 +25,12 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   public CNFFormula(Variable f) {
     clauses = new Vector<Clause>(1);
     clauses.add(new Clause(f));
+  }
+
+  @Override
+  public boolean eval(GlobalState valuation) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   /**

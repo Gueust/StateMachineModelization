@@ -1,5 +1,7 @@
 package abstractGraph.Conditions;
 
+import abstractGraph.GlobalState;
+
 public class Literal extends Formula {
   private Variable variable;
   boolean is_negated;
@@ -11,6 +13,12 @@ public class Literal extends Formula {
 
   public Literal(Variable variable) {
     this(variable, false);
+  }
+
+  @Override
+  public boolean eval(GlobalState valuation) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   public Variable getVariable() {

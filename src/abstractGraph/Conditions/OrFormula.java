@@ -1,5 +1,7 @@
 package abstractGraph.Conditions;
 
+import abstractGraph.GlobalState;
+
 public class OrFormula extends Formula {
 
   Formula p, q;
@@ -15,6 +17,12 @@ public class OrFormula extends Formula {
   public OrFormula(Formula p, Formula q) {
     this.p = p;
     this.q = q;
+  }
+
+  @Override
+  public boolean eval(GlobalState valuation) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   @Override

@@ -1,5 +1,7 @@
 package abstractGraph.Conditions;
 
+import abstractGraph.GlobalState;
+
 public class NotFormula extends Formula {
 
   Formula f;
@@ -12,6 +14,12 @@ public class NotFormula extends Formula {
    */
   public NotFormula(Formula f) {
     this.f = f;
+  }
+
+  @Override
+  public boolean eval(GlobalState valuation) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   @Override

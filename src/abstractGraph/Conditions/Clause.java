@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import abstractGraph.GlobalState;
+
 /**
  * A clause is a disjunction of literals (i.e. an OR over literals).
  */
@@ -28,6 +30,12 @@ public class Clause extends Formula implements Collection<Literal> {
 
   public Clause(Collection<Literal> literals) {
     literals = new Vector<Literal>(literals);
+  }
+
+  @Override
+  public boolean eval(GlobalState valuation) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   /**

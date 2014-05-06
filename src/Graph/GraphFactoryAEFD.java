@@ -10,17 +10,15 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 import abstractGraph.Conditions.AbstractCondition;
+import abstractGraph.Conditions.Formula;
 import abstractGraph.Events.CommandEvent;
 import abstractGraph.Events.Events;
 import abstractGraph.Events.ExternalEvent;
 import abstractGraph.Events.InternalEvent;
 import abstractGraph.Events.SingleEvent;
-import Graph.Conditions.Condition;
 import Graph.Events.Actions;
-import Graph.Events.UnknownEvent;
 import Parser_Fichier_6lignes.Fichier6lignes;
 
 public class GraphFactoryAEFD {
@@ -264,7 +262,7 @@ public class GraphFactoryAEFD {
   }
 
   private AbstractCondition getCondition(String condition) {
-    return new Condition(condition);
+    return Formula.newFormula(condition);
   }
 
   /**
@@ -385,14 +383,14 @@ public class GraphFactoryAEFD {
       if (!temp.equals("")) {
         writer.write(temp + " Condition");
       } else {
-      writer.write("Condition");
+        writer.write("Condition");
       }
       writer.write("\r\n");
       temp = init_transition.t.getActions().toString();
       if (temp != null) {
         writer.write(temp + " Action");
       } else {
-      writer.write(" Action");
+        writer.write(" Action");
       }
       if (iterator.hasNext())
         writer.write("\r\n");
