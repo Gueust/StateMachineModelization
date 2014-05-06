@@ -11,3 +11,14 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /bin
+
+# Generated file (using ANTLR v4 to generate a parser from a grammar)
+BooleanExpressionParser.java
+BooleanExpressionListener.java
+BooleanExpressionLexer.tokens
+BooleanExpressionLexer.java
+BooleanExpressionBaseListener.java
+BooleanExpression.tokens
+BooleanExpressionVisitor.java
+BooleanExpressionBaseVisitor.java
+
