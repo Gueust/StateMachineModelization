@@ -11,16 +11,12 @@ package abstractGraph.Conditions.parser;
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
 booleanExpression
 :
-  booleanExpression AND booleanExpression
-  | booleanExpression OR booleanExpression
-  | '(' booleanExpression ')'
-  | expression
+  booleanExpression AND booleanExpression				#andExpr
+  | booleanExpression OR booleanExpression				#orExpr
+  | LBRACKET booleanExpression RBRACKET					#bracketExpr
+  | ID													#idExpr
 ;
 
-expression
-:
-  ID
-;
 
 //Tokens
 
@@ -40,6 +36,8 @@ OR
   | '|'
 ;
 
+LBRACKET : '(';
+RBRACKET : ')';
 ID
 :
   [a-zA-Z0-9_]+

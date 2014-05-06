@@ -10,6 +10,8 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
+import abstractGraph.Conditions.Formula;
+
 public class ConditionParser {
 
   static public void build(String expression) throws ClassNotFoundException {
@@ -31,5 +33,8 @@ public class ConditionParser {
     TreeViewer viewer = new TreeViewer(null, tree);
     viewer.open();
 
+    GenerateFormula generation_of_formula = new GenerateFormula();
+    Formula f = generation_of_formula.visit(tree);
+    System.out.print(f);
   }
 }
