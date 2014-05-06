@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import abstractGraph.Conditions.parser.BooleanExpressionLexer;
 import abstractGraph.Conditions.parser.BooleanExpressionParser;
+import abstractGraph.Conditions.parser.GenerateFormula;
 
 /**
  * Boolean expression formula
@@ -43,6 +44,8 @@ public abstract class Formula {
     /* begin parsing at booleanExpression rule */
     ParseTree tree = parser.booleanExpression();
 
-    return null;
+    GenerateFormula generation_of_formula = new GenerateFormula();
+    Formula f = generation_of_formula.visit(tree);
+    return f;
   }
 }
