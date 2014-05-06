@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class Clause implements Collection<Literal> {
+/**
+ * A clause is a disjunction of literals (i.e. an OR over literals).
+ */
+public class Clause extends Formula implements Collection<Literal> {
 
   Vector<Literal> literals;
 
@@ -24,6 +27,22 @@ public class Clause implements Collection<Literal> {
 
   public Clause(Collection<Literal> literals) {
     literals = new Vector<Literal>(literals);
+  }
+
+  @Override
+  public String toString() {
+    String s = "(";
+    boolean is_first = true;
+    for (Literal l : literals) {
+      if (is_first) {
+        s += l.toString();
+      } else {
+        s += Formula.OR + " " + l.toString();
+      }
+      is_first = false;
+    }
+    s += ")";
+    return s;
   }
 
   @Override

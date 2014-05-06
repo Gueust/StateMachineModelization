@@ -1,6 +1,6 @@
 package abstractGraph.Conditions;
 
-public class Literal {
+public class Literal extends Formula {
   Variable variable;
   boolean is_negated;
 
@@ -11,5 +11,14 @@ public class Literal {
 
   public Literal(Variable variable) {
     this(variable, false);
+  }
+
+  @Override
+  public String toString() {
+    if (is_negated) {
+      return Formula.NOT + " " + variable.toString();
+    } else {
+      return variable.toString();
+    }
   }
 }

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+/**
+ * A conjunction of clauses.
+ */
 public class CNFFormula extends Formula implements Collection<Clause> {
 
   private Vector<Clause> clauses;
@@ -110,6 +113,15 @@ public class CNFFormula extends Formula implements Collection<Clause> {
           "Only formulas using Or, And and Not operators can be converted" +
               " into a CNF formula");
     }
+  }
+
+  @Override
+  public String toString() {
+    String s = "CNF Formula. Clauses are:\n";
+    for (Clause c : clauses) {
+      s += c.toString() + "\n";
+    }
+    return s;
   }
 
   @Override
