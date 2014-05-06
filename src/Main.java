@@ -1,4 +1,5 @@
 
+import abstractGraph.Conditions.aefdParser.ConditionParserAEFD;
 import abstractGraph.Conditions.parser.ConditionParser;
 import Graph.GraphFactoryAEFD;
 import Graph.Model;
@@ -20,6 +21,14 @@ public class Main {
     ConditionParser.build(condition);
     condition = "not x1 ET x2 OU x3 ET NOT X4";
     ConditionParser.build(condition);
+    
+    //Test the AEFD parser
+    String conditionAEFD = "x1_Libere OU (x2_Occupee ET x3_Bas)";
+    ConditionParserAEFD.build(conditionAEFD);
+    conditionAEFD = "x1_non_Condamne OU x2_NM ET x3_Libere";
+    ConditionParserAEFD.build(conditionAEFD);
+    conditionAEFD = "x1_Haut ET x2_Gauche OU x3_Droite";
+    ConditionParserAEFD.build(conditionAEFD);
   }
 
 }
