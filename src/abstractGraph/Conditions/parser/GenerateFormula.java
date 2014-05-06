@@ -3,7 +3,6 @@ package abstractGraph.Conditions.parser;
 import java.util.HashMap;
 
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 import abstractGraph.Conditions.AndFormula;
 import abstractGraph.Conditions.Formula;
@@ -23,7 +22,8 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
   }
 
   /**
-   * This function is lunched when the parser meets a negation ('not' or 'NOT').
+   * This function is launched when the parser meets a negation ('not' or
+   * 'NOT').
    * 
    * @return a Formula
    */
@@ -35,9 +35,9 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
   }
 
   /**
-   * This function is lunched when the parser meets an AND expression
+   * This function is launched when the parser meets an AND expression.
    * 
-   * @return an AndFormula
+   * @return An AndFormula
    */
   @Override
   public Formula visitAndExpr(
@@ -49,9 +49,9 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
   }
 
   /**
-   * This function is lunched when the parser meets an OR expression.
+   * This function is launched when the parser meets an OR expression.
    * 
-   * @return an OrFormula
+   * @return An OrFormula.
    */
   @Override
   public Formula visitOrExpr(@NotNull BooleanExpressionParser.OrExprContext ctx) {
@@ -62,10 +62,10 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
   }
 
   /**
-   * This function is lunched when the parser meets an expression between
-   * brackets.
+   * This function is launched when the parser meets an expression between
+   * parenthesis.
    * 
-   * @return a Formula
+   * @return The Formula within parenthesis.
    */
   @Override
   public Formula visitBracketExpr(

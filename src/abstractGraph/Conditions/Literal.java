@@ -1,7 +1,7 @@
 package abstractGraph.Conditions;
 
 public class Literal extends Formula {
-  Variable variable;
+  private Variable variable;
   boolean is_negated;
 
   public Literal(Variable variable, boolean is_negated) {
@@ -11,6 +11,14 @@ public class Literal extends Formula {
 
   public Literal(Variable variable) {
     this(variable, false);
+  }
+
+  public Variable getVariable() {
+    return variable;
+  }
+
+  public boolean IsNegated() {
+    return is_negated;
   }
 
   @Override

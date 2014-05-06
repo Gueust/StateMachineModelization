@@ -1,6 +1,7 @@
 package abstractGraph.Conditions;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -27,6 +28,18 @@ public class Clause extends Formula implements Collection<Literal> {
 
   public Clause(Collection<Literal> literals) {
     literals = new Vector<Literal>(literals);
+  }
+
+  /**
+   * @see abstractGraph.CNFFormula#associatveMap()
+   */
+  void associatveMap(HashMap<Variable, Integer> result) {
+    for (Literal l : literals) {
+      Integer i = result.get(l.getVariable());
+      if (i == null) {
+        result.put(l.getVariable(), result.size() + 1);
+      }
+    }
   }
 
   @Override

@@ -19,6 +19,6 @@ public class OrFormula extends Formula {
 
   @Override
   public String toString() {
-    return "( " + p.toString() + " " + Formula.OR + " " + q.toString() + " )";
+    return "(" + p.toString() + " " + Formula.OR + " " + q.toString() + ")";
   }
 }

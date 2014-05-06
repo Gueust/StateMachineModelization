@@ -1,6 +1,7 @@
 package abstractGraph.Conditions;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -22,6 +23,22 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   public CNFFormula(Variable f) {
     clauses = new Vector<Clause>(1);
     clauses.add(new Clause(f));
+  }
+
+  /**
+   * In order to get the formula solved in a SAT solver we need to write the CNF
+   * formula in Dimacs format. To do so, we must give to each variable a unique
+   * int indentifier that is within [1, n] where n is the number of variable.
+   * 
+   * @return An hashmap such that .get(var) is the unique int representing the
+   *         Variable var
+   */
+  public HashMap<Variable, Integer> associativeMap() {
+    HashMap<Variable, Integer> result = new HashMap<Variable, Integer>();
+    for (Clause c : clauses) {
+      c.associatveMap(result);
+    }
+    return result;
   }
 
   /**

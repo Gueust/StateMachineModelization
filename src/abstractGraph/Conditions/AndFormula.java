@@ -20,6 +20,6 @@ public class AndFormula extends Formula {
 
   @Override
   public String toString() {
-    return "( " + p.toString() + " " + Formula.AND + " " + q.toString() + " )";
+    return p.toString() + " " + Formula.AND + " " + q.toString();
   }
 }
