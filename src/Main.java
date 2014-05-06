@@ -18,6 +18,8 @@ public class Main {
     ConditionParser.build(condition);
     condition = "x1 ET x2 OU x3";
     ConditionParser.build(condition);
+    condition = "not x1 ET x2 OU x3 ET NOT X4";
+    ConditionParser.build(condition);
   }
 
 }

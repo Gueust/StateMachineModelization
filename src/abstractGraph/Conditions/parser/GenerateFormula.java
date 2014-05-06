@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 import abstractGraph.Conditions.AndFormula;
 import abstractGraph.Conditions.Formula;
+import abstractGraph.Conditions.NotFormula;
 import abstractGraph.Conditions.OrFormula;
 import abstractGraph.Conditions.Variable;
 
@@ -19,6 +20,18 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
    */
   public GenerateFormula() {
     variables = new HashMap<String, Variable>();
+  }
+
+  /**
+   * This function is lunched when the parser meets a negation ('not' or 'NOT').
+   * 
+   * @return a Formula
+   */
+  @Override
+  public Formula visitNotExpr(
+      @NotNull BooleanExpressionParser.NotExprContext ctx) {
+    Formula temp_formula = new NotFormula(visit(ctx.booleanExpression()));
+    return temp_formula;
   }
 
   /**

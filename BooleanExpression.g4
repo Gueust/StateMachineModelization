@@ -11,7 +11,8 @@ package abstractGraph.Conditions.parser;
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
 booleanExpression
 :
-  booleanExpression AND booleanExpression				#andExpr
+  NOT booleanExpression                                 #notExpr
+  |booleanExpression AND booleanExpression				#andExpr
   | booleanExpression OR booleanExpression				#orExpr
   | LBRACKET booleanExpression RBRACKET					#bracketExpr
   | ID													#idExpr
@@ -19,7 +20,11 @@ booleanExpression
 
 
 //Tokens
-
+NOT
+:
+  'NOT'
+  | 'not'
+;
 AND
 :
   'AND'
