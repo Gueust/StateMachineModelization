@@ -1,5 +1,7 @@
 package graph;
 
+import graph.events.SynchronisationEvent;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -32,7 +34,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   protected HashMap<String, ExternalEvent> external_events;
   /* All the commands that the model can generate */
   protected HashMap<String, CommandEvent> commands_events;
-  protected HashMap<String, InternalEvent> internal_events;
+  protected HashMap<String, SynchronisationEvent> synchronisation_events;
 
   /*
    * Every variable should be written by only state machine. This keeps the

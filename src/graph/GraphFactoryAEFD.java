@@ -1,6 +1,8 @@
 package graph;
 
 import graph.events.Actions;
+import graph.events.SynchronisationEvent;
+import graph.events.VariableChange;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -16,10 +18,10 @@ import java.util.LinkedHashMap;
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.AbstractCondition;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
-import abstractGraph.events.InternalEvent;
 import abstractGraph.events.SingleEvent;
 
 /**
@@ -36,19 +38,21 @@ import abstractGraph.events.SingleEvent;
  */
 public class GraphFactoryAEFD {
 
-  /* List all the state machines of the model */
-  private HashMap<String, StateMachine> state_machines;
-  /* List all the external events present in the state machines */
-  private HashMap<String, ExternalEvent> external_events;
-  /* List all the commands present in the state machines */
-  private HashMap<String, CommandEvent> commands_events;
-  /*
-   * List all the internal event (both synchronization messages and global
-   * variables modification)
-   */
-  private HashMap<String, InternalEvent> internal_events;
+  /** The formula factory to parse the condition formulas */
+  static final FormulaFactory factory = Formula.DEFAULT_FACTORY;
 
-  /*
+  /** List all the state machines of the model */
+  private HashMap<String, StateMachine> state_machines;
+  /** List all the external events present in the state machines */
+  private HashMap<String, ExternalEvent> external_events;
+  /** List all the commands present in the state machines */
+  private HashMap<String, CommandEvent> commands_events;
+  /** List all the synchronization messages */
+  private HashMap<String, SynchronisationEvent> synchronisation_events;
+  /** List all the global variable modification messages */
+  private HashMap<String, VariableChange> variable_modification_events;
+
+  /**
    * Used to remember the order of the transition within the parsed file in
    * order to be able to write the file back and compare with the initial file
    */
@@ -62,12 +66,33 @@ public class GraphFactoryAEFD {
     }
   }
 
-  /* Keep the order of the transition within the parsed file */
+  /** Keep the order of the transition within the parsed file */
   LinkedHashMap<Transition, InitialTransition> initial_transition_order;
 
   /**
-   * Create the factory. The natural function called next is
-   * {@link #buildModel(String)}
+   * Create the factory that loads the given file. The natural function called
+   * next is {@link #buildModel(String)}
+   * 
+   * @details The operations done to load a file are the following:
+   *          <ol>
+   *          <li>
+   *          parse a first time the file to detect all the ACT_NOT_FCI (i.e.
+   *          the synchronization messages sent by one state machine to an
+   *          other). They all are in at least one action field. For every
+   *          ACT_NOT_FCI name, only one synchronization message is created.
+   *          From now, we will call these events SYN (for synchronization).
+   * 
+   *          </li>
+   *          <li>
+   *          Then, we do a second parsing that will load all the transitions.
+   *          We ensure than every external event, command, syn, and IND (for
+   *          indicator, that indicates the modification of the value of a
+   *          global variable) is unique. This is done using
+   *          {@link #getEvents(String)}, {@link #getCondition(String)}, and
+   *          {@link #getActions(String)}.
+   * 
+   *          </li>
+   *          </ol>
    * 
    * @param file
    *          The file containing the states machines of the model. From now, we
@@ -79,12 +104,12 @@ public class GraphFactoryAEFD {
     state_machines = new HashMap<String, StateMachine>();
     external_events = new HashMap<String, ExternalEvent>();
     commands_events = new HashMap<String, CommandEvent>();
-    internal_events = new HashMap<String, InternalEvent>();
+    synchronisation_events = new HashMap<String, SynchronisationEvent>();
 
     initial_transition_order = new LinkedHashMap<Transition, InitialTransition>();
 
     /*
-     * We do two parsings
+     * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
      * - the second one to load the file
      */
@@ -125,9 +150,8 @@ public class GraphFactoryAEFD {
       System.out
           .println("Comparing the initial model with the built model... OK");
     } else {
-      System.out
-          .println("File generated from the loaded model is different from the"
-              + " initial model. Aborting");
+      System.out.println("File generated from the loaded model is different" +
+          " from the initial model. Aborting");
       System.exit(-1);
     }
 
@@ -150,7 +174,7 @@ public class GraphFactoryAEFD {
     }
     result.external_events = external_events;
     result.commands_events = commands_events;
-    result.internal_events = internal_events;
+    result.synchronisation_events = synchronisation_events;
 
     /**
      * We check that the list of added transitions is exactly the transitions
@@ -204,8 +228,9 @@ public class GraphFactoryAEFD {
           if (event_string
               .substring(0, event_string.indexOf('_'))
               .equals("ACT")) {
-            InternalEvent new_event = new InternalEvent(event_string);
-            internal_events.put(new_event.getName(), new_event);
+            SynchronisationEvent new_event = new SynchronisationEvent(
+                event_string);
+            synchronisation_events.put(new_event.getName(), new_event);
           }
         }
       }
@@ -309,7 +334,7 @@ public class GraphFactoryAEFD {
   }
 
   /**
-   * Return the SingleEvent object associated to `event_name`
+   * Return the SingleEvent object associated to `event_name`.
    * 
    * @param event_name
    *          The name of the event (including the prefix)
@@ -322,7 +347,7 @@ public class GraphFactoryAEFD {
     if (result != null) {
       return result;
     }
-    result = internal_events.get(event_name);
+    result = synchronisation_events.get(event_name);
     if (result != null) {
       return result;
     }
@@ -336,8 +361,9 @@ public class GraphFactoryAEFD {
       external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
     case "IND":
-      new_event = new InternalEvent(event_name);
-      internal_events.put(new_event.getName(), (InternalEvent) new_event);
+      new_event = new VariableChange(event_name);
+      variable_modification_events
+          .put(new_event.getName(), (VariableChange) new_event);
       break;
     case "ACT":
       /*
@@ -356,6 +382,13 @@ public class GraphFactoryAEFD {
 
   }
 
+  /**
+   * Return the action associated to the event. It is to be called for every
+   * action in the Action field.
+   * 
+   * @param event_name
+   * @return
+   */
   private SingleEvent actionFactory(String event_name) {
     SingleEvent result;
 
@@ -367,7 +400,7 @@ public class GraphFactoryAEFD {
     if (result != null) {
       return result;
     }
-    result = internal_events.get(event_name);
+    result = synchronisation_events.get(event_name);
     if (result != null) {
       return result;
     }
@@ -383,8 +416,9 @@ public class GraphFactoryAEFD {
       commands_events.put(new_event.getName(), (CommandEvent) new_event);
       break;
     case "IND":
-      new_event = new InternalEvent(event_name);
-      internal_events.put(new_event.getName(), (InternalEvent) new_event);
+      new_event = new VariableChange(event_name);
+      variable_modification_events
+          .put(new_event.getName(), (VariableChange) new_event);
       break;
     case "ACT":
       /*
@@ -401,6 +435,12 @@ public class GraphFactoryAEFD {
     return new_event;
   }
 
+  /**
+   * Save the loaded data into a file using the AEDF format.
+   * 
+   * @param file
+   * @throws IOException
+   */
   private void saveInFile(String file) throws IOException {
     File selected_file = new File(file);
     BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));

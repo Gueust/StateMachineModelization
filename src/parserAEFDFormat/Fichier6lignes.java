@@ -27,7 +27,7 @@ public class Fichier6lignes {
    * @param input
    *          The string to test
    * @param tested_string
-   *          The key word that must terminate `inout`
+   *          The key word that must terminate `input`
    * @return True if the condition is verified
    */
   private boolean checkSuffix(String input, String tested_string) {
@@ -49,8 +49,7 @@ public class Fichier6lignes {
 
   /**
    * Function that will read the file 6 lines by 6 lines and affect the
-   * differents
-   * values of the transitions to the right variable.
+   * different values of the transitions to the right variable.
    * 
    * @throws IOException
    */
@@ -101,6 +100,7 @@ public class Fichier6lignes {
       action = action.substring(0, action.length() - 6).trim();
       return true;
     } else {
+      buff.close();
       return false;
     }
 
