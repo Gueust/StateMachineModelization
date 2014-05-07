@@ -21,13 +21,36 @@ import abstractGraph.Events.SingleEvent;
 import Graph.Events.Actions;
 import Parser_Fichier_6lignes.Fichier6lignes;
 
+/**
+ * Build models from an AEFD formatted file.
+ * 
+ * To use this class :
+ * 
+ * <pre>
+ * {
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
+ * }
+ * </pre>
+ */
 public class GraphFactoryAEFD {
 
+  /* List all the state machines of the model */
   private HashMap<String, StateMachine> state_machines;
+  /* List all the external events present in the state machines */
   private HashMap<String, ExternalEvent> external_events;
+  /* List all the commands present in the state machines */
   private HashMap<String, CommandEvent> commands_events;
+  /*
+   * List all the internal event (both synchronization messages and global
+   * variables modification)
+   */
   private HashMap<String, InternalEvent> internal_events;
 
+  /*
+   * Used to remember the order of the transition within the parsed file in
+   * order to be able to write the file back and compare with the initial file
+   */
   class InitialTransition {
     public StateMachine state_machine;
     public Transition t;
@@ -38,9 +61,19 @@ public class GraphFactoryAEFD {
     }
   }
 
+  /* Keep the order of the transition within the parsed file */
   LinkedHashMap<Transition, InitialTransition> initial_transition_order;
 
-  public GraphFactoryAEFD(String file) throws Exception {
+  /**
+   * Create the factory. The natural function called next is
+   * {@link #buildModel(String)}
+   * 
+   * @param file
+   *          The file containing the states machines of the model. From now, we
+   *          can only load one file.
+   * @throws IOException
+   */
+  public GraphFactoryAEFD(String file) throws IOException {
 
     state_machines = new HashMap<String, StateMachine>();
     external_events = new HashMap<String, ExternalEvent>();
@@ -48,6 +81,7 @@ public class GraphFactoryAEFD {
     internal_events = new HashMap<String, InternalEvent>();
 
     initial_transition_order = new LinkedHashMap<Transition, InitialTransition>();
+
     /*
      * We do two parsings
      * - the first one to identify the ACT not FCI in the action fields
@@ -66,19 +100,19 @@ public class GraphFactoryAEFD {
       State from = retrieveState(state_machine.getName(), from_name);
       State to = retrieveState(state_machine.getName(), to_name);
 
+      /* Create the new transition in the associated state machine */
       Transition transition =
           state_machine.addTransition(from, to,
               getEvents(parser.getEvent()),
               getCondition(parser.getCondition()),
               getActions(parser.getAction()));
 
-      initial_transition_order
-          .put(transition, new InitialTransition(state_machine, transition));
-
       /*
        * Adding the transition in the linked list to be able to right the file
        * in the same order
        */
+      initial_transition_order
+          .put(transition, new InitialTransition(state_machine, transition));
     }
 
     /**
@@ -98,6 +132,14 @@ public class GraphFactoryAEFD {
 
   }
 
+  /**
+   * Produce a model.
+   * 
+   * @param model_name
+   *          The model name.
+   * @return A new model representing the file given when building the
+   *         {@link GraphFactoryAEFD}
+   */
   public Model buildModel(String model_name) {
     Model result = new Model(model_name);
     Iterator<StateMachine> sm_iterator = state_machines.values().iterator();
@@ -244,7 +286,7 @@ public class GraphFactoryAEFD {
    * @return The equivalent Actions object
    * @throws Exception
    */
-  private Actions getActions(String actions) throws Exception {
+  private Actions getActions(String actions) {
     /* TODO : split around "/" and take the left part */
     String[] array_of_actions = actions.split(";");
     Actions result = new Actions();
@@ -313,7 +355,7 @@ public class GraphFactoryAEFD {
 
   }
 
-  private SingleEvent actionFactory(String event_name) throws Exception {
+  private SingleEvent actionFactory(String event_name) {
     SingleEvent result;
 
     result = external_events.get(event_name);
@@ -358,7 +400,7 @@ public class GraphFactoryAEFD {
     return new_event;
   }
 
-  public void saveInFile(String file) throws IOException {
+  private void saveInFile(String file) throws IOException {
     File selected_file = new File(file);
     BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));
     Iterator<InitialTransition> iterator =
@@ -417,11 +459,6 @@ public class GraphFactoryAEFD {
     return sb.toString();
   }
 
-  @Override
-  public String toString() {
-    return state_machines.toString();
-  }
-
   /**
    * Compares 2 files byte by byte
    * 
@@ -455,5 +492,10 @@ public class GraphFactoryAEFD {
       in1.close();
       in2.close();
     }
+  }
+
+  @Override
+  public String toString() {
+    return state_machines.toString();
   }
 }

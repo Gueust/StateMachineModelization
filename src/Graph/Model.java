@@ -5,28 +5,45 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
 
-import Graph.Events.UnknownEvent;
 import abstractGraph.AbstractModel;
 import abstractGraph.Conditions.AbstractVariable;
 import abstractGraph.Events.CommandEvent;
 import abstractGraph.Events.ExternalEvent;
 import abstractGraph.Events.InternalEvent;
 
+/**
+ * A set of state machines interacting with each other.
+ * There is a set of external events to which the model can react
+ * (external_events), a set of commands that the model can give to the external
+ * environment and internal messages (both synchronization messages and global
+ * variables).
+ */
 public class Model extends AbstractModel<StateMachine, State, Transition> {
+  /* The order internal state machines */
   private LinkedHashMap<String, StateMachine> state_machines;
+  /*
+   * All the variables that are used within the state machines. There is pointer
+   * uniqueness of variables (i.e. two variables are equals if and only if they
+   * are the same object).
+   */
   private LinkedHashSet<AbstractVariable> variables;
 
+  /* All the external events that can trigger the model */
   protected HashMap<String, ExternalEvent> external_events;
+  /* All the commands that the model can generate */
   protected HashMap<String, CommandEvent> commands_events;
   protected HashMap<String, InternalEvent> internal_events;
-  protected HashMap<String, UnknownEvent> unknown_events;
 
   /*
    * Every variable should be written by only state machine. This keeps the
    * record
    */
-  private HashMap<AbstractVariable, StateMachine> writting_rights;
+  private HashMap<AbstractVariable, StateMachine> writing_rights;
 
+  /**
+   * Create a new empty model named `name`.
+   * @param name The name of the model.
+   */
   public Model(String name) {
     super(name);
     state_machines = new LinkedHashMap<String, StateMachine>(100);
