@@ -83,16 +83,11 @@ public class GenerateFormulaAEFD extends
   public Formula visitIdnegatifExpr(
       @NotNull AEFDBooleanExpressionParser.IdnegatifExprContext ctx) {
     String variable = "";
-    int length_variable;
-    for (String suffixe : negative_suffixe) {
-      if (ctx.IDNEGATIF().getText().contains(suffixe)) {
-        length_variable = ctx.IDNEGATIF().getText().length() - suffixe.length();
-        variable = ctx
-            .IDNEGATIF()
-            .getText()
-            .substring(0, length_variable)
-            .trim();
-      }
+    
+    variable = removeNegativeSuffixe(ctx.IDNEGATIF().getText().trim());
+    if (variable == null){
+      System.out.print("*************NEGATIF***************");
+      throw new NullPointerException("The parser does not find the variable.") ;
     }
     Variable temp_variable;
     if (!variables.containsKey(variable)) {
@@ -116,16 +111,10 @@ public class GenerateFormulaAEFD extends
   public Formula visitIdpositifExpr(
       @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
     String variable = "";
-    int length_variable;
-    for (String suffixe : positive_suffixe) {
-      if (ctx.IDPOSITIF().getText().contains(suffixe)) {
-        length_variable = ctx.IDPOSITIF().getText().length() - suffixe.length();
-        variable = ctx
-            .IDPOSITIF()
-            .getText()
-            .substring(0, length_variable)
-            .trim();
-      }
+    String indicateur = ctx.IDPOSITIF().getText().trim();
+    variable = removePositiveSuffixe(indicateur);
+    if (variable == null){
+      throw new NullPointerException("The parser does not find the variable " + indicateur) ;
     }
     Variable temp_variable;
     if (!variables.containsKey(variable)) {
@@ -136,6 +125,42 @@ public class GenerateFormulaAEFD extends
     }
     Formula temp_formula = temp_variable;
     return temp_formula;
+  }
+
+  
+  /**
+   * Remove the negative suffixe from the parsed variable.
+   * @param input
+   * @return
+   */
+  public String removeNegativeSuffixe(String input) {
+    int length_variable;
+
+    for (String suffixe : negative_suffixe) {
+      if (input.contains(suffixe)) {
+        length_variable = input.length() - suffixe.length();
+        return input.substring(0, length_variable).trim();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Remove the positive suffixe from the parsed variable.
+   * @param input
+   * @return
+   */
+  public String removePositiveSuffixe(String input) {
+    int length_variable;
+    String tmp = "";
+    for (String suffixe : positive_suffixe) {
+      if (input.contains(suffixe)) {
+        length_variable = input.length() - suffixe.length();
+        tmp = input.substring(0, length_variable).trim();
+        return tmp ;
+      }
+    }
+    return null;
   }
 
 }

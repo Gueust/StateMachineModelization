@@ -26,8 +26,9 @@ public class Main {
     FormulaFactory aefd_factory = new AEFDFormulaFactory();
     String conditionAEFD = "x1_Libere OU (x2_Occupee ET x3_Bas)";
     aefd_factory.parse(conditionAEFD);
-    conditionAEFD = "x1_non_Condamne OU x2_NM ET x3_Libere";
-    aefd_factory.parse(conditionAEFD);
+    conditionAEFD = "IND_A_non_Condamne OU IND_B_NM ET IND_C_Libere";
+    Formula f = aefd_factory.parse(conditionAEFD);
+    System.out.print(f);
     conditionAEFD = "x1_Haut ET x2_Gauche OU x3_Droite";
     aefd_factory.parse(conditionAEFD);
   }
