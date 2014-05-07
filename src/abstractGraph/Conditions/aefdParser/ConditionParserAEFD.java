@@ -25,9 +25,6 @@ public class ConditionParserAEFD {
     ParseTree tree = parser.booleanExpression(); // begin parsing at init rule
     System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 
-    TreeViewer viewer = new TreeViewer(null, tree);
-    viewer.open();
-
     GenerateFormulaAEFD generation_of_formula = new GenerateFormulaAEFD();
     Formula f = generation_of_formula.visit(tree);
     System.out.print(f);
