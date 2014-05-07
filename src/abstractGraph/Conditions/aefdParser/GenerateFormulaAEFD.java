@@ -29,7 +29,6 @@ public class GenerateFormulaAEFD extends
    */
   public GenerateFormulaAEFD() {
     variables = new HashMap<String, Variable>();
-
   }
 
   /**

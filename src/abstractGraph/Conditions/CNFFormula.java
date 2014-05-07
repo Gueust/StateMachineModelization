@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.GlobalState;
 
 /**
@@ -57,11 +58,17 @@ public class CNFFormula extends Formula implements Collection<Clause> {
    * The algorithm is an implementation from :
    * http://www.cs.jhu.edu/~jason/tutorials/convert-to-CNF.html
    * 
+   * In the worst case scenario, the created formula is m^n where there is n
+   * clauses of m literals.
+   * 
    * @param f
    *          The general formula
    * @return An equivalent CNF formula
    */
   static public CNFFormula ConvertToCNF(Formula f) {
+    if (f == null)
+      return new CNFFormula();
+
     if (f instanceof Variable) {
       // this is a CNF formula consisting of 1 clause that contains 1 literal
       return new CNFFormula((Variable) f);
@@ -94,7 +101,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         Formula q = ((OrFormula) A).q;
         return ConvertToCNF(new AndFormula(new NotFormula(p), new NotFormula(q)));
       }
-      return null;
+      throw new NotImplementedException();
     } else if (f instanceof AndFormula) {
       /*
        * If f has the form P ^ Q, then:
@@ -105,6 +112,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
 
       CNFFormula result = ConvertToCNF(p);
       result.addAll(ConvertToCNF(q));
+
       return result;
     } else if (f instanceof OrFormula) {
       /*
@@ -149,14 +157,28 @@ public class CNFFormula extends Formula implements Collection<Clause> {
     return s;
   }
 
+  public String testToString() {
+    String s = "";
+    boolean first = true;
+    for (Clause c : clauses) {
+      if (!first)
+        s += " " + Formula.AND + " ";
+      first = false;
+      s += c.toString();
+    }
+    return s;
+  }
+
   @Override
   public boolean add(Clause c) {
+    assert (c != null);
     return clauses.add(c);
   }
 
   @Override
   public boolean addAll(Collection<? extends Clause> c) {
-    return this.clauses.addAll(clauses);
+    assert (c != null);
+    return this.clauses.addAll(c);
   }
 
   @Override

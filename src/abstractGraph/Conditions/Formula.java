@@ -2,6 +2,7 @@ package abstractGraph.Conditions;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.Nullable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
@@ -37,8 +38,14 @@ public abstract class Formula implements AbstractCondition {
    * @param view_tree
    *          Set to "debug" mode and display the parsed formula as a tree
    * @return The exact formula parsed without any modification.
+   *         null if the formula is empty.
    */
   static public Formula parse(String expression, boolean view_tree) {
+    String trimed = expression.trim();
+    if (trimed.equals("")) {
+      return null;
+    }
+
     ANTLRInputStream input = new ANTLRInputStream(expression);
 
     /* Create a lexer that feeds off of input CharStream */
@@ -52,10 +59,12 @@ public abstract class Formula implements AbstractCondition {
     /* begin parsing at booleanExpression rule */
     ParseTree tree = parser.booleanExpression();
 
+    /* If view_tree is true, we print the debug tree window */
     if (view_tree) {
       TreeViewer viewer = new TreeViewer(null, tree);
       viewer.open();
     }
+
     GenerateFormula generation_of_formula = new GenerateFormula();
     Formula f = generation_of_formula.visit(tree);
     return f;
@@ -67,7 +76,8 @@ public abstract class Formula implements AbstractCondition {
    * @details Parse a formula using parse(expresssion, false).
    * @see #parse(String, boolean)
    */
-  static public Formula parse(String expression) {
+  static public @Nullable
+  Formula parse(String expression) {
     return parse(expression, false);
   }
 }

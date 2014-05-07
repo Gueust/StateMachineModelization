@@ -15,21 +15,21 @@ public class Clause extends Formula implements Collection<Literal> {
   Vector<Literal> literals;
 
   public Clause() {
-    literals = new Vector<Literal>();
+    this.literals = new Vector<Literal>();
   }
 
   public Clause(Variable f) {
-    literals = new Vector<Literal>(1);
-    literals.add(new Literal(f));
+    this.literals = new Vector<Literal>(1);
+    this.literals.add(new Literal(f));
   }
 
   public Clause(Literal literal) {
-    literals = new Vector<Literal>(1);
-    literals.add(literal);
+    this.literals = new Vector<Literal>(1);
+    this.literals.add(literal);
   }
 
   public Clause(Collection<Literal> literals) {
-    literals = new Vector<Literal>(literals);
+    this.literals = new Vector<Literal>(literals);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class Clause extends Formula implements Collection<Literal> {
       if (is_first) {
         s += l.toString();
       } else {
-        s += Formula.OR + " " + l.toString();
+        s += " " + Formula.OR + " " + l.toString();
       }
       is_first = false;
     }
@@ -68,11 +68,13 @@ public class Clause extends Formula implements Collection<Literal> {
 
   @Override
   public boolean add(Literal e) {
+    assert (e != null);
     return literals.add(e);
   }
 
   @Override
   public boolean addAll(Collection<? extends Literal> c) {
+    assert (c != null);
     return literals.addAll(c);
   }
 
