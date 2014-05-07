@@ -1,4 +1,4 @@
-package abstractGraph.conditions.aefdParser;
+package graph.conditions.aefdParser;
 
 import java.util.HashMap;
 

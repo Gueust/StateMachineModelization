@@ -1,6 +1,6 @@
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import abstractGraph.conditions.aefdParser.ConditionParserAEFD;
+import graph.conditions.aefdParser.ConditionParserAEFD;
 import abstractGraph.conditions.Formula;
 
 public class Main {

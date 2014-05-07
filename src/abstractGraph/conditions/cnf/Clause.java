@@ -1,4 +1,4 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.cnf;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import abstractGraph.GlobalState;
+import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.Variable;
 
 /**
  * A clause is a disjunction of literals (i.e. an OR over literals).
@@ -39,7 +41,7 @@ public class Clause extends Formula implements Collection<Literal> {
   }
 
   /**
-   * @see abstractGraph.CNFFormula#associatveMap()
+   * @see abstractGraph.conditions.cnf.CNFFormula#associatveMap()
    */
   void associatveMap(HashMap<Variable, Integer> result) {
     for (Literal l : literals) {

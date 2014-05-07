@@ -1,6 +1,8 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.cnf;
 
 import abstractGraph.GlobalState;
+import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.Variable;
 
 public class Literal extends Formula {
   private Variable variable;

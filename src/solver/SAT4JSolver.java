@@ -11,10 +11,10 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
-import abstractGraph.conditions.CNFFormula;
-import abstractGraph.conditions.Clause;
-import abstractGraph.conditions.Literal;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.cnf.CNFFormula;
+import abstractGraph.conditions.cnf.Clause;
+import abstractGraph.conditions.cnf.Literal;
 
 public class SAT4JSolver {
 

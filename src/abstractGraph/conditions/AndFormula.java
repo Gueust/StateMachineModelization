@@ -26,11 +26,29 @@ public class AndFormula extends Formula {
     return false;
   }
 
+  /**
+   * An AND formula represents : p AND q. This function returns p.
+   * 
+   * @return The first formula p of this AND
+   */
+  public Formula getFirst() {
+    return p;
+  }
+
+  /**
+   * An OR formula represents : p AND q. This function returns q.
+   * 
+   * @return The second formula q of this AND
+   */
+  public Formula getSecond() {
+    return q;
+  }
+
   @Override
   public String toString() {
     return parenthesis(p) + " " + Formula.AND + " " + parenthesis(q);
   }
-  
+
   private String parenthesis(Formula f) {
     String left;
     if (f instanceof OrFormula) {

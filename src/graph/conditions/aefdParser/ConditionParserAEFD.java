@@ -1,4 +1,4 @@
-package abstractGraph.conditions.aefdParser;
+package graph.conditions.aefdParser;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

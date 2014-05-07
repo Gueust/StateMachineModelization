@@ -1,4 +1,4 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.cnf;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +7,11 @@ import java.util.Vector;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.GlobalState;
+import abstractGraph.conditions.AndFormula;
+import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.NotFormula;
+import abstractGraph.conditions.OrFormula;
+import abstractGraph.conditions.Variable;
 
 /**
  * A conjunction of clauses.
@@ -74,7 +79,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
       return new CNFFormula((Variable) f);
     } else if (f instanceof NotFormula) {
       /* The formula is of the form Not A */
-      Formula A = ((NotFormula) f).f;
+      Formula A = ((NotFormula) f).getF();
 
       if (A instanceof Variable) {
         /* If f has the form ~A for some variable A, then return f. */
@@ -83,22 +88,22 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         return result;
       } else if (A instanceof NotFormula) {
         /* If f has the form ~(~P), then return CONVERT(P). (double negation) */
-        return ConvertToCNF(((NotFormula) A).f);
+        return ConvertToCNF(((NotFormula) A).getF());
       } else if (A instanceof AndFormula) {
         /*
          * If f has the form ~(P ^ Q), then return CONVERT(~P v ~Q). (de
          * Morgan's Law)
          */
-        Formula p = ((AndFormula) A).p;
-        Formula q = ((AndFormula) A).q;
+        Formula p = ((AndFormula) A).getFirst();
+        Formula q = ((AndFormula) A).getSecond();
         return ConvertToCNF(new OrFormula(new NotFormula(p), new NotFormula(q)));
       } else if (f instanceof OrFormula) {
         /*
          * If f has the form ~(P v Q), then return CONVERT(~P ^ ~Q).(de Morgan's
          * Law)
          */
-        Formula p = ((OrFormula) A).p;
-        Formula q = ((OrFormula) A).q;
+        Formula p = ((OrFormula) A).getFirst();
+        Formula q = ((OrFormula) A).getSecond();
         return ConvertToCNF(new AndFormula(new NotFormula(p), new NotFormula(q)));
       }
       throw new NotImplementedException();
@@ -107,8 +112,8 @@ public class CNFFormula extends Formula implements Collection<Clause> {
        * If f has the form P ^ Q, then:
        * CNFFormula(concatenate(CONVERT(P).clauses, CONVERT(Q).clauses))
        */
-      Formula p = ((AndFormula) f).p;
-      Formula q = ((AndFormula) f).q;
+      Formula p = ((AndFormula) f).getFirst();
+      Formula q = ((AndFormula) f).getSecond();
 
       CNFFormula result = ConvertToCNF(p);
       result.addAll(ConvertToCNF(q));
@@ -127,8 +132,8 @@ public class CNFFormula extends Formula implements Collection<Clause> {
        * ...
        * ^ (Pm v Q1) ^ (Pm v Q2) ^ ... ^ (Pm v Qn)
        */
-      Formula p = ((OrFormula) f).p;
-      Formula q = ((OrFormula) f).q;
+      Formula p = ((OrFormula) f).getFirst();
+      Formula q = ((OrFormula) f).getSecond();
       CNFFormula converted_p = ConvertToCNF(p);
       CNFFormula converted_q = ConvertToCNF(q);
 

@@ -22,6 +22,16 @@ public class NotFormula extends Formula {
     return false;
   }
 
+  /**
+   * A NOT formula represents NOT f, where f is a formula. This functions
+   * returns f.
+   * 
+   * @return The negated formula f
+   */
+  public Formula getF() {
+    return f;
+  }
+
   @Override
   public String toString() {
     return "(" + Formula.NOT + " " + f.toString() + ")";

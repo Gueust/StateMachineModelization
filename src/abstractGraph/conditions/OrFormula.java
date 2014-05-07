@@ -25,6 +25,24 @@ public class OrFormula extends Formula {
     return false;
   }
 
+  /**
+   * An OR formula represents : p OR q. This function returns p.
+   * 
+   * @return The first formula p of this OR
+   */
+  public Formula getFirst() {
+    return p;
+  }
+
+  /**
+   * An OR formula represents : p OR q. This function returns q.
+   * 
+   * @return The second formula q of this OR
+   */
+  public Formula getSecond() {
+    return q;
+  }
+
   @Override
   public String toString() {
     return parenthesis(p) + " " + Formula.OR + " " + parenthesis(q);
