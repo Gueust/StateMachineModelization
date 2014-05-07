@@ -1,11 +1,11 @@
 grammar AEFDBooleanExpression;
 
 @lexer::header {
-package abstractGraph.conditions.aefdParser;
+package graph.conditions.aefdParser;
 }
 
 @parser::header {
-package abstractGraph.conditions.aefdParser;
+package graph.conditions.aefdParser;
 }
 
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
