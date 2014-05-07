@@ -27,6 +27,10 @@ public class OrFormula extends Formula {
 
   @Override
   public String toString() {
-    return "(" + p.toString() + " " + Formula.OR + " " + q.toString() + ")";
+    return parenthesis(p) + " " + Formula.OR + " " + parenthesis(q);
+  }
+
+  private String parenthesis(Formula f) {
+    return f.toString();
   }
 }

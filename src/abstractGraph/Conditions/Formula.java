@@ -17,11 +17,9 @@ public abstract class Formula implements AbstractCondition {
   public static final String AND = "ET";
   public static final String OR = "OU";
   public static final String NOT = "NON";
-  private String condition;
 
   static public Formula newFormula(String expression) {
     Formula result = parse(expression);
-    result.condition = expression;
     return result;
   }
 

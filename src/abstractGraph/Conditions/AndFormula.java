@@ -28,6 +28,16 @@ public class AndFormula extends Formula {
 
   @Override
   public String toString() {
-    return p.toString() + " " + Formula.AND + " " + q.toString();
+    return parenthesis(p) + " " + Formula.AND + " " + parenthesis(q);
+  }
+  
+  private String parenthesis(Formula f) {
+    String left;
+    if (f instanceof OrFormula) {
+      left = "(" + f.toString() + ")";
+    } else {
+      left = f.toString();
+    }
+    return left;
   }
 }
