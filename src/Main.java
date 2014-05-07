@@ -1,7 +1,7 @@
-import abstractGraph.Conditions.Formula;
-import abstractGraph.Conditions.aefdParser.ConditionParserAEFD;
-import Graph.GraphFactoryAEFD;
-import Graph.Model;
+import graph.GraphFactoryAEFD;
+import graph.Model;
+import abstractGraph.conditions.aefdParser.ConditionParserAEFD;
+import abstractGraph.conditions.Formula;
 
 public class Main {
 

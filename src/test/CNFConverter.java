@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import abstractGraph.Conditions.CNFFormula;
-import abstractGraph.Conditions.Clause;
-import abstractGraph.Conditions.Formula;
-import abstractGraph.Conditions.Variable;
+import abstractGraph.conditions.CNFFormula;
+import abstractGraph.conditions.Formula;
 
 public class CNFConverter {
 

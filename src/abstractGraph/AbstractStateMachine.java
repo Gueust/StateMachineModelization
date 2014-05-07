@@ -2,10 +2,10 @@ package abstractGraph;
 
 import java.util.Iterator;
 
-import abstractGraph.Conditions.AbstractCondition;
-import abstractGraph.Events.AbstractActions;
-import abstractGraph.Events.Events;
-import abstractGraph.Events.SingleEvent;
+import abstractGraph.conditions.AbstractCondition;
+import abstractGraph.events.AbstractActions;
+import abstractGraph.events.Events;
+import abstractGraph.events.SingleEvent;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 

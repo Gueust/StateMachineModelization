@@ -1,8 +1,8 @@
 package abstractGraph;
 
-import abstractGraph.Conditions.AbstractCondition;
-import abstractGraph.Events.AbstractActions;
-import abstractGraph.Events.Events;
+import abstractGraph.conditions.AbstractCondition;
+import abstractGraph.events.AbstractActions;
+import abstractGraph.events.Events;
 
 public abstract class AbstractTransition<S extends AbstractState<? extends AbstractTransition<S>>> {
   protected S from, to;

@@ -1,11 +1,11 @@
 grammar BooleanExpression;
 
 @lexer::header {
-package abstractGraph.Conditions.parser;
+package abstractGraph.conditions.parser;
 }
 
 @parser::header {
-package abstractGraph.Conditions.parser;
+package abstractGraph.conditions.parser;
 }
 
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
