@@ -16,13 +16,14 @@ public abstract class Formula implements AbstractCondition {
 
   /**
    * A default factory that parses boolean expressions that uses only OR, AND,
-   * and NOT operators.
-   * OR tokens are: 'OR' , 'OU' , '||' , '|'
-   * AND tokens are:'AND' ,'&&', '&','ET'
-   * NOT tokens are: "NOT", "Not", "NON"
+   * and NOT operators. This default factory is unique (i.e. the same instance
+   * will be always returned).
    * 
    * Variables can have their name using [a-zA-Z0-9_].
    * AND has priority over OR, and NOT is highest priority operator.
+   * OR tokens are: 'OR' , 'OU' , '||' , '|'
+   * AND tokens are:'AND' ,'&&', '&','ET'
+   * NOT tokens are: "NOT", "Not", "NON"
    * 
    * @see FormulaFactory
    */

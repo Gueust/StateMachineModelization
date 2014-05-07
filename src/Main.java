@@ -1,7 +1,8 @@
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.conditions.aefdParser.ConditionParserAEFD;
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
 
 public class Main {
 
@@ -13,21 +14,22 @@ public class Main {
     System.out.println(model);
 
     String condition = "x1 OU (x2 ET x3)";
-    Formula.parse(condition);
+    Formula.DEFAULT_FACTORY.parse(condition);
     condition = "x1 OU x2 ET x3";
-    Formula.parse(condition);
+    Formula.DEFAULT_FACTORY.parse(condition);
     condition = "x1 ET x2 OU x3";
-    Formula.parse(condition);
+    Formula.DEFAULT_FACTORY.parse(condition);
     condition = "not x1 ET x2 OU x3 ET NOT X4";
-    Formula.parse(condition);
+    Formula.DEFAULT_FACTORY.parse(condition);
 
     // Test the AEFD parser
+    FormulaFactory aefd_factory = new AEFDFormulaFactory();
     String conditionAEFD = "x1_Libere OU (x2_Occupee ET x3_Bas)";
-    ConditionParserAEFD.build(conditionAEFD);
+    aefd_factory.parse(conditionAEFD);
     conditionAEFD = "x1_non_Condamne OU x2_NM ET x3_Libere";
-    ConditionParserAEFD.build(conditionAEFD);
+    aefd_factory.parse(conditionAEFD);
     conditionAEFD = "x1_Haut ET x2_Gauche OU x3_Droite";
-    ConditionParserAEFD.build(conditionAEFD);
+    aefd_factory.parse(conditionAEFD);
   }
 
 }
