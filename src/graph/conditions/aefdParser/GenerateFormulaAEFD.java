@@ -10,31 +10,37 @@ import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.Variable;
 
-public class GenerateFormulaAEFD extends
+class GenerateFormulaAEFD extends
     AEFDBooleanExpressionBaseVisitor<Formula> {
 
   private HashMap<String, Variable> variables;
-  private String[] negative_suffixe = { "_non_Bloque", "_non_Condamne",
+
+  public void setVariables(HashMap<String, Variable> variables) {
+    this.variables = variables;
+  }
+
+  private String[] negative_suffix = { "_non_Bloque", "_non_Condamne",
       "_non_Decondamne", "_non_Etabli", "Chute", "_Inactif", "_non_Prise",
       "_non_Enclenchee", "_Occupee", "_Droite", "_HS", "_Ferme",
       "_non_Controle", "_non_Assuree", "_non_Vide", "_non_Valide", "_NM",
       "_Bas" };
-  private String[] positive_suffixe = { "_Bloque", "_Condamne", "_Decondamne",
+  private String[] positive_suffix = { "_Bloque", "_Condamne", "_Decondamne",
       "_Etabli", "_Excite", "_Actif", "_Prise", "_Enclenchee", "_Libere",
       "_Gauche", "_ES", "_Ouvert", "_Controle", "_Assuree", "_Vide", "_Valide",
       "_M", "_Haut" };
 
   /**
-   * Constructor of the class that will initialize the hash map variables
+   * Constructor of the class that will initialize the internal hash map
+   * containing the already created variables to the given parameter.
    */
-  public GenerateFormulaAEFD() {
-    variables = new HashMap<String, Variable>();
+  public GenerateFormulaAEFD(HashMap<String, Variable> variables) {
+    this.variables = variables;
   }
 
   /**
-   * This function is lunched when the parser meets an AND expression
+   * This function is launched when the parser meets an AND expression.
    * 
-   * @return an AndFormula
+   * @return An AndFormula
    */
   @Override
   public Formula visitAndExpr(
@@ -46,9 +52,9 @@ public class GenerateFormulaAEFD extends
   }
 
   /**
-   * This function is lunched when the parser meets an OR expression.
+   * This function is launched when the parser meets an OR expression.
    * 
-   * @return an OrFormula
+   * @return An OrFormula
    */
   @Override
   public Formula visitOrExpr(
@@ -60,10 +66,10 @@ public class GenerateFormulaAEFD extends
   }
 
   /**
-   * This function is lunched when the parser meets an expression between
-   * brackets.
+   * This function is launched when the parser meets an expression between
+   * parenthesis.
    * 
-   * @return a Formula
+   * @return The Formula within parenthesis.
    */
   @Override
   public Formula visitBracketExpr(
@@ -72,37 +78,42 @@ public class GenerateFormulaAEFD extends
   }
 
   /**
-   * This function is lunched when the parser meets a variable with a negative
-   * prefix. It will remove the prefixe and it will add this variable to the
-   * hashmap variables if it doesn't exist yet
+   * This function is launched when the parser meets a variable with a negative
+   * prefix. It will remove the prefix and it will add this variable to the
+   * hashmap variables if it doesn't exist yet.
    * 
    * @return a NotFormula
+   * @NullPointerException When the suffix parsed by the parser coming from the
+   *                       grammar is not find. It means we have forgotten to
+   *                       put the suffix in the negative_suffix array.
    */
 
   @Override
   public Formula visitIdnegatifExpr(
       @NotNull AEFDBooleanExpressionParser.IdnegatifExprContext ctx) {
-    String variable = "";
-    
-    variable = removeNegativeSuffixe(ctx.IDNEGATIF().getText().trim());
-    if (variable == null){
-      System.out.print("*************NEGATIF***************");
-      throw new NullPointerException("The parser does not find the variable.") ;
+    String indicateur = ctx.IDNEGATIF().getText().trim();
+    String variable_name = removeNegativeSuffixe(indicateur);
+
+    if (variable_name == null) {
+      throw new NullPointerException("The parser did not find any negative " +
+          "suffix in the variable " + indicateur);
     }
-    Variable temp_variable;
-    if (!variables.containsKey(variable)) {
-      temp_variable = new Variable(variable);
-      variables.put(variable, temp_variable);
-    } else {
-      temp_variable = variables.get(variable);
+    if (variables == null) {
+      return new Variable(variable_name);
     }
-    Formula temp_formula = new NotFormula(temp_variable);
-    return (temp_formula);
+
+    Variable temp_variable = variables.get(variable_name);
+    if (temp_variable == null) {
+      temp_variable = new Variable(variable_name);
+      variables.put(variable_name, temp_variable);
+    }
+
+    return new NotFormula(temp_variable);
   }
 
   /**
-   * This function is lunched when the parser meets a variable with a positive
-   * prefix. It will remove the prefixe and it will add this variable to the
+   * This function is launched when the parser meets a variable with a positive
+   * prefix. It will remove the prefix and it will add this variable to the
    * hashmap variables if it doesn't exist yet
    * 
    * @return a Formula
@@ -110,33 +121,36 @@ public class GenerateFormulaAEFD extends
   @Override
   public Formula visitIdpositifExpr(
       @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
-    String variable = "";
     String indicateur = ctx.IDPOSITIF().getText().trim();
-    variable = removePositiveSuffixe(indicateur);
-    if (variable == null){
-      throw new NullPointerException("The parser does not find the variable " + indicateur) ;
+    String variable_name = removePositiveSuffixe(indicateur);
+
+    if (variable_name == null) {
+      throw new NullPointerException("The parser did not find any negative " +
+          "suffix in the variable " + indicateur);
     }
-    Variable temp_variable;
-    if (!variables.containsKey(variable)) {
-      temp_variable = new Variable(variable);
-      variables.put(variable, temp_variable);
-    } else {
-      temp_variable = variables.get(variable);
+    if (variables == null) {
+      return new Variable(variable_name);
     }
-    Formula temp_formula = temp_variable;
-    return temp_formula;
+
+    Variable temp_variable = variables.get(variable_name);
+    if (temp_variable == null) {
+      temp_variable = new Variable(variable_name);
+      variables.put(variable_name, temp_variable);
+    }
+    return temp_variable;
   }
 
-  
   /**
-   * Remove the negative suffixe from the parsed variable.
+   * Remove the negative suffix from the parsed variable.
+   * 
    * @param input
-   * @return
+   * @return The variable name without the first matched negative suffix.
+   *         null if the suffix did not match any registered negative suffix.
    */
   public String removeNegativeSuffixe(String input) {
     int length_variable;
 
-    for (String suffixe : negative_suffixe) {
+    for (String suffixe : negative_suffix) {
       if (input.contains(suffixe)) {
         length_variable = input.length() - suffixe.length();
         return input.substring(0, length_variable).trim();
@@ -146,18 +160,21 @@ public class GenerateFormulaAEFD extends
   }
 
   /**
-   * Remove the positive suffixe from the parsed variable.
+   * Remove the positive suffix from the parsed variable.
+   * 
    * @param input
-   * @return
+   * @return The variable name without the first matched positive suffix.
+   *         null if the suffix did not match any registered positive suffix.
    */
   public String removePositiveSuffixe(String input) {
     int length_variable;
-    String tmp = "";
-    for (String suffixe : positive_suffixe) {
+    String tmp;
+
+    for (String suffixe : positive_suffix) {
       if (input.contains(suffixe)) {
         length_variable = input.length() - suffixe.length();
         tmp = input.substring(0, length_variable).trim();
-        return tmp ;
+        return tmp;
       }
     }
     return null;

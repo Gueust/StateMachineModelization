@@ -19,6 +19,8 @@ public abstract class Formula implements AbstractCondition {
    * and NOT operators. This default factory is unique (i.e. the same instance
    * will be always returned).
    * 
+   * This factory is in UNITED MODEL mode.
+   * 
    * Variables can have their name using [a-zA-Z0-9_].
    * AND has priority over OR, and NOT is highest priority operator.
    * OR tokens are: 'OR' , 'OU' , '||' , '|'
@@ -28,7 +30,7 @@ public abstract class Formula implements AbstractCondition {
    * @see FormulaFactory
    */
   public static final FormulaFactory DEFAULT_FACTORY =
-      new BooleanExpressionFactory();
+      new BooleanExpressionFactory(true);
 
   static public Formula newFormula(String expression) {
     Formula result = DEFAULT_FACTORY.parse(expression);

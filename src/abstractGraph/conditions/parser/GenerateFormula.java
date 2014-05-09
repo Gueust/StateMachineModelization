@@ -10,22 +10,27 @@ import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.Variable;
 
-public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
+class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
 
   private HashMap<String, Variable> variables;
 
+  public void setVariables(HashMap<String, Variable> variables) {
+    this.variables = variables;
+  }
+
   /**
-   * Constructor of the class that will initialize the hash map variables
+   * Constructor of the class that will initialize the hash map variables to the
+   * given parameter.
    */
-  public GenerateFormula() {
-    variables = new HashMap<String, Variable>();
+  public GenerateFormula(HashMap<String, Variable> variables) {
+    this.variables = variables;
   }
 
   /**
    * This function is launched when the parser meets a negation ('not' or
    * 'NOT').
    * 
-   * @return a Formula
+   * @return A Formula
    */
   @Override
   public Formula visitNotExpr(
@@ -74,22 +79,27 @@ public class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
   }
 
   /**
-   * This function is lunched when the parser meets a variable. It will add this
-   * variable to the hashmap variables if it doesn't exist yet
+   * This function is launched when the parser meets a variable. It will use
+   * the hashmap `variables` to retrieve already existing variables if it is not
+   * null.
    * 
    * @return a Formula
    */
   @Override
   public Formula visitIdExpr(@NotNull BooleanExpressionParser.IdExprContext ctx) {
-    Variable temp_variable;
-    if (!variables.containsKey(ctx.ID().getText())) {
-      temp_variable = new Variable(ctx.ID().getText().trim());
-      variables.put(ctx.ID().getText().trim(), temp_variable);
-    } else {
-      temp_variable = variables.get(ctx.ID().getText().trim());
-    }
-    Formula temp_formula = temp_variable;
-    return temp_formula;
-  }
+    Variable v;
+    String variable_name = ctx.ID().getText().trim();
 
+    /* If the BooleanFactory is in single formula mode */
+    if (variables == null) {
+      v = new Variable(variable_name);
+    } else { /* Otherwise we retrieve the variable if it exists */
+      v = variables.get(variable_name);
+      if (v == null) {
+        v = new Variable(variable_name);
+        variables.put(variable_name, v);
+      }
+    }
+    return v;
+  }
 }

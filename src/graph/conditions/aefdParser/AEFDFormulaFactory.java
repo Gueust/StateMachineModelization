@@ -9,7 +9,26 @@ import org.antlr.v4.runtime.tree.gui.TreeViewer;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 
-public class AEFDFormulaFactory implements FormulaFactory {
+public class AEFDFormulaFactory extends FormulaFactory {
+
+  private GenerateFormulaAEFD generator_of_formula;
+
+  /**
+   * @see FormulaFactory#FormulaFactory(boolean)
+   */
+  public AEFDFormulaFactory(boolean united_model_mode) {
+    super(united_model_mode);
+
+    generator_of_formula =
+        new GenerateFormulaAEFD(existing_variables);
+  }
+
+  @Override
+  public void setUnitedModelModel(boolean united_model_mode) {
+    super.setUnitedModelModel(united_model_mode);
+    /* We update the internal hashMap of the actual formula Generator */
+    generator_of_formula.setVariables(existing_variables);
+  }
 
   /**
    * Parse literally a string expression into a formula.
@@ -49,8 +68,7 @@ public class AEFDFormulaFactory implements FormulaFactory {
       viewer.open();
     }
 
-    GenerateFormulaAEFD generation_of_formula = new GenerateFormulaAEFD();
-    Formula f = generation_of_formula.visit(tree);
+    Formula f = generator_of_formula.visit(tree);
     return f;
   }
 
