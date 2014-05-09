@@ -47,7 +47,11 @@ public abstract class FormulaFactory {
    *          True to activate the united model mode.
    */
   public FormulaFactory(boolean united_model_mode) {
-    setUnitedModelModel(united_model_mode);
+    if (united_model_mode) {
+      existing_variables = new HashMap<String, Variable>();
+    } else {
+      existing_variables = null;
+    }
   };
 
   /**
