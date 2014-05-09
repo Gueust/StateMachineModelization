@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
+import abstractGraph.conditions.cnf.Literal;
 
 public class AEFDFormulaFactory extends FormulaFactory {
 
@@ -19,15 +20,16 @@ public class AEFDFormulaFactory extends FormulaFactory {
   public AEFDFormulaFactory(boolean united_model_mode) {
     super(united_model_mode);
 
-    generator_of_formula =
-        new GenerateFormulaAEFD(existing_variables);
+    generator_of_formula = new GenerateFormulaAEFD(this);
   }
 
-  @Override
-  public void setUnitedModelModel(boolean united_model_mode) {
-    super.setUnitedModelModel(united_model_mode);
-    /* We update the internal hashMap of the actual formula Generator */
-    generator_of_formula.setVariables(existing_variables);
+  /**
+   * {@inheritDoc GenerateFormulaAEFD#getLiteral(String)}
+   * 
+   * @see GenerateFormulaAEFD#getLiteral(String)
+   */
+  public Literal getLiteral(String s) {
+    return generator_of_formula.getLiteral(s);
   }
 
   /**

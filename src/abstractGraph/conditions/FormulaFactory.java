@@ -69,6 +69,20 @@ public abstract class FormulaFactory {
     }
   }
 
+  public Variable getVariable(String variable_name) {
+    if (existing_variables == null) {
+      return new Variable(variable_name);
+    }
+
+    Variable temp_variable = existing_variables.get(variable_name);
+    if (temp_variable == null) {
+      temp_variable = new Variable(variable_name);
+      existing_variables.put(variable_name, temp_variable);
+    }
+
+    return new Variable(variable_name);
+  }
+
   /**
    * @return True if the factory in in the united model mode. False otherwise.
    */

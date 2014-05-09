@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.HashMap;
 
 import abstractGraph.AbstractModel;
-import abstractGraph.conditions.AbstractVariable;
+import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
@@ -28,7 +28,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * uniqueness of variables (i.e. two variables are equals if and only if they
    * are the same object).
    */
-  private LinkedHashSet<AbstractVariable> variables;
+  private LinkedHashSet<Variable> variables;
 
   /* All the external events that can trigger the model */
   protected HashMap<String, ExternalEvent> external_events;
@@ -40,16 +40,18 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * Every variable should be written by only state machine. This keeps the
    * record
    */
-  private HashMap<AbstractVariable, StateMachine> writing_rights;
+  private HashMap<Variable, StateMachine> writing_rights;
 
   /**
    * Create a new empty model named `name`.
-   * @param name The name of the model.
+   * 
+   * @param name
+   *          The name of the model.
    */
   public Model(String name) {
     super(name);
     state_machines = new LinkedHashMap<String, StateMachine>(100);
-    variables = new LinkedHashSet<AbstractVariable>();
+    variables = new LinkedHashSet<Variable>();
   }
 
   @Override

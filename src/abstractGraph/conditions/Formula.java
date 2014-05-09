@@ -32,11 +32,6 @@ public abstract class Formula implements AbstractCondition {
   public static final FormulaFactory DEFAULT_FACTORY =
       new BooleanExpressionFactory(true);
 
-  static public Formula newFormula(String expression) {
-    Formula result = DEFAULT_FACTORY.parse(expression);
-    return result;
-  }
-
   @Override
   public abstract String toString();
 }

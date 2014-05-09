@@ -1,29 +1,23 @@
 package abstractGraph.conditions.parser;
 
-import java.util.HashMap;
-
 import org.antlr.v4.runtime.misc.NotNull;
 
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Variable;
 
 class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
 
-  private HashMap<String, Variable> variables;
-
-  public void setVariables(HashMap<String, Variable> variables) {
-    this.variables = variables;
-  }
+  private FormulaFactory factory;
 
   /**
    * Constructor of the class that will initialize the hash map variables to the
    * given parameter.
    */
-  public GenerateFormula(HashMap<String, Variable> variables) {
-    this.variables = variables;
+  public GenerateFormula(FormulaFactory factory) {
+    this.factory = factory;
   }
 
   /**
@@ -87,19 +81,8 @@ class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
    */
   @Override
   public Formula visitIdExpr(@NotNull BooleanExpressionParser.IdExprContext ctx) {
-    Variable v;
     String variable_name = ctx.ID().getText().trim();
 
-    /* If the BooleanFactory is in single formula mode */
-    if (variables == null) {
-      v = new Variable(variable_name);
-    } else { /* Otherwise we retrieve the variable if it exists */
-      v = variables.get(variable_name);
-      if (v == null) {
-        v = new Variable(variable_name);
-        variables.put(variable_name, v);
-      }
-    }
-    return v;
+    return factory.getVariable(variable_name);
   }
 }

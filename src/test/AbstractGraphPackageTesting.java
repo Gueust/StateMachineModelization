@@ -8,7 +8,7 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.cnf.CNFFormula;
 
-public class CNFConverter {
+public class AbstractGraphPackageTesting {
 
   static final String AND = Formula.AND;
   static final String OR = Formula.OR;
@@ -17,7 +17,7 @@ public class CNFConverter {
   static final FormulaFactory factory = Formula.DEFAULT_FACTORY;
 
   @Test
-  public void parsingTest() {
+  public void parserPackageTesting() {
 
     String input;
     Formula formula;

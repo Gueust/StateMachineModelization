@@ -19,15 +19,12 @@ public class BooleanExpressionFactory extends FormulaFactory {
   public BooleanExpressionFactory(boolean united_model_mode) {
     super(united_model_mode);
 
-    generator_of_formula =
-        new GenerateFormula(existing_variables);
+    generator_of_formula = new GenerateFormula(this);
   }
 
   @Override
   public void setUnitedModelModel(boolean united_model_mode) {
     super.setUnitedModelModel(united_model_mode);
-    /* We update the internal hashMap of the actual formula Generator */
-    generator_of_formula.setVariables(existing_variables);
   }
 
   /**
@@ -75,7 +72,7 @@ public class BooleanExpressionFactory extends FormulaFactory {
   /**
    * {@inheritDoc #parse(String, boolean)}
    * 
-   * @details Parse a formula using parse(expresssion, false).
+   * @details Parse a formula using parse(expression, false).
    * @see #parse(String, boolean)
    */
   @Override

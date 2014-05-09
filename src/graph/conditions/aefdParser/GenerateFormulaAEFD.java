@@ -1,23 +1,18 @@
 package graph.conditions.aefdParser;
 
-import java.util.HashMap;
-
 import org.antlr.v4.runtime.misc.NotNull;
 
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.cnf.Literal;
 
 class GenerateFormulaAEFD extends
     AEFDBooleanExpressionBaseVisitor<Formula> {
 
-  private HashMap<String, Variable> variables;
-
-  public void setVariables(HashMap<String, Variable> variables) {
-    this.variables = variables;
-  }
+  private FormulaFactory factory;
 
   private String[] negative_suffix = { "_non_Bloque", "_non_Condamne",
       "_non_Decondamne", "_non_Etabli", "Chute", "_Inactif", "_non_Prise",
@@ -33,8 +28,8 @@ class GenerateFormulaAEFD extends
    * Constructor of the class that will initialize the internal hash map
    * containing the already created variables to the given parameter.
    */
-  public GenerateFormulaAEFD(HashMap<String, Variable> variables) {
-    this.variables = variables;
+  public GenerateFormulaAEFD(FormulaFactory factory) {
+    this.factory = factory;
   }
 
   /**
@@ -92,23 +87,14 @@ class GenerateFormulaAEFD extends
   public Formula visitIdnegatifExpr(
       @NotNull AEFDBooleanExpressionParser.IdnegatifExprContext ctx) {
     String indicateur = ctx.IDNEGATIF().getText().trim();
-    String variable_name = removeNegativeSuffixe(indicateur);
+    String variable_name = removeNegativeSuffix(indicateur);
 
     if (variable_name == null) {
       throw new NullPointerException("The parser did not find any negative " +
           "suffix in the variable " + indicateur);
     }
-    if (variables == null) {
-      return new Variable(variable_name);
-    }
 
-    Variable temp_variable = variables.get(variable_name);
-    if (temp_variable == null) {
-      temp_variable = new Variable(variable_name);
-      variables.put(variable_name, temp_variable);
-    }
-
-    return new NotFormula(temp_variable);
+    return new NotFormula(factory.getVariable(variable_name));
   }
 
   /**
@@ -122,22 +108,14 @@ class GenerateFormulaAEFD extends
   public Formula visitIdpositifExpr(
       @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
     String indicateur = ctx.IDPOSITIF().getText().trim();
-    String variable_name = removePositiveSuffixe(indicateur);
+    String variable_name = removePositiveSuffix(indicateur);
 
     if (variable_name == null) {
       throw new NullPointerException("The parser did not find any negative " +
           "suffix in the variable " + indicateur);
     }
-    if (variables == null) {
-      return new Variable(variable_name);
-    }
 
-    Variable temp_variable = variables.get(variable_name);
-    if (temp_variable == null) {
-      temp_variable = new Variable(variable_name);
-      variables.put(variable_name, temp_variable);
-    }
-    return temp_variable;
+    return factory.getVariable(variable_name);
   }
 
   /**
@@ -147,7 +125,7 @@ class GenerateFormulaAEFD extends
    * @return The variable name without the first matched negative suffix.
    *         null if the suffix did not match any registered negative suffix.
    */
-  public String removeNegativeSuffixe(String input) {
+  private String removeNegativeSuffix(String input) {
     int length_variable;
 
     for (String suffixe : negative_suffix) {
@@ -166,7 +144,7 @@ class GenerateFormulaAEFD extends
    * @return The variable name without the first matched positive suffix.
    *         null if the suffix did not match any registered positive suffix.
    */
-  public String removePositiveSuffixe(String input) {
+  private String removePositiveSuffix(String input) {
     int length_variable;
     String tmp;
 
@@ -178,6 +156,32 @@ class GenerateFormulaAEFD extends
       }
     }
     return null;
+  }
+
+  /**
+   * Return the literal associated to the input.
+   * It will take into account the suffix to decide whether it is a negated
+   * variable or a variable.
+   * 
+   * @param s
+   * @return
+   */
+  Literal getLiteral(String s) {
+    /* We MUST call the negative suffix */
+    String variable_name = removeNegativeSuffix(s);
+    if (variable_name != null) {
+      /* It is a literal: "NOT" + variable_name */
+      return new Literal(factory.getVariable(variable_name), true);
+    }
+
+    variable_name = removePositiveSuffix(s);
+    if (variable_name != null) {
+      /* If it is a literal: variable_name */
+      return new Literal(factory.getVariable(variable_name));
+    }
+
+    throw new NullPointerException("The parser did not find any negative " +
+        " or positive suffix in the variable " + s);
   }
 
 }
