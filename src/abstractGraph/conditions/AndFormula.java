@@ -1,6 +1,6 @@
 package abstractGraph.conditions;
 
-import abstractGraph.GlobalState;
+import java.util.HashSet;
 
 public class AndFormula extends Formula {
 
@@ -21,9 +21,8 @@ public class AndFormula extends Formula {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean eval(Valuation valuation) {
+    return p.eval(valuation) && q.eval(valuation);
   }
 
   /**
@@ -45,6 +44,13 @@ public class AndFormula extends Formula {
   }
 
   @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    p.allVariables(vars);
+    q.allVariables(vars);
+    return vars;
+  }
+
+  @Override
   public String toString() {
     return parenthesis(p) + " " + Formula.AND + " " + parenthesis(q);
   }
@@ -58,4 +64,5 @@ public class AndFormula extends Formula {
     }
     return left;
   }
+
 }

@@ -2,7 +2,6 @@ package graph.conditions.aefdParser;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Nullable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
@@ -46,6 +45,8 @@ public class AEFDFormulaFactory extends FormulaFactory {
    */
   @Override
   public Formula parse(String expression, boolean view_tree) {
+    reset();
+
     String trimed = expression.trim();
     if (trimed.equals("")) {
       return null;
@@ -72,17 +73,5 @@ public class AEFDFormulaFactory extends FormulaFactory {
 
     Formula f = generator_of_formula.visit(tree);
     return f;
-  }
-
-  /**
-   * {@inheritDoc #parse(String, boolean)}
-   * 
-   * @details Parse a formula using parse(expresssion, false).
-   * @see #parse(String, boolean)
-   */
-  @Override
-  public @Nullable
-  Formula parse(String expression) {
-    return parse(expression, false);
   }
 }

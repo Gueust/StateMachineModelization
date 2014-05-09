@@ -2,11 +2,12 @@ package abstractGraph.conditions.cnf;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import abstractGraph.GlobalState;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 
 /**
@@ -35,9 +36,21 @@ public class Clause extends Formula implements Collection<Literal> {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
+  public boolean eval(Valuation valuation) {
+    for (Literal l : this) {
+      if (l.eval(valuation)) {
+        return true;
+      }
+    }
     return false;
+  }
+
+  @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    for (Literal l : literals) {
+      vars.add(l.getVariable());
+    }
+    return vars;
   }
 
   /**

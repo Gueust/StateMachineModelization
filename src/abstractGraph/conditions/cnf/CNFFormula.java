@@ -2,19 +2,20 @@ package abstractGraph.conditions.cnf;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import abstractGraph.GlobalState;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
+import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 
 /**
- * A conjunction of clauses.
+ * A conjunction of clauses (i.e. AND of clauses).
  */
 public class CNFFormula extends Formula implements Collection<Clause> {
 
@@ -34,9 +35,21 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean eval(Valuation valuation) {
+    for (Clause c : this) {
+      if (!c.eval(valuation)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    for (Clause c : clauses) {
+      c.allVariables(vars);
+    }
+    return vars;
   }
 
   /**

@@ -1,6 +1,6 @@
 package abstractGraph.conditions;
 
-import abstractGraph.GlobalState;
+import java.util.HashSet;
 
 public class NotFormula extends Formula {
 
@@ -17,9 +17,8 @@ public class NotFormula extends Formula {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean eval(Valuation valuation) {
+    return !f.eval(valuation);
   }
 
   /**
@@ -30,6 +29,12 @@ public class NotFormula extends Formula {
    */
   public Formula getF() {
     return f;
+  }
+
+  @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    f.allVariables(vars);
+    return vars;
   }
 
   @Override

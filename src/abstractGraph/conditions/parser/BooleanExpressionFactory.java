@@ -2,7 +2,6 @@ package abstractGraph.conditions.parser;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Nullable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
@@ -22,11 +21,6 @@ public class BooleanExpressionFactory extends FormulaFactory {
     generator_of_formula = new GenerateFormula(this);
   }
 
-  @Override
-  public void setUnitedModelModel(boolean united_model_mode) {
-    super.setUnitedModelModel(united_model_mode);
-  }
-
   /**
    * Parse literally a string expression into a formula.
    * The formula accepts AND, &&, &, ET as the "and" operator ;
@@ -41,6 +35,8 @@ public class BooleanExpressionFactory extends FormulaFactory {
    */
   @Override
   public Formula parse(String expression, boolean view_tree) {
+    reset();
+
     String trimed = expression.trim();
     if (trimed.equals("")) {
       return null;
@@ -67,17 +63,5 @@ public class BooleanExpressionFactory extends FormulaFactory {
 
     Formula f = generator_of_formula.visit(tree);
     return f;
-  }
-
-  /**
-   * {@inheritDoc #parse(String, boolean)}
-   * 
-   * @details Parse a formula using parse(expression, false).
-   * @see #parse(String, boolean)
-   */
-  @Override
-  public @Nullable
-  Formula parse(String expression) {
-    return parse(expression, false);
   }
 }

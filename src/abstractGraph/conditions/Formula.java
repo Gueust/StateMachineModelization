@@ -1,7 +1,20 @@
 package abstractGraph.conditions;
 
+import java.util.HashSet;
+import java.util.Iterator;
+
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
 
+/**
+ * @package abstractGraph.conditions
+ * 
+ *          The root elements to use this package is the {@link FormulaFactory}
+ *          class. This allows to create {@link Formula}s.
+ *          
+ *          To evaluate a formula, you first need to create a {@link Valuation}
+ *          for the formula. In particular, to set the value for a variable,
+ *          one need to retrieve de variable from the FormulaFactory.
+ */
 /**
  * Boolean expression formula
  */
@@ -34,4 +47,62 @@ public abstract class Formula implements AbstractCondition {
 
   @Override
   public abstract String toString();
+
+  /**
+   * Add into the given HashSet variables that are in the given formula
+   * 
+   * @return A set that contains (not exclusively) the variables of the formula.
+   */
+  public abstract HashSet<Variable> allVariables(HashSet<Variable> vars);
+
+  @Override
+  final public boolean equals(Object o) {
+    return equals(this, (Formula) o);
+  }
+
+  private static final boolean equals(Formula f1, Formula f2) {
+    HashSet<Variable> s1 = f1.allVariables(new HashSet<Variable>());
+    HashSet<Variable> s2 = f2.allVariables(new HashSet<Variable>());
+
+    if (!s1.equals(s2)) {
+      return false;
+    }
+
+    Valuation valuation = new Valuation();
+
+    return partialEquals(s1, valuation, f1, f2);
+  }
+
+  /**
+   * Check that the 2 formulas are equal considering the given valuation under
+   * the assumption that the variables in `vars` are not fixed.
+   * 
+   * @return
+   */
+  private static final boolean partialEquals(HashSet<Variable> vars,
+      Valuation valuation, Formula f1, Formula f2) {
+
+    /* Terminal case */
+    if (vars.isEmpty()) {
+      return f1.eval(valuation) == f2.eval(valuation);
+    }
+
+    /* Recursion */
+    for (Iterator<Variable> it = vars.iterator(); it.hasNext();) {
+      Variable v = it.next();
+      it.remove();
+
+      valuation.setValue(v, true);
+      if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+        return false;
+      }
+
+      valuation.setValue(v, false);
+      if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

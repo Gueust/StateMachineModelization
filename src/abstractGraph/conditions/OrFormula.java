@@ -1,6 +1,6 @@
 package abstractGraph.conditions;
 
-import abstractGraph.GlobalState;
+import java.util.HashSet;
 
 public class OrFormula extends Formula {
 
@@ -20,9 +20,8 @@ public class OrFormula extends Formula {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean eval(Valuation valuation) {
+    return p.eval(valuation) || q.eval(valuation);
   }
 
   /**
@@ -41,6 +40,13 @@ public class OrFormula extends Formula {
    */
   public Formula getSecond() {
     return q;
+  }
+
+  @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    p.allVariables(vars);
+    q.allVariables(vars);
+    return vars;
   }
 
   @Override

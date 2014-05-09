@@ -1,7 +1,10 @@
 package abstractGraph.conditions.cnf;
 
-import abstractGraph.GlobalState;
+import java.util.HashSet;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 
 public class Literal extends Formula {
@@ -18,9 +21,12 @@ public class Literal extends Formula {
   }
 
   @Override
-  public boolean eval(GlobalState valuation) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean eval(Valuation valuation) {
+    if (is_negated) {
+      return !variable.eval(valuation);
+    } else {
+      return variable.eval(valuation);
+    }
   }
 
   public Variable getVariable() {
@@ -32,6 +38,11 @@ public class Literal extends Formula {
   }
 
   @Override
+  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+    throw new NotImplementedException();
+  }
+
+  @Override
   public String toString() {
     if (is_negated) {
       return Formula.NOT + " " + variable.toString();
@@ -39,4 +50,5 @@ public class Literal extends Formula {
       return variable.toString();
     }
   }
+
 }
