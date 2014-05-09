@@ -23,7 +23,7 @@ public class Main {
     Formula.DEFAULT_FACTORY.parse(condition);
 
     // Test the AEFD parser
-    FormulaFactory aefd_factory = new AEFDFormulaFactory();
+    FormulaFactory aefd_factory = new AEFDFormulaFactory(true);
     String conditionAEFD = "x1_Libere OU (x2_Occupee ET x3_Bas)";
     aefd_factory.parse(conditionAEFD);
     conditionAEFD = "IND_A_non_Condamne OU IND_B_NM ET IND_C_Libere";
