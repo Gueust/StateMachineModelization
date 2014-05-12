@@ -69,7 +69,6 @@ public abstract class Formula implements AbstractCondition {
     }
 
     Valuation valuation = new Valuation();
-
     return partialEquals(s1, valuation, f1, f2);
   }
 
@@ -88,21 +87,21 @@ public abstract class Formula implements AbstractCondition {
     }
 
     /* Recursion */
-    for (Iterator<Variable> it = vars.iterator(); it.hasNext();) {
-      Variable v = it.next();
-      it.remove();
+    Iterator<Variable> it = vars.iterator();
+    it.hasNext();
+    Variable v = it.next();
+    it.remove();
 
-      valuation.setValue(v, true);
-      if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
-        return false;
-      }
-
-      valuation.setValue(v, false);
-      if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
-        return false;
-      }
+    valuation.setValue(v, true);
+    if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+      return false;
     }
+
+    valuation.setValue(v, false);
+    if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+      return false;
+    }
+
     return true;
   }
-
 }
