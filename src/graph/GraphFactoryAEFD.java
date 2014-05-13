@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import parserAEFDFormat.Fichier6lignes;
-import abstractGraph.conditions.AbstractCondition;
+import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
@@ -365,7 +365,7 @@ public class GraphFactoryAEFD {
    *          The state machine where the action field is parsed.
    * @return
    */
-  private AbstractCondition getCondition(String condition, StateMachine m) {
+  private Formula getCondition(String condition, StateMachine m) {
     return factory.parse(condition);
   }
 

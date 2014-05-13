@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import javax.management.openmbean.KeyAlreadyExistsException;
 
 import abstractGraph.AbstractStateMachine;
-import abstractGraph.conditions.AbstractCondition;
+import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.AbstractActions;
 import abstractGraph.events.Events;
@@ -88,7 +88,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
   @Override
   public Transition addTransition(State from, State to, Events events,
-      AbstractCondition guard, AbstractActions actions) {
+      Formula guard, AbstractActions actions) {
 
     State s1 = states.get(from.getId());
     if (s1 == null) {

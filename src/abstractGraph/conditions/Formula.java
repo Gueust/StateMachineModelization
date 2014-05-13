@@ -18,7 +18,7 @@ import abstractGraph.conditions.parser.BooleanExpressionFactory;
 /**
  * Boolean expression formula
  */
-public abstract class Formula implements AbstractCondition {
+public abstract class Formula {
 
   /* The AND keyword */
   public static final String AND = "ET";
@@ -55,6 +55,15 @@ public abstract class Formula implements AbstractCondition {
    * @return A set that contains (not exclusively) the variables of the formula.
    */
   public abstract HashSet<Variable> allVariables(HashSet<Variable> vars);
+
+  /**
+   * Evaluate the formula within an environment.
+   * 
+   * @param valuation
+   *          The valuation for the variables.
+   * @return The evaluation of the formula.
+   */
+  public abstract boolean eval(Valuation valuation);
 
   @Override
   final public boolean equals(Object o) {

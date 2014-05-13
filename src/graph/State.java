@@ -44,4 +44,9 @@ public class State extends AbstractState<Transition> {
     }
     return sb.toString();
   }
+
+  @Override
+  public Transition[] toArray() {
+    return (Transition[]) transitions.toArray();
+  }
 }

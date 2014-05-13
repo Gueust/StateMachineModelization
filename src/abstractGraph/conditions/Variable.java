@@ -1,6 +1,7 @@
 package abstractGraph.conditions;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 
 public class Variable extends Formula {
 
@@ -12,7 +13,14 @@ public class Variable extends Formula {
 
   @Override
   public boolean eval(Valuation valuation) {
-    return valuation.getValue(this);
+    Boolean result = valuation.getValue(this);
+
+    if (result == null) {
+      throw new NoSuchElementException("The variable " + varname
+          + " is not set in the valuation " + valuation);
+    } else {
+      return valuation.getValue(this);
+    }
   }
 
   @Override

@@ -11,11 +11,27 @@ public class Literal extends Formula {
   private Variable variable;
   boolean is_negated;
 
+  /**
+   * Create a new literal associated to `variable`.
+   * It is negated if `is_negated` is true.
+   * 
+   * @param variable
+   *          The variable being in the literal.
+   * @param is_negated
+   *          True to get the (NOT `variable`) literal.
+   *          False to get the (`variable`) literal.
+   */
   public Literal(Variable variable, boolean is_negated) {
     this.variable = variable;
     this.is_negated = is_negated;
   }
 
+  /**
+   * Create a new positive literal associated to `variable`.
+   * 
+   * @param variable
+   *          A variable.
+   */
   public Literal(Variable variable) {
     this(variable, false);
   }
