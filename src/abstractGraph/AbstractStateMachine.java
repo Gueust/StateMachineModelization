@@ -34,14 +34,14 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    * 
    * @return An iterator over all the sates
    */
-  public abstract Iterator<S> states();
+  public abstract Iterator<S> iteratorStates();
 
   /**
    * The order of the elements is not specified.
    * 
    * @return An iterator over all the transitions
    */
-  public abstract Iterator<T> transitions();
+  public abstract Iterator<T> iteratorTransitions();
 
   public abstract Iterator<T> getTransition(SingleEvent E);
 

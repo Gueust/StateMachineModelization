@@ -18,7 +18,7 @@ public abstract class AbstractState<T extends AbstractTransition<? extends Abstr
     return id;
   }
 
-  public abstract Iterator<T> transitions();
+  public abstract Iterator<T> iteratorTransitions();
 
-  public abstract Iterator<T> get_transitions(SingleEvent E);
+  public abstract Iterator<T> iteratorTransitions(SingleEvent E);
 }

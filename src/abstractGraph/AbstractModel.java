@@ -32,5 +32,5 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
    * 
    * @return An iterator over all the state machines
    */
-  public abstract Iterator<M> statesMachines();
+  public abstract Iterator<M> iteratorStatesMachines();
 }

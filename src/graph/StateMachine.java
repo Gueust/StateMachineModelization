@@ -26,7 +26,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public Iterator<Transition> transitions() {
+  public Iterator<Transition> iteratorTransitions() {
     /* We iterate over the states, and over the transitions within a state */
     /* TODO: the algorithm can be improved */
     class TransitionsIterator implements Iterator<Transition> {
@@ -35,7 +35,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
       public TransitionsIterator() {
         if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().transitions();
+          transitions_iterator = states_iterator.next().iteratorTransitions();
         }
       }
 
@@ -48,7 +48,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
         if (transitions_iterator.hasNext()) {
           return true;
         } else if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().transitions();
+          transitions_iterator = states_iterator.next().iteratorTransitions();
           return hasNext();
         } else {
           return false;
@@ -64,7 +64,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
         if (transitions_iterator.hasNext()) {
           return transitions_iterator.next();
         } else if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().transitions();
+          transitions_iterator = states_iterator.next().iteratorTransitions();
           return next();
         } else {
           throw new NoSuchElementException();
@@ -82,7 +82,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public Iterator<State> states() {
+  public Iterator<State> iteratorStates() {
     return states.values().iterator();
   }
 
@@ -131,7 +131,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   @Override
   public String toString() {
     String result = "# STATE MACHINE: " + getName() + " \n";
-    Iterator<State> states_iterator = states();
+    Iterator<State> states_iterator = iteratorStates();
     while (states_iterator.hasNext()) {
       State s = states_iterator.next();
       result += s.toString();

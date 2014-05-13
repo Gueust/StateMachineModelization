@@ -194,6 +194,7 @@ public class GraphFactoryAEFD {
     result.commands_events = commands_events;
     result.synchronisation_events = synchronisation_events;
     result.writting_state_machines = writting_state_machines;
+    result.formulaFactory = factory;
 
     System.out.println("BUILD: " + result.writting_state_machines);
 
@@ -201,11 +202,11 @@ public class GraphFactoryAEFD {
      * We check that the list of added transitions is exactly the transitions
      * added in the model
      */
-    sm_iterator = result.statesMachines();
+    sm_iterator = result.iteratorStatesMachines();
     int number_of_transitions = 0;
     while (sm_iterator.hasNext()) {
       StateMachine sm = sm_iterator.next();
-      Iterator<Transition> transitions_iterator = sm.transitions();
+      Iterator<Transition> transitions_iterator = sm.iteratorTransitions();
       while (transitions_iterator.hasNext()) {
         Transition t = transitions_iterator.next();
         number_of_transitions++;

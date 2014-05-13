@@ -1,11 +1,9 @@
 package graph;
 
 import graph.events.SynchronisationEvent;
-import graph.events.VariableChange;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -33,7 +31,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * this FormulaFactory. There is pointer uniqueness of variables (i.e. two
    * variables are equals if and only if they are the same object).
    */
-  private FormulaFactory formulaFactory;
+  protected FormulaFactory formulaFactory;
 
   /* All the external events that can trigger the model */
   protected HashMap<String, ExternalEvent> external_events;
@@ -76,7 +74,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   @Override
-  public Iterator<StateMachine> statesMachines() {
+  public Iterator<StateMachine> iteratorStatesMachines() {
     return state_machines.values().iterator();
   }
 

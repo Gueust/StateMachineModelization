@@ -215,7 +215,7 @@ class GenerateFormulaAEFD extends
       return new Literal(factory.getVariable(s));
     }
 
-    throw new NullPointerException("The parser did not find any negative " +
+    throw new NullPointerException("The parser did not find any negative" +
         " or positive suffix in the variable " + s);
   }
 
