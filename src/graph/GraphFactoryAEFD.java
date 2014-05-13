@@ -40,21 +40,27 @@ import abstractGraph.events.SingleEvent;
 public class GraphFactoryAEFD {
 
   /** The formula factory to parse the condition formulas */
-  static final AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
+  private AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
 
   /** List all the state machines of the model */
-  private HashMap<String, StateMachine> state_machines;
+  private HashMap<String, StateMachine> state_machines =
+      new HashMap<String, StateMachine>();
   /** List all the external events present in the state machines */
-  private HashMap<String, ExternalEvent> external_events;
+  private HashMap<String, ExternalEvent> external_events =
+      new HashMap<String, ExternalEvent>();
   /** List all the commands present in the state machines */
-  private HashMap<String, CommandEvent> commands_events;
+  private HashMap<String, CommandEvent> commands_events =
+      new HashMap<String, CommandEvent>();
   /** List all the synchronization messages */
-  private HashMap<String, SynchronisationEvent> synchronisation_events;
+  private HashMap<String, SynchronisationEvent> synchronisation_events =
+      new HashMap<String, SynchronisationEvent>();
   /** List all the global variable modification messages */
-  private HashMap<String, VariableChange> variable_modification_events;
+  private HashMap<String, VariableChange> variable_modification_events =
+      new HashMap<String, VariableChange>();
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
+  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines =
+      new HashMap<Variable, LinkedList<StateMachine>>();
 
   /**
    * Used to remember the order of the transition within the parsed file in
@@ -71,7 +77,8 @@ public class GraphFactoryAEFD {
   }
 
   /** Keep the order of the transition within the parsed file */
-  LinkedHashMap<Transition, InitialTransition> initial_transition_order;
+  LinkedHashMap<Transition, InitialTransition> initial_transition_order =
+      new LinkedHashMap<Transition, InitialTransition>();
 
   /**
    * Create the factory that loads the given file. The natural function called
@@ -104,15 +111,6 @@ public class GraphFactoryAEFD {
    * @throws IOException
    */
   public GraphFactoryAEFD(String file) throws IOException {
-
-    state_machines = new HashMap<String, StateMachine>();
-    external_events = new HashMap<String, ExternalEvent>();
-    commands_events = new HashMap<String, CommandEvent>();
-    synchronisation_events = new HashMap<String, SynchronisationEvent>();
-
-    initial_transition_order = new LinkedHashMap<Transition, InitialTransition>();
-
-    writting_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
     /*
      * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
