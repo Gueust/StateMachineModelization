@@ -11,7 +11,8 @@ package graph.conditions.aefdParser;
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
 booleanExpression
 :
-  booleanExpression AND booleanExpression				#andExpr
+  NOT booleanExpression									#notExpr
+  |booleanExpression AND booleanExpression				#andExpr
   | booleanExpression OR booleanExpression				#orExpr
   | LBRACKET booleanExpression RBRACKET					#bracketExpr
   | IDNEGATIF											#idnegatifExpr
@@ -22,6 +23,14 @@ booleanExpression
 
 //Tokens
 
+NOT
+:
+   'NON'
+   |'non'
+   |'NOT'
+   |'not'
+;
+   
 AND
 :
   'AND'
@@ -60,6 +69,7 @@ IDNEGATIF
   | ID'_non_Valide'
   | ID'_NM'
   | ID'_Bas'
+  | ID'_en_Action'
 ;
 IDPOSITIF
 :
@@ -71,7 +81,7 @@ IDPOSITIF
   | ID'_Actif'  
   | ID'_Prise'
   | ID'_Enclenchee'
-  | ID'_Libere'
+  | ID'_Libre'
   | ID'_Gauche'
   | ID'_ES'
   | ID'_Ouvert'
@@ -81,6 +91,7 @@ IDPOSITIF
   | ID'_Valide'
   | ID'_M'
   | ID'_Haut'
+  | ID'_Libere'
 ;
 
 ID

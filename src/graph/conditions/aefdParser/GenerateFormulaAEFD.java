@@ -1,5 +1,7 @@
 package graph.conditions.aefdParser;
 
+import java.util.HashMap;
+
 import org.antlr.v4.runtime.misc.NotNull;
 
 import abstractGraph.conditions.AndFormula;
@@ -8,12 +10,14 @@ import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.cnf.Literal;
+import abstractGraph.conditions.parser.BooleanExpressionParser;
 
 class GenerateFormulaAEFD extends
     AEFDBooleanExpressionBaseVisitor<Formula> {
 
   private FormulaFactory factory;
 
+  private HashMap<String, String> suffixes;
   private String[] negative_suffix = { "_non_Bloque", "_non_Condamne",
       "_non_Decondamne", "_non_Etabli", "Chute", "_Inactif", "_non_Prise",
       "_non_Enclenchee", "_Occupee", "_Droite", "_HS", "_Ferme",
@@ -30,8 +34,37 @@ class GenerateFormulaAEFD extends
    */
   public GenerateFormulaAEFD(FormulaFactory factory) {
     this.factory = factory;
+    /*
+     * Initialization of the hashmap containing the suffixes
+     */
+    suffixes = new HashMap<String, String>();
+    if (negative_suffix.length == positive_suffix.length) {
+      for (int i = 0; i < positive_suffix.length; i++) {
+        suffixes.put(negative_suffix[i], positive_suffix[i]);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "The two tables negative_suffixe and positive_suffixe don't have the same size. Check their contents.");
+    }
   }
 
+  
+  /**
+   * This function is launched when the parser meets a negation ('not' or
+   * 'NOT').
+   * 
+   * @return A Formula
+   */
+  @Override
+  public Formula visitNotExpr(
+      @NotNull AEFDBooleanExpressionParser.NotExprContext ctx) {
+    NotFormula temp_formula = new NotFormula(visit(ctx.booleanExpression()));
+    return temp_formula;
+  }
+  
+  
+ 
+  
   /**
    * This function is launched when the parser meets an AND expression.
    * 
@@ -56,7 +89,7 @@ class GenerateFormulaAEFD extends
       @NotNull AEFDBooleanExpressionParser.OrExprContext ctx) {
     Formula left = visit(ctx.booleanExpression(0));
     Formula right = visit(ctx.booleanExpression(1));
-    Formula temp_formula = new OrFormula(left, right);
+    OrFormula temp_formula = new OrFormula(left, right);
     return temp_formula;
   }
 
@@ -88,12 +121,13 @@ class GenerateFormulaAEFD extends
       @NotNull AEFDBooleanExpressionParser.IdnegatifExprContext ctx) {
     String indicateur = ctx.IDNEGATIF().getText().trim();
     String variable_name = removeNegativeSuffix(indicateur);
-
     if (variable_name == null) {
       throw new NullPointerException("The parser did not find any negative " +
           "suffix in the variable " + indicateur);
     }
-
+    String suffix_negative = indicateur.substring(variable_name.length(), indicateur.length());
+    String suffix_positive = suffixes.get(suffix_negative);
+    variable_name = variable_name.concat(suffix_positive);
     return new NotFormula(factory.getVariable(variable_name));
   }
 
@@ -115,7 +149,7 @@ class GenerateFormulaAEFD extends
           "suffix in the variable " + indicateur);
     }
 
-    return factory.getVariable(variable_name);
+    return factory.getVariable(indicateur);
   }
 
   /**
@@ -170,18 +204,23 @@ class GenerateFormulaAEFD extends
     /* We MUST call the negative suffix */
     String variable_name = removeNegativeSuffix(s);
     if (variable_name != null) {
+      String suffix_negative = s.substring(variable_name.length(), s.length());
       /* It is a literal: "NOT" + variable_name */
-      return new Literal(factory.getVariable(variable_name), true);
+      return new Literal(factory.getVariable(variable_name.concat(suffixes.get(suffix_negative))), true);
     }
 
     variable_name = removePositiveSuffix(s);
     if (variable_name != null) {
       /* If it is a literal: variable_name */
-      return new Literal(factory.getVariable(variable_name));
+      return new Literal(factory.getVariable(s));
     }
 
     throw new NullPointerException("The parser did not find any negative " +
         " or positive suffix in the variable " + s);
+  }
+
+  public void initHashMapSuffixes() {
+
   }
 
 }

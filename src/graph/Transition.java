@@ -21,9 +21,12 @@ public class Transition extends AbstractTransition<State> {
 
   @Override
   public String toString() {
+
     return from.getId() + " --> " + to.getId() + " -- EVENT: "
         + events.toString() + "\n" +
-        "              CONDITION: " + condition.toString() + "\n" +
+        "              CONDITION: "
+        + ((condition != null) ? condition.toString() : " Empty") + "\n" +
         "              ACTIONS: " + actions.toString();
+
   }
 }
