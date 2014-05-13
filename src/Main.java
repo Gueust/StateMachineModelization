@@ -10,7 +10,7 @@ public class Main {
   public static void main(String[] args) throws Exception {
 
     GraphFactoryAEFD test =
-        new GraphFactoryAEFD("ACLE.txt");
+        new GraphFactoryAEFD("AP_P5_ITI_f_Instance_3411_3421.txt");
     Model model = test.buildModel("Testing model");
     System.out.println(model);
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;

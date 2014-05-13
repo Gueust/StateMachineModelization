@@ -14,7 +14,7 @@ public class Transition extends AbstractTransition<State> {
   }
 
   @Override
-  public boolean evalCondition(GlobalState env) {
+  public boolean evalCondition(GlobalState<State, ?> env) {
     // TODO Auto-generated method stub
     return false;
   }

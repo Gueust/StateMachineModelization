@@ -19,7 +19,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
     this.actions = actions;
   }
 
-  public abstract boolean evalCondition(GlobalState env);
+  public abstract boolean evalCondition(GlobalState<S, ?> env);
 
   public S getSource() {
     return from;

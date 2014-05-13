@@ -22,7 +22,7 @@ public class AbstractGraph_Conditions_PackageTesting {
   static final String OR = Formula.OR;
   static final String NOT = Formula.NOT;
 
-  static final FormulaFactory factory = Formula.DEFAULT_FACTORY;
+  static final FormulaFactory factory = Formula.newDefaultFactory();
 
   @Test
   public void parserPackageTesting() {

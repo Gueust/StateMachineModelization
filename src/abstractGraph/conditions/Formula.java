@@ -42,8 +42,9 @@ public abstract class Formula implements AbstractCondition {
    * 
    * @see FormulaFactory
    */
-  public static final FormulaFactory DEFAULT_FACTORY =
-      new BooleanExpressionFactory(true);
+  public static FormulaFactory newDefaultFactory() {
+    return new BooleanExpressionFactory(true);
+  }
 
   @Override
   public abstract String toString();

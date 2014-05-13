@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import abstractGraph.AbstractModel;
+import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
@@ -24,13 +25,15 @@ import abstractGraph.events.ExternalEvent;
  */
 public class Model extends AbstractModel<StateMachine, State, Transition> {
   /* The order internal state machines */
-  private LinkedHashMap<String, StateMachine> state_machines;
+  private LinkedHashMap<String, StateMachine> state_machines =
+      new LinkedHashMap<String, StateMachine>(100);
   /*
-   * All the variables that are used within the state machines. There is pointer
-   * uniqueness of variables (i.e. two variables are equals if and only if they
-   * are the same object).
+   * The FormulaFactory used to generate new variables.
+   * All the variables that are used within the state machines are stored in
+   * this FormulaFactory. There is pointer uniqueness of variables (i.e. two
+   * variables are equals if and only if they are the same object).
    */
-  private LinkedHashSet<Variable> variables;
+  private FormulaFactory formulaFactory;
 
   /* All the external events that can trigger the model */
   protected HashMap<String, ExternalEvent> external_events;
@@ -49,8 +52,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    */
   public Model(String name) {
     super(name);
-    state_machines = new LinkedHashMap<String, StateMachine>(100);
-    variables = new LinkedHashSet<Variable>();
   }
 
   @Override
