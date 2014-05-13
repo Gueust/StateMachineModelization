@@ -1,17 +1,19 @@
 package graph;
 
 import graph.events.SynchronisationEvent;
+import graph.events.VariableChange;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
-import abstractGraph.events.InternalEvent;
 
 /**
  * A set of state machines interacting with each other.
@@ -36,11 +38,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   protected HashMap<String, CommandEvent> commands_events;
   protected HashMap<String, SynchronisationEvent> synchronisation_events;
 
-  /*
-   * Every variable should be written by only state machine. This keeps the
-   * record
-   */
-  private HashMap<Variable, StateMachine> writing_rights;
+  /** Store for every VariableChange the state machines that modifies it. */
+  protected HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
 
   /**
    * Create a new empty model named `name`.
@@ -78,5 +77,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   @Override
   public Iterator<StateMachine> statesMachines() {
     return state_machines.values().iterator();
+  }
+
+  /**
+   * @return An iterator over the couple (VariableChange => List of state
+   *         machines writing on it)
+   */
+  public Iterator<Entry<Variable, LinkedList<StateMachine>>> writingRightsIterator() {
+    System.out.println(writting_state_machines);
+    return writting_state_machines.entrySet().iterator();
   }
 }

@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.AbstractCondition;
+import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
@@ -53,7 +54,7 @@ public class GraphFactoryAEFD {
   private HashMap<String, VariableChange> variable_modification_events;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<VariableChange, LinkedList<StateMachine>> writting_state_machines;
+  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
 
   /**
    * Used to remember the order of the transition within the parsed file in
@@ -111,6 +112,7 @@ public class GraphFactoryAEFD {
 
     initial_transition_order = new LinkedHashMap<Transition, InitialTransition>();
 
+    writting_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
     /*
      * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
@@ -163,10 +165,12 @@ public class GraphFactoryAEFD {
   }
 
   private void addWrittingStateMachine(VariableChange event, StateMachine m) {
-    LinkedList<StateMachine> list = writting_state_machines.get(event);
+    Variable modified_var = event
+        .getModifiedVariable();
+    LinkedList<StateMachine> list = writting_state_machines.get(modified_var);
     if (list == null) {
       list = new LinkedList<StateMachine>();
-      writting_state_machines.put(event, list);
+      writting_state_machines.put(modified_var, list);
     }
     if (!list.contains(m)) {
       list.add(m);
@@ -191,6 +195,9 @@ public class GraphFactoryAEFD {
     result.external_events = external_events;
     result.commands_events = commands_events;
     result.synchronisation_events = synchronisation_events;
+    result.writting_state_machines = writting_state_machines;
+
+    System.out.println("BUILD: " + result.writting_state_machines);
 
     /**
      * We check that the list of added transitions is exactly the transitions
