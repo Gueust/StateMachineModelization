@@ -196,8 +196,6 @@ public class GraphFactoryAEFD {
     result.writting_state_machines = writting_state_machines;
     result.formulaFactory = factory;
 
-    System.out.println("BUILD: " + result.writting_state_machines);
-
     /**
      * We check that the list of added transitions is exactly the transitions
      * added in the model

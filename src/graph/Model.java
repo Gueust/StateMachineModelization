@@ -83,7 +83,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *         machines writing on it)
    */
   public Iterator<Entry<Variable, LinkedList<StateMachine>>> writingRightsIterator() {
-    System.out.println(writting_state_machines);
     return writting_state_machines.entrySet().iterator();
   }
 }

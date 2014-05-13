@@ -10,7 +10,6 @@ import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.cnf.Literal;
-import abstractGraph.conditions.parser.BooleanExpressionParser;
 
 class GenerateFormulaAEFD extends
     AEFDBooleanExpressionBaseVisitor<Formula> {

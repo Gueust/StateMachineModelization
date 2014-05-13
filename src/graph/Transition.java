@@ -1,5 +1,6 @@
 package graph;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractTransition;
 import abstractGraph.GlobalState;
 import abstractGraph.conditions.Formula;
@@ -15,8 +16,7 @@ public class Transition extends AbstractTransition<State> {
 
   @Override
   public boolean evalCondition(GlobalState<State, ?> env) {
-    // TODO Auto-generated method stub
-    return false;
+    throw new NotImplementedException();
   }
 
   @Override
