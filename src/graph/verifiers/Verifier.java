@@ -21,6 +21,7 @@ public class Verifier {
     public DefaultVerifier() {
       super();
       addVerification(new NoConcurrentWriting());
+      addVerification(new DeterminismChecker());
     }
   }
 

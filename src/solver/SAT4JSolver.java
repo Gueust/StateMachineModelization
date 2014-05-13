@@ -95,11 +95,24 @@ public class SAT4JSolver {
    * {@link #isSatisfiable(CNFFormula)}.
    */
   public void printModel() {
-    System.err.println("The last given problem is satisfiable." +
-        "A solution (true literals follows)");
+    System.err.println(solution());
+  }
+
+  /**
+   * Used to print the literals that when true, will make the last given formula
+   * true.
+   * 
+   * @return The details of the solution to satisfy the last formula given to
+   *         {@link #isSatisfiable(CNFFormula)}.
+   */
+  public String solution() {
+    StringBuffer result = new StringBuffer(
+        "The last given problem is satisfiable." +
+            "A solution (true literals follows).\n");
     for (int i = 0; i < solution.length; i++) {
-      System.err.println(id_to_var.get(i).toString());
+      result.append(id_to_var.get(i).toString());
     }
+    return result.toString();
   }
 
   /**
