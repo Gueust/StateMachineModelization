@@ -6,13 +6,40 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
+import abstractGraph.conditions.NotFormula;
+import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
 
+/**
+ * Testing of the main functions of the abstractGraph.conditions package:
+ * <ol>
+ * <li>
+ * the parsing done by {@link BooleanExpressionFactory}
+ * 
+ * </li>
+ * <li>
+ * the formulas construction done using {@link Formula} and its subclasses (
+ * {@link AndFormula},{@link OrFormula},{@link NotFormula},{@link Variable}).
+ * 
+ * </li>
+ * <li>
+ * the conversion of Formulas into the {@link CNFFormula} (package cnf).
+ * 
+ * </li>
+ * <li>
+ * - the evaluation of formulas, using a {@link Valuation} environment, and the
+ * equality between formulas.
+ * 
+ * </li>
+ * </ol>
+ * 
+ */
 public class AbstractGraph_Conditions_PackageTesting {
 
   @Rule
@@ -24,6 +51,9 @@ public class AbstractGraph_Conditions_PackageTesting {
 
   static final FormulaFactory factory = Formula.newDefaultFactory();
 
+  /**
+   * Testing of the {@link BooleanExpressionFactory#parse(String)} function.
+   */
   @Test
   public void parserPackageTesting() {
 
@@ -109,6 +139,9 @@ public class AbstractGraph_Conditions_PackageTesting {
         .replaceAll("\\|", OR);
   }
 
+  /**
+   * Testing of {@link CNFFormula#ConvertToCNF(Formula)}.
+   */
   @Test
   public void CNFConverterTesting() {
     String input;
@@ -164,6 +197,9 @@ public class AbstractGraph_Conditions_PackageTesting {
 
   }
 
+  /**
+   * Testing of the two modes of the {@link FormulaFactory}.
+   */
   @Test
   public void FormulaFactoryModes() {
     String input;
@@ -197,6 +233,10 @@ public class AbstractGraph_Conditions_PackageTesting {
     assertTrue(v1 == v2);
   }
 
+  /**
+   * Testing the evaluation of function for formulas created by the
+   * {@link BooleanExpressionFactory}, for both modes.
+   */
   @Test
   public void formulaEvaluationTesting() {
     FormulaFactory f;
@@ -369,6 +409,9 @@ public class AbstractGraph_Conditions_PackageTesting {
     assertFalse(formula.eval(valuation));
   }
 
+  /**
+   * Testing of {@link Formula#equals(Object)}.
+   */
   @Test
   public void FormulaEqualsTesting() {
     String input;
