@@ -46,6 +46,8 @@ public class SAT4JSolver {
    */
   public boolean isSatisfiable(CNFFormula f) throws TimeoutException {
 
+    solver.reset();
+
     int nb_clauses = f.size();
     HashMap<Variable, Integer> var_to_int = f.associativeMap();
 
@@ -81,36 +83,36 @@ public class SAT4JSolver {
     if (problem.isSatisfiable()) {
       solution = problem.model();
       id_to_var = invert(var_to_int);
-
     } else {
       solution = null;
       id_to_var = null;
     }
-    solver.reset();
+
     return res;
   }
 
   /**
-   * Print the literals that when true, satisfies the last formula given to
-   * {@link #isSatisfiable(CNFFormula)}.
-   */
-  public void printModel() {
-    System.err.println(solution());
-  }
-
-  /**
    * Used to print the literals that when true, will make the last given formula
-   * true.
+   * true.It can be called ONLY if is {@link #isSatisfiable(CNFFormula)}
+   * returned true.
    * 
    * @return The details of the solution to satisfy the last formula given to
    *         {@link #isSatisfiable(CNFFormula)}.
    */
   public String solution() {
+    assert (solution != null && id_to_var != null);
+
     StringBuffer result = new StringBuffer(
         "The last given problem is satisfiable." +
-            "A solution (true literals follows).\n");
+            " A solution (true literals follows):\n");
     for (int i = 0; i < solution.length; i++) {
-      result.append(id_to_var.get(i).toString());
+      int id = solution[i];
+      Variable v = id_to_var.get(Math.abs(solution[i]));
+      if (id > 0) {
+        result.append(v.toString() + "\n");
+      } else {
+        result.append(new Literal(v, true).toString() + "\n");
+      }
     }
     return result.toString();
   }
@@ -125,12 +127,9 @@ public class SAT4JSolver {
    *          {@link #isSatisfiable(CNFFormula)}.
    */
   public void printModel(CNFFormula f) {
-    System.err.println("The given problem is satisfiable :");
+    System.err.println("The given problem is:\n");
     System.err.println(f);
-    System.err.println("A solution (true literals follows)");
-    for (int i = 0; i < solution.length; i++) {
-      System.err.println(id_to_var.get(i).toString());
-    }
+    System.err.println(solution());
   }
 
   /**
