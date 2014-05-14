@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.Variable;
 import graph.Model;
 import graph.StateMachine;
@@ -50,4 +51,9 @@ public class NoConcurrentWriting extends AbstractVerificationUnit {
     return "[SUCCESS] Checking that all variable is modified by only 1 state machine...OK";
   }
 
+  @Override
+  public boolean checkAll(Model m, boolean verbose)
+      throws NotImplementedException {
+    throw new NotImplementedException();
+  }
 }

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.sat4j.specs.TimeoutException;
 
 import solver.SAT4JSolver;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.cnf.CNFFormula;
@@ -104,4 +105,9 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     return "[SUCCESS] Checking that transitions are exlusives, ensuring determinism...OK";
   }
 
+  @Override
+  public boolean checkAll(Model m, boolean verbose)
+      throws NotImplementedException {
+    throw new NotImplementedException();
+  }
 }

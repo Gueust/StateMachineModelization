@@ -25,7 +25,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   /* The order internal state machines */
   private LinkedHashMap<String, StateMachine> state_machines =
       new LinkedHashMap<String, StateMachine>(100);
-  /*
+  /**
    * The FormulaFactory used to generate new variables.
    * All the variables that are used within the state machines are stored in
    * this FormulaFactory. There is pointer uniqueness of variables (i.e. two
