@@ -40,7 +40,9 @@ public class NoConcurrentWriting extends AbstractVerificationUnit {
   public String errorMessage() {
     int nb_writers = counter_example.getValue().size();
     return "[FAILURE] The variable " + counter_example.getKey()
-        + " is written by " + nb_writers + ": " + counter_example.getValue();
+        + " is written by " + nb_writers + " state machines.\n"
+        + "The concerned states machines are the followings:\n"
+        + counter_example.getValue();
   }
 
   @Override

@@ -90,8 +90,10 @@ public class DeterminismChecker extends AbstractVerificationUnit {
 
   @Override
   public String errorMessage() {
-    return "[FAILURE] The transitions " + counter_example_t1 + " and "
-        + counter_example_t2 +
+    return "[FAILURE] The transitions \n" +
+        counter_example_t1 + " \n" +
+        "and \n" +
+        counter_example_t2 + "\n" +
         " are not exclusive. \n" +
         " Here is the details of the not exlusivity: " +
         solver.solution();
