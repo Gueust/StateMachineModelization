@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 public class Variable extends Formula {
 
-  String varname;
+  protected String varname;
 
   public Variable(String s) {
     varname = s;
@@ -29,6 +29,7 @@ public class Variable extends Formula {
     return vars;
   }
 
+  /* Do NOT modify, this function is supposed to be equivalent to getVaname() */
   @Override
   public String toString() {
     return varname;

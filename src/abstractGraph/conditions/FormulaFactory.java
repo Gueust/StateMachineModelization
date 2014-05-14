@@ -1,6 +1,7 @@
 package abstractGraph.conditions;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * All formula factories should be able to parse a string and return a valid
@@ -98,6 +99,28 @@ public abstract class FormulaFactory {
   }
 
   /**
+   * Allow to know whether a variable exists in the FormulaFactory or not.
+   * 
+   * @param variable_name
+   *          The variable name to look for.
+   * @return true if the variable_name exists. false otherwise.
+   */
+  public boolean contains(String variable_name) {
+    return existing_variables.containsKey(variable_name);
+  }
+
+  /**
+   * {@inheritDoc #contains(String)}
+   * 
+   * @param variable
+   *          The variable to look for.
+   * @return true if the variable exists. false otherwise.
+   */
+  public boolean contains(Variable variable) {
+    return existing_variables.containsKey(variable.toString());
+  }
+
+  /**
    * @return True if the factory in in the united model mode. False otherwise.
    */
   public boolean isUnitedModelMode() {
@@ -146,6 +169,15 @@ public abstract class FormulaFactory {
    */
   public final Formula parse(String expression) {
     return parse(expression, false);
+  }
+
+  /**
+   * Iterate the variables that are contained in the conditions.
+   * 
+   * @return
+   */
+  public Iterator<Variable> iteratorConditionVariables() {
+    return existing_variables.values().iterator();
   }
 
 }

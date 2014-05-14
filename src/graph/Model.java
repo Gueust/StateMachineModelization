@@ -1,6 +1,7 @@
 package graph;
 
 import graph.events.SynchronisationEvent;
+import graph.verifiers.AbstractVerificationUnit;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,7 +41,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   protected HashMap<String, SynchronisationEvent> synchronisation_events;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  protected HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
+  protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
 
   /**
    * Create a new empty model named `name`.
@@ -83,6 +84,46 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *         machines writing on it)
    */
   public Iterator<Entry<Variable, LinkedList<StateMachine>>> writingRightsIterator() {
-    return writting_state_machines.entrySet().iterator();
+    return writing_state_machines.entrySet().iterator();
   }
+
+  /**
+   * This function is reserved to specific uses that require to access internal
+   * data of the model. In particular, it can be useful to write new
+   * {@link AbstractVerificationUnit}.
+   * 
+   * @return The HashMap linking for every VariableChange, the list of the state
+   *         machines that are modifying its value.
+   */
+  public HashMap<Variable, LinkedList<StateMachine>> getWritingStateMachines() {
+    return writing_state_machines;
+  }
+
+  /**
+   * Allow to check the existence of a variable in a Condition field.
+   * 
+   * @param variable
+   *          The variable to look for.
+   * @return true if the variable exists in a Condition field.
+   */
+  public boolean containsVariable(Variable variable) {
+    return formulaFactory.contains(variable);
+  }
+
+  /**
+   * {@inheritDoc #contains(Variable)}
+   */
+  public boolean containsVariable(String variable_name) {
+    return formulaFactory.contains(variable_name);
+  }
+
+  /**
+   * Iterate the variables that are contained in the conditions.
+   * 
+   * @return
+   */
+  public Iterator<Variable> iteratorConditionVariables() {
+    return formulaFactory.iteratorConditionVariables();
+  }
+
 }

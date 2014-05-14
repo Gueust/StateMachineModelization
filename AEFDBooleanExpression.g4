@@ -70,6 +70,7 @@ IDNEGATIF
   | ID'_NM'
   | ID'_Bas'
   | ID'_en_Action'
+  | ID'_non_Pris'
 ;
 IDPOSITIF
 :
@@ -92,6 +93,7 @@ IDPOSITIF
   | ID'_M'
   | ID'_Haut'
   | ID'_Libere'
+  | ID'_Pris'
 ;
 
 ID

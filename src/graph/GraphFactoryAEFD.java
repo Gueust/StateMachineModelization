@@ -193,7 +193,7 @@ public class GraphFactoryAEFD {
     result.external_events = external_events;
     result.commands_events = commands_events;
     result.synchronisation_events = synchronisation_events;
-    result.writting_state_machines = writting_state_machines;
+    result.writing_state_machines = writting_state_machines;
     result.formulaFactory = factory;
 
     /**

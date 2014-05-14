@@ -21,11 +21,11 @@ class GenerateFormulaAEFD extends
       "_non_Decondamne", "_non_Etabli", "Chute", "_Inactif", "_non_Prise",
       "_non_Enclenchee", "_Occupee", "_Droite", "_HS", "_Ferme",
       "_non_Controle", "_non_Assuree", "_non_Vide", "_non_Valide", "_NM",
-      "_Bas", "_en_Action" };
+      "_Bas", "_en_Action" , "_non_Pris"};
   private String[] positive_suffix = { "_Bloque", "_Condamne", "_Decondamne",
       "_Etabli", "_Excite", "_Actif", "_Prise", "_Enclenchee", "_Libre",
       "_Gauche", "_ES", "_Ouvert", "_Controle", "_Assuree", "_Vide", "_Valide",
-      "_M", "_Haut", "_Libere" };
+      "_M", "_Haut", "_Libere" , "_Pris" };
 
   /**
    * Constructor of the class that will initialize the internal hash map

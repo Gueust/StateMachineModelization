@@ -22,6 +22,7 @@ public class Verifier {
       super();
       addVerification(new NoConcurrentWriting());
       addVerification(new DeterminismChecker());
+      addVerification(new NoUselessVariables());
     }
   }
 
