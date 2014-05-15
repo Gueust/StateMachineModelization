@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import org.sat4j.minisat.orders.VarOrderHeap;
 
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;

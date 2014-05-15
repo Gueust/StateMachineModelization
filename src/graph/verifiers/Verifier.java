@@ -20,7 +20,7 @@ public class Verifier {
   static class DefaultVerifier extends Verifier {
     public DefaultVerifier() {
       super();
-      addVerification(new NoConcurrentWriting());
+      addVerification(new SingleWritingChecker());
       addVerification(new DeterminismChecker());
       addVerification(new NoUselessVariables());
     }
