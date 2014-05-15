@@ -116,6 +116,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   public boolean containsVariable(String variable_name) {
     return formulaFactory.contains(variable_name);
   }
+  
+  
 
   /**
    * Iterate the variables that are contained in the conditions.

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import abstractGraph.conditions.Variable;
 import graph.Model;
@@ -15,7 +16,8 @@ import graph.StateMachine;
  * never used.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
-  private Variable counter_example;
+  private Vector<Variable> counter_example_not_used;
+  private Vector<Variable> counter_example_not_writen;
 
   /**
    * The type of the last error encountered.
@@ -31,7 +33,10 @@ public class NoUselessVariables extends AbstractVerificationUnit {
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
-    boolean found = true;
+    boolean found_not_written = true;
+    boolean found_not_used = true;
+    counter_example_not_used = new Vector<Variable>();
+    counter_example_not_writen = new Vector<Variable>();
     error_type = Error.NONE;
     HashMap<Variable, LinkedList<StateMachine>> writen_variables =
         m.getWritingStateMachines();
@@ -44,42 +49,43 @@ public class NoUselessVariables extends AbstractVerificationUnit {
     while (condition_variable.hasNext()) {
       Variable variable = condition_variable.next();
       if (!writen_variables.containsKey(variable)) {
-        counter_example = variable;
-        found = false;
-        if (verbose) {
-          error_type = Error.NOT_WRITTEN;
-          System.out.println(errorMessage());
-        }
+        counter_example_not_writen.add(variable);
+        found_not_written = false;
       }
+    }
+    if (verbose && !found_not_written) {
+      error_type = Error.NOT_WRITTEN;
+      System.out.println(errorMessage());
     }
 
     /*
      * Test that all the variable that are written are used.
      */
 
-    Iterator<Entry<Variable, LinkedList<StateMachine>>> writen_variables_iterator =
+    Iterator<Entry<Variable, LinkedList<StateMachine>>> written_variables_iterator =
         m.writingRightsIterator();
-    while (writen_variables_iterator.hasNext()) {
-      Entry<Variable, LinkedList<StateMachine>> entry = writen_variables_iterator
+    while (written_variables_iterator.hasNext()) {
+      Entry<Variable, LinkedList<StateMachine>> entry = written_variables_iterator
           .next();
       if (!m.containsVariable(entry.getKey())) {
-        counter_example = entry.getKey();
-        found = false;
-        if (verbose) {
-          error_type = Error.NOT_WRITTEN;
-          System.out.println(errorMessage());
-        }
+        counter_example_not_used.add(entry.getKey());
+        found_not_used = false;
       }
+    }
+    if (verbose && !found_not_used) {
+      error_type = Error.NOT_USED;
+      System.out.println(errorMessage());
     }
 
-    if (!found) {
+    if (!found_not_written || !found_not_used) {
       return false;
-    } else {
-      if (verbose) {
-        System.out.println(successMessage());
-      }
-      return true;
     }
+    
+    if (verbose) {
+      System.out.println(successMessage());
+    }
+    return true;
+
   }
 
   @Override
@@ -91,11 +97,11 @@ public class NoUselessVariables extends AbstractVerificationUnit {
   public String errorMessage() {
     switch (error_type) {
     case NOT_WRITTEN:
-      return "[FAILURE] The variable " + counter_example.toString()
-          + " is used but never written";
+      return "[FAILURE] The variables that follow are used but never written "
+          + counter_example_not_writen.toString();
     case NOT_USED:
-      return "[FAILURE] The variable " + counter_example.toString()
-          + " is written but never used";
+      return "[FAILURE] The variables that folow are written but never used"
+          + counter_example_not_used.toString();
     default:
       return null;
     }

@@ -46,6 +46,7 @@ public abstract class FormulaFactory {
   private boolean united_model;
   private HashMap<String, Variable> existing_variables;
 
+
   /**
    * Initialize the FormulaFactory in the single formula mode.
    */
@@ -64,6 +65,7 @@ public abstract class FormulaFactory {
     this.united_model = united_model_mode;
     existing_variables = new HashMap<String, Variable>();
 
+
   };
 
   /**
@@ -76,6 +78,7 @@ public abstract class FormulaFactory {
   public void setUnitedModelModel(boolean united_model_mode) {
     this.united_model = united_model_mode;
     existing_variables = new HashMap<String, Variable>();
+
   }
 
   /**
