@@ -3,6 +3,7 @@ package graph;
 import graph.events.SynchronisationEvent;
 import graph.verifiers.AbstractVerificationUnit;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
@@ -42,6 +43,9 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
   /** Store for every VariableChange the state machines that modifies it. */
   protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
+  
+  /** store all the variables that are found in the conditions field */
+  protected HashSet<Variable> condition_variable = new HashSet<Variable>();
 
   /**
    * Create a new empty model named `name`.
@@ -124,8 +128,12 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * 
    * @return
    */
-  public Iterator<Variable> iteratorConditionVariables() {
-    return formulaFactory.iteratorConditionVariables();
+  public Iterator<Variable> iteratorExistingVariables() {
+    return formulaFactory.iteratorExistingVariables();
   }
+  
+ public HashSet<Variable> getConditionVariable(){
+   return condition_variable;
+ }
 
 }

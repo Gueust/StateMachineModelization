@@ -179,7 +179,7 @@ public abstract class FormulaFactory {
    * 
    * @return
    */
-  public Iterator<Variable> iteratorConditionVariables() {
+  public Iterator<Variable> iteratorExistingVariables() {
     return existing_variables.values().iterator();
   }
 

@@ -40,7 +40,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
     error_type = Error.NONE;
     HashMap<Variable, LinkedList<StateMachine>> writen_variables =
         m.getWritingStateMachines();
-    Iterator<Variable> condition_variable = m.iteratorConditionVariables();
+    Iterator<Variable> condition_variable = m.iteratorExistingVariables();
 
     /*
      * Test that all the variable that are used (i.e. appears in a Condition
@@ -67,7 +67,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
     while (written_variables_iterator.hasNext()) {
       Entry<Variable, LinkedList<StateMachine>> entry = written_variables_iterator
           .next();
-      if (!m.containsVariable(entry.getKey())) {
+      if (!m.getConditionVariable().contains(entry.getKey())) {
         counter_example_not_used.add(entry.getKey());
         found_not_used = false;
       }

@@ -13,9 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+
+import org.sat4j.minisat.orders.VarOrderHeap;
 
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
@@ -61,6 +64,9 @@ public class GraphFactoryAEFD {
   /** Store for every VariableChange the state machines that modifies it. */
   private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines =
       new HashMap<Variable, LinkedList<StateMachine>>();
+
+  /** store all the variables that are found in the conditions field */
+  private HashSet<Variable> condition_variable = new HashSet<Variable>();
 
   /**
    * Used to remember the order of the transition within the parsed file in
@@ -142,6 +148,16 @@ public class GraphFactoryAEFD {
        */
       initial_transition_order
           .put(transition, new InitialTransition(state_machine, transition));
+
+      /*
+       * Store all the variables found in the field condition and put it in the
+       * HashSet condition_variables.
+       */
+      
+      Formula condition = getCondition(parser.getCondition(), state_machine);
+      if (condition!=null){
+        condition.allVariables(condition_variable);
+      }
     }
 
     /**
@@ -195,6 +211,7 @@ public class GraphFactoryAEFD {
     result.synchronisation_events = synchronisation_events;
     result.writing_state_machines = writting_state_machines;
     result.formulaFactory = factory;
+    result.condition_variable = condition_variable;
 
     /**
      * We check that the list of added transitions is exactly the transitions
