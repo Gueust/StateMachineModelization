@@ -1,7 +1,6 @@
 package graph;
 
 import graph.conditions.aefdParser.AEFDFormulaFactory;
-import graph.events.Actions;
 import graph.events.SynchronisationEvent;
 import graph.events.VariableChange;
 
@@ -19,9 +18,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 
+
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
+import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;

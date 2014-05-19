@@ -1,17 +1,17 @@
 package abstractGraph;
 
 import abstractGraph.conditions.Formula;
-import abstractGraph.events.AbstractActions;
+import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 
 public abstract class AbstractTransition<S extends AbstractState<? extends AbstractTransition<S>>> {
   protected S from, to;
   protected Events events;
   protected Formula condition;
-  protected AbstractActions actions;
+  protected Actions actions;
 
   public AbstractTransition(S from, S to, Events events,
-      Formula condition, AbstractActions actions) {
+      Formula condition, Actions actions) {
     this.from = from;
     this.to = to;
     this.events = events;
@@ -37,7 +37,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
     return condition;
   }
 
-  public AbstractActions getActions() {
+  public Actions getActions() {
     return actions;
   }
 }

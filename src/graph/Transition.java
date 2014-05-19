@@ -4,13 +4,13 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractTransition;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Formula;
-import abstractGraph.events.AbstractActions;
+import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 
 public class Transition extends AbstractTransition<State> {
 
   public Transition(State from, State to, Events event,
-      Formula condition, AbstractActions actions) {
+      Formula condition, Actions actions) {
     super(from, to, event, condition, actions);
   }
 

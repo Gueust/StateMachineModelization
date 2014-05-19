@@ -1,12 +1,9 @@
-package graph.events;
+package abstractGraph.events;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import abstractGraph.events.AbstractActions;
-import abstractGraph.events.SingleEvent;
-
-public class Actions extends AbstractActions {
+public class Actions {
 
   private LinkedList<SingleEvent> events;
 
@@ -14,7 +11,6 @@ public class Actions extends AbstractActions {
     events = new LinkedList<SingleEvent>();
   }
 
-  @Override
   public void add(SingleEvent e) {
     events.add(e);
   }
