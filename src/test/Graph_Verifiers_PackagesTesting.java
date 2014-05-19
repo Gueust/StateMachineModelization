@@ -158,7 +158,8 @@ public class Graph_Verifiers_PackagesTesting {
         "Not_determinist_graph_1.txt",
         "Not_determinist_graph_2.txt",
         "Not_determinism_with_SAT_solving.txt",
-        "Determinism_two_identical_transitions.txt"
+        "Determinism_two_identical_transitions.txt",
+        "Determinism_with_identically_labeled_transitions.txt"
     };
 
     Boolean[] results = {
@@ -167,6 +168,7 @@ public class Graph_Verifiers_PackagesTesting {
         false,
         false,
         false,
+        true,
         true
     };
 

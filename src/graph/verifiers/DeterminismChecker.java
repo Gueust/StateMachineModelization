@@ -97,7 +97,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
 
                     System.out.println("[Notice]Non exclusive transitions " +
                         "not considered as an error since they have the same" +
-                        "target and actions.");
+                        " target and actions.");
                     System.out.println(errorMessage(machine, t1, t2));
                     continue;
                   }
