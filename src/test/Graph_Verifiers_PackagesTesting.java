@@ -139,7 +139,12 @@ public class Graph_Verifiers_PackagesTesting {
    *          </li>
    *          <li>
    *          Not_determinism_with_SAT_solving.txt : 2 transitions labeled with
-   *          the same event, and with an incompatible condition.</li>
+   *          the same event, and with an incompatible condition.
+   *          </li>
+   *          <li>
+   *          Determinism_two_identical_transitions.txt: two identical
+   *          transitions that should not raise an error, but only a warning.
+   *          </li>
    *          </ol>
    */
   @Test
@@ -152,7 +157,8 @@ public class Graph_Verifiers_PackagesTesting {
         "Determinism_with_SAT_solving.txt",
         "Not_determinist_graph_1.txt",
         "Not_determinist_graph_2.txt",
-        "Not_determinism_with_SAT_solving.txt"
+        "Not_determinism_with_SAT_solving.txt",
+        "Determinism_two_identical_transitions.txt"
     };
 
     Boolean[] results = {
@@ -160,7 +166,8 @@ public class Graph_Verifiers_PackagesTesting {
         true,
         false,
         false,
-        false
+        false,
+        true
     };
 
     generalTest(verifier, files, results);

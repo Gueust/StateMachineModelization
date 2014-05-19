@@ -99,18 +99,19 @@ public class DeterminismChecker extends AbstractVerificationUnit {
                         "not considered as an error since they have the same" +
                         "target and actions.");
                     System.out.println(errorMessage(machine, t1, t2));
-
+                    continue;
                   }
                   list_counter_example_machine.add(machine);
                   list_counter_example_t1.add(t1);
                   list_counter_example_t2.add(t2);
 
-                  if (verbose) {
-                    System.out.println(errorMessage(machine, t1, t2));
-                  }
-
                   result = false;
                   if (!check_all) {
+                    if (verbose) {
+                      System.out
+                          .println("[FAILURE] Transitions exclusion not verified.\n");
+                      System.out.println(errorMessage(machine, t1, t2));
+                    }
                     return false;
                   }
                 }
@@ -126,8 +127,8 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     }
     if (verbose && result) {
       System.out.println(successMessage());
-    } else {
-
+    } else if (verbose && !result) {
+      System.out.println();
     }
     return result;
   }
