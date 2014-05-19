@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import abstractGraph.GlobalState;
+import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
@@ -16,11 +16,11 @@ import abstractGraph.events.ExternalEvent;
 public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
-  private HashMap<GlobalState<S, T>, GlobalState<S, T>> visited_states =
-      new LinkedHashMap<GlobalState<S, T>, GlobalState<S, T>>();
+  private HashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>> visited_states =
+      new LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>>();
 
   /** The states to explore */
-  private LinkedHashMap<GlobalState<S, T>, GlobalState<S, T>> unvisited_states;
+  private LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>> unvisited_states;
 
   private LinkedList<ExternalEvent> possible_events;
 
@@ -28,7 +28,7 @@ public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>,
    * The states that are excluded from the exploration by the postulate states
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
-  private HashSet<GlobalState<S, T>> illegal_states;
+  private HashSet<AbstractGlobalState<M, S, T>> illegal_states;
 
   /**
    * Initialize the external events that will be tested.
@@ -49,10 +49,10 @@ public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>,
    * 
    * @param init
    */
-  public void configureInitialGlobalStates(Collection<GlobalState<S, T>> init) {
+  public void configureInitialGlobalStates(Collection<AbstractGlobalState<M, S, T>> init) {
     unvisited_states =
-        new LinkedHashMap<GlobalState<S, T>, GlobalState<S, T>>();
-    for (GlobalState<S, T> s : init) {
+        new LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>>();
+    for (AbstractGlobalState<M, S, T> s : init) {
       unvisited_states.put(s, s);
     }
   }
@@ -63,19 +63,19 @@ public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>,
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public GlobalState<S, T> verify(AbstractGraphSimulator<M, S, T> simulator) {
+  public AbstractGlobalState<M, S, T> verify(AbstractGraphSimulator<M, S, T> simulator) {
     assert (unvisited_states != null);
     assert (possible_events != null);
 
     while (unvisited_states.size() != 0) {
-      Iterator<GlobalState<S, T>> it = unvisited_states.values().iterator();
+      Iterator<AbstractGlobalState<M, S, T>> it = unvisited_states.values().iterator();
 
-      GlobalState<S, T> state = it.next();
+      AbstractGlobalState<M, S, T> state = it.next();
       it.remove();
       visited_states.put(state, state);
 
       for (ExternalEvent e : possible_events) {
-        GlobalState<S, T> next_state = simulator.execute(state, e);
+        AbstractGlobalState<M, S, T> next_state = simulator.execute(state, e);
 
         /* Illegal state */
         if (simulator.isP6()) {

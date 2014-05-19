@@ -461,6 +461,7 @@ public class GraphFactoryAEFD {
     case "DTP":
     case "ATP":
     case "CMD":
+    case "MSG":
     case "FCI":
     case "P":
       new_event = new CommandEvent(event_name);

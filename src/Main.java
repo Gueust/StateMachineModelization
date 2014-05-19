@@ -26,7 +26,7 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD test =
-        new GraphFactoryAEFD("Nurieux/NurieuxTestJLACLE_Auto.txt");
+        new GraphFactoryAEFD("PN/PN_SAL_N_Fonct_Auto.txt");
     Model model = test.buildModel("Testing model");
     System.out.println(model);
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;

@@ -6,7 +6,7 @@ import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
-import abstractGraph.GlobalState;
+import abstractGraph.AbstractGlobalState;
 import abstractGraph.events.ExternalEvent;
 
 public abstract class AbstractGraphSimulator<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
@@ -15,13 +15,13 @@ public abstract class AbstractGraphSimulator<M extends AbstractStateMachine<S, T
   protected AbstractModel<M, S, T> proof_model;
   protected AbstractModel<M, S, T> external_environment;
 
-  private GlobalState<S, T> global_state;
+  private AbstractGlobalState<M, S, T> global_state;
 
   abstract public void eat(LinkedList<ExternalEvent> l);
 
-  abstract public GlobalState<S, T> execute(ExternalEvent e);
+  abstract public AbstractGlobalState<M, S, T> execute(ExternalEvent e);
 
-  abstract public GlobalState<S, T> execute(GlobalState<S, T> starting_state,
+  abstract public AbstractGlobalState<M, S, T> execute(AbstractGlobalState<M, S, T> starting_state,
       ExternalEvent e);
 
   /**
@@ -48,11 +48,11 @@ public abstract class AbstractGraphSimulator<M extends AbstractStateMachine<S, T
    */
   abstract public boolean isP7();
 
-  public GlobalState<S, T> getGlobalState() {
+  public AbstractGlobalState<M, S, T> getGlobalState() {
     return global_state;
   }
 
-  public void setGlobalState(GlobalState<S, T> global_state) {
+  public void setGlobalState(AbstractGlobalState<M, S, T> global_state) {
     this.global_state = global_state;
   }
 
