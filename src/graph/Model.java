@@ -1,6 +1,5 @@
 package graph;
 
-import graph.events.SynchronisationEvent;
 import graph.verifiers.AbstractVerificationUnit;
 
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.SynchronisationEvent;
 
 /**
  * A set of state machines interacting with each other.

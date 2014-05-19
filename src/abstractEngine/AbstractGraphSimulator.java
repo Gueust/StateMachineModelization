@@ -19,6 +19,11 @@ public abstract class AbstractGraphSimulator<M extends AbstractStateMachine<S, T
 
   abstract public void eat(LinkedList<ExternalEvent> l);
 
+  /**
+   * Take the external event e and 
+   * @param e
+   * @return
+   */
   abstract public AbstractGlobalState<M, S, T> execute(ExternalEvent e);
 
   abstract public AbstractGlobalState<M, S, T> execute(AbstractGlobalState<M, S, T> starting_state,

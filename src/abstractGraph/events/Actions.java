@@ -3,6 +3,8 @@ package abstractGraph.events;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import com.sun.corba.se.spi.orbutil.fsm.Action;
+
 public class Actions {
 
   private LinkedList<SingleEvent> events;
@@ -54,5 +56,9 @@ public class Actions {
       }
     }
     return true;
+  }
+  
+  public Iterator<SingleEvent> iteratorActions(){
+    return events.iterator();
   }
 }

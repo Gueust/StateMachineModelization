@@ -1,6 +1,5 @@
-package graph.events;
+package abstractGraph.events;
 
-import abstractGraph.events.InternalEvent;
 
 public class SynchronisationEvent extends InternalEvent {
 

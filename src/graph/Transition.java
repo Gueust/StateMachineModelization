@@ -1,5 +1,6 @@
 package graph;
 
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractTransition;
 import abstractGraph.AbstractGlobalState;
@@ -29,4 +30,5 @@ public class Transition extends AbstractTransition<State> {
         "              ACTIONS: " + actions.toString();
 
   }
+  
 }

@@ -1,8 +1,6 @@
 package graph;
 
 import graph.conditions.aefdParser.AEFDFormulaFactory;
-import graph.events.SynchronisationEvent;
-import graph.events.VariableChange;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -19,6 +17,8 @@ import java.util.LinkedList;
 
 
 
+
+
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
@@ -27,6 +27,8 @@ import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
+import abstractGraph.events.SynchronisationEvent;
+import abstractGraph.events.VariableChange;
 
 /**
  * Build models from an AEFD formatted file.

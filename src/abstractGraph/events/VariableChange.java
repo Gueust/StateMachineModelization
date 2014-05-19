@@ -1,8 +1,7 @@
-package graph.events;
+package abstractGraph.events;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.Literal;
-import abstractGraph.events.InternalEvent;
 
 public class VariableChange extends InternalEvent {
 
