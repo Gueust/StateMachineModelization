@@ -1,6 +1,7 @@
 package graph.verifiers;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.sat4j.specs.TimeoutException;
 
@@ -18,6 +19,9 @@ import graph.Transition;
 /**
  * This verifier checks that for all states, all transitions leaving from that
  * state and having a common event have an exclusive Condition field.
+ * 
+ * It will not consider 2 not exclusive transitions going to the same state and
+ * labeled with the same action as an error.
  */
 public class DeterminismChecker extends AbstractVerificationUnit {
 
@@ -29,13 +33,35 @@ public class DeterminismChecker extends AbstractVerificationUnit {
 
   /*
    * The 2 transitions that offer a counter example if needed (i.e. that are not
-   * exlusive while beginning at the same state and being activated by a common
-   * Event)
+   * exclusive while beginning at the same state and being activated by a common
+   * Event).
+   * Then the machines where the counter example if found.
    */
-  private Transition counter_example_t1, counter_example_t2;
+  private LinkedList<Transition>
+      list_counter_example_t1 = new LinkedList<Transition>(),
+      list_counter_example_t2 = new LinkedList<Transition>();
+  private LinkedList<StateMachine> list_counter_example_machine =
+      new LinkedList<StateMachine>();
 
-  @Override
-  public boolean check(Model m, boolean verbose) {
+  private boolean identicalActionFields(Transition t1, Transition t2) {
+    return t1.getActions().equals(t2.getActions());
+  }
+
+  private boolean identicalTarget(Transition t1, Transition t2) {
+    return t1.getDestination().equals(t2.getDestination());
+  }
+
+  /**
+   * Serves for both the {@link #check(Model, boolean)} and
+   * {@link #checkAll(Model, boolean)} functions.
+   */
+  private boolean checkFunction(Model m, boolean verbose, boolean check_all) {
+
+    boolean result = true;
+
+    list_counter_example_t1.clear();
+    list_counter_example_t2.clear();
+    list_counter_example_machine.clear();
 
     /* For all StateMachines */
     Iterator<StateMachine> it = m.iteratorStatesMachines();
@@ -66,12 +92,27 @@ public class DeterminismChecker extends AbstractVerificationUnit {
 
               try {
                 if (solver.isSatisfiable(formula)) {
-                  counter_example_t1 = t1;
-                  counter_example_t2 = t2;
-                  if (verbose) {
-                    System.out.println(errorMessage());
+                  if (identicalActionFields(t1, t2) &&
+                      identicalTarget(t1, t2)) {
+
+                    System.out.println("[Notice]Non exclusive transitions " +
+                        "not considered as an error since they have the same" +
+                        "target and actions.");
+                    System.out.println(errorMessage(machine, t1, t2));
+
                   }
-                  return false;
+                  list_counter_example_machine.add(machine);
+                  list_counter_example_t1.add(t1);
+                  list_counter_example_t2.add(t2);
+
+                  if (verbose) {
+                    System.out.println(errorMessage(machine, t1, t2));
+                  }
+
+                  result = false;
+                  if (!check_all) {
+                    return false;
+                  }
                 }
               } catch (TimeoutException e) {
                 e.printStackTrace();
@@ -83,15 +124,30 @@ public class DeterminismChecker extends AbstractVerificationUnit {
         }
       }
     }
-    if (verbose) {
+    if (verbose && result) {
       System.out.println(successMessage());
+    } else {
+
     }
-    return true;
+    return result;
   }
 
   @Override
-  public String errorMessage() {
-    return "[FAILURE] The transitions \n" +
+  public boolean check(Model m, boolean verbose) {
+    return checkFunction(m, verbose, false);
+  }
+
+  @Override
+  public boolean checkAll(Model m, boolean verbose)
+      throws NotImplementedException {
+    return checkFunction(m, verbose, true);
+  }
+
+  private String errorMessage(StateMachine counter_example_machine,
+      Transition counter_example_t1, Transition counter_example_t2) {
+    return "In the state machine "
+        + counter_example_machine.getName() +
+        ", the transitions \n" +
         counter_example_t1 + " \n" +
         "and \n" +
         counter_example_t2 + "\n" +
@@ -101,13 +157,27 @@ public class DeterminismChecker extends AbstractVerificationUnit {
   }
 
   @Override
-  public String successMessage() {
-    return "[SUCCESS] Checking that transitions are exlusives, ensuring determinism...OK";
+  public String errorMessage() {
+    StringBuffer result = new StringBuffer();
+    int n = list_counter_example_machine.size();
+    result.append("[FAILURE] " + n + " errors have been found.\n");
+    for (int i = 0; i < n; i++) {
+      result.append(errorMessage(list_counter_example_machine.get(i),
+          list_counter_example_t1.get(i), list_counter_example_t2.get(i)));
+    }
+
+    return result.toString();
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose)
-      throws NotImplementedException {
-    throw new NotImplementedException();
+  public String successMessage() {
+    if (list_counter_example_machine.isEmpty()) {
+      return "[SUCCESS] Checking that transitions are exlusives, ensuring determinism...OK";
+    } else {
+      throw new IllegalArgumentException(
+          "The last call to check returned with errors."
+              + "You should not be calling sucessMessage().");
+    }
   }
+
 }
