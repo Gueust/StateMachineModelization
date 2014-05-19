@@ -74,10 +74,21 @@ public abstract class AbstractVerificationUnit {
   }
 
   /**
+   * This function can be called ONLY if the {@link #check(Model, boolean)} or
+   * {@link #checkAll(Model, boolean)} function have been called first and that
+   * it was not set to verbose.
+   * 
    * @return The message in case of failure of the verification.
    */
   abstract public String errorMessage();
 
+  /**
+   * This function can be called ONLY if the {@link #check(Model, boolean)} or
+   * {@link #checkAll(Model, boolean)} function have been called first and that
+   * it was not set to verbose.
+   * 
+   * @return The message in case of success of the verification.
+   */
   abstract public String successMessage();
 
 }

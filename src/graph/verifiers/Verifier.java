@@ -62,4 +62,31 @@ public class Verifier {
   public boolean check(Model m) {
     return check(m, true);
   }
+
+  /**
+   * Same as {@link #check(Model, boolean)} but does not stop on the first error
+   * found: it will continue and try to find all the errors.
+   * 
+   * @param m
+   * @param verbose
+   *          True prints the results of the intermediary verifications.
+   * @return True if the model verifies all the registered verification units.
+   */
+  public boolean checkAll(Model m, boolean verbose) {
+    boolean result = true;
+    for (AbstractVerificationUnit unit : verification_units) {
+      boolean tmp = unit.checkAll(m, verbose);
+      result = result & tmp;
+    }
+    return result;
+  }
+
+  /**
+   * Simply {@link #checkAll(Model, boolean)} using verbose = true;
+   * 
+   * {@inheritDoc #checkAll(Model, boolean)}
+   */
+  public boolean checkAll(Model m) {
+    return checkAll(m, true);
+  }
 }
