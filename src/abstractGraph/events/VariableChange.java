@@ -23,4 +23,7 @@ public class VariableChange extends InternalEvent {
     return l.getVariable();
   }
 
+  public boolean isNegated() {
+    return l.isNegated();
+  }
 }
