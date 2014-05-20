@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+import utils.TeeOutputStream;
 import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.verifiers.Verifier;
@@ -17,7 +18,7 @@ public class Main {
   public static void main(String[] args) throws Exception {
 
     /* Launching logging */
-    launchLogging("logfile.txt");
+    launchLogging("verification_tools_logfile.txt");
 
     DateFormat date_format = DateFormat.getTimeInstance();
     System.out.println("Execution launched at " +
@@ -26,7 +27,7 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD test =
-        new GraphFactoryAEFD("PN/PN_SAL_N_Fonct_Auto.txt");
+        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Fonct_Auto.txt");
     Model model = test.buildModel("Testing model");
     System.out.println(model);
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
@@ -62,6 +63,11 @@ public class Main {
       TeeOutputStream myOut = new TeeOutputStream(System.out, fos);
       PrintStream ps = new PrintStream(myOut);
       System.setOut(ps);
+
+      /* Same for System.err */
+      TeeOutputStream myErr = new TeeOutputStream(System.err, fos);
+      PrintStream ps_err = new PrintStream(myErr);
+      System.setErr(ps_err);
     } catch (Exception e) {
       e.printStackTrace();
     }

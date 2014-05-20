@@ -1,4 +1,5 @@
 package utils;
+
 /* This file has been modified */
 
 /*
@@ -21,18 +22,19 @@ package utils;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedList;
 
 /**
  * Classic splitter of OutputStream. Named after the unix 'tee'
  * command. It allows a stream to be branched off so there
- * are now two streams.
+ * are now several streams.
  * 
  * @version $Id: TeeOutputStream.java 610010 2008-01-08 14:50:59Z niallp $
  */
 public class TeeOutputStream extends FilterOutputStream {
 
-  /** the second OutputStream to write to */
-  protected OutputStream branch;
+  /** The others OutputStream to write to */
+  protected LinkedList<OutputStream> branches = new LinkedList<OutputStream>();
 
   /**
    * Constructs a TeeOutputStream.
@@ -44,7 +46,15 @@ public class TeeOutputStream extends FilterOutputStream {
    */
   public TeeOutputStream(OutputStream out, OutputStream branch) {
     super(out);
-    this.branch = branch;
+    this.branches.add(out);
+    this.branches.add(branch);
+  }
+
+  /**
+   * Add a new OutputStream to write to
+   */
+  public void add(OutputStream other_branch) {
+    branches.add(other_branch);
   }
 
   /**
@@ -56,8 +66,10 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public synchronized void write(byte[] b) throws IOException {
-    super.write(b);
-    this.branch.write(b);
+    
+    for (OutputStream branch : branches) {
+      branch.write(b);
+    }
   }
 
   /**
@@ -73,8 +85,9 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public synchronized void write(byte[] b, int off, int len) throws IOException {
-    super.write(b, off, len);
-    this.branch.write(b, off, len);
+    for (OutputStream branch : branches) {
+      branch.write(b, off, len);
+    }
   }
 
   /**
@@ -86,8 +99,9 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public synchronized void write(int b) throws IOException {
-    super.write(b);
-    this.branch.write(b);
+    for (OutputStream branch : branches) {
+      branch.write(b);
+    }
   }
 
   /**
@@ -97,8 +111,9 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public void flush() throws IOException {
-    super.flush();
-    this.branch.flush();
+    for (OutputStream branch : branches) {
+      branch.flush();
+    }
   }
 
   /**
@@ -108,8 +123,9 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public void close() throws IOException {
-    super.close();
-    this.branch.close();
+    for (OutputStream branch : branches) {
+      branch.close();
+    }
   }
 
 }
