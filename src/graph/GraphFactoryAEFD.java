@@ -15,10 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-
-
-
-
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
@@ -37,8 +33,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -155,9 +151,9 @@ public class GraphFactoryAEFD {
        * Store all the variables found in the field condition and put it in the
        * HashSet condition_variables.
        */
-      
+
       Formula condition = getCondition(parser.getCondition(), state_machine);
-      if (condition!=null){
+      if (condition != null) {
         condition.allVariables(condition_variable);
       }
     }
@@ -357,12 +353,20 @@ public class GraphFactoryAEFD {
    */
   private Actions getActions(String actions, StateMachine m) {
     /* TODO : split around "/" and take the left part */
+    if (!actions.endsWith(";") && !actions.equals("")) {
+      throw new UnsupportedOperationException(
+          "The action list does not end with a ';' : " + actions);
+    }
     String[] array_of_actions = actions.split(";");
     Actions result = new Actions();
 
     for (int i = 0; i < array_of_actions.length; i++) {
       String event_string = array_of_actions[i].trim();
 
+      if (event_string.lastIndexOf(' ') != -1) {
+        throw new UnsupportedOperationException(
+            "When parsing the action : " + event_string);
+      }
       if (!event_string.equals("")) {
         SingleEvent new_action = actionFactory(event_string);
         if (new_action instanceof VariableChange) {
