@@ -148,7 +148,7 @@ public class SAT4JSolver {
     int i = 0;
     for (Literal l : c) {
       int id = var_to_int.get(l.getVariable());
-      if (l.IsNegated()) {
+      if (l.isNegated()) {
         result[i] = -id;
       } else {
         result[i] = id;

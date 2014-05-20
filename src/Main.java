@@ -6,11 +6,22 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+
 import utils.TeeOutputStream;
+
+import engine.GraphSimulator;
+import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.Variable;
+import abstractGraph.events.ExternalEvent;
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import graph.Transition;
 import graph.verifiers.Verifier;
 
 public class Main {
@@ -27,7 +38,9 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD test =
-        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Fonct_Auto.txt");
+
+        new GraphFactoryAEFD("test_simulation.txt");
+
     Model model = test.buildModel("Testing model");
     System.out.println(model);
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
@@ -39,6 +52,26 @@ public class Main {
     printFullPeakMemoryUsage();
 
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
+    
+    AbstractGlobalState<StateMachine, State, Transition> global_state = new AbstractGlobalState<StateMachine, State, Transition>(model);
+    Iterator<StateMachine> state_machie_iterator = model.iteratorStatesMachines();
+    while (state_machie_iterator.hasNext()){
+      StateMachine state_machine = state_machie_iterator.next();
+      global_state.setState(state_machine, state_machine.getState("0"));
+    }
+    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+    while (variable_iterator.hasNext()){
+      Variable variable = variable_iterator.next();
+      global_state.setVariableValue(variable, true);
+    }
+    LinkedList<ExternalEvent> event_queue = new LinkedList<ExternalEvent>();
+    ExternalEvent ctl1 = new ExternalEvent("CTL_1");
+    event_queue.add(ctl1);
+    ExternalEvent ctl2 = new ExternalEvent("CTL_2");
+    event_queue.add(ctl2);
+    GraphSimulator simulator = new GraphSimulator(model);
+    System.out.print(global_state.toString());
+    simulator.simulation(event_queue, global_state);
   }
 
   /**
@@ -105,4 +138,5 @@ public class Main {
     System.out.printf("Total peak memory used: %,d%n", total_used);
     System.out.printf("Total peak memory reserved: %,d%n", total_commited);
   }
+  
 }

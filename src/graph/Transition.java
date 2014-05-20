@@ -1,13 +1,8 @@
 package graph;
 
-import java.util.Iterator;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractTransition;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Valuation;
-import abstractGraph.conditions.Variable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 
@@ -18,16 +13,13 @@ public class Transition extends AbstractTransition<State> {
     super(from, to, event, condition, actions);
   }
 
-  //TODO verify that it works and add the tests.
+  // TODO verify that it works and add the tests.
   @Override
   public boolean evalCondition(AbstractGlobalState<?, State, ?> global_state) {
-    Valuation valuation = new Valuation();
-    Iterator<Variable> variable_iterator = global_state.iteratorVariables();
-    while (variable_iterator.hasNext()) {
-      Variable variable = variable_iterator.next();
-      valuation.setValue(variable, global_state.getVariableValue(variable));
+    if (condition == null){
+      return true;
     }
-    return condition.eval(valuation);
+    return condition.eval(global_state.getValuation());
   }
 
   @Override
