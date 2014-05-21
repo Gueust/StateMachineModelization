@@ -264,8 +264,8 @@ public class GraphFactoryAEFD {
               .substring(0, event_string.indexOf('_'))
               .equals("ACT") ||
               event_string
-              .substring(0, event_string.indexOf('_'))
-              .equals("SYN")) {
+                  .substring(0, event_string.indexOf('_'))
+                  .equals("SYN")) {
             SynchronisationEvent new_event = new SynchronisationEvent(
                 event_string);
             synchronisation_events.put(new_event.getName(), new_event);
@@ -434,6 +434,11 @@ public class GraphFactoryAEFD {
       new_event = new ExternalEvent(event_name);
       external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
+    case "SYN":
+      new_event = new SynchronisationEvent(event_name);
+      synchronisation_events.put(new_event.getName(),
+          (SynchronisationEvent) new_event);
+      break;
     default:
       System.out.println(toString());
       throw new UnsupportedOperationException(
@@ -489,6 +494,11 @@ public class GraphFactoryAEFD {
        */
       new_event = new ExternalEvent(event_name);
       external_events.put(new_event.getName(), (ExternalEvent) new_event);
+      break;
+    case "SYN":
+      new_event = new SynchronisationEvent(event_name);
+      synchronisation_events.put(new_event.getName(),
+          (SynchronisationEvent) new_event);
       break;
     default:
       throw new UnsupportedOperationException(
