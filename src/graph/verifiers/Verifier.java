@@ -22,13 +22,13 @@ public class Verifier {
       super();
       addVerification(new SingleWritingChecker());
       addVerification(new DeterminismChecker());
-      addVerification(new CoherentVariablesWriting());
     }
   }
 
   static class WarningVerifier extends Verifier {
     public WarningVerifier() {
       super();
+      addVerification(new CoherentVariablesWriting());
       addVerification(new NoUselessVariables());
     }
   }
