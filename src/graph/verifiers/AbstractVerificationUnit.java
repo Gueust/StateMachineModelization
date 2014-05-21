@@ -65,11 +65,13 @@ public abstract class AbstractVerificationUnit {
    * Apply the current verification on the Model `m`, and try to show the most
    * possible counter example if their exists.
    * 
+   * @throws Exception
+   * 
    */
   abstract public boolean checkAll(Model m, boolean verbose)
       throws NotImplementedException;
 
-  public boolean checkAll(Model m) {
+  public boolean checkAll(Model m) throws NotImplementedException {
     return checkAll(m, false);
   }
 

@@ -27,13 +27,26 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD test =
-        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Fonct_Auto.txt");
+        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Preuv_Auto.txt");
     Model model = test.buildModel("Testing model");
-    System.out.println(model);
+    //System.out.println(model);
+    
+    
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
-    default_verifier.check(model);
-
+    if (!default_verifier.check(model)) {
+      System.err.println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***");
+    } else {
+      System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
+    }
+    
+    Verifier warning_verifier = Verifier.WARNING_VERIFIER;
+    if (!warning_verifier.check(model)) {
+      System.out.println("*** Some additionnal properties are not verified ***");
+    } else {
+      System.out.println("*** All other properties verifier ***");
+    }
+    
     long estimatedTime = System.nanoTime() - startTime;
 
     printFullPeakMemoryUsage();

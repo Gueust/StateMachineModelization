@@ -49,7 +49,7 @@ public class Literal extends Formula {
     return variable;
   }
 
-  public boolean IsNegated() {
+  public boolean isNegated() {
     return is_negated;
   }
 
