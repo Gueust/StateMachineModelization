@@ -262,7 +262,10 @@ public class GraphFactoryAEFD {
         if (!event_string.equals("")) {
           if (event_string
               .substring(0, event_string.indexOf('_'))
-              .equals("ACT")) {
+              .equals("ACT") ||
+              event_string
+              .substring(0, event_string.indexOf('_'))
+              .equals("SYN")) {
             SynchronisationEvent new_event = new SynchronisationEvent(
                 event_string);
             synchronisation_events.put(new_event.getName(), new_event);
