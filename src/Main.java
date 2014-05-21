@@ -39,39 +39,34 @@ public class Main {
 
     GraphFactoryAEFD test =
 
-        new GraphFactoryAEFD("test_simulation.txt");
+        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Preuv_Auto.txt");
 
     Model model = test.buildModel("Testing model");
-    System.out.println(model);
+    //System.out.println(model);
+    
+    
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
-    default_verifier.check(model);
-
+    if (!default_verifier.check(model)) {
+      System.err.println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***");
+    } else {
+      System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
+    }
+    
+    Verifier warning_verifier = Verifier.WARNING_VERIFIER;
+    if (!warning_verifier.check(model)) {
+      System.out.println("*** Some additionnal properties are not verified ***");
+    } else {
+      System.out.println("*** All other properties verifier ***");
+    }
+    
     long estimatedTime = System.nanoTime() - startTime;
 
     printFullPeakMemoryUsage();
 
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
     
-    AbstractGlobalState<StateMachine, State, Transition> global_state = new AbstractGlobalState<StateMachine, State, Transition>(model);
-    Iterator<StateMachine> state_machie_iterator = model.iteratorStatesMachines();
-    while (state_machie_iterator.hasNext()){
-      StateMachine state_machine = state_machie_iterator.next();
-      global_state.setState(state_machine, state_machine.getState("0"));
-    }
-    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
-    while (variable_iterator.hasNext()){
-      Variable variable = variable_iterator.next();
-      global_state.setVariableValue(variable, true);
-    }
-    LinkedList<ExternalEvent> event_queue = new LinkedList<ExternalEvent>();
-    ExternalEvent ctl1 = new ExternalEvent("CTL_1");
-    event_queue.add(ctl1);
-    ExternalEvent ctl2 = new ExternalEvent("CTL_2");
-    event_queue.add(ctl2);
-    GraphSimulator simulator = new GraphSimulator(model);
-    System.out.print(global_state.toString());
-    simulator.simulation(event_queue, global_state);
+
   }
 
   /**

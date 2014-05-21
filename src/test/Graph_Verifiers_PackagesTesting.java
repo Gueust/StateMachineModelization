@@ -8,6 +8,7 @@ import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.DeterminismChecker;
+import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.Verifier;
 
@@ -176,6 +177,77 @@ public class Graph_Verifiers_PackagesTesting {
   }
 
   /**
+   * Testing of {@link DeterminismChecker}.
+   * 
+   * @details This test uses different files representing simple graphs:
+   *          <ol>
+   *          <li>
+   *          Incoherent_writting_1.txt: 2 incoherent writing into the same
+   *          state.
+   *          </li>
+   *          <li>
+   *          Incoherent_writting_2.txt: requires 1 level of propagation.
+   *          </li>
+   *          </ol>
+   */
+  @Test
+  public void CoherentVariablesWriting() {
+    Verifier verifier = new Verifier();
+    verifier.addVerification(new CoherentVariablesWriting());
+
+    String[] files = {
+        /* All files from the DeterminismChecker should be ok */
+        "Determinism_without_SAT_solving.txt",
+        "Determinism_with_SAT_solving.txt",
+        "Not_determinist_graph_1.txt",
+        "Not_determinist_graph_2.txt",
+        "Not_determinism_with_SAT_solving.txt",
+        "Determinism_two_identical_transitions.txt",
+        "Determinism_with_identically_labeled_transitions.txt",
+        /* All files from NoUselessVariablesChecker should be ok */
+        "Graph_with_no_variable.txt",
+        "Graph_without_useless_variables.txt",
+        "Graph_with_not_used_variables.txt",
+        /* All files from SingleWrittingChecker should be ok */
+        "Graph_with_no_variable.txt",
+        "Graph_without_concurrent_writing.txt",
+        "Graph_with_concurrent_writing.txt",
+        "Graph_with_not_written_variables.txt",
+        /* More specific tests */
+        "Incoherent_writting_1.txt",
+        "Incoherent_writting_2.txt",
+        "Incoherent_writting_3.txt"
+    };
+
+    Boolean[] results = {
+        /* All files from the DeterminismChecker should be ok */
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        /* All files from NoUselessVariablesChecker should be ok */
+        true,
+        true,
+        true,
+        /* All files from SingleWrittingChecker should be ok */
+        true,
+        true,
+        true,
+        true,
+        /* More specific tests */
+        false,
+        false,
+        false
+
+    };
+
+    generalTest(verifier, files, results);
+  }
+
+  /**
    * Testing of {@link NoUselessVariables}.
    * 
    * @details This test uses different files representing simple graphs:
@@ -191,6 +263,7 @@ public class Graph_Verifiers_PackagesTesting {
    *          <li>
    *          Graph_with_not_used_variables.txt :Graph with a variable in an
    *          action field but never used in a condition.</li>
+   *          </ol>
    * 
    */
   @Test

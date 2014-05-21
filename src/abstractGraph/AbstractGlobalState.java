@@ -4,10 +4,11 @@ import graph.Model;
 import graph.State;
 import graph.StateMachine;
 
+
+import graph.Transition;
+
 import java.util.HashMap;
 import java.util.Iterator;
-
-import com.sun.xml.internal.bind.v2.runtime.RuntimeUtil.ToStringAdapter;
 
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
@@ -15,7 +16,7 @@ import abstractGraph.conditions.Variable;
 public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   private Valuation variables_values;
-  private HashMap<StateMachine, State> state_machines_currenst_state =
+  private HashMap<StateMachine, State> state_machines_current_state =
       new HashMap<StateMachine, State>();
 
   public AbstractGlobalState(Model model) {
@@ -35,11 +36,11 @@ public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends
    *          The state to set.
    */
   public void setState(StateMachine machine, State state) {
-    state_machines_currenst_state.put(machine, state);
+    state_machines_current_state.put(machine, state);
   }
 
   public State getState(StateMachine machine) {
-    return state_machines_currenst_state.get(machine);
+    return state_machines_current_state.get(machine);
   }
 
   public boolean getVariableValue(Variable variable) {
@@ -68,18 +69,41 @@ public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends
   @Override
   public String toString() {
     String result = "";
-    Iterator<StateMachine> state_machine_iterator = state_machines_currenst_state
+    Iterator<StateMachine> state_machine_iterator = state_machines_current_state
         .keySet()
         .iterator();
     while (state_machine_iterator.hasNext()) {
       StateMachine state_machine = state_machine_iterator.next();
       result = result + state_machine.getName()
           + " : state "
-          + state_machines_currenst_state.get(state_machine).getId() + ".\n";
+          + state_machines_current_state.get(state_machine).getId() + ".\n";
     }
     result = result + "The value of the variables are : "
         + variables_values.toString() + ".\n";
     return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AbstractGlobalState<StateMachine, State, Transition> other = (AbstractGlobalState<StateMachine, State, Transition>) obj;
+    if (state_machines_current_state == null) {
+      if (other.state_machines_current_state != null)
+        return false;
+    } else if (!state_machines_current_state
+        .equals(other.state_machines_current_state))
+      return false;
+    if (variables_values == null) {
+      if (other.variables_values != null)
+        return false;
+    } else if (!variables_values.equals(other.variables_values))
+      return false;
+    return true;
   }
 
 }

@@ -22,12 +22,22 @@ public class Verifier {
       super();
       addVerification(new SingleWritingChecker());
       addVerification(new DeterminismChecker());
+      addVerification(new CoherentVariablesWriting());
+    }
+  }
+
+  static class WarningVerifier extends Verifier {
+    public WarningVerifier() {
+      super();
       addVerification(new NoUselessVariables());
     }
   }
 
   public static final Verifier DEFAULT_VERIFIER =
       new DefaultVerifier();
+
+  public static final Verifier WARNING_VERIFIER =
+      new WarningVerifier();
 
   public Verifier() {
     verification_units = new LinkedList<AbstractVerificationUnit>();

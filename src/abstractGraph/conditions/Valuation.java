@@ -4,6 +4,7 @@ import graph.Model;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * Mapping of the variables to {true, false}.
@@ -51,7 +52,8 @@ public class Valuation {
       throw new NullPointerException("The value for " + v + " does not exist.");
     }
     if (res == INCOHERENT) {
-      throw new NullPointerException("The value for " + v + " is INCOHERENT and can't be get.");
+      throw new NullPointerException("The value for " + v
+          + " is INCOHERENT and can't be get.");
     }
 
     return res.byteValue() == TRUE;
@@ -92,5 +94,25 @@ public class Valuation {
   @Override
   public String toString() {
     return valuation.toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Valuation other = (Valuation) obj;
+    /* The valuation should not be null */
+    if ((valuation == null || other.valuation == null)) {
+      throw new Error(
+          "The valuation HashMap cannot be null since it is always initialized");
+    }
+    return this.valuation.equals(other);
   }
 }
