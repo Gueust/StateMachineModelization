@@ -16,7 +16,7 @@ public class Transition extends AbstractTransition<State> {
   // TODO verify that it works and add the tests.
   @Override
   public boolean evalCondition(AbstractGlobalState<?, State, ?> global_state) {
-    if (condition == null){
+    if (condition == null) {
       return true;
     }
     return condition.eval(global_state.getValuation());

@@ -3,8 +3,6 @@ package graph.verifiers;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 
 import abstractGraph.conditions.Variable;
@@ -115,19 +113,19 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
   public String successMessage() {
     return "[SUCCESS] Checking that all variables are written and used...OK";
   }
-  
-  private String myPrint(HashMap<Variable, LinkedList<StateMachine>> input){
+
+  private String myPrint(HashMap<Variable, LinkedList<StateMachine>> input) {
     String debug = "";
     Iterator<Variable> iterator = input.keySet().iterator();
-    LinkedList<StateMachine> states_machines_list = new LinkedList<StateMachine>(); 
-    while (iterator.hasNext()){
+    LinkedList<StateMachine> states_machines_list = new LinkedList<StateMachine>();
+    while (iterator.hasNext()) {
       Variable variable = iterator.next();
       debug = debug + "The variable " + variable + " in the states machine : ";
       states_machines_list = input.get(variable);
       for (StateMachine stateMachine : states_machines_list) {
-        debug = debug + stateMachine.getName()+"  ";
+        debug = debug + stateMachine.getName() + "  ";
       }
-      debug = debug+ "\n";
+      debug = debug + "\n";
     }
     return debug;
   }
