@@ -285,7 +285,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
               !old_value.equals(propagating_value)) {
             counter_example_machines.add(machine);
             counter_example_variable.add(variable);
-            counter_example_states.add(state);
+            counter_example_states.add(destination);
 
             return false;
           } else {
@@ -377,7 +377,8 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
       String state = counter_example_states.get(i).getId();
 
       result.append("In state machine " + machine_name + " in state " + state
-          + " with variable " + variable_name);
+          + " with variable " + variable_name + ".\n");
+      System.out.println("Here is the current value for all states:\n");
     }
     return result.toString();
   }
