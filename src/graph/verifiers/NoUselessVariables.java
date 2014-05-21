@@ -43,6 +43,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
     while (written_variables_iterator.hasNext()) {
       Entry<Variable, LinkedList<StateMachine>> entry = written_variables_iterator
           .next();
+      /* We check that the variable is found in the Condition fields */
       if (!m.getConditionVariable().contains(entry.getKey())) {
         counter_example_not_used.add(entry.getKey());
         found_not_used = false;

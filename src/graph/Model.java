@@ -43,8 +43,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
   /** Store for every VariableChange the state machines that modifies it. */
   protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
-  
-  /** store all the variables that are found in the conditions field */
+
+  /** Store all the variables that are found ONLY in the conditions field. */
   protected HashSet<Variable> condition_variable = new HashSet<Variable>();
 
   /**
@@ -120,8 +120,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   public boolean containsVariable(String variable_name) {
     return formulaFactory.contains(variable_name);
   }
-  
-  
 
   /**
    * Iterate the variables that are contained in the conditions.
@@ -131,9 +129,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   public Iterator<Variable> iteratorExistingVariables() {
     return formulaFactory.iteratorExistingVariables();
   }
-  
- public HashSet<Variable> getConditionVariable(){
-   return condition_variable;
- }
+
+  /**
+   * 
+   * @return A set of the variables found ONLY in the condition fields.
+   */
+  public HashSet<Variable> getConditionVariable() {
+    return condition_variable;
+  }
 
 }

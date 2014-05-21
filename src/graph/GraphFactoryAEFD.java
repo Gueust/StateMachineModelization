@@ -63,7 +63,7 @@ public class GraphFactoryAEFD {
   private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines =
       new HashMap<Variable, LinkedList<StateMachine>>();
 
-  /** store all the variables that are found in the conditions field */
+  /** Store all the variables that are found ONLY in the conditions field. */
   private HashSet<Variable> condition_variable = new HashSet<Variable>();
 
   /**
