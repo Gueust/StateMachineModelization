@@ -207,7 +207,7 @@ public class Graph_Verifiers_PackagesTesting {
         /* All files from NoUselessVariablesChecker should be ok */
         "Graph_with_no_variable.txt",
         "Graph_without_useless_variables.txt",
-        "Graph_with_not_used_variables.txt",
+        "Graph_with_not_used_variables_in_condition.txt",
         /* All files from SingleWrittingChecker should be ok */
         "Graph_with_no_variable.txt",
         "Graph_without_concurrent_writing.txt",
@@ -274,14 +274,18 @@ public class Graph_Verifiers_PackagesTesting {
     String[] files = {
         "Graph_with_no_variable.txt",
         "Graph_without_useless_variables.txt",
-        "Graph_with_not_used_variables.txt",
+        "Graph_with_not_used_variables_in_condition.txt",
+        "Graph_with_not_used_variables_in_event.txt",
+        "Graph_with_used_variables_in_event.txt"
 
     };
 
     Boolean[] results = {
         true,
         true,
-        false
+        false,
+        false,
+        true
     };
 
     generalTest(verifier, files, results);

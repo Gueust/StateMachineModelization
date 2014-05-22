@@ -213,6 +213,7 @@ public class GraphFactoryAEFD {
     result.writing_state_machines = writting_state_machines;
     result.formulaFactory = factory;
     result.condition_variable = condition_variable;
+    result.variable_modification_events = variable_modification_events;
 
     /**
      * We check that the list of added transitions is exactly the transitions

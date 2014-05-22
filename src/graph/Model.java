@@ -15,6 +15,7 @@ import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SynchronisationEvent;
+import abstractGraph.events.VariableChange;
 
 /**
  * A set of state machines interacting with each other.
@@ -40,6 +41,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   /* All the commands that the model can generate */
   protected HashMap<String, CommandEvent> commands_events;
   protected HashMap<String, SynchronisationEvent> synchronisation_events;
+  protected HashMap<String, VariableChange> variable_modification_events ;
 
   /** Store for every VariableChange the state machines that modifies it. */
   protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
@@ -141,6 +143,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    */
   public Iterator<SynchronisationEvent> iteratorSyns() {
     return synchronisation_events.values().iterator();
+  }
+  
+  /**
+   * @return An iterator of the variable change in the model.
+   */
+  public Iterator<VariableChange> iteratorVariableChange() {
+    return variable_modification_events.values().iterator();
   }
 
   /**

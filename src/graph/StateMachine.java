@@ -3,6 +3,7 @@ package graph;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
@@ -107,9 +108,17 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public Iterator<Transition> getTransition(SingleEvent E) {
-    // TODO Auto-generated method stub
-    return null;
+  public LinkedList<Transition> getTransition(SingleEvent E) {
+    LinkedList<Transition>  transition = new LinkedList<Transition>();
+    Iterator<State> state_iterator = states.values().iterator();
+    while (state_iterator.hasNext()){
+      State state = state_iterator.next();
+      Iterator<Transition> transition_iterator = state.iteratorTransitions(E);
+      while(transition_iterator.hasNext()){
+        transition.add(transition_iterator.next());
+      }
+    } 
+    return transition;
   }
 
   @Override

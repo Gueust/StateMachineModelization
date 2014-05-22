@@ -1,6 +1,7 @@
 package abstractGraph;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import abstractGraph.conditions.Formula;
 import abstractGraph.events.Actions;
@@ -43,7 +44,12 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    */
   public abstract Iterator<T> iteratorTransitions();
 
-  public abstract Iterator<T> getTransition(SingleEvent E);
+  /**
+   * Return the transitions that have the event E in the event field.
+   * @param E
+   * @return
+   */
+  public abstract LinkedList<T> getTransition(SingleEvent E);
 
   /**
    * Add a transition to a state machine
