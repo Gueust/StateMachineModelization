@@ -158,4 +158,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return condition_variable;
   }
 
+  /**
+   * Search a variable by its name.
+   * 
+   * @param variable_name
+   * @return the variable associated to the variable_name.
+   */
+  public Variable getVariable(String variable_name) {
+    return formulaFactory.getVariable(variable_name);
+  }
+
 }

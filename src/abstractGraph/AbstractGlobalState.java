@@ -3,25 +3,21 @@ package abstractGraph;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
-
-
 import graph.Transition;
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
+import abstractGraph.events.VariableChange;
 
 public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   private Valuation variables_values;
   private HashMap<StateMachine, State> state_machines_current_state =
       new HashMap<StateMachine, State>();
-
-  public AbstractGlobalState(Model model) {
-    variables_values = new Valuation(model);
-  }
 
   public AbstractGlobalState() {
     variables_values = new Valuation();
@@ -39,11 +35,56 @@ public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends
     state_machines_current_state.put(machine, state);
   }
 
+  /**
+   * Return the current state of a state machine.
+   * 
+   * @param machine
+   * @return the current state if the state machine exists, null otherwise.
+   */
   public State getState(StateMachine machine) {
     return state_machines_current_state.get(machine);
   }
 
+  /**
+   * Search for a state machine by name and return its current state.
+   * 
+   * @param state_machine_name
+   * @return the current state if the state machine exists, null otherwise.
+   */
+  public State getState(String state_machine_name) {
+    Iterator<StateMachine> state_machine_iterator = state_machines_current_state
+        .keySet()
+        .iterator();
+    while (state_machine_iterator.hasNext()) {
+      StateMachine state_machine = state_machine_iterator.next();
+      if (state_machine.getName().equals(state_machine_name)) {
+        return state_machines_current_state.get(state_machine);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 
+   * @param variable
+   * @return the value of the variable
+   */
   public boolean getVariableValue(Variable variable) {
+    return variables_values.getValue(variable);
+  }
+
+  /**
+   * Search a variable by its name and gives its value
+   * 
+   * @param variable_name
+   * @return
+   */
+  public boolean getVariableValue(String variable_name) {
+    AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
+    VariableChange new_event = new VariableChange(factory
+        .getLiteral(variable_name));
+    Variable variable = new_event.getModifiedVariable();
+    System.out.print(variable.toString() + " ******************** \n");
     return variables_values.getValue(variable);
   }
 

@@ -22,6 +22,7 @@ import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
@@ -42,7 +43,9 @@ public class GraphFactoryAEFD {
 
   /** The formula factory to parse the condition formulas */
   private AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
-
+  /** List all the events related with the model checker */
+  private HashMap<String, ModelCheckerEvent> model_checker_event =
+      new HashMap<String, ModelCheckerEvent>();
   /** List all the state machines of the model */
   private HashMap<String, StateMachine> state_machines =
       new HashMap<String, StateMachine>();
@@ -479,8 +482,8 @@ public class GraphFactoryAEFD {
     case "MSG":
     case "FCI":
     case "P":
-      new_event = new CommandEvent(event_name);
-      commands_events.put(new_event.getName(), (CommandEvent) new_event);
+      new_event = new ModelCheckerEvent(event_name);
+      model_checker_event.put(new_event.getName(), (ModelCheckerEvent) new_event);
       break;
     case "IND":
       new_event = new VariableChange(factory.getLiteral(event_name));

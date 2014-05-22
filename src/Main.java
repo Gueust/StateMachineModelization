@@ -38,8 +38,7 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD test =
-
-        new GraphFactoryAEFD("PN SAL/PN_SAL_N_Preuv_Auto.txt");
+        new GraphFactoryAEFD("test_simulation.txt");
 
     Model model = test.buildModel("Testing model");
     //System.out.println(model);
