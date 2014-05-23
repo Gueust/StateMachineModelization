@@ -2,8 +2,9 @@ package abstractGraph.events;
 
 public abstract class SingleEvent {
 
-  protected String prefix;
-  protected String name;
+  /* SingleEvents are immutable */
+  protected final String prefix;
+  protected final String name;
 
   /**
    * Creates a new event using the name `name`. The characters before the first
