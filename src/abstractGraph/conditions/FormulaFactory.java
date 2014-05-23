@@ -64,8 +64,6 @@ public abstract class FormulaFactory {
   public FormulaFactory(boolean united_model_mode) {
     this.united_model = united_model_mode;
     existing_variables = new HashMap<String, Variable>();
-
-
   };
 
   /**

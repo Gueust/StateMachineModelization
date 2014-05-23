@@ -31,9 +31,10 @@ public class Graph_Verifiers_PackagesTesting {
 
     String class_name = this.getClass().getSimpleName();
 
-    GraphFactoryAEFD test =
-        new GraphFactoryAEFD("src/test/resources/" + class_name + "/" + name);
-    Model model = test.buildModel("Testing model");
+    GraphFactoryAEFD test = new GraphFactoryAEFD();
+    Model model = test.buildModel(
+        "src/test/resources/" + class_name + "/" + name,
+        "Testing model");
     return model;
   }
 

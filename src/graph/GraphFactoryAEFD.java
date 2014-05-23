@@ -44,30 +44,23 @@ public class GraphFactoryAEFD {
   /** The formula factory to parse the condition formulas */
   private AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
   /** List all the events related with the model checker */
-  private HashMap<String, ModelCheckerEvent> model_checker_event =
-      new HashMap<String, ModelCheckerEvent>();
+  private HashMap<String, ModelCheckerEvent> model_checker_event;
   /** List all the state machines of the model */
-  private HashMap<String, StateMachine> state_machines =
-      new HashMap<String, StateMachine>();
+  private HashMap<String, StateMachine> state_machines;
   /** List all the external events present in the state machines */
-  private HashMap<String, ExternalEvent> external_events =
-      new HashMap<String, ExternalEvent>();
+  private HashMap<String, ExternalEvent> external_events;
   /** List all the commands present in the state machines */
-  private HashMap<String, CommandEvent> commands_events =
-      new HashMap<String, CommandEvent>();
+  private HashMap<String, CommandEvent> commands_events;
   /** List all the synchronization messages */
-  private HashMap<String, SynchronisationEvent> synchronisation_events =
-      new HashMap<String, SynchronisationEvent>();
+  private HashMap<String, SynchronisationEvent> synchronisation_events;
   /** List all the global variable modification messages */
-  private HashMap<String, VariableChange> variable_modification_events =
-      new HashMap<String, VariableChange>();
+  private HashMap<String, VariableChange> variable_modification_events;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines =
-      new HashMap<Variable, LinkedList<StateMachine>>();
+  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
 
   /** Store all the variables that are found ONLY in the conditions field. */
-  private HashSet<Variable> condition_variable = new HashSet<Variable>();
+  private HashSet<Variable> condition_variable;
 
   /**
    * Used to remember the order of the transition within the parsed file in
@@ -84,40 +77,55 @@ public class GraphFactoryAEFD {
   }
 
   /** Keep the order of the transition within the parsed file */
-  LinkedHashMap<Transition, InitialTransition> initial_transition_order =
-      new LinkedHashMap<Transition, InitialTransition>();
+  LinkedHashMap<Transition, InitialTransition> initial_transition_order;
 
   /**
    * Create the factory that loads the given file. The natural function called
-   * next is {@link #buildModel(String)}
-   * 
-   * @details The operations done to load a file are the following:
-   *          <ol>
-   *          <li>
-   *          Parse a first time the file to detect all the ACT_NOT_FCI (i.e.
-   *          the synchronization messages sent by one state machine to an
-   *          other). They all are in at least one action field. For every
-   *          ACT_NOT_FCI name, only one synchronization message is created.
-   *          From now, we will call these events SYNs (for synchronization).
-   * 
-   *          </li>
-   *          <li>
-   *          Then, we do a second parsing that will load all the transitions.
-   *          We ensure than every external event, command, syn, and IND (for
-   *          indicator, that indicates the modification of the value of a
-   *          global variable) is unique. This is done using
-   *          {@link #getEvents(String)}, {@link #getCondition(String)}, and
-   *          {@link #getActions(String)}.
-   * 
-   *          </li>
-   *          </ol>
-   * 
-   * @param file
-   *          The file containing the states machines of the model. From now, we
-   *          can only load one file.
-   * @throws IOException
+   * next is {@link #buildModel(String, String)}
    */
-  public GraphFactoryAEFD(String file) throws IOException {
+  public GraphFactoryAEFD() throws IOException {
+  }
+
+  /*
+  * @details The operations done to load a file are the following:
+  *          <ol>
+  *          <li>
+  *          Parse a first time the file to detect all the ACT_NOT_FCI (i.e.
+  *          the synchronization messages sent by one state machine to an
+  *          other). They all are in at least one action field. For every
+  *          ACT_NOT_FCI name, only one synchronization message is created.
+  *          From now, we will call these events SYNs (for synchronization).
+  * 
+  *          </li>
+  *          <li>
+  *          Then, we do a second parsing that will load all the transitions.
+  *          We ensure than every external event, command, syn, and IND (for
+  *          indicator, that indicates the modification of the value of a
+  *          global variable) is unique. This is done using
+  *          {@link #getEvents(String)}, {@link #getCondition(String)}, and
+  *          {@link #getActions(String)}.
+  * 
+  *          </li>
+  *          </ol>
+  */
+  private void parse(String file) throws IOException {
+    
+    model_checker_event =
+        new HashMap<String, ModelCheckerEvent>();
+    state_machines =
+        new HashMap<String, StateMachine>();
+    external_events =
+        new HashMap<String, ExternalEvent>();
+    commands_events =
+        new HashMap<String, CommandEvent>();
+    synchronisation_events =
+        new HashMap<String, SynchronisationEvent>();
+    variable_modification_events =
+        new HashMap<String, VariableChange>();
+    writting_state_machines =
+        new HashMap<Variable, LinkedList<StateMachine>>();
+    condition_variable = new HashSet<Variable>();
+    
     /*
      * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
@@ -176,7 +184,6 @@ public class GraphFactoryAEFD {
     // " from the initial model. Aborting");
     // System.exit(-1);
     // }
-
   }
 
   private void addWrittingStateMachine(VariableChange event, StateMachine m) {
@@ -195,12 +202,21 @@ public class GraphFactoryAEFD {
   /**
    * Produce a model.
    * 
+   * @param file
+   *          The file to load.
    * @param model_name
    *          The model name.
    * @return A new model representing the file given when building the
    *         {@link GraphFactoryAEFD}
+   * @throws IOException 
    */
-  public Model buildModel(String model_name) {
+  public Model buildModel(String file, String model_name) throws IOException {
+
+    initial_transition_order =
+        new LinkedHashMap<Transition, InitialTransition>();
+    
+    parse(file);
+
     Model result = new Model(model_name);
     Iterator<StateMachine> sm_iterator = state_machines.values().iterator();
     while (sm_iterator.hasNext()) {
@@ -484,7 +500,8 @@ public class GraphFactoryAEFD {
     case "FCI":
     case "P":
       new_event = new ModelCheckerEvent(event_name);
-      model_checker_event.put(new_event.getName(), (ModelCheckerEvent) new_event);
+      model_checker_event.put(new_event.getName(),
+          (ModelCheckerEvent) new_event);
       break;
     case "IND":
       new_event = new VariableChange(factory.getLiteral(event_name));

@@ -10,18 +10,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import utils.TeeOutputStream;
 
-import engine.GraphSimulator;
-import abstractGraph.AbstractGlobalState;
-import abstractGraph.conditions.Variable;
-import abstractGraph.events.ExternalEvent;
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 import graph.verifiers.Verifier;
 
 public class Main {
@@ -37,13 +29,11 @@ public class Main {
 
     long startTime = System.nanoTime();
 
-    GraphFactoryAEFD test =
-        new GraphFactoryAEFD("test_simulation.txt");
+    GraphFactoryAEFD test = new GraphFactoryAEFD();
 
-    Model model = test.buildModel("Testing model");
-    //System.out.println(model);
-    
-    
+    Model model = test.buildModel("test_simulation.txt", "Testing model");
+    // System.out.println(model);
+
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
     if (!default_verifier.check(model)) {
@@ -51,20 +41,20 @@ public class Main {
     } else {
       System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
     }
-    
+
     Verifier warning_verifier = Verifier.WARNING_VERIFIER;
     if (!warning_verifier.check(model)) {
-      System.out.println("*** Some additionnal properties are not verified ***");
+      System.out
+          .println("*** Some additionnal properties are not verified ***");
     } else {
       System.out.println("*** All other properties verifier ***");
     }
-    
+
     long estimatedTime = System.nanoTime() - startTime;
 
     printFullPeakMemoryUsage();
 
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
-    
 
   }
 
@@ -132,5 +122,5 @@ public class Main {
     System.out.printf("Total peak memory used: %,d%n", total_used);
     System.out.printf("Total peak memory reserved: %,d%n", total_commited);
   }
-  
+
 }
