@@ -37,6 +37,17 @@ public class TeeOutputStream extends FilterOutputStream {
   protected LinkedList<OutputStream> branches = new LinkedList<OutputStream>();
 
   /**
+   * Constructs a TeeOutputStream based on the given OutputStream
+   * 
+   * @param out
+   *          the main OutputStream
+   */
+  public TeeOutputStream(OutputStream out) {
+    super(out);
+    this.branches.add(out);
+  }
+
+  /**
    * Constructs a TeeOutputStream.
    * 
    * @param out
@@ -66,7 +77,7 @@ public class TeeOutputStream extends FilterOutputStream {
    *           if an I/O error occurs
    */
   public synchronized void write(byte[] b) throws IOException {
-    
+
     for (OutputStream branch : branches) {
       branch.write(b);
     }
