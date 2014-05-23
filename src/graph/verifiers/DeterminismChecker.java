@@ -85,6 +85,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
             Formula t2_formula = t2.getCondition();
             Events t2_events = t2.getEvent();
 
+            /* If both transitions are labeled with a common event */
             if (t1_events.notEmptyIntersection(t2_events)) {
 
               CNFFormula formula = CNFFormula.ConvertToCNF(
