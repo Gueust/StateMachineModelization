@@ -108,7 +108,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public LinkedList<Transition> getTransition(SingleEvent E) {
+  public LinkedList<Transition> getTransitions(SingleEvent E) {
     LinkedList<Transition>  transition = new LinkedList<Transition>();
     Iterator<State> state_iterator = states.values().iterator();
     while (state_iterator.hasNext()){

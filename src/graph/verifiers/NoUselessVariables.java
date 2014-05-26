@@ -2,10 +2,7 @@ package graph.verifiers;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Vector;
-
-import org.antlr.runtime.EarlyExitException;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.VariableChange;
@@ -19,73 +16,56 @@ import graph.Transition;
  * event.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
-  private Vector<Variable> counter_example_not_used;
-
-  /**
-   * The type of the last error encountered.
-   * 
-   */
-  private enum Error {
-    NONE, /* No error encountered */
-    NOT_USED, /* A variable is written but never used */
-  };
-
-  Error error_type;
+  private Vector<Variable> counter_example_not_used = new Vector<Variable>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
-    boolean found_not_used = true;
-    boolean found_tmp = false;
-    counter_example_not_used = new Vector<Variable>();
-    error_type = Error.NONE;
+    boolean no_error = true;
 
-    /*
-     * Test that all the variable that are written are used.
-     */
+    counter_example_not_used.clear();
 
-    Iterator<VariableChange> variable_chenge_iterator = m
-        .iteratorVariableChange();
+    Iterator<VariableChange> variable_chenge_iterator =
+        m.iteratorVariableChange();
+
     while (variable_chenge_iterator.hasNext()) {
-      found_tmp = false;
+      boolean found_variable = false;
       VariableChange variable_change = variable_chenge_iterator.next();
       Variable variable = variable_change.getModifiedVariable();
-      /* We check that the variable is found in the Condition fields */
+
+      /* We check that the variable is found in a Condition field */
       if (!m.getConditionVariable().contains(variable)) {
         /*
          * If the variable isn't in a condition field, we search for it in the
          * event field
          */
-        Iterator<StateMachine> state_machine_iterator = m
-            .iteratorStatesMachines();
+        Iterator<StateMachine> state_machine_iterator =
+            m.iteratorStatesMachines();
+
         while (state_machine_iterator.hasNext()) {
           StateMachine state_machine = state_machine_iterator.next();
-          LinkedList<Transition> transitions = state_machine
-              .getTransition(variable_change);
+          LinkedList<Transition> transitions =
+              state_machine.getTransitions(variable_change);
           if (transitions.size() != 0) {
-            found_tmp = true;
+            found_variable = true;
+            break;
           }
         }
-        if (!found_tmp) {
+        if (!found_variable) {
           counter_example_not_used.add(variable);
-          found_not_used = false;
+          no_error = false;
         }
       }
     }
 
-    if (verbose && !found_not_used) {
-      error_type = Error.NOT_USED;
+    if (verbose && !no_error) {
       System.out.println(errorMessage());
     }
 
-    if (!found_not_used) {
-      return false;
-    }
-
-    if (verbose) {
+    if (verbose && no_error) {
       System.out.println(successMessage());
     }
-    return true;
 
+    return no_error;
   }
 
   @Override
@@ -95,7 +75,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
 
   @Override
   public String errorMessage() {
-    return "[FAILURE] The variables that folow are written but never used"
+    return "[FAILURE] The variables that follow are written but never used: \n"
         + counter_example_not_used.toString();
   }
 
@@ -103,5 +83,4 @@ public class NoUselessVariables extends AbstractVerificationUnit {
   public String successMessage() {
     return "[SUCCESS] Checking that all variables are written and used...OK";
   }
-
 }

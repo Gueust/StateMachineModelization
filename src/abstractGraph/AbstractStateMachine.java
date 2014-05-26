@@ -49,7 +49,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    * @param E
    * @return
    */
-  public abstract LinkedList<T> getTransition(SingleEvent E);
+  public abstract LinkedList<T> getTransitions(SingleEvent E);
 
   /**
    * Add a transition to a state machine

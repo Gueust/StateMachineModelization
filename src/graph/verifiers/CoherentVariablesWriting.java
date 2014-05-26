@@ -25,8 +25,7 @@ import graph.Transition;
  * Then, for all states s in M, v must whether be true or (exclusively) false in
  * s.
  * It must not be possible to find 2 paths setting the variable in a different
- * value
- * within a state).
+ * value within a state).
  * 
  * The verification on every state machine is done by:
  * <ol>
