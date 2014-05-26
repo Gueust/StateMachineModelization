@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import org.sat4j.specs.TimeoutException;
 
 import solver.SAT4JSolver;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.cnf.CNFFormula;
@@ -36,12 +35,15 @@ public class DeterminismChecker extends AbstractVerificationUnit {
    * exclusive while beginning at the same state and being activated by a common
    * Event).
    * Then the machines where the counter example if found.
+   * Because we use a single solver, we need to save the solution.
    */
   private LinkedList<Transition>
       list_counter_example_t1 = new LinkedList<Transition>(),
       list_counter_example_t2 = new LinkedList<Transition>();
   private LinkedList<StateMachine> list_counter_example_machine =
       new LinkedList<StateMachine>();
+  private LinkedList<String> solution_details =
+      new LinkedList<String>();
 
   private boolean identicalActionFields(Transition t1, Transition t2) {
     return t1.getActions().equals(t2.getActions());
@@ -99,19 +101,22 @@ public class DeterminismChecker extends AbstractVerificationUnit {
                     System.out.println("[Notice]Non exclusive transitions " +
                         "not considered as an error since they have the same" +
                         " target and actions.");
-                    System.out.println(errorMessage(machine, t1, t2));
+                    System.out.println(errorMessage(machine, t1, t2, solver
+                        .solution()));
                     continue;
                   }
                   list_counter_example_machine.add(machine);
                   list_counter_example_t1.add(t1);
                   list_counter_example_t2.add(t2);
+                  solution_details.add(solver.solution());
 
                   result = false;
                   if (!check_all) {
                     if (verbose) {
                       System.out
                           .println("[FAILURE] Transitions exclusion not verified.\n");
-                      System.out.println(errorMessage(machine, t1, t2));
+                      System.out.println(errorMessage(machine, t1, t2,
+                          solver.solution()));
                     }
                     return false;
                   }
@@ -126,10 +131,11 @@ public class DeterminismChecker extends AbstractVerificationUnit {
         }
       }
     }
+
     if (verbose && result) {
       System.out.println(successMessage());
     } else if (verbose && !result) {
-      System.out.println();
+      System.out.println(errorMessage());
     }
     return result;
   }
@@ -140,13 +146,13 @@ public class DeterminismChecker extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose)
-      throws NotImplementedException {
+  public boolean checkAll(Model m, boolean verbose) {
     return checkFunction(m, verbose, true);
   }
 
   private String errorMessage(StateMachine counter_example_machine,
-      Transition counter_example_t1, Transition counter_example_t2) {
+      Transition counter_example_t1, Transition counter_example_t2,
+      String solution_details) {
     return "In the state machine "
         + counter_example_machine.getName() +
         ", the transitions \n" +
@@ -155,7 +161,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
         counter_example_t2 + "\n" +
         " are not exclusive. \n" +
         " Here is the details of the not exlusivity: " +
-        solver.solution();
+        solution_details;
   }
 
   @Override
@@ -165,7 +171,8 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     result.append("[FAILURE] " + n + " errors have been found.\n");
     for (int i = 0; i < n; i++) {
       result.append(errorMessage(list_counter_example_machine.get(i),
-          list_counter_example_t1.get(i), list_counter_example_t2.get(i)));
+          list_counter_example_t1.get(i), list_counter_example_t2.get(i),
+          solution_details.get(i)));
     }
 
     return result.toString();

@@ -2,6 +2,7 @@ package graph.verifiers;
 
 import java.util.LinkedList;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import graph.Model;
 
 /**
@@ -81,8 +82,11 @@ public class Verifier {
    * @param verbose
    *          True prints the results of the intermediary verifications.
    * @return True if the model verifies all the registered verification units.
+   * @throws NotImplementedException
+   *           This function is not mandatory.
    */
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(Model m, boolean verbose)
+      throws NotImplementedException {
     boolean result = true;
     for (AbstractVerificationUnit unit : verification_units) {
       boolean tmp = unit.checkAll(m, verbose);
@@ -95,8 +99,11 @@ public class Verifier {
    * Simply {@link #checkAll(Model, boolean)} using verbose = true;
    * 
    * {@inheritDoc #checkAll(Model, boolean)}
+   * 
+   * @throws NotImplementedException
+   *           This function is not mandatory.
    */
-  public boolean checkAll(Model m) {
+  public boolean checkAll(Model m) throws NotImplementedException {
     return checkAll(m, true);
   }
 }
