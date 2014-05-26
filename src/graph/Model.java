@@ -41,7 +41,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   /* All the commands that the model can generate */
   protected HashMap<String, CommandEvent> commands_events;
   protected HashMap<String, SynchronisationEvent> synchronisation_events;
-  protected HashMap<String, VariableChange> variable_modification_events ;
+  protected HashMap<String, VariableChange> variable_modification_events;
 
   /** Store for every VariableChange the state machines that modifies it. */
   protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
@@ -125,7 +125,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
   /**
    * @return An iterator over the variables of the model (contained in a
-   *         condition or writen in a action field).
+   *         event field, condition field or written in a action field).
    */
   public Iterator<Variable> iteratorExistingVariables() {
     return formulaFactory.iteratorExistingVariables();
@@ -144,7 +144,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   public Iterator<SynchronisationEvent> iteratorSyns() {
     return synchronisation_events.values().iterator();
   }
-  
+
   /**
    * @return An iterator of the variable change in the model.
    */
