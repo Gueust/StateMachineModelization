@@ -18,14 +18,14 @@ class GenerateFormulaAEFD extends
 
   private HashMap<String, String> suffixes;
   private String[] negative_suffix = { "_non_Bloque", "_non_Condamne",
-      "_non_Decondamne", "_non_Etabli", "Chute", "_Inactif", "_non_Prise",
-      "_non_Enclenchee", "_Occupee", "_Droite", "_HS", "_Ferme",
-      "_non_Controle", "_non_Assuree", "_non_Vide", "_non_Valide", "_NM",
-      "_Bas", "_en_Action" , "_non_Pris"};
+      "_non_Decondamne", "_non_Etabli", "_Chute", "_Inactif", "_Inactive", "_non_Prise",
+      "_non_Enclenchee","_non_Enclenche", "_Occupee", "_Droite", "_HS", "_Ferme",
+      "_non_Controle", "_non_Assuree", "_non_Assure", "_non_Vide", "_non_Valide", "_NM",
+      "_Bas", "_en_Action" , "_non_Pris","_Renverse","_Declenche","_NOK","_non_cde","_non_en_cours"};
   private String[] positive_suffix = { "_Bloque", "_Condamne", "_Decondamne",
-      "_Etabli", "_Excite", "_Actif", "_Prise", "_Enclenchee", "_Libre",
-      "_Gauche", "_ES", "_Ouvert", "_Controle", "_Assuree", "_Vide", "_Valide",
-      "_M", "_Haut", "_Libere" , "_Pris" };
+      "_Etabli", "_Excite", "_Actif", "_Active", "_Prise", "_Enclenchee", "_Enclenche", "_Libre",
+      "_Gauche", "_ES", "_Ouvert", "_Controle", "_Assuree", "_Assure", "_Vide", "_Valide",
+      "_M", "_Haut", "_Libere" , "_Pris","_Normal","_Rearme","_OK","_cde","_en_cours"};
 
   /**
    * Constructor of the class that will initialize the internal hash map
