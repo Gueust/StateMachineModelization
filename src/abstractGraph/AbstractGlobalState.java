@@ -1,6 +1,6 @@
 package abstractGraph;
 
-import graph.Model;
+
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
@@ -124,6 +124,7 @@ public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

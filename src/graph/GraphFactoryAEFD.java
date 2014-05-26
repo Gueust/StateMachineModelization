@@ -34,8 +34,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- * Model m = factory.buildModel();
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -380,22 +380,39 @@ public class GraphFactoryAEFD {
       throw new UnsupportedOperationException(
           "The action list does not end with a ';' : " + actions);
     }
-    String[] array_of_actions = actions.split(";");
+    String[] alarm_action;
     Actions result = new Actions();
 
-    for (int i = 0; i < array_of_actions.length; i++) {
-      String event_string = array_of_actions[i].trim();
+    if (actions.contains("/")) {
+      alarm_action = actions.split("/");
+    } else {
+      alarm_action = new String[1];
+      alarm_action[0] = actions;
+    }
 
-      if (event_string.lastIndexOf(' ') != -1) {
-        throw new UnsupportedOperationException(
-            "When parsing the action : " + event_string);
-      }
-      if (!event_string.equals("")) {
-        SingleEvent new_action = actionFactory(event_string);
-        if (new_action instanceof VariableChange) {
-          addWrittingStateMachine((VariableChange) new_action, m);
+    for (int j = 0; j < alarm_action.length; j++) {
+
+      String[] array_of_actions = alarm_action[j].split(";");
+
+      for (int i = 0; i < array_of_actions.length; i++) {
+        String event_string = array_of_actions[i].trim();
+
+        if (event_string.lastIndexOf(' ') != -1) {
+          throw new UnsupportedOperationException(
+              "When parsing the action : " + event_string);
         }
-        result.add(new_action);
+        if (!event_string.equals("")) {
+          SingleEvent new_action = actionFactory(event_string);
+          if (new_action instanceof VariableChange) {
+            addWrittingStateMachine((VariableChange) new_action, m);
+          }
+          if (j == 0) {
+            result.add(new_action);
+          } else {
+            result.addAlarm(new_action);
+          }
+        }
+
       }
 
     }

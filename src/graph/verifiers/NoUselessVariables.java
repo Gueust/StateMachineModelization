@@ -14,9 +14,9 @@ import graph.StateMachine;
 import graph.Transition;
 
 /**
- * Check that the graphs don't contain useless variables. Which means that we
- * can't find a variable with no graph to write on it or a variable written but
- * never used.
+ * Check that the graphs don't contain useless variables. Which means that a
+ * variable found in the action field must be found in the field condition or
+ * event.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
   private Vector<Variable> counter_example_not_used;
@@ -68,7 +68,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
         if (!found_tmp) {
           counter_example_not_used.add(variable);
           found_not_used = false;
-      }
+        }
       }
     }
 

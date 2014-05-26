@@ -31,15 +31,12 @@ import graph.Transition;
  * The verification on every state machine is done by:
  * <ol>
  * <li>
- * initializing all states to have an unknown value for all variables
- * </li>
+ * initializing all states to have an unknown value for all variables</li>
  * <li>
- * setting the truth value gathered from the action (i.e. writing A or not A)
- * </li>
+ * setting the truth value gathered from the action (i.e. writing A or not A)</li>
  * <li>
  * spreading this truth values through unlabeled transitions (i.e. that does not
- * write A).
- * </li>
+ * write A).</li>
  * </ol>
  * 
  */
@@ -77,11 +74,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
       boolean verbose) throws Error {
 
     if (written_variables == null || written_variables.isEmpty()) {
-
-      if (verbose) {
-        System.out.println("The state machine " + machine.getName()
-            + " does not write any variable. Automatically coherent.");
-      }
       return true;
     }
 
@@ -378,7 +370,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
       result.append("In state machine " + machine_name + " in state " + state
           + " with variable " + variable_name + ".\n");
-      System.out.println("Here is the current value for all states:\n");
+      // System.out.println("Here is the current value for all states:\n");
     }
     return result.toString();
   }

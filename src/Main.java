@@ -6,12 +6,9 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import utils.TeeOutputStream;
-
 import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.verifiers.Verifier;
@@ -31,13 +28,13 @@ public class Main {
 
     GraphFactoryAEFD test = new GraphFactoryAEFD();
 
-    Model model = test.buildModel("test_simulation.txt", "Testing model");
+    Model model = test.buildModel("Nurieux/Nurieux_PN_An_I_34_Fonct_Auto.txt", "Testing model");
     // System.out.println(model);
 
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
-    if (!default_verifier.check(model)) {
-      System.err.println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***");
+    if (!default_verifier.checkAll(model)) {
+      System.out.println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
     } else {
       System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
     }
