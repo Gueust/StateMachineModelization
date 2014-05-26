@@ -28,13 +28,15 @@ public class Main {
 
     GraphFactoryAEFD test = new GraphFactoryAEFD();
 
-    Model model = test.buildModel("Nurieux/Nurieux_PN_An_I_34_Fonct_Auto.txt", "Testing model");
+    Model model = test.buildModel("Nurieux/Nurieux_PN_An_I_34_Fonct_Auto.txt",
+        "Testing model");
     // System.out.println(model);
 
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
     if (!default_verifier.checkAll(model)) {
-      System.out.println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
+      System.out
+          .println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
     } else {
       System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
     }

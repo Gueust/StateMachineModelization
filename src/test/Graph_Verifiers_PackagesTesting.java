@@ -52,10 +52,10 @@ public class Graph_Verifiers_PackagesTesting {
 
     try {
       for (int i = 0; i < files.length; i++) {
-        assertTrue("Error on " + files[i],
-            verifier.check(loadFile(files[i]), true) == results[i]);
-        assertTrue("Error on " + files[i],
-            verifier.check(loadFile(files[i]), false) == results[i]);
+           assertTrue("Error on " + files[i],
+                verifier.check(loadFile(files[i]), true) == results[i]);
+          assertTrue("Error on " + files[i],
+              verifier.check(loadFile(files[i]), false) == results[i]);
       }
     } catch (IOException e) {
       e.printStackTrace();

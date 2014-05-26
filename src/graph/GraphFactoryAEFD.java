@@ -60,9 +60,6 @@ public class GraphFactoryAEFD {
   /** Store for every VariableChange the state machines that modifies it. */
   private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
 
-  /** Store all the variables that are found ONLY in the conditions field. */
-  private HashSet<Variable> condition_variable;
-
   /**
    * Used to remember the order of the transition within the parsed file in
    * order to be able to write the file back and compare with the initial file
@@ -125,7 +122,6 @@ public class GraphFactoryAEFD {
         new HashMap<String, VariableChange>();
     writting_state_machines =
         new HashMap<Variable, LinkedList<StateMachine>>();
-    condition_variable = new HashSet<Variable>();
 
     /*
      * We do two parsings:
@@ -158,16 +154,6 @@ public class GraphFactoryAEFD {
        */
       initial_transition_order
           .put(transition, new InitialTransition(state_machine, transition));
-
-      /*
-       * Store all the variables found in the field condition and put it in the
-       * HashSet condition_variables.
-       */
-
-      Formula condition = getCondition(parser.getCondition(), state_machine);
-      if (condition != null) {
-        condition.allVariables(condition_variable);
-      }
     }
 
     /**
@@ -229,7 +215,6 @@ public class GraphFactoryAEFD {
     result.synchronisation_events = synchronisation_events;
     result.writing_state_machines = writting_state_machines;
     result.formulaFactory = factory;
-    result.condition_variable = condition_variable;
     result.variable_modification_events = variable_modification_events;
 
     /**

@@ -1,71 +1,85 @@
 package graph.verifiers;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Vector;
 
+import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
+import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
 import graph.Model;
 import graph.StateMachine;
 import graph.Transition;
 
 /**
- * Check that the graphs don't contain useless variables. Which means that a
- * variable found in the action field must be found in the field condition or
- * event.
+ * Check that the graphs does not contain useless variables.A variable is
+ * useless if it is not used in any Event or Contion field.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
   private Vector<Variable> counter_example_not_used = new Vector<Variable>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
-    boolean no_error = true;
+    boolean error = false;
 
     counter_example_not_used.clear();
 
-    Iterator<VariableChange> variable_chenge_iterator =
-        m.iteratorVariableChange();
+    /*
+     * We create the hashMap of the variables that are contained ONLY in the
+     * conditions fields and in the events fields.
+     */
+    HashSet<Variable> variables_in_conditions_and_events = new HashSet<Variable>();
+    Iterator<StateMachine> it_sm = m.iteratorStatesMachines();
+    /* For all state machines */
+    while (it_sm.hasNext()) {
+      StateMachine sm = it_sm.next();
+      Iterator<Transition> it_trans = sm.iteratorTransitions();
+      /* For all transitions */
+      while (it_trans.hasNext()) {
+        Transition transition = it_trans.next();
 
-    while (variable_chenge_iterator.hasNext()) {
-      boolean found_variable = false;
-      VariableChange variable_change = variable_chenge_iterator.next();
-      Variable variable = variable_change.getModifiedVariable();
-
-      /* We check that the variable is found in a Condition field */
-      if (!m.getConditionVariable().contains(variable)) {
-        /*
-         * If the variable isn't in a condition field, we search for it in the
-         * event field
-         */
-        Iterator<StateMachine> state_machine_iterator =
-            m.iteratorStatesMachines();
-
-        while (state_machine_iterator.hasNext()) {
-          StateMachine state_machine = state_machine_iterator.next();
-          LinkedList<Transition> transitions =
-              state_machine.getTransitions(variable_change);
-          if (transitions.size() != 0) {
-            found_variable = true;
-            break;
+        /* We add the variables in the event field. */
+        Iterator<SingleEvent> actions =
+            transition.getEvent().singleEvent();
+        while (actions.hasNext()) {
+          SingleEvent event = actions.next();
+          if (event instanceof VariableChange) {
+            variables_in_conditions_and_events.add(
+                ((VariableChange) event).getModifiedVariable());
           }
         }
-        if (!found_variable) {
-          counter_example_not_used.add(variable);
-          no_error = false;
+
+        /* We add the variables within the condition field */
+        Formula condition = transition.getCondition();
+        if (condition != null) {
+          condition.allVariables(variables_in_conditions_and_events);
         }
       }
     }
 
-    if (verbose && !no_error) {
+    Iterator<VariableChange> variable_change_iterator =
+        m.iteratorVariableChange();
+
+    while (variable_change_iterator.hasNext()) {
+      Variable variable = variable_change_iterator.next().getModifiedVariable();
+
+      /* We check that the variable is found in a Condition or event field */
+      if (!variables_in_conditions_and_events.contains(variable)) {
+        counter_example_not_used.add(variable);
+        error = true;
+      }
+    }
+
+    if (verbose && error) {
       System.out.println(errorMessage());
     }
 
-    if (verbose && no_error) {
+    if (verbose && !error) {
       System.out.println(successMessage());
     }
 
-    return no_error;
+    return !error;
   }
 
   @Override

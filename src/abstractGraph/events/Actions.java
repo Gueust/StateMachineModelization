@@ -24,7 +24,7 @@ public class Actions {
       SingleEvent single_event = iterator.next();
       sb.append(single_event.toString() + ";");
     }
-    if (this.hasAlarm()){
+    if (this.hasAlarm()) {
       sb.append("\n");
       Iterator<SingleEvent> alarm_iterator = alarm_events.iterator();
       while (alarm_iterator.hasNext()) {
@@ -68,18 +68,28 @@ public class Actions {
   public Iterator<SingleEvent> iteratorActions() {
     return events.iterator();
   }
-  
-  public boolean hasAlarm(){
+
+  /**
+   * Usually one will call {@link #iteratorAlarms()} after this.
+   * 
+   * @return true if the transition owns an alarm.
+   */
+  public boolean hasAlarm() {
     return (alarm_events != null);
   }
-  
+
   public void addAlarm(SingleEvent e) {
-    if(!hasAlarm()){
+    if (!hasAlarm()) {
       alarm_events = new LinkedList<SingleEvent>();
     }
     alarm_events.add(e);
   }
-  
+
+  /**
+   * This function can be called ONLY if hasAlarm() has returned true.
+   * 
+   * @return An iterator over the actions contained in the alarm field.
+   */
   public Iterator<SingleEvent> iteratorAlarms() {
     return alarm_events.iterator();
   }

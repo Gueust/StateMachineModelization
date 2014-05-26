@@ -160,18 +160,11 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   /**
-   * 
-   * @return A set of the variables found ONLY in the condition fields.
-   */
-  public HashSet<Variable> getConditionVariable() {
-    return condition_variable;
-  }
-
-  /**
-   * Search a variable by its name.
+   * Search a variable by its name. It creates it if it does not exist.
    * 
    * @param variable_name
    * @return the variable associated to the variable_name.
+   * @see FormulaFactory#getVariable(String)
    */
   public Variable getVariable(String variable_name) {
     return formulaFactory.getVariable(variable_name);

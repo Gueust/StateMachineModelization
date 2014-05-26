@@ -27,6 +27,7 @@ public class State extends AbstractState<Transition> {
   public Iterator<Transition> iteratorTransitions(SingleEvent E) {
     LinkedList<Transition> transition_event = new LinkedList<>();
     Iterator<Transition> transition_iterator = transitions.iterator();
+
     while (transition_iterator.hasNext()) {
       Transition transition = transition_iterator.next();
       if (transition.getEvent().containsEvent(E)) {
@@ -42,6 +43,7 @@ public class State extends AbstractState<Transition> {
     return getId().equals(s2.getId());
   }
 
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("STATE: " + getId() + "\n");
