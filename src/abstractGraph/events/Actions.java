@@ -6,7 +6,6 @@ import java.util.LinkedList;
 public class Actions {
 
   private LinkedList<SingleEvent> events;
-  private LinkedList<SingleEvent> alarm_events;
 
   public Actions() {
     events = new LinkedList<SingleEvent>();
@@ -23,14 +22,6 @@ public class Actions {
     while (iterator.hasNext()) {
       SingleEvent single_event = iterator.next();
       sb.append(single_event.toString() + ";");
-    }
-    if (this.hasAlarm()) {
-      sb.append("\n");
-      Iterator<SingleEvent> alarm_iterator = alarm_events.iterator();
-      while (alarm_iterator.hasNext()) {
-        SingleEvent alarm = alarm_iterator.next();
-        sb.append(alarm.toString() + ";");
-      }
     }
     return sb.toString();
   }
@@ -67,31 +58,6 @@ public class Actions {
 
   public Iterator<SingleEvent> iteratorActions() {
     return events.iterator();
-  }
-
-  /**
-   * Usually one will call {@link #iteratorAlarms()} after this.
-   * 
-   * @return true if the transition owns an alarm.
-   */
-  public boolean hasAlarm() {
-    return (alarm_events != null);
-  }
-
-  public void addAlarm(SingleEvent e) {
-    if (!hasAlarm()) {
-      alarm_events = new LinkedList<SingleEvent>();
-    }
-    alarm_events.add(e);
-  }
-
-  /**
-   * This function can be called ONLY if hasAlarm() has returned true.
-   * 
-   * @return An iterator over the actions contained in the alarm field.
-   */
-  public Iterator<SingleEvent> iteratorAlarms() {
-    return alarm_events.iterator();
   }
 
 }

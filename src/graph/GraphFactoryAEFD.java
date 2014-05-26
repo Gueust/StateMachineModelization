@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
@@ -141,12 +141,15 @@ public class GraphFactoryAEFD {
       State from = retrieveState(state_machine.getName(), from_name);
       State to = retrieveState(state_machine.getName(), to_name);
 
-      /* Create the new transition in the associated state machine */
+      /* Create the new transition in the associated state machine. */
+      /* We deal with the case of alarms by creating 2 transitions if needed */
+      Pair<Actions> actions = getActions(parser.getAction(), state_machine);
+
+      Formula condition = getCondition(parser.getCondition(), state_machine);
+      Events events = getEvents(parser.getEvent(), state_machine);
+      Actions action = actions.first;
       Transition transition =
-          state_machine.addTransition(from, to,
-              getEvents(parser.getEvent(), state_machine),
-              getCondition(parser.getCondition(), state_machine),
-              getActions(parser.getAction(), state_machine));
+          state_machine.addTransition(from, to, events, condition, action);
 
       /*
        * Adding the transition in the linked list to be able to right the file
@@ -154,6 +157,19 @@ public class GraphFactoryAEFD {
        */
       initial_transition_order
           .put(transition, new InitialTransition(state_machine, transition));
+
+      action = actions.second;
+      if (action != null) {
+        transition =
+            state_machine.addTransition(from, from, events, new NotFormula(condition), action);
+
+        /*
+         * Adding the transition in the linked list to be able to right the file
+         * in the same order
+         */
+        initial_transition_order
+            .put(transition, new InitialTransition(state_machine, transition));
+      }
     }
 
     /**
@@ -349,60 +365,81 @@ public class GraphFactoryAEFD {
     return result;
   }
 
+  private class Pair<E> {
+    public E first, second;
+
+    public Pair(E first, E second) {
+      this.first = first;
+      this.second = second;
+    }
+  }
+
   /**
-   * Return an Actions object representing the events listed in the `actions`
-   * String
+   * Return a pair of Actions object representing the events listed in the
+   * `actions`
+   * String.
+   * The second element of the pair is always null, except when the actions
+   * contains an alarm (introduced by '/'). In that case the second element of
+   * the pair is the list of actions of the alarm.
    * 
    * @param actions
    *          The input string to be parsed
    * @param m
-   *          The state machine where the action field is parsed.
-   * @return The equivalent Actions object
-   * @throws Exception
+   *          The state machine where the action field is parsed
    */
-  private Actions getActions(String actions, StateMachine m) {
-    /* TODO : split around "/" and take the left part */
+  private Pair<Actions> getActions(String actions, StateMachine m) {
+    /* We check it respects the syntax */
     if (!actions.endsWith(";") && !actions.equals("")) {
       throw new UnsupportedOperationException(
           "The action list does not end with a ';' : " + actions);
     }
-    String[] alarm_action;
+
+    /* In case of an alarm, we need to build 2 different actions list */
     Actions result = new Actions();
 
     if (actions.contains("/")) {
-      alarm_action = actions.split("/");
+      String[] action_alarm = actions.split("/");
+
+      if (action_alarm.length > 2) {
+        throw new IllegalArgumentException(
+            "There is 2 '/' character in the action field :" + actions);
+      }
+
+      /* In case of an alarm we do create 2 lists of actions. */
+      addActions(result, action_alarm[0], m);
+
+      Actions alarm = new Actions();
+      addActions(alarm, action_alarm[1], m);
+      return new Pair<Actions>(result, alarm);
     } else {
-      alarm_action = new String[1];
-      alarm_action[0] = actions;
+      addActions(result, actions, m);
+      return new Pair<Actions>(result, null);
     }
+  }
 
-    for (int j = 0; j < alarm_action.length; j++) {
+  /*
+   * TODO: it is not the role of the Factory to build the writtingStateMachine
+   * hashmap.
+   */
+  private void addActions(Actions actions, String string_actions, StateMachine m) {
+    String[] array_of_actions = string_actions.split(";");
 
-      String[] array_of_actions = alarm_action[j].split(";");
+    for (int i = 0; i < array_of_actions.length; i++) {
+      String event_string = array_of_actions[i].trim();
 
-      for (int i = 0; i < array_of_actions.length; i++) {
-        String event_string = array_of_actions[i].trim();
-
-        if (event_string.lastIndexOf(' ') != -1) {
-          throw new UnsupportedOperationException(
-              "When parsing the action : " + event_string);
+      if (event_string.lastIndexOf(' ') != -1) {
+        throw new UnsupportedOperationException(
+            "When parsing the action : " + event_string);
+      }
+      if (!event_string.equals("")) {
+        SingleEvent new_action = actionFactory(event_string);
+        if (new_action instanceof VariableChange) {
+          addWrittingStateMachine((VariableChange) new_action, m);
         }
-        if (!event_string.equals("")) {
-          SingleEvent new_action = actionFactory(event_string);
-          if (new_action instanceof VariableChange) {
-            addWrittingStateMachine((VariableChange) new_action, m);
-          }
-          if (j == 0) {
-            result.add(new_action);
-          } else {
-            result.addAlarm(new_action);
-          }
-        }
-
+        actions.add(new_action);
       }
 
     }
-    return result;
   }
 
   /**
