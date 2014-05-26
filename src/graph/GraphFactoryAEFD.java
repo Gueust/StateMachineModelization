@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,8 +35,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -87,29 +88,29 @@ public class GraphFactoryAEFD {
   }
 
   /*
-  * @details The operations done to load a file are the following:
-  *          <ol>
-  *          <li>
-  *          Parse a first time the file to detect all the ACT_NOT_FCI (i.e.
-  *          the synchronization messages sent by one state machine to an
-  *          other). They all are in at least one action field. For every
-  *          ACT_NOT_FCI name, only one synchronization message is created.
-  *          From now, we will call these events SYNs (for synchronization).
-  * 
-  *          </li>
-  *          <li>
-  *          Then, we do a second parsing that will load all the transitions.
-  *          We ensure than every external event, command, syn, and IND (for
-  *          indicator, that indicates the modification of the value of a
-  *          global variable) is unique. This is done using
-  *          {@link #getEvents(String)}, {@link #getCondition(String)}, and
-  *          {@link #getActions(String)}.
-  * 
-  *          </li>
-  *          </ol>
-  */
+   * @details The operations done to load a file are the following:
+   * <ol>
+   * <li>
+   * Parse a first time the file to detect all the ACT_NOT_FCI (i.e.
+   * the synchronization messages sent by one state machine to an
+   * other). They all are in at least one action field. For every
+   * ACT_NOT_FCI name, only one synchronization message is created.
+   * From now, we will call these events SYNs (for synchronization).
+   * 
+   * </li>
+   * <li>
+   * Then, we do a second parsing that will load all the transitions.
+   * We ensure than every external event, command, syn, and IND (for
+   * indicator, that indicates the modification of the value of a
+   * global variable) is unique. This is done using
+   * {@link #getEvents(String)}, {@link #getCondition(String)}, and
+   * {@link #getActions(String)}.
+   * 
+   * </li>
+   * </ol>
+   */
   private void parse(String file) throws IOException {
-    
+
     model_checker_event =
         new HashMap<String, ModelCheckerEvent>();
     state_machines =
@@ -125,7 +126,7 @@ public class GraphFactoryAEFD {
     writting_state_machines =
         new HashMap<Variable, LinkedList<StateMachine>>();
     condition_variable = new HashSet<Variable>();
-    
+
     /*
      * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
@@ -208,13 +209,13 @@ public class GraphFactoryAEFD {
    *          The model name.
    * @return A new model representing the file given when building the
    *         {@link GraphFactoryAEFD}
-   * @throws IOException 
+   * @throws IOException
    */
   public Model buildModel(String file, String model_name) throws IOException {
 
     initial_transition_order =
         new LinkedHashMap<Transition, InitialTransition>();
-    
+
     parse(file);
 
     Model result = new Model(model_name);
@@ -450,7 +451,15 @@ public class GraphFactoryAEFD {
     }
 
     SingleEvent new_event;
-    switch (event_name.substring(0, event_name.indexOf('_'))) {
+    String prefix;
+    try {
+      prefix = event_name.substring(0, event_name.indexOf('_'));
+    } catch (IndexOutOfBoundsException e) {
+      throw new InvalidParameterException(
+          "The following string has been found in an event field: "
+              + event_name + ". It is invalid because no '_' appears in it.");
+    }
+    switch (prefix) {
     case "MSG":
     case "CTL":
     case "FTP":
@@ -509,7 +518,15 @@ public class GraphFactoryAEFD {
     }
 
     SingleEvent new_event;
-    switch (event_name.substring(0, event_name.indexOf('_'))) {
+    String prefix;
+    try {
+      prefix = event_name.substring(0, event_name.indexOf('_'));
+    } catch (IndexOutOfBoundsException e) {
+      throw new InvalidParameterException(
+          "The following string has been found in an action field: "
+              + event_name + ". It is invalid because no '_' appears in it.");
+    }
+    switch (prefix) {
     case "DTP":
     case "ATP":
     case "CMD":
