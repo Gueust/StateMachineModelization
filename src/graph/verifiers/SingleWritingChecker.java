@@ -28,10 +28,10 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
 
     HashMap<Variable, LinkedList<StateMachine>> written_variables =
         m.getWritingStateMachines();
-    Iterator<Variable> condition_variable = m.iteratorExistingVariables();
+    Iterator<Variable> variables = m.iteratorExistingVariables();
 
-    while (condition_variable.hasNext()) {
-      Variable variable = condition_variable.next();
+    while (variables.hasNext()) {
+      Variable variable = variables.next();
       LinkedList<StateMachine> writing_state_machine =
           written_variables.get(variable);
 

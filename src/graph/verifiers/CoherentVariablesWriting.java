@@ -16,9 +16,6 @@ import graph.StateMachine;
 import graph.Transition;
 
 /**
- * Requirement: this test requires that every variable is written by at most one
- * state machine. Then SingleWritingChecker is required prior to this
- * verification.
  * 
  * This verification units checks the following property:
  * let v be a variable, let M be the state machine that is writing on it.
@@ -32,7 +29,8 @@ import graph.Transition;
  * <li>
  * initializing all states to have an unknown value for all variables</li>
  * <li>
- * setting the truth value gathered from the action (i.e. writing A or not A)</li>
+ * setting the truth value gathered from the actions (i.e. writing A or not
+ * A)</li>
  * <li>
  * spreading this truth values through unlabeled transitions (i.e. that does not
  * write A).</li>
@@ -216,10 +214,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
         /* We retrieve the current value */
         Byte propagating_value = value_associated.get(state).get(variable);
 
-        // System.out.println("We propagate the state sate: " + state.getId());
-        // System.out.println("Variable " + variable);
-        // System.out.println("Value: " + propagating_value);
-
         assert (propagating_value != UNDEFINED);
         assert (propagating_value != null);
         if (propagating_value == UNDEFINED || propagating_value == null)
@@ -238,7 +232,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
            * If the transition write the variable, then we do not check for
            * coherence
            */
-          // System.out.println("Studying transition " + transition);
           boolean transition_does_write_variable = false;
           Iterator<SingleEvent> it_single_event = transition
               .getActions()
@@ -249,8 +242,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
               VariableChange vc_event = (VariableChange) e;
               if (vc_event.getModifiedVariable() == variable) {
                 transition_does_write_variable = true;
-                // System.out.println("We do not check for " + variable
-                // + " into state " + destination.getId());
                 break;
               }
             }
@@ -260,17 +251,13 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
             continue;
           }
 
-          /* We do the checking */
+          /* The next state will be used to propagate */
           if (!visited_states.contains(destination)) {
-            // System.out.println("Added to visit " + destination.getId()
-            // + " for var " + variable);
             states_to_propagate_var.add(destination);
           }
-          /* The current state will be used to propagate */
 
+          /* We do the checking */
           Byte old_value = value_associated.get(destination).get(variable);
-          // System.out.println("OLD VALUE " + old_value);
-          // System.out.println("NEW VALUE " + propagating_value);
           if (old_value != null &&
               old_value.byteValue() != UNDEFINED &&
               !old_value.equals(propagating_value)) {
@@ -292,8 +279,8 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
   }
 
   /*
-   * Creates the Hashmap associating to every stage machine the variables it is
-   * writing
+   * Creates the Hashmap associating to every state machine the variables it is
+   * writing.
    */
   private HashMap<StateMachine, LinkedList<Variable>> writtenVariables(
       HashMap<Variable, LinkedList<StateMachine>> writting_state_machines) {
@@ -369,7 +356,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
       result.append("In state machine " + machine_name + " in state " + state
           + " with variable " + variable_name + ".\n");
-      // System.out.println("Here is the current value for all states:\n");
     }
     return result.toString();
   }
