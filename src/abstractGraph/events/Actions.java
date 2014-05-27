@@ -3,7 +3,7 @@ package abstractGraph.events;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Actions {
+public class Actions implements Iterable<SingleEvent> {
 
   private LinkedList<SingleEvent> events;
 
@@ -56,8 +56,8 @@ public class Actions {
     return true;
   }
 
-  public Iterator<SingleEvent> iteratorActions() {
+  @Override
+  public Iterator<SingleEvent> iterator() {
     return events.iterator();
   }
-
 }

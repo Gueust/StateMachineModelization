@@ -80,12 +80,12 @@ public class DeterminismChecker extends AbstractVerificationUnit {
         for (int i = 0; i < transitions.length; i++) {
           Transition t1 = transitions[i];
           Formula t1_formula = t1.getCondition();
-          Events t1_events = t1.getEvent();
+          Events t1_events = t1.getEvents();
 
           for (int j = i + 1; j < transitions.length; j++) {
             Transition t2 = transitions[j];
             Formula t2_formula = t2.getCondition();
-            Events t2_events = t2.getEvent();
+            Events t2_events = t2.getEvents();
 
             /* If both transitions are labeled with a common event */
             if (t1_events.notEmptyIntersection(t2_events)) {

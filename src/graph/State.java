@@ -30,7 +30,7 @@ public class State extends AbstractState<Transition> {
 
     while (transition_iterator.hasNext()) {
       Transition transition = transition_iterator.next();
-      if (transition.getEvent().containsEvent(E)) {
+      if (transition.getEvents().containsEvent(E)) {
         transition_event.add(transition);
       }
     }

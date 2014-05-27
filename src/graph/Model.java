@@ -2,7 +2,6 @@ package graph;
 
 import graph.verifiers.AbstractVerificationUnit;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
@@ -14,15 +13,15 @@ import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
 
 /**
  * A set of state machines interacting with each other.
- * There is a set of external events to which the model can react
- * (external_events), a set of commands that the model can give to the external
- * environment and internal messages (both synchronization messages and global
- * variables).
+ * After after having created an object, one needs to call the #build()
+ * function.
+ * 
  */
 public class Model extends AbstractModel<StateMachine, State, Transition> {
   /* The order internal state machines */
@@ -37,26 +36,95 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   protected FormulaFactory formulaFactory;
 
   /* All the external events that can trigger the model */
-  protected HashMap<String, ExternalEvent> external_events;
+  private HashMap<String, ExternalEvent> external_events;
   /* All the commands that the model can generate */
-  protected HashMap<String, CommandEvent> commands_events;
-  protected HashMap<String, SynchronisationEvent> synchronisation_events;
-  protected HashMap<String, VariableChange> variable_modification_events;
+  private HashMap<String, CommandEvent> commands_events;
+  private HashMap<String, SynchronisationEvent> synchronisation_events;
+  private HashMap<String, VariableChange> variable_modification_events;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  protected HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
-
-  /** Store all the variables that are found ONLY in the conditions field. */
-  protected HashSet<Variable> condition_variable = new HashSet<Variable>();
+  private HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
 
   /**
    * Create a new empty model named `name`.
    * 
    * @param name
    *          The name of the model.
+   * 
    */
   public Model(String name) {
     super(name);
+  }
+
+  /**
+   * This function is required to ensure the coherence of all the internal data
+   * of the model. It has to be called after every modification of the structure
+   * of the model ( {@link #addStateMachine(StateMachine)}.
+   * 
+   * @details Initialize all internal fields except state_machines. In
+   *          particular, it does fill in writing_state_machines.
+   */
+  public void build() {
+    /* Internal data should all be null or initialized together */
+    if (external_events == null) {
+      external_events = new HashMap<String, ExternalEvent>();
+      commands_events = new HashMap<String, CommandEvent>();
+      synchronisation_events = new HashMap<String, SynchronisationEvent>();
+      variable_modification_events = new HashMap<String, VariableChange>();
+      writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
+    } else {
+      external_events.clear();
+      commands_events.clear();
+      synchronisation_events.clear();
+      variable_modification_events.clear();
+      writing_state_machines.clear();
+    }
+
+    for (StateMachine machine : state_machines.values()) {
+      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+      while (transition_iterator.hasNext()) {
+        Transition transition = transition_iterator.next();
+
+        for (SingleEvent event : transition.getEvents()) {
+          addEvent(event);
+        }
+
+        for (SingleEvent event : transition.getActions()) {
+          addEvent(event);
+          if (event instanceof VariableChange) {
+            Variable modified_var =
+                ((VariableChange) event).getModifiedVariable();
+
+            LinkedList<StateMachine> list =
+                writing_state_machines.get(modified_var);
+            if (list == null) {
+              list = new LinkedList<StateMachine>();
+              writing_state_machines.put(modified_var, list);
+            }
+            if (!list.contains(machine)) {
+              list.add(machine);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Used only in build. It adds the event in the according hashmap.
+   */
+  private void addEvent(SingleEvent event) {
+    if (event instanceof ExternalEvent) {
+      external_events.put(event.getName(), (ExternalEvent) event);
+    } else if (event instanceof SynchronisationEvent) {
+      synchronisation_events.put(event.getName(),
+          (SynchronisationEvent) event);
+    } else if (event instanceof CommandEvent) {
+      commands_events.put(event.getName(), (CommandEvent) event);
+    } else if (event instanceof VariableChange) {
+      variable_modification_events.put(event.getName(),
+          (VariableChange) event);
+    }
   }
 
   @Override

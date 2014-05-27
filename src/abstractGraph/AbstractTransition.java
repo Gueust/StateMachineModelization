@@ -29,7 +29,7 @@ public abstract class AbstractTransition<S extends AbstractState<? extends Abstr
     return to;
   }
 
-  public Events getEvent() {
+  public Events getEvents() {
     return events;
   }
 

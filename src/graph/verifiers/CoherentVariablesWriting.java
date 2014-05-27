@@ -115,7 +115,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
     while (it_trans.hasNext()) {
       Transition transition = it_trans.next();
       Actions actions = transition.getActions();
-      Iterator<SingleEvent> it_actions = actions.iteratorActions();
+      Iterator<SingleEvent> it_actions = actions.iterator();
       while (it_actions.hasNext()) {
         SingleEvent event = it_actions.next();
         if (event instanceof VariableChange) {
@@ -232,7 +232,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
           boolean transition_does_write_variable = false;
           Iterator<SingleEvent> it_single_event = transition
               .getActions()
-              .iteratorActions();
+              .iterator();
           while (it_single_event.hasNext()) {
             SingleEvent e = it_single_event.next();
             if (e instanceof VariableChange) {

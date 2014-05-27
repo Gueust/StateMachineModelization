@@ -41,7 +41,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
 
         /* We add the variables in the event field. */
         Iterator<SingleEvent> actions =
-            transition.getEvent().singleEvent();
+            transition.getEvents().singleEvent();
         while (actions.hasNext()) {
           SingleEvent event = actions.next();
           if (event instanceof VariableChange) {

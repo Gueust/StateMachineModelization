@@ -13,12 +13,10 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 import parserAEFDFormat.Fichier6lignes;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
-import abstractGraph.conditions.Variable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
@@ -44,21 +42,11 @@ public class GraphFactoryAEFD {
 
   /** The formula factory to parse the condition formulas */
   private AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
-  /** List all the events related with the model checker */
-  private HashMap<String, ModelCheckerEvent> model_checker_event;
+
   /** List all the state machines of the model */
   private HashMap<String, StateMachine> state_machines;
-  /** List all the external events present in the state machines */
-  private HashMap<String, ExternalEvent> external_events;
-  /** List all the commands present in the state machines */
-  private HashMap<String, CommandEvent> commands_events;
-  /** List all the synchronization messages */
-  private HashMap<String, SynchronisationEvent> synchronisation_events;
-  /** List all the global variable modification messages */
-  private HashMap<String, VariableChange> variable_modification_events;
-
-  /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<Variable, LinkedList<StateMachine>> writting_state_machines;
+  /** List all the events present in the state machines. To prevent duplicates. */
+  private HashMap<String, SingleEvent> single_events;
 
   /**
    * Used to remember the order of the transition within the parsed file in
@@ -108,20 +96,10 @@ public class GraphFactoryAEFD {
    */
   private void parse(String file) throws IOException {
 
-    model_checker_event =
-        new HashMap<String, ModelCheckerEvent>();
     state_machines =
         new HashMap<String, StateMachine>();
-    external_events =
-        new HashMap<String, ExternalEvent>();
-    commands_events =
-        new HashMap<String, CommandEvent>();
-    synchronisation_events =
-        new HashMap<String, SynchronisationEvent>();
-    variable_modification_events =
-        new HashMap<String, VariableChange>();
-    writting_state_machines =
-        new HashMap<Variable, LinkedList<StateMachine>>();
+
+    single_events = new HashMap<String, SingleEvent>();
 
     /*
      * We do two parsings:
@@ -161,7 +139,8 @@ public class GraphFactoryAEFD {
       action = actions.second;
       if (action != null) {
         transition =
-            state_machine.addTransition(from, from, events, new NotFormula(condition), action);
+            state_machine.addTransition(from, from, events, new NotFormula(
+                condition), action);
 
         /*
          * Adding the transition in the linked list to be able to right the file
@@ -189,19 +168,6 @@ public class GraphFactoryAEFD {
     // }
   }
 
-  private void addWrittingStateMachine(VariableChange event, StateMachine m) {
-    Variable modified_var = event
-        .getModifiedVariable();
-    LinkedList<StateMachine> list = writting_state_machines.get(modified_var);
-    if (list == null) {
-      list = new LinkedList<StateMachine>();
-      writting_state_machines.put(modified_var, list);
-    }
-    if (!list.contains(m)) {
-      list.add(m);
-    }
-  }
-
   /**
    * Produce a model.
    * 
@@ -226,13 +192,9 @@ public class GraphFactoryAEFD {
       StateMachine sm = sm_iterator.next();
       result.addStateMachine(sm);
     }
-    result.external_events = external_events;
-    result.commands_events = commands_events;
-    result.synchronisation_events = synchronisation_events;
-    result.writing_state_machines = writting_state_machines;
     result.formulaFactory = factory;
-    result.variable_modification_events = variable_modification_events;
-
+    /* Required to generated internal data */
+    result.build();
     /**
      * We check that the list of added transitions is exactly the transitions
      * added in the model
@@ -290,7 +252,7 @@ public class GraphFactoryAEFD {
                   .equals("SYN")) {
             SynchronisationEvent new_event = new SynchronisationEvent(
                 event_string);
-            synchronisation_events.put(new_event.getName(), new_event);
+            single_events.put(new_event.getName(), new_event);
           }
         }
       }
@@ -433,9 +395,6 @@ public class GraphFactoryAEFD {
       }
       if (!event_string.equals("")) {
         SingleEvent new_action = actionFactory(event_string);
-        if (new_action instanceof VariableChange) {
-          addWrittingStateMachine((VariableChange) new_action, m);
-        }
         actions.add(new_action);
       }
 
@@ -461,14 +420,14 @@ public class GraphFactoryAEFD {
    * @return The SingleEvent associated with it.
    */
   private SingleEvent eventFactory(String event_name) {
-    SingleEvent result;
+    SingleEvent result = single_events.get(event_name);
 
-    result = external_events.get(event_name);
     if (result != null) {
-      return result;
-    }
-    result = synchronisation_events.get(event_name);
-    if (result != null) {
+      if (!(result instanceof ExternalEvent) &&
+          !(result instanceof SynchronisationEvent) &&
+          !(result instanceof VariableChange)) {
+        throw new Error("Impossible scenario");
+      }
       return result;
     }
 
@@ -486,13 +445,9 @@ public class GraphFactoryAEFD {
     case "CTL":
     case "FTP":
       new_event = new ExternalEvent(event_name);
-      external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
     case "IND":
       new_event = new VariableChange(factory.getLiteral(event_name));
-
-      variable_modification_events
-          .put(new_event.getName(), (VariableChange) new_event);
       break;
     case "ACT":
       /*
@@ -500,18 +455,17 @@ public class GraphFactoryAEFD {
        * an internal event during the first parsing
        */
       new_event = new ExternalEvent(event_name);
-      external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
     case "SYN":
       new_event = new SynchronisationEvent(event_name);
-      synchronisation_events.put(new_event.getName(),
-          (SynchronisationEvent) new_event);
       break;
     default:
       System.out.println(toString());
       throw new UnsupportedOperationException(
           "When parsing the events field : " + event_name);
     }
+    single_events.put(new_event.getName(), new_event);
+
     return new_event;
 
   }
@@ -524,18 +478,16 @@ public class GraphFactoryAEFD {
    * @return
    */
   private SingleEvent actionFactory(String event_name) {
-    SingleEvent result;
+    SingleEvent result = single_events.get(event_name);
 
-    result = external_events.get(event_name);
     if (result != null) {
-      return result;
-    }
-    result = commands_events.get(event_name);
-    if (result != null) {
-      return result;
-    }
-    result = synchronisation_events.get(event_name);
-    if (result != null) {
+      if (!(result instanceof CommandEvent) &&
+          !(result instanceof SynchronisationEvent) &&
+          !(result instanceof VariableChange) &&
+          !(result instanceof ModelCheckerEvent)) {
+        throw new Error("Impossible scenario");
+      }
+
       return result;
     }
 
@@ -556,13 +508,9 @@ public class GraphFactoryAEFD {
     case "FCI":
     case "P":
       new_event = new ModelCheckerEvent(event_name);
-      model_checker_event.put(new_event.getName(),
-          (ModelCheckerEvent) new_event);
       break;
     case "IND":
       new_event = new VariableChange(factory.getLiteral(event_name));
-      variable_modification_events
-          .put(new_event.getName(), (VariableChange) new_event);
       break;
     case "ACT":
       /*
@@ -570,17 +518,15 @@ public class GraphFactoryAEFD {
        * an internal event during the first parsing
        */
       new_event = new ExternalEvent(event_name);
-      external_events.put(new_event.getName(), (ExternalEvent) new_event);
       break;
     case "SYN":
       new_event = new SynchronisationEvent(event_name);
-      synchronisation_events.put(new_event.getName(),
-          (SynchronisationEvent) new_event);
       break;
     default:
       throw new UnsupportedOperationException(
           "When parsing the events field : " + event_name);
     }
+    single_events.put(new_event.getName(), new_event);
     return new_event;
   }
 
@@ -604,7 +550,7 @@ public class GraphFactoryAEFD {
       writer.write("\r\n");
       writer.write(init_transition.t.getDestination().getId());
       writer.write("\r\n");
-      String temp = concatenateEventsWithOU(init_transition.t.getEvent());
+      String temp = concatenateEventsWithOU(init_transition.t.getEvents());
       if (temp != null) {
         writer.write(temp + " Evenement");
       } else {

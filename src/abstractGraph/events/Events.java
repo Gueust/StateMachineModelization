@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
-public class Events {
+public class Events implements Iterable<SingleEvent> {
 
   protected HashMap<String, SingleEvent> events;
 
@@ -63,5 +63,10 @@ public class Events {
       sb.append(single_event.toString() + ";");
     }
     return sb.toString();
+  }
+
+  @Override
+  public Iterator<SingleEvent> iterator() {
+    return events.values().iterator();
   }
 }
