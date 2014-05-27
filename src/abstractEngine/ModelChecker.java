@@ -13,14 +13,14 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
 
-public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class ModelChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
   private HashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>> visited_states =
       new LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>>();
 
   /** The states to explore */
-  private LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>> unvisited_states;
+  private LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>> unvisited_states = new LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>>();
 
   private LinkedList<ExternalEvent> possible_events;
 
@@ -49,12 +49,17 @@ public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>,
    * 
    * @param init
    */
-  public void configureInitialGlobalStates(Collection<AbstractGlobalState<M, S, T>> init) {
-    unvisited_states =
-        new LinkedHashMap<AbstractGlobalState<M, S, T>, AbstractGlobalState<M, S, T>>();
+  public void configureInitialGlobalStates(
+      Collection<AbstractGlobalState<M, S, T>> init) {
+    unvisited_states.clear();
     for (AbstractGlobalState<M, S, T> s : init) {
       unvisited_states.put(s, s);
     }
+  }
+
+  public void configureInitialGlobalStates(AbstractGlobalState<M, S, T> init) {
+    unvisited_states.clear();
+    unvisited_states.put(init, init);
   }
 
   /**
@@ -63,12 +68,15 @@ public abstract class AbstractModelChecker<M extends AbstractStateMachine<S, T>,
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public AbstractGlobalState<M, S, T> verify(AbstractGraphSimulator<M, S, T> simulator) {
+  public AbstractGlobalState<M, S, T> verify(
+      AbstractGraphSimulator<M, S, T> simulator) {
     assert (unvisited_states != null);
     assert (possible_events != null);
 
     while (unvisited_states.size() != 0) {
-      Iterator<AbstractGlobalState<M, S, T>> it = unvisited_states.values().iterator();
+      Iterator<AbstractGlobalState<M, S, T>> it = unvisited_states
+          .values()
+          .iterator();
 
       AbstractGlobalState<M, S, T> state = it.next();
       it.remove();

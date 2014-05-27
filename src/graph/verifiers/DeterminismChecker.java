@@ -172,7 +172,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     for (int i = 0; i < n; i++) {
       result.append(errorMessage(list_counter_example_machine.get(i),
           list_counter_example_t1.get(i), list_counter_example_t2.get(i),
-          solution_details.get(i)));
+          solution_details.get(i)) + "\n");
     }
 
     return result.toString();

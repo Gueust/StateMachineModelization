@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+
 import utils.TeeOutputStream;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -54,6 +55,7 @@ public class Main {
     printFullPeakMemoryUsage();
 
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
+
 
   }
 
