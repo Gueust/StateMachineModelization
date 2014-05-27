@@ -154,8 +154,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
             return false;
           }
-          // System.out.println("Added in " + state.getId() + " the variable "
-          // + variable + " to the " + value);
+
           value_associated.get(state).put(variable, value);
         }
       }
@@ -214,8 +213,6 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
         /* We retrieve the current value */
         Byte propagating_value = value_associated.get(state).get(variable);
 
-        assert (propagating_value != UNDEFINED);
-        assert (propagating_value != null);
         if (propagating_value == UNDEFINED || propagating_value == null)
           throw new Error("Impossible scenario");
 

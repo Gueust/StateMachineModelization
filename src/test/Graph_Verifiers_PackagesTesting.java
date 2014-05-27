@@ -189,6 +189,10 @@ public class Graph_Verifiers_PackagesTesting {
    *          <li>
    *          Incoherent_writting_2.txt: requires 1 level of propagation.
    *          </li>
+   *          
+   *          <li>
+   *          Incoherent_writting_4.txt: a single transition writing A and Not A.
+   *          </li>
    *          </ol>
    */
   @Test
@@ -217,7 +221,8 @@ public class Graph_Verifiers_PackagesTesting {
         /* More specific tests */
         "Incoherent_writting_1.txt",
         "Incoherent_writting_2.txt",
-        "Incoherent_writting_3.txt"
+        "Incoherent_writting_3.txt",
+        "Incoherent_writting_4.txt"
     };
 
     Boolean[] results = {
@@ -239,6 +244,7 @@ public class Graph_Verifiers_PackagesTesting {
         true,
         true,
         /* More specific tests */
+        false,
         false,
         false,
         false
