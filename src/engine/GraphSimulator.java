@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
@@ -348,66 +349,108 @@ public class GraphSimulator implements
     }
     return result;
   }
-}
 
-/*
- * AbstractGlobalState<StateMachine, State, Transition> global_state = new
- * AbstractGlobalState<StateMachine, State, Transition>(model);
- * Iterator<StateMachine> state_machie_iterator =
- * model.iteratorStatesMachines();
- * while (state_machie_iterator.hasNext()){
- * StateMachine state_machine = state_machie_iterator.next();
- * global_state.setState(state_machine, state_machine.getState("0"));
- * }
- * Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
- * while (variable_iterator.hasNext()){
- * Variable variable = variable_iterator.next();
- * global_state.setVariableValue(variable, true);
- * }
- * LinkedList<ExternalEvent> event_queue = new LinkedList<ExternalEvent>();
- * ExternalEvent ctl1 = new ExternalEvent("CTL_1");
- * event_queue.add(ctl1);
- * ExternalEvent ctl2 = new ExternalEvent("CTL_2");
- * event_queue.add(ctl2);
- * GraphSimulator simulator = new GraphSimulator(model);
- * System.out.print(global_state.toString());
- * simulator.simulation(event_queue, global_state);
- * 
- * 
- * /************************* the initialisation *****************************
- * Model proof = test.buildModel("Nurieux/NurieuxTestJLPreuv_Auto.txt",
- * "Testing proof model");
- * AbstractGlobalState<StateMachine, State, Transition> global_state = new
- * AbstractGlobalState<StateMachine, State, Transition>();
- * Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
- * 
- * while (variable_iterator.hasNext()) {
- * Variable variable = variable_iterator.next();
- * global_state.setVariableValue(variable, true);
- * }
- * Iterator<StateMachine> state_machine_iterator = model
- * .iteratorStatesMachines();
- * while (state_machine_iterator.hasNext()) {
- * StateMachine state_machine = state_machine_iterator.next();
- * global_state.setState(state_machine, state_machine.getState("0"));
- * }
- * variable_iterator = proof.iteratorExistingVariables();
- * while (variable_iterator.hasNext()) {
- * Variable variable = variable_iterator.next();
- * global_state.setVariableValue(variable, true);
- * }
- * state_machine_iterator = proof.iteratorStatesMachines();
- * while (state_machine_iterator.hasNext()) {
- * StateMachine state_machine = state_machine_iterator.next();
- * global_state.setState(state_machine, state_machine.getState("0"));
- * }
- * 
- * 
- * /**************************** The exploration ****************************
- * GraphSimulator simulator = new GraphSimulator(model, proof, global_state);
- * ModelChecker<StateMachine, State, Transition> model_checker = new
- * ModelChecker<StateMachine, State, Transition>();
- * model_checker.configureExternalEvents(model.external_events.values());
- * model_checker.configureInitialGlobalStates(global_state);
- * System.out.print(model_checker.verify(simulator));
- */
+  /**
+   * Check that the functional model and the proof model can be executed
+   * simultaneously.
+   * 
+   * @details
+   *          If verifies that:
+   *          <ol>
+   *          <li>
+   *          1) the proof model does not write any variable that belongs
+   *          to the functional model.
+   *          </li>
+   *          <li>
+   *          2) the proof model does not write any synchronization event
+   *          that is used (i.e. written or listened) by the functional model.
+   *          </li>
+   *          <li>
+   *          3) the proof model does not write ExternalCommands
+   *          </li>
+   *          <li>
+   *          4) the functional model does not write ModelCheckerEvents
+   *          </li>
+   *          </ol>
+   * @return true if the models are ok
+   */
+  public boolean checkCompatibility() {
+    if (model == null) {
+      System.err.println("The functionnal model within the simulator is null");
+      return false;
+    }
+    if (proof == null) {
+      return true;
+    }
+
+    for (StateMachine machine : proof) {
+      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+      while (transition_iterator.hasNext()) {
+        Transition transition = transition_iterator.next();
+
+        for (SingleEvent event : transition.getEvents()) {
+          if (event instanceof ExternalEvent) {
+
+          } else if (event instanceof SynchronisationEvent) {
+
+          } else if (event instanceof CommandEvent) {
+
+          } else if (event instanceof VariableChange) {
+
+          }
+        }
+
+        for (SingleEvent event : transition.getActions()) {
+          if (event instanceof VariableChange) {
+            /* Verification of 1) */
+            Variable var = ((VariableChange) event).getModifiedVariable();
+            if (model.containsVariable(var)) {
+              System.err.println(
+                  "The proof model does write the variable " + var +
+                      " which is also present in the functional model.");
+              return false;
+            }
+          } else if (event instanceof SynchronisationEvent) {
+            /* Verification of 2) */
+            if (model
+                .containsSynchronisationEvent((SynchronisationEvent) event)) {
+              System.err
+                  .println(
+                  "The proof model does write the synchronisation event" +
+                      event + " which is also present in the functional model.");
+              return false;
+            }
+          } else if (event instanceof CommandEvent) {
+            /* Verification of 3) */
+            System.err.println(
+                "The proof model does write the external command " + event);
+            return false;
+          }
+
+        }
+      }
+    }
+
+    /* Verification of 4) */
+    for (StateMachine machine : model) {
+      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+      while (transition_iterator.hasNext()) {
+        Transition transition = transition_iterator.next();
+
+        for (SingleEvent event : transition.getActions()) {
+          /* Verification of 4) */
+          if (event instanceof ModelCheckerEvent) {
+
+            System.err.println(
+                "The functional model does write a variable that is reserved"
+                    + " to proof models: " + event);
+            return false;
+
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+}

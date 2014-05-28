@@ -2,9 +2,9 @@ package graph;
 
 import graph.verifiers.AbstractVerificationUnit;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -236,6 +236,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    */
   public Variable getVariable(String variable_name) {
     return formulaFactory.getVariable(variable_name);
+  }
+
+  /**
+   * @return True if the model writes on or listens to the argument event.
+   */
+  public boolean containsSynchronisationEvent(SynchronisationEvent event) {
+    return synchronisation_events.containsKey(event.getName());
   }
 
 }
