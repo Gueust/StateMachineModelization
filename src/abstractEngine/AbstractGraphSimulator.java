@@ -32,23 +32,4 @@ public interface AbstractGraphSimulator<GS extends AbstractGlobalState<M, S, T>,
    * @return The internal GlobalState, that has been modified by the execution.
    */
   public GS execute(ExternalEvent e);
-
-  /**
-   * 
-   * @return true if a safety property is not verified
-   */
-  public boolean isP5();
-
-  /**
-   * 
-   * @return true if a predicate is not ensure.
-   */
-  public boolean isP6();
-
-  /**
-   * 
-   * @return true if a functionality is not ensured.
-   */
-  public boolean isP7();
-
 }

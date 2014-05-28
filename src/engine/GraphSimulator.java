@@ -36,11 +36,6 @@ public class GraphSimulator implements
   /** This is the model of the proof */
   private Model proof;
 
-  /** The variables necessary for the model checker */
-  private boolean isP5 = false;
-  private boolean isP6 = false;
-  private boolean isP7 = false;
-
   public GraphSimulator(Model model, Model proof, GlobalState global_state) {
     this.model = model;
     this.proof = proof;
@@ -59,21 +54,6 @@ public class GraphSimulator implements
 
   public GraphSimulator(Model model) {
     this.model = model;
-  }
-
-  @Override
-  public boolean isP5() {
-    return isP5;
-  }
-
-  @Override
-  public boolean isP6() {
-    return isP6;
-  }
-
-  @Override
-  public boolean isP7() {
-    return isP7;
   }
 
   public GlobalState getGlobalState() {
@@ -199,13 +179,13 @@ public class GraphSimulator implements
       } else if (single_event instanceof ModelCheckerEvent) {
         switch (single_event.getName()) {
         case "P_5":
-          isP5 = true;
+          global_state.setIsSafe(false);
           break;
         case "P_6":
-          isP6 = true;
+          global_state.setIsLegal(false);
           break;
         case "P_7":
-          isP7 = true;
+          global_state.setNotP7(false);
           break;
         default:
           throw new IllegalArgumentException("The argument "

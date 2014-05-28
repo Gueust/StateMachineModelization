@@ -1,10 +1,9 @@
 package abstractEngine;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import abstractGraph.AbstractGlobalState;
@@ -16,13 +15,13 @@ import abstractGraph.events.ExternalEvent;
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
-  private HashMap<GS, GS> visited_states =
-      new LinkedHashMap<GS, GS>();
+  private LinkedHashSet<GS> visited_states = new LinkedHashSet<GS>();
 
   /** The states to explore */
-  private LinkedHashMap<GS, GS> unvisited_states = new LinkedHashMap<GS, GS>();
+  private LinkedHashSet<GS> unvisited_states = new LinkedHashSet<GS>();
 
   private LinkedList<ExternalEvent> possible_events;
+  private LinkedList<GS> initial_states;
 
   /**
    * The states that are excluded from the exploration by the postulate states
@@ -49,21 +48,20 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * 
    * @param init
    */
-  public void configureInitialGlobalStates(
-      Collection<GS> init) {
-    unvisited_states.clear();
-    for (GS s : init) {
-      unvisited_states.put(s, s);
-    }
+  public void configureInitialGlobalStates(Collection<GS> init) {
+    initial_states = new LinkedList<GS>(init);
   }
 
   public void configureInitialGlobalStates(GS init) {
     unvisited_states.clear();
-    unvisited_states.put(init, init);
+    unvisited_states.add(init);
   }
 
   /**
-   * 
+   * @details
+   *          Properties to verify:
+   *          - unvisited_states and visited_states have never one item in
+   *          common.
    * @param simulator
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
@@ -73,20 +71,22 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     assert (unvisited_states != null);
     assert (possible_events != null);
 
+    unvisited_states.clear();
+    unvisited_states.addAll(initial_states);
+
     while (unvisited_states.size() != 0) {
-      Iterator<GS> it = unvisited_states
-          .values()
-          .iterator();
+      Iterator<GS> it = unvisited_states.iterator();
 
       GS state = it.next();
       it.remove();
-      visited_states.put(state, state);
+      visited_states.add(state);
 
       for (ExternalEvent e : possible_events) {
-        GS next_state = simulator.execute(state, e);
+        @SuppressWarnings("unchecked")
+        GS next_state = simulator.execute((GS) state.clone(), e);
 
         /* Illegal state */
-        if (simulator.isP6()) {
+        if (!next_state.isLegal()) {
           /* If we reach this code, the state is not in illegal_sates */
           if (!illegal_states.contains(next_state)) {
             illegal_states.add(next_state);
@@ -94,14 +94,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
           continue;
         }
 
-        /* Safety property not respected */
-        if (simulator.isP5()) {
-          unvisited_states.put(next_state, next_state);
-          return next_state;
+        if (visited_states.contains(next_state)) {
+          continue;
         }
+        unvisited_states.add(next_state);
 
-        if (!visited_states.containsKey(next_state)) {
-          unvisited_states.put(next_state, next_state);
+        /* Safety property not respected */
+        if (!next_state.isSafe()) {
+          return next_state;
         }
       }
     }

@@ -57,6 +57,23 @@ public class Valuation {
     return valuation.toString();
   }
 
+
+  
+  @SuppressWarnings("unchecked")
+  public Valuation clone() {
+    Valuation result = new Valuation();
+    result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
+    return result;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((valuation == null) ? 0 : valuation.hashCode());
+    return result;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -75,12 +92,5 @@ public class Valuation {
           "The valuation HashMap cannot be null since it is always initialized");
     }
     return this.valuation.equals(other);
-  }
-  
-  @SuppressWarnings("unchecked")
-  public Valuation clone() {
-    Valuation result = new Valuation();
-    result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
-    return result;
   }
 }
