@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import abstractEngine.AbstractGraphSimulator;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
