@@ -149,7 +149,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   @Override
-  public Iterator<StateMachine> iteratorStatesMachines() {
+  public Iterator<StateMachine> iterator() {
     return state_machines.values().iterator();
   }
 

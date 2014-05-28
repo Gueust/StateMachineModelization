@@ -30,7 +30,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
      * conditions fields and in the events fields.
      */
     HashSet<Variable> variables_in_conditions_and_events = new HashSet<Variable>();
-    Iterator<StateMachine> it_sm = m.iteratorStatesMachines();
+    Iterator<StateMachine> it_sm = m.iterator();
     /* For all state machines */
     while (it_sm.hasNext()) {
       StateMachine sm = it_sm.next();

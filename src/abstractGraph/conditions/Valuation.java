@@ -76,4 +76,11 @@ public class Valuation {
     }
     return this.valuation.equals(other);
   }
+  
+  @SuppressWarnings("unchecked")
+  public Valuation clone() {
+    Valuation result = new Valuation();
+    result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
+    return result;
+  }
 }

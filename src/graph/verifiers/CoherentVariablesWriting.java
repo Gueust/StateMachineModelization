@@ -322,7 +322,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
     HashMap<StateMachine, LinkedList<Variable>> written_variables =
         writtenVariables(m.getWritingStateMachines());
 
-    Iterator<StateMachine> it_state_machines = m.iteratorStatesMachines();
+    Iterator<StateMachine> it_state_machines = m.iterator();
     while (it_state_machines.hasNext()) {
       StateMachine machine = it_state_machines.next();
 

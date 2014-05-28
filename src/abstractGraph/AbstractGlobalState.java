@@ -1,6 +1,5 @@
 package abstractGraph;
 
-
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
@@ -13,10 +12,10 @@ import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.VariableChange;
 
-public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
-  private Valuation variables_values;
-  private HashMap<StateMachine, State> state_machines_current_state =
+  protected Valuation variables_values;
+  protected HashMap<StateMachine, State> state_machines_current_state =
       new HashMap<StateMachine, State>();
 
   public AbstractGlobalState() {
@@ -148,4 +147,5 @@ public class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends
     return true;
   }
 
+  public abstract AbstractGlobalState<M, S, T> clone();
 }

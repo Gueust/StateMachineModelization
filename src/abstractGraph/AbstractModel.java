@@ -2,7 +2,8 @@ package abstractGraph;
 
 import java.util.Iterator;
 
-public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    implements Iterable<M> {
   protected String model_name;
 
   public AbstractModel(String name) {
@@ -30,7 +31,7 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
   /**
    * The order of the elements is not specified.
    * 
-   * @return An iterator over all the state machines
+   * @return An iterator over all the state machines.
    */
-  public abstract Iterator<M> iteratorStatesMachines();
+  public abstract Iterator<M> iterator();
 }

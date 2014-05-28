@@ -199,7 +199,7 @@ public class GraphFactoryAEFD {
      * We check that the list of added transitions is exactly the transitions
      * added in the model
      */
-    sm_iterator = result.iteratorStatesMachines();
+    sm_iterator = result.iterator();
     int number_of_transitions = 0;
     while (sm_iterator.hasNext()) {
       StateMachine sm = sm_iterator.next();
