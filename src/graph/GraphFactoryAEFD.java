@@ -69,7 +69,7 @@ public class GraphFactoryAEFD {
    * Create the factory that loads the given file. The natural function called
    * next is {@link #buildModel(String, String)}
    */
-  public GraphFactoryAEFD() throws IOException {
+  public GraphFactoryAEFD() {
   }
 
   /*
