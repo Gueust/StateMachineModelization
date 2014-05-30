@@ -3,24 +3,16 @@ package abstractGraph.events;
 public abstract class SingleEvent {
 
   /* SingleEvents are immutable */
-  protected final String prefix;
   protected final String name;
 
   /**
-   * Creates a new event using the name `name`. The characters before the first
-   * occurence of an underscore (i.e. '_') will be taken at the prefix of the
-   * event.
+   * Creates a new event using the name `name`.
    * 
    * @param name
    *          The name of the event
    */
   public SingleEvent(String name) {
     this.name = name;
-    this.prefix = name.substring(0, name.indexOf('_'));
-  }
-
-  public String getPrefix() {
-    return prefix;
   }
 
   public String getName() {
