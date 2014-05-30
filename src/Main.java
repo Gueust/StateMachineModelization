@@ -30,8 +30,8 @@ public class Main {
 
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
-    String functional_model = "PN SAL/PN_SAL_N_Fonct_Auto.txt";
-    String proof_model = "PN SAL/PN_SAL_N_Preuv_Auto.txt";
+    String functional_model = "PN/test/PN_SAL_N_Fonct_Auto.txt";
+    String proof_model = "PN/test/PN_SAL_N_Preuv_Auto.txt";
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -50,6 +50,8 @@ public class Main {
     printFullPeakMemoryUsage();
 
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
+
+    System.out.print(model.regroupCTL().toString());
 
   }
 

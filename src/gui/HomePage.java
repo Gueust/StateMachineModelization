@@ -39,7 +39,7 @@ public class HomePage extends JFrame {
     JScrollPane scrollPane = new JScrollPane();
     checkbox_panel.setVisible(true);
 
-    JCheckBox chckbxCheckAll = new JCheckBox("Check All");
+    JCheckBox chckbxCheckAll = new JCheckBox("Don't stop at the first error");
     chckbxCheckAll.setSelected(true);
 
     JTextArea txtrVerificationLog = new JTextArea();
@@ -342,6 +342,8 @@ public class HomePage extends JFrame {
 
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,
+        functional_file_chooser, proof_file_chooser, this));
+    btnSimulation.addActionListener(new LaunchSimulationButton(
         functional_file_chooser, proof_file_chooser, this));
 
   }

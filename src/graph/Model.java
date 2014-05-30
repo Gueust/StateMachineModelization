@@ -1,5 +1,6 @@
 package graph;
 
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.verifiers.AbstractVerificationUnit;
 
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.Formula;
@@ -263,4 +265,53 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return synchronisation_events.containsKey(event.getName());
   }
 
+  /**
+   * Search all the CTL in the model (Event and Condition field) and put them in
+   * a HashMap where each CTL is linked to it opposite.
+   * Note that the key isn't probably the positive one.
+   * 
+   * @return
+   */
+  public HashMap<String, String> regroupCTL() {
+    HashMap<String, String> ctl_with_opposite = new HashMap<String, String>();
+    LinkedList<String> list_of_ctl_name = new LinkedList<String>();
+    searchExistingNameInHashSet(existingVariables.keySet(), list_of_ctl_name,
+        "CTL_");
+    searchExistingNameInHashSet(external_events.keySet(), list_of_ctl_name,
+        "CTL_");
+
+    while (!list_of_ctl_name.isEmpty()) {
+      GenerateFormulaAEFD generate_formula = new GenerateFormulaAEFD(
+          formulaFactory);
+      String ctl_name = list_of_ctl_name.removeFirst();
+      String ctl_opposite_name = generate_formula.getOppositeName(ctl_name);
+      if (list_of_ctl_name.contains(ctl_opposite_name)) {
+        ctl_with_opposite.put(ctl_name, ctl_opposite_name);
+      }
+      else {
+        throw new Error("Opposite ctl of " + ctl_name + " not found.");
+      }
+
+    }
+    return ctl_with_opposite;
+  }
+
+  /**
+   * Search the Strings that begin with the String to_search and put it in the
+   * LinkedList result.
+   * 
+   * @param target
+   * @param result
+   * @param to_search
+   */
+  public void searchExistingNameInHashSet(Set<String> target,
+      LinkedList<String> result, String to_search) {
+    Iterator<String> iterator_target = target.iterator();
+    while (iterator_target.hasNext()) {
+      String variable_name = iterator_target.next();
+      if (variable_name.startsWith(to_search)) {
+        result.add(variable_name);
+      }
+    }
+  }
 }

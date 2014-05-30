@@ -227,7 +227,7 @@ public class GenerateFormulaAEFD extends
     int length_variable;
 
     for (String suffixe : negative_suffix) {
-      if (input.contains(suffixe)) {
+      if (input.endsWith(suffixe)) {
         length_variable = input.length() - suffixe.length();
         return input.substring(0, length_variable).trim();
       }
@@ -247,7 +247,7 @@ public class GenerateFormulaAEFD extends
     String tmp;
 
     for (String suffixe : positive_suffix) {
-      if (input.contains(suffixe)) {
+      if (input.endsWith(suffixe)) {
         length_variable = input.length() - suffixe.length();
         tmp = input.substring(0, length_variable).trim();
         return tmp;

@@ -17,11 +17,19 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import engine.GraphSimulator;
+import graph.Model;
+
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
   private JTable table;
+  GraphSimulator simulator;
+  boolean with_proof;
 
-  public MainWindow() throws HeadlessException {
+  public MainWindow(GraphSimulator simulator, boolean with_proof)
+      throws HeadlessException {
+    this.simulator = simulator;
+    this.with_proof = with_proof;
 
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
@@ -381,7 +389,10 @@ public class MainWindow extends JFrame {
   }
 
   public static void main(String[] args) {
-    MainWindow main_window = new MainWindow();
+    Model model = new Model("test");
+    GraphSimulator simulator = new GraphSimulator(model);
+    boolean with_proof = false;
+    MainWindow main_window = new MainWindow(simulator, with_proof);
     main_window.pack();
     main_window.setLocationRelativeTo(null);
     main_window.setVisible(true);
