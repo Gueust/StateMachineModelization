@@ -6,7 +6,6 @@ import graph.Transition;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
 
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
@@ -18,7 +17,7 @@ import abstractGraph.events.VariableChange;
  * useless if it is not used in any Event or Contion field.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
-  private Vector<Variable> counter_example_not_used = new Vector<Variable>();
+  private HashSet<Variable> counter_example_not_used = new HashSet<Variable>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
