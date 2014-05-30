@@ -32,6 +32,7 @@ public class Verifier {
       super();
       addVerification(new CoherentVariablesWriting());
       addVerification(new NoUselessVariables());
+      addVerification(new WrittenAtLeastOnceChecker());
     }
   }
 
