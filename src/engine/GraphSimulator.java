@@ -21,7 +21,7 @@ import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
 
 public class GraphSimulator implements
-    AbstractGraphSimulator<GlobalState, StateMachine, State, Transition> {
+    GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
 
   private GlobalState internal_global_state = new GlobalState();
 

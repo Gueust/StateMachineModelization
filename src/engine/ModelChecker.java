@@ -67,7 +67,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    *         null if no such state exists.
    */
   public GS verify(
-      AbstractGraphSimulator<GS, M, S, T> simulator) {
+      GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
     assert (possible_events != null);
 
