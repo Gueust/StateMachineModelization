@@ -1,5 +1,10 @@
 package graph.verifiers;
 
+import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import graph.Transition;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -10,10 +15,6 @@ import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.events.Events;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 
 /**
  * This verifier checks that for all states, all transitions leaving from that
@@ -97,12 +98,6 @@ public class DeterminismChecker extends AbstractVerificationUnit {
                 if (solver.isSatisfiable(formula)) {
                   if (identicalActionFields(t1, t2) &&
                       identicalTarget(t1, t2)) {
-
-                    System.out.println("[Notice]Non exclusive transitions " +
-                        "not considered as an error since they have the same" +
-                        " target and actions.");
-                    System.out.println(errorMessage(machine, t1, t2, solver
-                        .solution()));
                     continue;
                   }
                   list_counter_example_machine.add(machine);
