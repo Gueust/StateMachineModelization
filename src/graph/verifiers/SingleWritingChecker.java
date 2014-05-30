@@ -1,14 +1,14 @@
 package graph.verifiers;
 
+import graph.Model;
+import graph.StateMachine;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import abstractGraph.conditions.Variable;
-import graph.Model;
-import graph.StateMachine;
 
 /**
  * Check that all the variables in the graphs are written exactly once.
@@ -16,7 +16,6 @@ import graph.StateMachine;
 public class SingleWritingChecker extends AbstractVerificationUnit {
   private HashMap<Variable, LinkedList<StateMachine>> counter_example_written_more_than_once =
       new HashMap<Variable, LinkedList<StateMachine>>();
-  private Vector<Variable> counter_example_not_writen = new Vector<Variable>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
@@ -24,7 +23,6 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
     boolean is_error = false;
 
     counter_example_written_more_than_once.clear();
-    counter_example_not_writen.clear();
 
     HashMap<Variable, LinkedList<StateMachine>> written_variables =
         m.getWritingStateMachines();
@@ -38,8 +36,6 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
       if (writing_state_machine != null) {
         switch (writing_state_machine.size()) {
         case 0:
-          is_error = true;
-          counter_example_not_writen.add(variable);
           break;
         case 1:
           break;
@@ -48,9 +44,6 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
           counter_example_written_more_than_once.put(variable,
               writing_state_machine);
         }
-      } else {
-        is_error = true;
-        counter_example_not_writen.add(variable);
       }
     }
 
@@ -74,18 +67,9 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
   public String errorMessage() {
     StringBuffer result = new StringBuffer();
 
-    if (!counter_example_written_more_than_once.isEmpty()) {
-      result.append(
-          "[FAILURE] The variables that follow are written more than once :\n"
-              + myPrint(counter_example_written_more_than_once) + "\n");
-    }
-
-    if (!counter_example_not_writen.isEmpty()) {
-      result.append(
-          "[WARNING] The variables that follow are never written :\n"
-              + counter_example_not_writen.toString() + "\n");
-    }
-
+    result.append(
+        "[FAILURE] The variables that follow are written more than once :\n"
+            + myPrint(counter_example_written_more_than_once) + "\n");
     return result.toString();
   }
 

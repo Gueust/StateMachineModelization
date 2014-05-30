@@ -1,16 +1,17 @@
 package test;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.DeterminismChecker;
 import graph.verifiers.CoherentVariablesWriting;
+import graph.verifiers.DeterminismChecker;
 import graph.verifiers.NoUselessVariables;
+import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.Verifier;
+import graph.verifiers.WrittenAtLeastOnceChecker;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -52,10 +53,10 @@ public class Graph_Verifiers_PackagesTesting {
 
     try {
       for (int i = 0; i < files.length; i++) {
-           assertTrue("Error on " + files[i],
-                verifier.check(loadFile(files[i]), true) == results[i]);
-          assertTrue("Error on " + files[i],
-              verifier.check(loadFile(files[i]), false) == results[i]);
+        assertTrue("Error on " + files[i],
+            verifier.check(loadFile(files[i]), true) == results[i]);
+        assertTrue("Error on " + files[i],
+            verifier.check(loadFile(files[i]), false) == results[i]);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -98,14 +99,53 @@ public class Graph_Verifiers_PackagesTesting {
     String[] files = {
         "Graph_with_no_variable.txt",
         "Graph_without_concurrent_writing.txt",
-        "Graph_with_concurrent_writing.txt",
+        "Graph_with_concurrent_writing.txt"
+    };
+
+    Boolean[] results = {
+        true,
+        true,
+        false
+    };
+
+    generalTest(verifier, files, results);
+  }
+
+  /**
+   * Testing of {@link graph.verifiers.WrittenAtLeastOnceChecker}.
+   * 
+   * @details This test uses different files representing simple graphs:
+   *          <ol>
+   *          <li>
+   *          Graph_with_no_variable.txt is not writing any variable.
+   * 
+   *          </li>
+   *          <li>
+   *          Graph_without_concurrent_writing.txt : 2 state machines, 2
+   *          variables, each of them written by one state machine.
+   * 
+   *          </li>
+   * 
+   *          <li>
+   *          Graph_with_not_written_variables.txt : Graph with a variable in a
+   *          condition field but never written on.</li>
+   * 
+   *          </ol>
+   */
+  @Test
+  public void WrittenAtLeastOnceChecker() {
+    Verifier verifier = new Verifier();
+    verifier.addVerification(new WrittenAtLeastOnceChecker());
+
+    String[] files = {
+        "Graph_with_no_variable.txt",
+        "Graph_without_concurrent_writing.txt",
         "Graph_with_not_written_variables.txt"
     };
 
     Boolean[] results = {
         true,
         true,
-        false,
         false
     };
 
@@ -141,12 +181,10 @@ public class Graph_Verifiers_PackagesTesting {
    *          </li>
    *          <li>
    *          Not_determinism_with_SAT_solving.txt : 2 transitions labeled with
-   *          the same event, and with an incompatible condition.
-   *          </li>
+   *          the same event, and with an incompatible condition.</li>
    *          <li>
    *          Determinism_two_identical_transitions.txt: two identical
-   *          transitions that should not raise an error, but only a warning.
-   *          </li>
+   *          transitions that should not raise an error, but only a warning.</li>
    *          </ol>
    */
   @Test
@@ -184,15 +222,13 @@ public class Graph_Verifiers_PackagesTesting {
    *          <ol>
    *          <li>
    *          Incoherent_writting_1.txt: 2 incoherent writing into the same
-   *          state.
-   *          </li>
+   *          state.</li>
    *          <li>
-   *          Incoherent_writting_2.txt: requires 1 level of propagation.
-   *          </li>
-   *          
+   *          Incoherent_writting_2.txt: requires 1 level of propagation.</li>
+   * 
    *          <li>
-   *          Incoherent_writting_4.txt: a single transition writing A and Not A.
-   *          </li>
+   *          Incoherent_writting_4.txt: a single transition writing A and Not
+   *          A.</li>
    *          </ol>
    */
   @Test

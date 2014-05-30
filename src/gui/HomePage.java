@@ -1,10 +1,10 @@
 package gui;
 
-import graph.GraphFactoryAEFD;
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.WrittenAtLeastOnceChecker;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
@@ -108,10 +108,12 @@ public class HomePage extends JFrame {
         );
 
     JCheckBox chckbxDeterminism = new JCheckBox("Determinism");
+    chckbxDeterminism.setEnabled(false);
     chckbxDeterminism.setSelected(true);
 
     JCheckBox chckbxNoConcurrentWritting = new JCheckBox(
         "No concurrent writting");
+    chckbxNoConcurrentWritting.setEnabled(false);
     chckbxNoConcurrentWritting.setSelected(true);
 
     JCheckBox chckbxCoherentWritting = new JCheckBox("Coherent writting");
@@ -120,6 +122,9 @@ public class HomePage extends JFrame {
     JCheckBox chckbxUselessVariables = new JCheckBox("Useless variables");
     chckbxUselessVariables.setSelected(true);
 
+    JCheckBox chckbxWrittenAtLeast = new JCheckBox("Written at least once");
+    chckbxWrittenAtLeast.setSelected(true);
+
     HashMap<Class<?>, JCheckBox> property_hashmap = new HashMap<Class<?>, JCheckBox>();
     property_hashmap.put(DeterminismChecker.class, chckbxDeterminism);
     property_hashmap
@@ -127,6 +132,8 @@ public class HomePage extends JFrame {
     property_hashmap.put(NoUselessVariables.class, chckbxUselessVariables);
     property_hashmap
         .put(CoherentVariablesWriting.class, chckbxCoherentWritting);
+    property_hashmap
+        .put(WrittenAtLeastOnceChecker.class, chckbxWrittenAtLeast);
 
     GroupLayout gl_checkbox_panel = new GroupLayout(checkbox_panel);
     gl_checkbox_panel.setHorizontalGroup(
@@ -166,6 +173,12 @@ public class HomePage extends JFrame {
                                     .addContainerGap()
                                     .addComponent(chckbxDeterminism,
                                         GroupLayout.DEFAULT_SIZE, 344,
+                                        Short.MAX_VALUE))
+                            .addGroup(
+                                gl_checkbox_panel.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(chckbxWrittenAtLeast,
+                                        GroupLayout.DEFAULT_SIZE, 344,
                                         Short.MAX_VALUE)))
                     .addContainerGap())
         );
@@ -181,7 +194,9 @@ public class HomePage extends JFrame {
                     .addComponent(chckbxCoherentWritting)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxUselessVariables)
-                    .addPreferredGap(ComponentPlacement.RELATED, 200,
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(chckbxWrittenAtLeast)
+                    .addPreferredGap(ComponentPlacement.RELATED, 177,
                         Short.MAX_VALUE)
                     .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -302,7 +317,6 @@ public class HomePage extends JFrame {
     // btnVerifyProperties.addActionListener();
 
     /* The actions performed by the different buttons */
-    GraphFactoryAEFD graph_factory;
     FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "txt files", "txt");
 
@@ -330,6 +344,7 @@ public class HomePage extends JFrame {
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,
         functional_file_chooser, proof_file_chooser, this));
+
   }
 
   public HomePage(GraphicsConfiguration arg0) {
