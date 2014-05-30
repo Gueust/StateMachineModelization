@@ -11,21 +11,89 @@ import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.cnf.Literal;
 
-class GenerateFormulaAEFD extends
+public class GenerateFormulaAEFD extends
     AEFDBooleanExpressionBaseVisitor<Formula> {
 
   private FormulaFactory factory;
 
   private HashMap<String, String> suffixes;
-  private String[] negative_suffix = { "_non_Bloque", "_non_Condamne",
-      "_non_Decondamne", "_non_Etabli", "_Chute", "_Inactif", "_Inactive", "_non_Prise",
-      "_non_Enclenchee","_non_Enclenche", "_Occupee", "_Droite", "_HS", "_Ferme",
-      "_non_Controle", "_non_Assuree", "_non_Assure", "_non_Vide", "_non_Valide", "_NM",
-      "_Bas", "_en_Action" , "_non_Pris","_Renverse","_Declenche","_NOK","_non_cde","_non_en_cours"};
-  private String[] positive_suffix = { "_Bloque", "_Condamne", "_Decondamne",
-      "_Etabli", "_Excite", "_Actif", "_Active", "_Prise", "_Enclenchee", "_Enclenche", "_Libre",
-      "_Gauche", "_ES", "_Ouvert", "_Controle", "_Assuree", "_Assure", "_Vide", "_Valide",
-      "_M", "_Haut", "_Libere" , "_Pris","_Normal","_Rearme","_OK","_cde","_en_cours"};
+  private static final String[] negative_suffix = { "_non_Bloque",
+      "_non_Condamne",
+      "_non_Decondamne",
+      "_non_Etabli",
+      "_Chute",
+      "_Inactif",
+      "_Inactive",
+      "_non_Prise",
+      "_non_Enclenchee",
+      "_non_Enclenche",
+      "_Occupee",
+      "_Droite",
+      "_HS",
+      "_Ferme",
+      "_non_Controle",
+      "_non_Assuree",
+      "_non_Assure",
+      "_non_Vide",
+      "_non_Valide",
+      "_NM",
+      "_Bas",
+      "_en_Action",
+      "_non_Pris",
+      "_Renverse",
+      "_Declenche",
+      "_NOK",
+      "_non_cde",
+      "_non_en_cours" };
+  private static final String[] positive_suffix = { "_Bloque",
+      "_Condamne", "_Decondamne",
+      "_Etabli", "_Excite", "_Actif",
+      "_Active",
+      "_Prise",
+      "_Enclenchee",
+      "_Enclenche",
+      "_Libre",
+      "_Gauche",
+      "_ES",
+      "_Ouvert",
+      "_Controle",
+      "_Assuree",
+      "_Assure",
+      "_Vide",
+      "_Valide",
+      "_M",
+      "_Haut",
+      "_Libere",
+      "_Pris",
+      "_Normal",
+      "_Rearme",
+      "_OK",
+      "_cde",
+      "_en_cours" };
+
+  static public String getOppositeSuffix(String suffix) {
+
+    for (int i = 0; i < positive_suffix.length; i++) {
+      if (positive_suffix[i].equals(suffix)) {
+        return negative_suffix[i];
+      }
+    }
+
+    for (int i = 0; i < negative_suffix.length; i++) {
+      if (negative_suffix[i].equals(suffix)) {
+        return positive_suffix[i];
+      }
+    }
+    throw new Error("Not found.");
+  }
+
+  static public String getOppositeName(String name) {
+    String suffix = name.substring(name.lastIndexOf('_'), name.length());
+    System.out.println("Suffix : " + suffix);
+    String tmp = name.substring(0, name.lastIndexOf('_'));
+    System.out.println("sans la fin" + tmp);
+    return tmp + getOppositeSuffix(suffix);
+  }
 
   /**
    * Constructor of the class that will initialize the internal hash map
@@ -47,7 +115,6 @@ class GenerateFormulaAEFD extends
     }
   }
 
-  
   /**
    * This function is launched when the parser meets a negation ('not' or
    * 'NOT').
@@ -60,10 +127,7 @@ class GenerateFormulaAEFD extends
     NotFormula temp_formula = new NotFormula(visit(ctx.booleanExpression()));
     return temp_formula;
   }
-  
-  
- 
-  
+
   /**
    * This function is launched when the parser meets an AND expression.
    * 
@@ -124,7 +188,8 @@ class GenerateFormulaAEFD extends
       throw new NullPointerException("The parser did not find any negative " +
           "suffix in the variable " + indicateur);
     }
-    String suffix_negative = indicateur.substring(variable_name.length(), indicateur.length());
+    String suffix_negative = indicateur.substring(variable_name.length(),
+        indicateur.length());
     String suffix_positive = suffixes.get(suffix_negative);
     variable_name = variable_name.concat(suffix_positive);
     return new NotFormula(factory.getVariable(variable_name));
@@ -205,7 +270,8 @@ class GenerateFormulaAEFD extends
     if (variable_name != null) {
       String suffix_negative = s.substring(variable_name.length(), s.length());
       /* It is a literal: "NOT" + variable_name */
-      return new Literal(factory.getVariable(variable_name.concat(suffixes.get(suffix_negative))), true);
+      return new Literal(factory.getVariable(variable_name.concat(suffixes
+          .get(suffix_negative))), true);
     }
 
     variable_name = removePositiveSuffix(s);
