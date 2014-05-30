@@ -1,3 +1,8 @@
+import engine.GraphSimulator;
+import graph.GraphFactoryAEFD;
+import graph.Model;
+import graph.verifiers.Verifier;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -8,11 +13,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-
 import utils.TeeOutputStream;
-import graph.GraphFactoryAEFD;
-import graph.Model;
-import graph.verifiers.Verifier;
 
 public class Main {
 
@@ -27,20 +28,44 @@ public class Main {
 
     long startTime = System.nanoTime();
 
-    GraphFactoryAEFD test = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
-    Model model = test.buildModel("Nurieux/Nurieux_PN_An_I_34_Fonct_Auto.txt",
-        "Testing model");
-    // System.out.println(model);
+    String functional_model = "PN SAL/PN_SAL_N_Fonct_Auto.txt";
+    String proof_model = "PN SAL/PN_SAL_N_Preuv_Auto.txt";
+
+    Model model = graph_factory
+        .buildModel(functional_model, functional_model);
+    model.build();
+    Model proof = graph_factory.buildModel(proof_model, proof_model);
+    proof.build();
+
+    GraphSimulator simulator = new GraphSimulator(model, proof);
+    simulator.checkCompatibility();
+
+    verifyModel(model);
+    verifyModel(proof);
+
+    long estimatedTime = System.nanoTime() - startTime;
+
+    printFullPeakMemoryUsage();
+
+    System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
+
+  }
+
+  private static void verifyModel(Model model) {
 
     Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
 
-    if (!default_verifier.checkAll(model)) {
+    boolean is_ok = !default_verifier.checkAll(model);
+    System.out.println();
+    if (is_ok) {
       System.out
           .println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
     } else {
       System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
     }
+    System.out.println();
 
     Verifier warning_verifier = Verifier.WARNING_VERIFIER;
     if (!warning_verifier.check(model)) {
@@ -49,14 +74,6 @@ public class Main {
     } else {
       System.out.println("*** All other properties verifier ***");
     }
-
-    long estimatedTime = System.nanoTime() - startTime;
-
-    printFullPeakMemoryUsage();
-
-    System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
-
-
   }
 
   /**
