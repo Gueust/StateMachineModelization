@@ -64,6 +64,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @details Initialize all internal fields except state_machines. In
    *          particular, it does fill in writing_state_machines.
    */
+  @Override
   public void build() {
     /* Internal data should all be null or initialized together */
     if (external_events == null) {

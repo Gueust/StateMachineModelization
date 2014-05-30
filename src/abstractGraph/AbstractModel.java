@@ -29,6 +29,13 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
   public abstract void addStateMachine(M state_machine);
 
   /**
+   * This function must be called after having added and filled all the state
+   * machines.
+   * The internal effects are internal implementation specific.
+   */
+  public abstract void build();
+
+  /**
    * The order of the elements is not specified.
    * 
    * @return An iterator over all the state machines.
