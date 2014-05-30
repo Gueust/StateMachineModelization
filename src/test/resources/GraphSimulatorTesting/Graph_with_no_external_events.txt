@@ -1,0 +1,12 @@
+Graph_with_no_external_event
+0
+1
+SYN_1 Evenement
+IND_A_Actif Condition
+IND_B_Inactif; Action
+Graph_with_no_external_event
+1
+2
+IND_B_Inactif Evenement
+Condition
+IND_A_Actif; Action

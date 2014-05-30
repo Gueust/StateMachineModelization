@@ -1,0 +1,30 @@
+Page 1
+3
+3
+Evenement
+Condition
+IND_A_Inactif; Action
+Page 1
+0
+0
+Evenement
+Condition
+IND_A_Actif; Action
+Page 1
+0
+1
+Evenement
+Condition
+Action
+Page 1
+1
+2
+Evenement
+Condition
+Action
+Page 1
+2
+3
+Evenement
+Condition
+Action

@@ -1,0 +1,12 @@
+Page 1
+0
+1
+CTL_1 Evenement
+IND_B_non_Actif Condition
+FCI_1; Action
+Page 1
+2
+1
+IND_A_Actif Evenement
+Condition
+FCI_1; IND_B_Actif; Action

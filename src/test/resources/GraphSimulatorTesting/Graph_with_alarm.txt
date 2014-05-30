@@ -1,0 +1,18 @@
+Page 1
+0
+1
+CTL_1 Evenement
+IND_A_Inactif Condition
+IND_B_Inactif; / IND_C_Inactif; Action
+Page 2
+0
+1
+IND_B_Inactif Evenement
+Condition
+Action
+Page 3
+0
+1
+IND_C_Inactif Evenement
+Condition
+Action

@@ -1,0 +1,6 @@
+Incoherent_writting_4
+0
+0
+Evenement
+Condition
+IND_A_Inactif; IND_A_Actif; Action

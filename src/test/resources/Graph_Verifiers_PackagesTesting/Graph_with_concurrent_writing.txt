@@ -1,0 +1,18 @@
+AUTO_1
+0
+1
+IND_A_Actif Evenement
+Condition
+IND_A_Inactif; Action
+AUTO_2
+1
+2
+MSG_1 Evenement
+IND_B_Inactif ET IND_A_Inactif Condition
+IND_A_Inactif; Action
+AUTO_3
+1
+2
+MSG_1 Evenement
+IND_B_Inactif ET IND_A_Inactif Condition
+IND_B_Inactif; Action

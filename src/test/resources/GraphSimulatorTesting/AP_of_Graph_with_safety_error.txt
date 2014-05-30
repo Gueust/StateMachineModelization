@@ -1,0 +1,6 @@
+AP_1
+0
+1
+IND_B_Inactif OU IND_C_Inactif Evenement
+IND_B_Inactif ET IND_C_Inactif Condition
+P_5; Action

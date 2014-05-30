@@ -1,0 +1,12 @@
+AUTO_1
+0
+1
+ACT_1 Evenement
+Condition
+Action
+AUTO_1
+1
+1
+MSG_1 Evenement
+Condition
+FCI_1; Action

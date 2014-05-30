@@ -1,0 +1,12 @@
+Determinism_with_sat_solving
+0
+1
+ACT_A OU MSG_1 Evenement
+IND_A_Inactif Condition
+IND_B_Actif; Action
+Determinism_with_sat_solving
+0
+1
+ACT_A Evenement
+IND_A_Actif Condition
+IND_A_Actif; Action
