@@ -1,12 +1,11 @@
 package gui;
 
+import graph.GraphFactoryAEFD;
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.WrittenAtLeastOnceChecker;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.util.HashMap;
 
@@ -29,12 +28,10 @@ public class HomePage extends JFrame {
   public HomePage() throws HeadlessException {
 
     this.setTitle("New Simulation");
+
     JPanel file_upload_panel = new JPanel();
-
     JPanel verification_panel = new JPanel();
-
     JButton btnVerifyProperties = new JButton("Verify Properties");
-
     JPanel checkbox_panel = new JPanel();
 
     JScrollPane scrollPane = new JScrollPane();
@@ -45,7 +42,7 @@ public class HomePage extends JFrame {
 
     JTextArea txtrVerificationLog = new JTextArea();
     txtrVerificationLog
-        .setToolTipText("The file where the log of the verification are written. If no file chosen, it will be written in the file \"verification_log.txt\" in the location of the jar.");
+        .setToolTipText("The file where the logs of the verification are written.");
     txtrVerificationLog.setEditable(false);
     txtrVerificationLog.setText("verification_log.txt");
 
@@ -314,11 +311,10 @@ public class HomePage extends JFrame {
         );
     getContentPane().setLayout(groupLayout);
 
-    // btnVerifyProperties.addActionListener();
-
     /* The actions performed by the different buttons */
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "txt files", "txt");
+    GraphFactoryAEFD graph_factory;
+    FileNameExtensionFilter filter =
+        new FileNameExtensionFilter("txt files", "txt");
 
     JFileChooser functional_file_chooser = new JFileChooser();
     functional_file_chooser.setSelectedFile(null);
@@ -345,21 +341,6 @@ public class HomePage extends JFrame {
         property_hashmap, chckbxCheckAll, log_file_chooser,
         functional_file_chooser, proof_file_chooser, this));
 
-  }
-
-  public HomePage(GraphicsConfiguration arg0) {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-  }
-
-  public HomePage(String arg0) throws HeadlessException {
-    super(arg0);
-    // TODO Auto-generated constructor stub
-  }
-
-  public HomePage(String arg0, GraphicsConfiguration arg1) {
-    super(arg0, arg1);
-    // TODO Auto-generated constructor stub
   }
 
   public static void main(String[] args) {
