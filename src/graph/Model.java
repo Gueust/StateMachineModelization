@@ -3,12 +3,14 @@ package graph;
 import graph.verifiers.AbstractVerificationUnit;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import abstractGraph.AbstractModel;
+import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
@@ -41,6 +43,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   private HashMap<String, CommandEvent> commands_events;
   private HashMap<String, SynchronisationEvent> synchronisation_events;
   private HashMap<String, VariableChange> variable_modification_events;
+  private HashMap<String, Variable> existingVariables;
 
   /** Store for every VariableChange the state machines that modifies it. */
   private HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
@@ -72,6 +75,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       commands_events = new HashMap<String, CommandEvent>();
       synchronisation_events = new HashMap<String, SynchronisationEvent>();
       variable_modification_events = new HashMap<String, VariableChange>();
+      existingVariables = new HashMap<String, Variable>();
       writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
     } else {
       external_events.clear();
@@ -88,6 +92,17 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
         for (SingleEvent event : transition.getEvents()) {
           addEvent(event);
+        }
+
+        Formula formula = transition.getCondition();
+
+        if (formula != null) {
+          HashSet<Variable> this_formula_variables = new HashSet<Variable>();
+          formula.allVariables(this_formula_variables);
+          for (Variable variable : this_formula_variables) {
+
+            existingVariables.put(variable.toString(), variable);
+          }
         }
 
         for (SingleEvent event : transition.getActions()) {
@@ -125,6 +140,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     } else if (event instanceof VariableChange) {
       variable_modification_events.put(event.getName(),
           (VariableChange) event);
+      Variable v = ((VariableChange) event).getModifiedVariable();
+      existingVariables.put(v.toString(), v);
     }
   }
 
@@ -182,14 +199,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return true if the variable exists in a Condition field.
    */
   public boolean containsVariable(Variable variable) {
-    return formulaFactory.contains(variable);
+    return containsVariable(variable.toString());
   }
 
   /**
    * {@inheritDoc #contains(Variable)}
    */
   public boolean containsVariable(String variable_name) {
-    return formulaFactory.contains(variable_name);
+    return existingVariables.containsKey(variable_name);
   }
 
   /**
