@@ -5,8 +5,10 @@ import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.WrittenAtLeastOnceChecker;
 
 import java.awt.HeadlessException;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.GroupLayout;
@@ -44,7 +46,6 @@ public class HomePage extends JFrame {
     txtrVerificationLog
         .setToolTipText("The file where the logs of the verification are written.");
     txtrVerificationLog.setEditable(false);
-    txtrVerificationLog.setText("verification_log.txt");
 
     JButton btnChangeLogFile = new JButton("Change log file");
 
@@ -317,7 +318,6 @@ public class HomePage extends JFrame {
         new FileNameExtensionFilter("txt files", "txt");
 
     JFileChooser functional_file_chooser = new JFileChooser();
-    functional_file_chooser.setSelectedFile(null);
     functional_file_chooser.setFileFilter(filter);
     btnLoadFunctionalModel.addActionListener(new LinkFileChoserToTextArea(
         functional_file_chooser,
@@ -331,7 +331,10 @@ public class HomePage extends JFrame {
         txtrProofModel));
 
     JFileChooser log_file_chooser = new JFileChooser();
-    log_file_chooser.setSelectedFile(null);
+    String default_log_file_name = "verification_log.txt";
+    File default_log = new File(default_log_file_name);
+    txtrVerificationLog.setText(default_log_file_name);
+    log_file_chooser.setSelectedFile(default_log);
     log_file_chooser.setFileFilter(filter);
     btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
         log_file_chooser,

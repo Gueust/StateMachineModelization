@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+@SuppressWarnings("serial")
 public class MainWindow extends JFrame {
   private JTable table;
 
@@ -93,8 +94,8 @@ public class MainWindow extends JFrame {
                     .addContainerGap())
         );
 
-    JRadioButton rdbtnCompleteSimulation = new JRadioButton(
-        "Complete Simulation");
+    JRadioButton rdbtnCompleteSimulation =
+        new JRadioButton("Complete Simulation");
     rdbtnCompleteSimulation.setPreferredSize(new Dimension(101, 23));
 
     JButton btnSimulate = new JButton("next");
@@ -114,11 +115,11 @@ public class MainWindow extends JFrame {
 
     JTextPane textPane = new JTextPane();
 
-    JRadioButton rdbtnOneExternalEvent = new JRadioButton(
-        "One External Event Step");
+    JRadioButton rdbtnOneExternalEvent =
+        new JRadioButton("One External Event Step");
 
-    JRadioButton rdbtnOneInternalEvent = new JRadioButton(
-        "One Internal Event Step");
+    JRadioButton rdbtnOneInternalEvent =
+        new JRadioButton("One Internal Event Step");
     GroupLayout gl_user_option_panel = new GroupLayout(user_option_panel);
     gl_user_option_panel.setHorizontalGroup(
         gl_user_option_panel.createParallelGroup(Alignment.TRAILING)
@@ -270,8 +271,7 @@ public class MainWindow extends JFrame {
     JList commands = new JList();
     GroupLayout gl_fifo_panel = new GroupLayout(fifo_panel);
     gl_fifo_panel
-        .setHorizontalGroup(
-        gl_fifo_panel
+        .setHorizontalGroup(gl_fifo_panel
             .createParallelGroup(Alignment.TRAILING)
             .addGroup(
                 Alignment.LEADING,
