@@ -89,9 +89,7 @@ public class GenerateFormulaAEFD extends
 
   static public String getOppositeName(String name) {
     String suffix = name.substring(name.lastIndexOf('_'), name.length());
-    System.out.println("Suffix : " + suffix);
     String tmp = name.substring(0, name.lastIndexOf('_'));
-    System.out.println("sans la fin" + tmp);
     return tmp + getOppositeSuffix(suffix);
   }
 
