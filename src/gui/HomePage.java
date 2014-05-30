@@ -40,6 +40,8 @@ public class HomePage extends JFrame {
     checkbox_panel.setVisible(true);
 
     JCheckBox chckbxCheckAll = new JCheckBox("Don't stop at the first error");
+    chckbxCheckAll
+        .setToolTipText("If not checked, the verification will stop at the first error encountered.");
     chckbxCheckAll.setSelected(true);
 
     JTextArea txtrVerificationLog = new JTextArea();
@@ -106,21 +108,31 @@ public class HomePage extends JFrame {
         );
 
     JCheckBox chckbxDeterminism = new JCheckBox("Determinism");
+    chckbxDeterminism
+        .setToolTipText("For each state, check that all the transitions with a same event are exclusive.");
     chckbxDeterminism.setEnabled(false);
     chckbxDeterminism.setSelected(true);
 
     JCheckBox chckbxNoConcurrentWritting = new JCheckBox(
         "No concurrent writting");
+    chckbxNoConcurrentWritting
+        .setToolTipText("Check that each variable is written by just one graph.");
     chckbxNoConcurrentWritting.setEnabled(false);
     chckbxNoConcurrentWritting.setSelected(true);
 
     JCheckBox chckbxCoherentWritting = new JCheckBox("Coherent writting");
+    chckbxCoherentWritting
+        .setToolTipText("Check that for each state, a variable will always have the same value when the current state of the graph will be that state.");
     chckbxCoherentWritting.setSelected(true);
 
     JCheckBox chckbxUselessVariables = new JCheckBox("Useless variables");
+    chckbxUselessVariables
+        .setToolTipText("Check that all the variables that are written are used at least once.");
     chckbxUselessVariables.setSelected(true);
 
     JCheckBox chckbxWrittenAtLeast = new JCheckBox("Written at least once");
+    chckbxWrittenAtLeast
+        .setToolTipText("Check that all the variable that are in the field condition or event are written at least once (found in the field Action).");
     chckbxWrittenAtLeast.setSelected(true);
 
     HashMap<Class<?>, JCheckBox> property_hashmap = new HashMap<Class<?>, JCheckBox>();
