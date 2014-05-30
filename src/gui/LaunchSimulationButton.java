@@ -54,7 +54,7 @@ public class LaunchSimulationButton implements ActionListener {
       } else {
         simulator = new GraphSimulator(functional_model);
       }
-
+      frame.dispose();
       MainWindow main_window = new MainWindow(simulator, with_proof);
       main_window.pack();
       main_window.setLocationRelativeTo(null);
