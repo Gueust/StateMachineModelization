@@ -34,12 +34,7 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
           written_variables.get(variable);
 
       if (writing_state_machine != null) {
-        switch (writing_state_machine.size()) {
-        case 0:
-          break;
-        case 1:
-          break;
-        default:
+        if (writing_state_machine.size()>1) {
           is_error = true;
           counter_example_written_more_than_once.put(variable,
               writing_state_machine);
