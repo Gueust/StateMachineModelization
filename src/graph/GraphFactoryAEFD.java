@@ -485,7 +485,8 @@ public class GraphFactoryAEFD {
           !(result instanceof SynchronisationEvent) &&
           !(result instanceof VariableChange) &&
           !(result instanceof ModelCheckerEvent)) {
-        throw new Error("Impossible scenario");
+        throw new Error("Impossible scenario. The event " + result.getName()
+            + " is a " + result.getClass());
       }
 
       return result;
@@ -504,8 +505,9 @@ public class GraphFactoryAEFD {
     case "DTP":
     case "ATP":
     case "CMD":
-    case "MSG":
     case "FCI":
+      new_event = new CommandEvent(event_name);
+      break;
     case "P":
       new_event = new ModelCheckerEvent(event_name);
       break;
