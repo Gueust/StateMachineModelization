@@ -1,9 +1,10 @@
 package graph.verifiers;
 
+import graph.Model;
+
 import java.util.LinkedList;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import graph.Model;
 
 /**
  * A Verifier groups several verification unit. A verification unit is a
@@ -57,6 +58,9 @@ public class Verifier {
    * @return True if the model verifies all the registered verification units.
    */
   public boolean check(Model m, boolean verbose) {
+    if (verbose) {
+      printHeader(m);
+    }
     boolean result = true;
     for (AbstractVerificationUnit unit : verification_units) {
       boolean tmp = unit.check(m, verbose);
@@ -87,6 +91,9 @@ public class Verifier {
    */
   public boolean checkAll(Model m, boolean verbose)
       throws NotImplementedException {
+    if (verbose) {
+      printHeader(m);
+    }
     boolean result = true;
     for (AbstractVerificationUnit unit : verification_units) {
       boolean tmp = unit.checkAll(m, verbose);
@@ -105,5 +112,9 @@ public class Verifier {
    */
   public boolean checkAll(Model m) throws NotImplementedException {
     return checkAll(m, true);
+  }
+
+  private void printHeader(Model m) {
+    System.out.println("Checking of the " + m.getModelName() + " model.");
   }
 }
