@@ -1,5 +1,9 @@
 package graph.verifiers;
 
+import graph.Model;
+import graph.StateMachine;
+import graph.Transition;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
@@ -8,9 +12,6 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
-import graph.Model;
-import graph.StateMachine;
-import graph.Transition;
 
 /**
  * Check that the graphs does not contain useless variables.A variable is
@@ -95,6 +96,6 @@ public class NoUselessVariables extends AbstractVerificationUnit {
 
   @Override
   public String successMessage() {
-    return "[SUCCESS] Checking that all variables are written and used...OK";
+    return "[SUCCESS] Checking that all variables that are written are used...OK";
   }
 }
