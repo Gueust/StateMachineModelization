@@ -216,7 +216,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *         event field, condition field or written in a action field).
    */
   public Iterator<Variable> iteratorExistingVariables() {
-    return formulaFactory.iteratorExistingVariables();
+    return existingVariables.values().iterator();
   }
 
   /**
