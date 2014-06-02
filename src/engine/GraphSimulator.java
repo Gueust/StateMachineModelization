@@ -115,8 +115,9 @@ public class GraphSimulator implements
 
     for (StateMachine state_machine : model) {
       State current_state = global_state.getState(state_machine);
-      Iterator<Transition> transition_iterator = current_state
-          .iteratorTransitions(event);
+      assert current_state != null : "No state selected for a state machine.";
+      Iterator<Transition> transition_iterator =
+          current_state.iteratorTransitions(event);
       while (transition_iterator.hasNext()) {
         Transition transition = transition_iterator.next();
 
@@ -326,26 +327,22 @@ public class GraphSimulator implements
     if (proof != null) {
       execute(proof, starting_state, event, internal_proof_event_queue);
     }
-    processSingleEvent(model, starting_state, event,
-        internal_functional_event_queue);
 
-    @SuppressWarnings("unchecked")
-    LinkedList<SingleEvent> transfert_list =
-        (LinkedList<SingleEvent>) internal_functional_event_queue.clone();
+    LinkedList<SingleEvent> transfert_list = new LinkedList<SingleEvent>();
+    SingleEvent curr_event = event;
 
-    executeProof(starting_state, transfert_list);
-
-    while (!internal_functional_event_queue.isEmpty()) {
-      SingleEvent head = internal_functional_event_queue.removeFirst();
+    do {
       transfert_list.clear();
 
-      processSingleEvent(model, starting_state, head, transfert_list);
+      processSingleEvent(model, starting_state, curr_event, transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
       if (proof != null) {
         executeProof(starting_state, transfert_list);
       }
-    }
+
+      curr_event = internal_functional_event_queue.poll();
+    } while (curr_event != null);
     return internal_global_state;
   }
 
