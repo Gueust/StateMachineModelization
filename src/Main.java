@@ -74,7 +74,7 @@ public class Main {
 
     System.out.println(initialization_events);
 
-    simulator.execute(initialization_events);
+    simulator.executeAll(initialization_events);
 
     long estimatedTime = System.nanoTime() - startTime;
 
