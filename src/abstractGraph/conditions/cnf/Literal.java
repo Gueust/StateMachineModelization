@@ -6,6 +6,9 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 
+/**
+ * Literals are used in CNFFormulas.
+ */
 public class Literal extends Formula {
   private Variable variable;
   boolean is_negated;

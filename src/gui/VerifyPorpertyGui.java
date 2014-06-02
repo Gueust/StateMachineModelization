@@ -52,9 +52,7 @@ public class VerifyPorpertyGui implements ActionListener {
             .getSelectedFile()
             .getAbsoluteFile());
       } catch (FileNotFoundException e2) {
-        // TODO Auto-generated catch block
         e2.printStackTrace();
-
       }
 
       TeeOutputStream myOut = new TeeOutputStream(System.out, fos);

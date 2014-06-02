@@ -112,8 +112,8 @@ public class HomePage extends JFrame {
     chckbxDeterminism.setEnabled(false);
     chckbxDeterminism.setSelected(true);
 
-    JCheckBox chckbxNoConcurrentWritting = new JCheckBox(
-        "No concurrent writting");
+    JCheckBox chckbxNoConcurrentWritting =
+        new JCheckBox("No concurrent writting");
     chckbxNoConcurrentWritting
         .setToolTipText("Check that each variable is written by just one graph.");
     chckbxNoConcurrentWritting.setEnabled(false);
@@ -229,97 +229,89 @@ public class HomePage extends JFrame {
     JButton btnSimulation = new JButton("Simulation");
 
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
-    gl_file_upload_panel.setHorizontalGroup(
-        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_file_upload_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(
-                        gl_file_upload_panel.createParallelGroup(
-                            Alignment.TRAILING)
-                            .addComponent(btnSimulation, Alignment.LEADING,
-                                GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(
-                                Alignment.LEADING,
-                                gl_file_upload_panel.createParallelGroup(
-                                    Alignment.TRAILING, false)
-                                    .addComponent(btnLoadFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(txtrFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(btnLoadProofModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(txtrProofModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)))
-                    .addContainerGap())
+    gl_file_upload_panel.setHorizontalGroup(gl_file_upload_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_file_upload_panel.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(gl_file_upload_panel.createParallelGroup(
+                Alignment.TRAILING)
+                .addComponent(btnSimulation, Alignment.LEADING,
+                    GroupLayout.DEFAULT_SIZE,
+                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(Alignment.LEADING,
+                    gl_file_upload_panel.createParallelGroup(
+                        Alignment.TRAILING, false)
+                        .addComponent(btnLoadFunctionalModel,
+                            Alignment.LEADING,
+                            GroupLayout.DEFAULT_SIZE, 184,
+                            Short.MAX_VALUE)
+                        .addComponent(txtrFunctionalModel,
+                            Alignment.LEADING,
+                            GroupLayout.DEFAULT_SIZE, 184,
+                            Short.MAX_VALUE)
+                        .addComponent(btnLoadProofModel,
+                            Alignment.LEADING,
+                            GroupLayout.DEFAULT_SIZE, 184,
+                            Short.MAX_VALUE)
+                        .addComponent(txtrProofModel,
+                            Alignment.LEADING,
+                            GroupLayout.DEFAULT_SIZE, 184,
+                            Short.MAX_VALUE)))
+            .addContainerGap())
         );
     gl_file_upload_panel.setVerticalGroup(
         gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_file_upload_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(txtrFunctionalModel,
-                        GroupLayout.PREFERRED_SIZE, 41,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnLoadFunctionalModel,
-                        GroupLayout.PREFERRED_SIZE, 42,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addGap(11)
-                    .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
-                        42, GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnLoadProofModel,
-                        GroupLayout.PREFERRED_SIZE, 42,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED, 100,
-                        Short.MAX_VALUE)
-                    .addComponent(btnSimulation, GroupLayout.PREFERRED_SIZE,
-                        58, GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap())
+            .addGroup(gl_file_upload_panel.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtrFunctionalModel,
+                    GroupLayout.PREFERRED_SIZE, 41,
+                    GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(btnLoadFunctionalModel,
+                    GroupLayout.PREFERRED_SIZE, 42,
+                    GroupLayout.PREFERRED_SIZE)
+                .addGap(11)
+                .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
+                    42, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(btnLoadProofModel,
+                    GroupLayout.PREFERRED_SIZE, 42,
+                    GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED, 100,
+                    Short.MAX_VALUE)
+                .addComponent(btnSimulation, GroupLayout.PREFERRED_SIZE,
+                    58, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
     // TODO Auto-generated constructor stub
 
     GroupLayout groupLayout = new GroupLayout(getContentPane());
-    groupLayout.setHorizontalGroup(
-        groupLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                groupLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(file_upload_panel,
-                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addGap(18)
-                    .addComponent(verification_panel, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap())
+    groupLayout.setHorizontalGroup(groupLayout
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(groupLayout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(file_upload_panel,
+                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                GroupLayout.PREFERRED_SIZE)
+            .addGap(18)
+            .addComponent(verification_panel, GroupLayout.DEFAULT_SIZE,
+                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap())
         );
-    groupLayout
-        .setVerticalGroup(
-        groupLayout
-            .createParallelGroup(Alignment.TRAILING)
-            .addGroup(
-                groupLayout
-                    .createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(
-                        groupLayout.createParallelGroup(Alignment.TRAILING)
-                            .addComponent(verification_panel,
-                                Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-                                297, Short.MAX_VALUE)
-                            .addComponent(file_upload_panel, Alignment.LEADING,
-                                GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
-                    .addContainerGap())
+    groupLayout.setVerticalGroup(groupLayout
+        .createParallelGroup(Alignment.TRAILING)
+        .addGroup(groupLayout
+            .createSequentialGroup()
+            .addContainerGap()
+            .addGroup(groupLayout
+                .createParallelGroup(Alignment.TRAILING)
+                .addComponent(verification_panel,
+                    Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
+                    297, Short.MAX_VALUE)
+                .addComponent(file_upload_panel, Alignment.LEADING,
+                    GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
+            .addContainerGap())
         );
     getContentPane().setLayout(groupLayout);
 
@@ -336,9 +328,8 @@ public class HomePage extends JFrame {
     JFileChooser proof_file_chooser = new JFileChooser();
     proof_file_chooser.setSelectedFile(null);
     proof_file_chooser.setFileFilter(filter);
-    btnLoadProofModel.addActionListener(new LinkFileChoserToTextArea(
-        proof_file_chooser,
-        txtrProofModel));
+    btnLoadProofModel.addActionListener(
+        new LinkFileChoserToTextArea(proof_file_chooser, txtrProofModel));
 
     JFileChooser log_file_chooser = new JFileChooser();
     String default_log_file_name = "verification_log.txt";
@@ -346,9 +337,8 @@ public class HomePage extends JFrame {
     txtrVerificationLog.setText(default_log_file_name);
     log_file_chooser.setSelectedFile(default_log);
     log_file_chooser.setFileFilter(filter);
-    btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
-        log_file_chooser,
-        txtrVerificationLog));
+    btnChangeLogFile.addActionListener(
+        new LinkFileChoserToTextArea(log_file_chooser, txtrVerificationLog));
 
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,

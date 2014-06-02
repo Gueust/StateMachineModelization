@@ -24,6 +24,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
+
+import abstractGraph.events.InternalEvent;
+
 import abstractGraph.events.SingleEvent;
 import engine.GraphSimulator;
 import graph.Model;
@@ -65,12 +68,16 @@ public class MainWindow extends JFrame {
     JPanel transitions_panel = new JPanel();
 
     GroupLayout groupLayout = new GroupLayout(getContentPane());
-    groupLayout
-        .setHorizontalGroup(
-        groupLayout
-            .createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                groupLayout
+    groupLayout.setHorizontalGroup(groupLayout
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(groupLayout
+            .createSequentialGroup()
+            .addContainerGap()
+            .addGroup(groupLayout
+                .createParallelGroup(Alignment.LEADING)
+                .addComponent(transitions_panel,
+                    GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+                .addGroup(groupLayout
                     .createSequentialGroup()
                     .addContainerGap()
                     .addGroup(
@@ -114,7 +121,9 @@ public class MainWindow extends JFrame {
                     .addComponent(transitions_panel,
                         GroupLayout.PREFERRED_SIZE, 181,
                         GroupLayout.PREFERRED_SIZE)
+
                     .addContainerGap(117, Short.MAX_VALUE))
+
         );
 
     ButtonGroup button_group = new ButtonGroup();
@@ -150,102 +159,92 @@ public class MainWindow extends JFrame {
     button_group.add(rdbtnOneInternalEvent);
 
     GroupLayout gl_user_option_panel = new GroupLayout(user_option_panel);
-    gl_user_option_panel.setHorizontalGroup(
-        gl_user_option_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                Alignment.TRAILING,
-                gl_user_option_panel.createSequentialGroup()
-                    .addGroup(
-                        gl_user_option_panel.createParallelGroup(
-                            Alignment.TRAILING)
-                            .addComponent(btnEatExternalEvents,
-                                GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                            .addGroup(
-                                gl_user_option_panel.createSequentialGroup()
-                                    .addGap(4)
-                                    .addComponent(textPane,
-                                        GroupLayout.DEFAULT_SIZE, 170,
-                                        Short.MAX_VALUE))
-                            .addGroup(
-                                gl_user_option_panel.createSequentialGroup()
-                                    .addGap(2)
-                                    .addComponent(btnSimulate,
-                                        GroupLayout.DEFAULT_SIZE, 172,
-                                        Short.MAX_VALUE))
-                            .addGroup(
-                                Alignment.LEADING,
-                                gl_user_option_panel.createSequentialGroup()
-                                    .addGap(4)
-                                    .addGroup(
-                                        gl_user_option_panel
-                                            .createParallelGroup(
-                                                Alignment.LEADING)
-                                            .addComponent(
-                                                rdbtnCompleteSimulation,
-                                                Alignment.TRAILING,
-                                                GroupLayout.DEFAULT_SIZE, 170,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                rdbtnOneInternalEvent,
-                                                GroupLayout.DEFAULT_SIZE, 170,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                rdbtnOneExternalEvent,
-                                                GroupLayout.DEFAULT_SIZE, 170,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                btnUploadExternalEvent,
-                                                GroupLayout.DEFAULT_SIZE, 170,
-                                                Short.MAX_VALUE))))
-                    .addContainerGap())
-        );
-    gl_user_option_panel.setVerticalGroup(
-        gl_user_option_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_user_option_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(btnUploadExternalEvent,
-                        GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                    .addGap(92)
-                    .addComponent(rdbtnCompleteSimulation,
-                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(rdbtnOneExternalEvent)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(rdbtnOneInternalEvent)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnSimulate, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addGap(46)
-                    .addComponent(textPane, GroupLayout.PREFERRED_SIZE, 70,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addGap(18)
+    gl_user_option_panel.setHorizontalGroup(gl_user_option_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(Alignment.TRAILING,
+            gl_user_option_panel.createSequentialGroup()
+                .addGroup(gl_user_option_panel
+                    .createParallelGroup(Alignment.TRAILING)
                     .addComponent(btnEatExternalEvents,
-                        GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-                    .addGap(45))
+                        GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                    .addGroup(gl_user_option_panel.createSequentialGroup()
+                        .addGap(4)
+                        .addComponent(textPane,
+                            GroupLayout.DEFAULT_SIZE, 170,
+                            Short.MAX_VALUE))
+                    .addGroup(gl_user_option_panel.createSequentialGroup()
+                        .addGap(2)
+                        .addComponent(btnSimulate,
+                            GroupLayout.DEFAULT_SIZE, 172,
+                            Short.MAX_VALUE))
+                    .addGroup(Alignment.LEADING,
+                        gl_user_option_panel.createSequentialGroup()
+                            .addGap(4)
+                            .addGroup(gl_user_option_panel
+                                .createParallelGroup(Alignment.LEADING)
+                                .addComponent(
+                                    rdbtnCompleteSimulation,
+                                    Alignment.TRAILING,
+                                    GroupLayout.DEFAULT_SIZE, 170,
+                                    Short.MAX_VALUE)
+                                .addComponent(
+                                    rdbtnOneInternalEvent,
+                                    GroupLayout.DEFAULT_SIZE, 170,
+                                    Short.MAX_VALUE)
+                                .addComponent(
+                                    rdbtnOneExternalEvent,
+                                    GroupLayout.DEFAULT_SIZE, 170,
+                                    Short.MAX_VALUE)
+                                .addComponent(
+                                    btnUploadExternalEvent,
+                                    GroupLayout.DEFAULT_SIZE, 170,
+                                    Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+    gl_user_option_panel.setVerticalGroup(gl_user_option_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_user_option_panel.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(btnUploadExternalEvent,
+                GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+            .addGap(92)
+            .addComponent(rdbtnCompleteSimulation,
+                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(rdbtnOneExternalEvent)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(rdbtnOneInternalEvent)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnSimulate, GroupLayout.PREFERRED_SIZE,
+                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addGap(46)
+            .addComponent(textPane, GroupLayout.PREFERRED_SIZE, 70,
+                GroupLayout.PREFERRED_SIZE)
+            .addGap(18)
+            .addComponent(btnEatExternalEvents,
+                GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+            .addGap(45))
         );
     user_option_panel.setLayout(gl_user_option_panel);
 
     table = new JTable();
     GroupLayout gl_transitions_panel = new GroupLayout(transitions_panel);
-    gl_transitions_panel.setHorizontalGroup(
-        gl_transitions_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_transitions_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(table, GroupLayout.DEFAULT_SIZE, 799,
-                        Short.MAX_VALUE)
-                    .addContainerGap())
+    gl_transitions_panel.setHorizontalGroup(gl_transitions_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_transitions_panel.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(table, GroupLayout.DEFAULT_SIZE, 799,
+                Short.MAX_VALUE)
+            .addContainerGap())
         );
-    gl_transitions_panel.setVerticalGroup(
-        gl_transitions_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_transitions_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(table, GroupLayout.DEFAULT_SIZE, 159,
-                        Short.MAX_VALUE)
-                    .addContainerGap())
+    gl_transitions_panel.setVerticalGroup(gl_transitions_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_transitions_panel.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(table, GroupLayout.DEFAULT_SIZE, 159,
+                Short.MAX_VALUE)
+            .addContainerGap())
         );
     transitions_panel.setLayout(gl_transitions_panel);
 
@@ -297,7 +296,9 @@ public class MainWindow extends JFrame {
     functional_state_tag_change_FIFO = new JList();
 
     proof_state_tag_change_FIFO = new JList();
+    
     GroupLayout gl_fifo_panel = new GroupLayout(fifo_panel);
+    
     gl_fifo_panel
         .setHorizontalGroup(
         gl_fifo_panel
@@ -398,7 +399,9 @@ public class MainWindow extends JFrame {
                                 GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(commands, GroupLayout.DEFAULT_SIZE, 90,
+
                         Short.MAX_VALUE)
+
                     .addGap(15))
         );
     fifo_panel.setLayout(gl_fifo_panel);

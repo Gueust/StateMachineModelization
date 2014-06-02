@@ -3,13 +3,13 @@ package graph;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.verifiers.AbstractVerificationUnit;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.Formula;
@@ -270,53 +270,61 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * a HashMap where each CTL is linked to it opposite.
    * Note that the key isn't probably the positive one.
    * 
-   * @return
+   * @return A HashMap of the pair (positive_CTL, negative_CTL).
    */
   public HashMap<String, String> regroupCTL() {
     boolean has_error = false;
     LinkedList<String> list_of_ctl_without_opposite = new LinkedList<String>();
-    HashMap<String, String> ctl_with_opposite = new HashMap<String, String>();
-    HashSet<String> list_of_ctl_name = new HashSet<String>();
-    searchExistingNameInHashSet(existingVariables.keySet(), list_of_ctl_name,
-        "CTL_");
-    searchExistingNameInHashSet(external_events.keySet(), list_of_ctl_name,
-        "CTL_");
-    LinkedList<String> queue_of_ctl = new LinkedList<String>();
-    queue_of_ctl.addAll(list_of_ctl_name);
-    while (!queue_of_ctl.isEmpty()) {
-      GenerateFormulaAEFD generate_formula = new GenerateFormulaAEFD(
-          formulaFactory);
-      String ctl_name = queue_of_ctl.removeFirst();
-      String ctl_opposite_name = generate_formula.getOppositeName(ctl_name);
-      if (queue_of_ctl.contains(ctl_opposite_name)) {
-        ctl_with_opposite.put(ctl_name, ctl_opposite_name);
-        queue_of_ctl.remove(queue_of_ctl.indexOf(ctl_opposite_name));
+    HashMap<String, String> pairs_of_ctl = new HashMap<String, String>();
+    HashSet<String> list_of_ctl_names = new HashSet<String>();
+
+    searchExistingNameInHashSet(existingVariables.keySet(), "CTL_",
+        list_of_ctl_names);
+    searchExistingNameInHashSet(external_events.keySet(), "CTL_",
+        list_of_ctl_names);
+
+    while (!list_of_ctl_names.isEmpty()) {
+      String ctl_name = list_of_ctl_names.iterator().next();
+      String ctl_opposite_name = GenerateFormulaAEFD.getOppositeName(ctl_name);
+
+      if (list_of_ctl_names.contains(ctl_opposite_name)) {
+        if (GenerateFormulaAEFD.removePositiveSuffix(ctl_name) != null) {
+          pairs_of_ctl.put(ctl_name, ctl_opposite_name);
+        }
+        else {
+          pairs_of_ctl.put(ctl_opposite_name, ctl_name);
+        }
+        list_of_ctl_names.remove(ctl_opposite_name);
       } else {
         has_error = true;
         list_of_ctl_without_opposite.add(ctl_name);
       }
+
+      list_of_ctl_names.remove(ctl_name);
+
     }
     if (has_error) {
       throw new Error("This list of CTL doesn't have an opposite "
           + list_of_ctl_without_opposite.toString() + "\n");
     }
-    return ctl_with_opposite;
+    return pairs_of_ctl;
   }
 
   /**
-   * Search the Strings that begin with the String to_search and put it in the
-   * LinkedList result.
+   * Search the Strings in `target` that begins with `to_search` and puts it in
+   * `result`.
    * 
    * @param target
+   *          The strings to test.
+   * @param prefix
+   *          The prefix to search for.
    * @param result
-   * @param to_search
    */
-  public void searchExistingNameInHashSet(Set<String> target,
-      HashSet<String> result, String to_search) {
-    Iterator<String> iterator_target = target.iterator();
-    while (iterator_target.hasNext()) {
-      String variable_name = iterator_target.next();
-      if (variable_name.startsWith(to_search)) {
+  public void searchExistingNameInHashSet(Iterable<String> target,
+      String prefix, Collection<String> result) {
+
+    for (String variable_name : target) {
+      if (variable_name.startsWith(prefix)) {
         result.add(variable_name);
       }
     }

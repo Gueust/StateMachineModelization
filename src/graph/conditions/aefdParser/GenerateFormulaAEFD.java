@@ -221,7 +221,7 @@ public class GenerateFormulaAEFD extends
    * @return The variable name without the first matched negative suffix.
    *         null if the suffix did not match any registered negative suffix.
    */
-  private String removeNegativeSuffix(String input) {
+  public static String removeNegativeSuffix(String input) {
     int length_variable;
 
     for (String suffixe : negative_suffix) {
@@ -240,7 +240,7 @@ public class GenerateFormulaAEFD extends
    * @return The variable name without the first matched positive suffix.
    *         null if the suffix did not match any registered positive suffix.
    */
-  private String removePositiveSuffix(String input) {
+  public static String removePositiveSuffix(String input) {
     int length_variable;
     String tmp;
 
