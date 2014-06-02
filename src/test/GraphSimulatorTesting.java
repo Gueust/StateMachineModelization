@@ -218,7 +218,7 @@ public class GraphSimulatorTesting {
         "Page 3").getId().equals("1"));
 
     simulator = liste_simulator_proof.removeFirst();
-    simulator.execute(liste_of_list_external_event_proof.removeFirst());
+    simulator.executeAll(liste_of_list_external_event_proof.removeFirst());
     assertTrue("Error on " + files_for_proof_testing[0],
         !simulator
             .getGlobalState()

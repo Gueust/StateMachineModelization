@@ -26,9 +26,16 @@ public class GraphSimulator implements
   private GlobalState internal_global_state = new GlobalState();
 
   /** This is the list of the different queues used in the simulator. */
-  private LinkedList<SingleEvent> internal_functional_event_queue = new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> internal_proof_event_queue = new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> temporary_queue = new LinkedList<SingleEvent>();
+  private LinkedList<SingleEvent> internal_functional_event_queue =
+      new LinkedList<SingleEvent>();
+  private LinkedList<SingleEvent> internal_proof_event_queue =
+      new LinkedList<SingleEvent>();
+  private LinkedList<SingleEvent> temporary_queue =
+      new LinkedList<SingleEvent>();
+
+  /* Only used when executing the micro-steps */
+  private LinkedList<SingleEvent> external_proof_event_queue =
+      new LinkedList<SingleEvent>();
 
   /** This is the model to execute */
   private Model model;
@@ -42,16 +49,20 @@ public class GraphSimulator implements
     this.internal_global_state = global_state;
   }
 
-  public LinkedList<SingleEvent> getInternal_functional_event_queue() {
+  public LinkedList<SingleEvent> getInternalFunctionalEventQueue() {
     return internal_functional_event_queue;
   }
 
-  public LinkedList<SingleEvent> getInternal_proof_event_queue() {
+  public LinkedList<SingleEvent> getInternalProofEventQueue() {
     return internal_proof_event_queue;
   }
 
-  public LinkedList<SingleEvent> getTemporary_queue() {
+  public LinkedList<SingleEvent> getTemporaryQueue() {
     return temporary_queue;
+  }
+
+  public LinkedList<SingleEvent> getExternalProofEventQueue() {
+    return external_proof_event_queue;
   }
 
   public GraphSimulator(Model model, GlobalState global_state) {
@@ -85,6 +96,75 @@ public class GraphSimulator implements
   }
 
   /**
+   * 
+   * @return True if there is no internal events to process in the functional
+   *         model. Note that the proof model is then also stable.
+   */
+  public boolean isStable() {
+    return internal_functional_event_queue.size() == 0;
+  }
+
+  /*
+   * It is true iff the proof model has executed an external event that has not
+   * been executed by the functional model
+   */
+  private boolean has_executed_external_event_in_proof = false;
+  /* The last external event processed by the proof model */
+  private ExternalEvent external_event_to_execute = null;
+
+  /**
+   * This function execute the smallest step possible:
+   * <ol>
+   * <li>
+   * If the proof model is not completely executed, it execute one step in the
+   * proof model</li>
+   * <li>
+   * If the proof model is stable, it then executes a step in the functional
+   * model if there is any</li>
+   * <li>
+   * Otherwise, it executes the first external event in the proof model if not
+   * already executed in the model. It will be executed in the functional model
+   * otherwise.</li>
+   * </ol>
+   * 
+   * @param external_events
+   */
+  public void processSingleEvent(LinkedList<ExternalEvent> external_events) {
+
+    if (proof != null && internal_proof_event_queue.size() != 0) {
+      processSingleEvent(proof, internal_global_state,
+          internal_proof_event_queue.remove(), internal_proof_event_queue);
+      return;
+    }
+
+    if (proof != null && external_proof_event_queue.size() != 0) {
+      processSingleEvent(proof, internal_global_state,
+          external_proof_event_queue.remove(), internal_proof_event_queue);
+      return;
+    }
+
+    if (internal_functional_event_queue.size() != 0) {
+      processSingleEvent(model, internal_global_state,
+          internal_functional_event_queue.remove(), external_proof_event_queue);
+
+      internal_functional_event_queue.addAll(external_proof_event_queue);
+      return;
+    }
+
+    if (has_executed_external_event_in_proof || proof == null) {
+      processSingleEvent(model, internal_global_state,
+          external_event_to_execute, external_proof_event_queue);
+      has_executed_external_event_in_proof = false;
+    } else {
+      external_event_to_execute = external_events.poll();
+      processSingleEvent(proof, internal_global_state,
+          external_event_to_execute, internal_proof_event_queue);
+      has_executed_external_event_in_proof = true;
+    }
+
+  }
+
+  /**
    * Execute a single event (that can be either external or internal).
    * 
    * @details
@@ -102,7 +182,8 @@ public class GraphSimulator implements
    *          The global state containing the current states and the values
    *          of the variables. It will be modified in place.
    * @param event
-   *          The event to process.
+   *          The event to process. If this parameter is null, it does neither
+   *          execute any event nor raise an error.
    * @param event_list
    *          The list in which the generated internal events will be added.
    */
@@ -136,7 +217,8 @@ public class GraphSimulator implements
     event_list.addAll(temporary_queue);
 
     temporary_queue.clear();
-    System.out.print("-->" + event.toString() + " -->\n"
+    System.out.print("-->" + ((event != null) ? event.toString() : "null")
+        + " -->\n"
         + "Internal FIFO " + event_list.toString() + "\n"
         + global_state);
   }
@@ -237,9 +319,12 @@ public class GraphSimulator implements
    * @param external_events_list
    *          This list is emptied by this function.
    */
-  public void executeOnlyFunctional(GlobalState global_state,
+  private void executeOnlyFunctional(GlobalState global_state,
       LinkedList<ExternalEvent> external_events_list) {
+    Model temporary = proof;
+    proof = null;
     execute(model, global_state, external_events_list);
+    proof = temporary;
   }
 
   /**
@@ -248,6 +333,14 @@ public class GraphSimulator implements
   public void executeOnlyFunctional(
       LinkedList<ExternalEvent> external_events_list) {
     executeOnlyFunctional(internal_global_state, external_events_list);
+  }
+
+  /**
+   * {@inheritDoc #executeOnlyFunctional(GlobalState, LinkedList)}
+   */
+  private void executeOnlyFunctional(
+      ExternalEvent external_events) {
+    execute(model, external_events, internal_functional_event_queue);
   }
 
   /**
@@ -306,14 +399,25 @@ public class GraphSimulator implements
   }
 
   /**
+   * 
+   * {@inheritDoc #execute(Model, GlobalState, SingleEvent, LinkedList)}
+   */
+  private GlobalState execute(Model m, SingleEvent e,
+      LinkedList<SingleEvent> single_event_queue) {
+    execute(m, internal_global_state, e, single_event_queue);
+    return internal_global_state;
+  }
+
+  /**
    * Execute an external event and launch the proof model with it.
    * It execute one external event in the proof model, then process it in the
    * model. With the generated internal event of the model, it executes one
-   * event
-   * in the proof model, then in the model, then executes all the generated
-   * event
-   * in the proof model.
+   * event in the proof model, then in the model, then executes all the
+   * generated event in the proof model.
    * Use the global state given in the argument.
+   * 
+   * If `event` is null, it does only finish the execution of the proof and
+   * functional model to be ready for the next external event.
    * 
    * @param starting_state
    *          an external to the simulator global state. It will be modified in
@@ -332,8 +436,6 @@ public class GraphSimulator implements
     SingleEvent curr_event = event;
 
     do {
-      transfert_list.clear();
-
       processSingleEvent(model, starting_state, curr_event, transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
@@ -355,12 +457,25 @@ public class GraphSimulator implements
     return execute(internal_global_state, event);
   }
 
-  public GlobalState execute(Iterable<ExternalEvent> list) {
-    GlobalState result = internal_global_state;
+  /**
+   * Same as {@link #execute(GlobalState, ExternalEvent)} but uses a LinkedList
+   * of events
+   */
+  public GlobalState executeAll(GlobalState starting_state,
+      Iterable<ExternalEvent> list) {
+    GlobalState result = starting_state;
     for (ExternalEvent e : list) {
-      result = execute(e);
+      result = execute(starting_state, e);
     }
     return result;
+  }
+
+  /**
+   * Same as {@link #executeAll(GlobalState, Iterable<ExternalEvent>)} but uses
+   * the internal GlobalState.
+   */
+  public GlobalState executeAll(Iterable<ExternalEvent> list) {
+    return executeAll(internal_global_state, list);
   }
 
   /**

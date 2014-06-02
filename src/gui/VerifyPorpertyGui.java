@@ -66,7 +66,7 @@ public class VerifyPorpertyGui implements ActionListener {
     }
 
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
-    Model model = null, proof = null;
+    Model model, proof;
 
     if (functional_file_chooser.getSelectedFile() == null) {
       JOptionPane.showMessageDialog(frame,
@@ -109,7 +109,8 @@ public class VerifyPorpertyGui implements ActionListener {
           .getAbsolutePath()
           .toString(), "functional model");
     } catch (IOException e1) {
-      e1.printStackTrace();
+      System.err.println(e1.toString());
+      return;
     }
 
     System.out.print("The verification of the functional model in the file "
@@ -123,16 +124,18 @@ public class VerifyPorpertyGui implements ActionListener {
 
     if (proof_file_chooser.getSelectedFile() != null) {
       try {
-        model = factory.buildModel(proof_file_chooser
+        proof = factory.buildModel(proof_file_chooser
             .getSelectedFile()
             .getAbsolutePath()
             .toString(), "proof model");
       } catch (IOException e1) {
-        e1.printStackTrace();
+        System.err.println(e1.toString());
+        return;
       }
 
       System.out.print("The verification of the proof model in the file "
           + functional_file_chooser.getSelectedFile().getName() + " : \n\n");
+
       if (check_all.isSelected()) {
         verifier.checkAll(proof, true);
       } else {
@@ -140,5 +143,4 @@ public class VerifyPorpertyGui implements ActionListener {
       }
     }
   }
-
 }

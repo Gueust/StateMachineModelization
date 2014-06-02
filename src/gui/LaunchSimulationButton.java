@@ -16,7 +16,6 @@ public class LaunchSimulationButton implements ActionListener {
   private JFileChooser functional_file_chooser;
   private JFileChooser proof_file_chooser;
   private JFrame frame;
-  private boolean with_proof = false;
 
   public LaunchSimulationButton(JFileChooser functional_file_chooser,
       JFileChooser proof_file_chooser, JFrame frame) {
@@ -40,7 +39,6 @@ public class LaunchSimulationButton implements ActionListener {
         e1.printStackTrace();
       }
       if (proof_file_chooser.getSelectedFile() != null) {
-        with_proof = true;
         try {
           proof_model = loadFile(factory, proof_file_chooser,
               "proof model");
@@ -55,7 +53,7 @@ public class LaunchSimulationButton implements ActionListener {
         simulator = new GraphSimulator(functional_model);
       }
       frame.dispose();
-      MainWindow main_window = new MainWindow(simulator, with_proof);
+      MainWindow main_window = new MainWindow(simulator);
       main_window.pack();
       main_window.setLocationRelativeTo(null);
       main_window.setVisible(true);
