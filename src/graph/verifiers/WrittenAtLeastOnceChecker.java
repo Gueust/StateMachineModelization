@@ -69,6 +69,6 @@ public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
 
   @Override
   public String successMessage() {
-    return "[SUCCESS] Checking that all variables are written exactly once...OK";
+    return "[SUCCESS] Checking that all variables are written at least once...OK";
   }
 }
