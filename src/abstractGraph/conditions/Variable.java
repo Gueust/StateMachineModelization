@@ -29,9 +29,12 @@ public class Variable extends Formula {
     return vars;
   }
 
-  /* Do NOT modify, this function is supposed to be equivalent to getVaname() */
+  public String getVarname() {
+    return varname;
+  }
+
   @Override
   public String toString() {
-    return varname;
+    return getVarname();
   }
 }

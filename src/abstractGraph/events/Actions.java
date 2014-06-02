@@ -3,6 +3,8 @@ package abstractGraph.events;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import abstractGraph.conditions.CustomToString;
+
 public class Actions implements Iterable<SingleEvent> {
 
   private LinkedList<SingleEvent> events;
@@ -15,15 +17,19 @@ public class Actions implements Iterable<SingleEvent> {
     events.add(e);
   }
 
-  @Override
-  public String toString() {
+  public String toString(CustomToString customizer) {
     StringBuilder sb = new StringBuilder();
     Iterator<SingleEvent> iterator = events.iterator();
     while (iterator.hasNext()) {
       SingleEvent single_event = iterator.next();
-      sb.append(single_event.toString() + ";");
+      sb.append(single_event.toString(customizer) + "; ");
     }
     return sb.toString();
+  }
+
+  @Override
+  public String toString() {
+    return toString(null);
   }
 
   @Override
@@ -60,4 +66,5 @@ public class Actions implements Iterable<SingleEvent> {
   public Iterator<SingleEvent> iterator() {
     return events.iterator();
   }
+
 }

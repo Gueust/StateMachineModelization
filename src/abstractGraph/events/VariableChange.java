@@ -1,5 +1,6 @@
 package abstractGraph.events;
 
+import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.Literal;
 
@@ -25,5 +26,13 @@ public class VariableChange extends InternalEvent {
 
   public boolean isNegated() {
     return l.isNegated();
+  }
+
+  public String toString(CustomToString customizer) {
+    if (customizer == null)
+      return l.toString();
+    else {
+      return customizer.toString(l);
+    }
   }
 }

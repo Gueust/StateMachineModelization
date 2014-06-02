@@ -1,5 +1,7 @@
 package abstractGraph.events;
 
+import abstractGraph.conditions.CustomToString;
+
 public abstract class SingleEvent {
 
   /* SingleEvents are immutable */
@@ -36,5 +38,9 @@ public abstract class SingleEvent {
   @Override
   public String toString() {
     return name;
+  }
+
+  public String toString(CustomToString customizer) {
+    return toString();
   }
 }

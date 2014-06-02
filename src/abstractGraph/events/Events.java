@@ -1,16 +1,16 @@
 package abstractGraph.events;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
 public class Events implements Iterable<SingleEvent> {
 
-  protected HashMap<String, SingleEvent> events;
+  protected LinkedHashMap<String, SingleEvent> events;
 
   public Events() {
-    events = new HashMap<String, SingleEvent>();
+    events = new LinkedHashMap<String, SingleEvent>();
   }
 
   public boolean containsEvent(SingleEvent event) {

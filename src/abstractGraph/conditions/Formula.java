@@ -46,9 +46,6 @@ public abstract class Formula {
     return new BooleanExpressionFactory(true);
   }
 
-  @Override
-  public abstract String toString();
-
   /**
    * Add into the given HashSet variables that are in the given formula
    * 
@@ -114,4 +111,25 @@ public abstract class Formula {
 
     return true;
   }
+
+  public static final CustomToString DEFAULT_STRINGIFIER =
+      new CustomToString();
+
+  /**
+   * Allow custum printing of formulas
+   * 
+   * @param c
+   *          A customizer that will print the object.
+   * @return
+   */
+  public String toString(CustomToString c) {
+    if (c == null) {
+      return toString();
+    } else {
+      return c.toString(this);
+    }
+  }
+
+  @Override
+  public abstract String toString();
 }
