@@ -42,6 +42,18 @@ public class GraphSimulator implements
     this.internal_global_state = global_state;
   }
 
+  public LinkedList<SingleEvent> getInternal_functional_event_queue() {
+    return internal_functional_event_queue;
+  }
+
+  public LinkedList<SingleEvent> getInternal_proof_event_queue() {
+    return internal_proof_event_queue;
+  }
+
+  public LinkedList<SingleEvent> getTemporary_queue() {
+    return temporary_queue;
+  }
+
   public GraphSimulator(Model model, GlobalState global_state) {
     this.model = model;
     this.internal_global_state = global_state;
@@ -358,19 +370,15 @@ public class GraphSimulator implements
    *          If verifies that:
    *          <ol>
    *          <li>
-   *          1) the proof model does not write any variable that belongs
-   *          to the functional model.
-   *          </li>
+   *          1) the proof model does not write any variable that belongs to the
+   *          functional model.</li>
    *          <li>
-   *          2) the proof model does not write any synchronization event
-   *          that is used (i.e. written or listened) by the functional model.
-   *          </li>
+   *          2) the proof model does not write any synchronization event that
+   *          is used (i.e. written or listened) by the functional model.</li>
    *          <li>
-   *          3) the proof model does not write ExternalCommands
-   *          </li>
+   *          3) the proof model does not write ExternalCommands</li>
    *          <li>
-   *          4) the functional model does not write ModelCheckerEvents
-   *          </li>
+   *          4) the functional model does not write ModelCheckerEvents</li>
    *          </ol>
    * @return true if the models are ok
    */

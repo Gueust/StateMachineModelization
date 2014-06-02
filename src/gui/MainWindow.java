@@ -89,12 +89,11 @@ public class MainWindow extends JFrame {
                     .addGroup(
                         groupLayout.createParallelGroup(Alignment.LEADING)
                             .addComponent(user_option_panel,
-                                GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
                             .addComponent(global_state_panel,
-                                GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
                             .addComponent(fifo_panel, GroupLayout.DEFAULT_SIZE,
-                                388, Short.MAX_VALUE))
+                                491, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.UNRELATED)
                     .addComponent(transitions_panel,
                         GroupLayout.PREFERRED_SIZE, 181,
@@ -277,12 +276,16 @@ public class MainWindow extends JFrame {
     JList functionnal_external_event_FIFO = new JList();
 
     JList commands = new JList();
+
+    JList functional_state_tag_change_FIFO = new JList();
+
+    JList proof_state_tag_change_FIFOlist_3 = new JList();
     GroupLayout gl_fifo_panel = new GroupLayout(fifo_panel);
     gl_fifo_panel
-        .setHorizontalGroup(gl_fifo_panel
-            .createParallelGroup(Alignment.TRAILING)
+        .setHorizontalGroup(
+        gl_fifo_panel
+            .createParallelGroup(Alignment.LEADING)
             .addGroup(
-                Alignment.LEADING,
                 gl_fifo_panel
                     .createSequentialGroup()
                     .addGap(15)
@@ -292,7 +295,19 @@ public class MainWindow extends JFrame {
                             .addGroup(
                                 gl_fifo_panel.createSequentialGroup()
                                     .addComponent(commands,
+                                        GroupLayout.DEFAULT_SIZE, 288,
+                                        Short.MAX_VALUE)
+                                    .addContainerGap())
+                            .addGroup(
+                                gl_fifo_panel
+                                    .createSequentialGroup()
+                                    .addComponent(
+                                        functionnal_external_event_FIFO,
                                         GroupLayout.DEFAULT_SIZE, 139,
+                                        Short.MAX_VALUE)
+                                    .addPreferredGap(ComponentPlacement.RELATED)
+                                    .addComponent(proof_external_event_FIFO,
+                                        GroupLayout.DEFAULT_SIZE, 143,
                                         Short.MAX_VALUE)
                                     .addContainerGap())
                             .addGroup(
@@ -301,56 +316,54 @@ public class MainWindow extends JFrame {
                                     .addGroup(
                                         gl_fifo_panel
                                             .createParallelGroup(
-                                                Alignment.LEADING)
+                                                Alignment.TRAILING)
                                             .addGroup(
-                                                Alignment.TRAILING,
-                                                gl_fifo_panel
-                                                    .createParallelGroup(
-                                                        Alignment.LEADING)
-                                                    .addGroup(
-                                                        gl_fifo_panel
-                                                            .createSequentialGroup()
-                                                            .addComponent(
-                                                                functionnal_temporary_event_FIFO,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                139,
-                                                                Short.MAX_VALUE)
-                                                            .addPreferredGap(
-                                                                ComponentPlacement.UNRELATED)
-                                                            .addComponent(
-                                                                proof_temporary_event_FIFO,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                139,
-                                                                Short.MAX_VALUE))
-                                                    .addGroup(
-                                                        gl_fifo_panel
-                                                            .createSequentialGroup()
-                                                            .addComponent(
-                                                                functionnal_internal_event_FIFO,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                139,
-                                                                Short.MAX_VALUE)
-                                                            .addPreferredGap(
-                                                                ComponentPlacement.UNRELATED)
-                                                            .addComponent(
-                                                                proof_internal_event_FIFO,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                139,
-                                                                Short.MAX_VALUE)))
-                                            .addGroup(
-                                                Alignment.TRAILING,
+                                                Alignment.LEADING,
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        functionnal_external_event_FIFO,
+                                                        functionnal_temporary_event_FIFO,
                                                         GroupLayout.DEFAULT_SIZE,
                                                         139, Short.MAX_VALUE)
                                                     .addPreferredGap(
                                                         ComponentPlacement.UNRELATED)
                                                     .addComponent(
-                                                        proof_external_event_FIFO,
+                                                        proof_temporary_event_FIFO,
                                                         GroupLayout.DEFAULT_SIZE,
-                                                        139, Short.MAX_VALUE)))
+                                                        139, Short.MAX_VALUE))
+                                            .addGroup(
+                                                Alignment.LEADING,
+                                                gl_fifo_panel
+                                                    .createSequentialGroup()
+                                                    .addComponent(
+                                                        functionnal_internal_event_FIFO,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        139, Short.MAX_VALUE)
+                                                    .addPreferredGap(
+                                                        ComponentPlacement.UNRELATED)
+                                                    .addComponent(
+                                                        proof_internal_event_FIFO,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        139, Short.MAX_VALUE))
+                                            .addGroup(
+                                                Alignment.LEADING,
+                                                gl_fifo_panel
+                                                    .createSequentialGroup()
+                                                    .addComponent(
+                                                        functional_state_tag_change_FIFO,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        139,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(
+                                                        ComponentPlacement.RELATED,
+                                                        10, Short.MAX_VALUE)
+                                                    .addComponent(
+                                                        proof_state_tag_change_FIFOlist_3,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        139,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(
+                                                        ComponentPlacement.RELATED)))
                                     .addGap(10))))
         );
     gl_fifo_panel.setVerticalGroup(
@@ -374,14 +387,21 @@ public class MainWindow extends JFrame {
                     .addPreferredGap(ComponentPlacement.UNRELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(proof_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                            .addComponent(functional_state_tag_change_FIFO,
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                            .addComponent(proof_state_tag_change_FIFOlist_3,
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addGroup(
+                        gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(functionnal_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
-                    .addPreferredGap(ComponentPlacement.UNRELATED)
-                    .addComponent(commands, GroupLayout.PREFERRED_SIZE, 103,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap())
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                            .addComponent(proof_external_event_FIFO,
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 82,
+                        Short.MAX_VALUE)
+                    .addGap(12))
         );
     fifo_panel.setLayout(gl_fifo_panel);
     getContentPane().setLayout(groupLayout);
