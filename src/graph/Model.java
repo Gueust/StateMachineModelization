@@ -273,25 +273,32 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return
    */
   public HashMap<String, String> regroupCTL() {
+    boolean has_error = false;
+    LinkedList<String> list_of_ctl_without_opposite = new LinkedList<String>();
     HashMap<String, String> ctl_with_opposite = new HashMap<String, String>();
-    LinkedList<String> list_of_ctl_name = new LinkedList<String>();
+    HashSet<String> list_of_ctl_name = new HashSet<String>();
     searchExistingNameInHashSet(existingVariables.keySet(), list_of_ctl_name,
         "CTL_");
     searchExistingNameInHashSet(external_events.keySet(), list_of_ctl_name,
         "CTL_");
-
-    while (!list_of_ctl_name.isEmpty()) {
+    LinkedList<String> queue_of_ctl = new LinkedList<String>();
+    queue_of_ctl.addAll(list_of_ctl_name);
+    while (!queue_of_ctl.isEmpty()) {
       GenerateFormulaAEFD generate_formula = new GenerateFormulaAEFD(
           formulaFactory);
-      String ctl_name = list_of_ctl_name.removeFirst();
+      String ctl_name = queue_of_ctl.removeFirst();
       String ctl_opposite_name = generate_formula.getOppositeName(ctl_name);
-      if (list_of_ctl_name.contains(ctl_opposite_name)) {
+      if (queue_of_ctl.contains(ctl_opposite_name)) {
         ctl_with_opposite.put(ctl_name, ctl_opposite_name);
+        queue_of_ctl.remove(queue_of_ctl.indexOf(ctl_opposite_name));
+      } else {
+        has_error = true;
+        list_of_ctl_without_opposite.add(ctl_name);
       }
-      else {
-        throw new Error("Opposite ctl of " + ctl_name + " not found.");
-      }
-
+    }
+    if (has_error) {
+      throw new Error("This list of CTL doesn't have an opposite "
+          + list_of_ctl_without_opposite.toString() + "\n");
     }
     return ctl_with_opposite;
   }
@@ -305,7 +312,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @param to_search
    */
   public void searchExistingNameInHashSet(Set<String> target,
-      LinkedList<String> result, String to_search) {
+      HashSet<String> result, String to_search) {
     Iterator<String> iterator_target = target.iterator();
     while (iterator_target.hasNext()) {
       String variable_name = iterator_target.next();
