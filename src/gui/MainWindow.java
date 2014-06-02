@@ -3,6 +3,7 @@ package gui;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -101,6 +102,7 @@ public class MainWindow extends JFrame {
                     .addContainerGap())
         );
 
+    ButtonGroup button_group = new ButtonGroup();
     JRadioButton rdbtnCompleteSimulation =
         new JRadioButton("Complete Simulation");
     rdbtnCompleteSimulation.setPreferredSize(new Dimension(101, 23));
@@ -127,58 +129,59 @@ public class MainWindow extends JFrame {
 
     JRadioButton rdbtnOneInternalEvent =
         new JRadioButton("One Internal Event Step");
+
+    button_group.add(rdbtnCompleteSimulation);
+    button_group.add(rdbtnOneExternalEvent);
+    button_group.add(rdbtnOneInternalEvent);
+
     GroupLayout gl_user_option_panel = new GroupLayout(user_option_panel);
     gl_user_option_panel.setHorizontalGroup(
-        gl_user_option_panel.createParallelGroup(Alignment.TRAILING)
+        gl_user_option_panel.createParallelGroup(Alignment.LEADING)
             .addGroup(
+                Alignment.TRAILING,
                 gl_user_option_panel.createSequentialGroup()
                     .addGroup(
                         gl_user_option_panel.createParallelGroup(
-                            Alignment.LEADING)
+                            Alignment.TRAILING)
                             .addComponent(btnEatExternalEvents,
                                 GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                             .addGroup(
-                                Alignment.TRAILING,
                                 gl_user_option_panel.createSequentialGroup()
                                     .addGap(4)
                                     .addComponent(textPane,
-                                        GroupLayout.DEFAULT_SIZE, 174,
+                                        GroupLayout.DEFAULT_SIZE, 170,
                                         Short.MAX_VALUE))
                             .addGroup(
-                                Alignment.TRAILING,
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(2)
+                                    .addComponent(btnSimulate,
+                                        GroupLayout.DEFAULT_SIZE, 172,
+                                        Short.MAX_VALUE))
+                            .addGroup(
+                                Alignment.LEADING,
                                 gl_user_option_panel.createSequentialGroup()
                                     .addGap(4)
                                     .addGroup(
                                         gl_user_option_panel
                                             .createParallelGroup(
-                                                Alignment.TRAILING)
+                                                Alignment.LEADING)
+                                            .addComponent(
+                                                rdbtnCompleteSimulation,
+                                                Alignment.TRAILING,
+                                                GroupLayout.DEFAULT_SIZE, 170,
+                                                Short.MAX_VALUE)
                                             .addComponent(
                                                 rdbtnOneInternalEvent,
-                                                Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 174,
+                                                GroupLayout.DEFAULT_SIZE, 170,
                                                 Short.MAX_VALUE)
                                             .addComponent(
                                                 rdbtnOneExternalEvent,
-                                                Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 174,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                rdbtnCompleteSimulation,
-                                                Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 174,
+                                                GroupLayout.DEFAULT_SIZE, 170,
                                                 Short.MAX_VALUE)
                                             .addComponent(
                                                 btnUploadExternalEvent,
-                                                Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 174,
-                                                Short.MAX_VALUE)))
-                            .addGroup(
-                                Alignment.TRAILING,
-                                gl_user_option_panel.createSequentialGroup()
-                                    .addGap(2)
-                                    .addComponent(btnSimulate,
-                                        GroupLayout.DEFAULT_SIZE, 172,
-                                        Short.MAX_VALUE)))
+                                                GroupLayout.DEFAULT_SIZE, 170,
+                                                Short.MAX_VALUE))))
                     .addContainerGap())
         );
     gl_user_option_panel.setVerticalGroup(
@@ -187,10 +190,11 @@ public class MainWindow extends JFrame {
                 gl_user_option_panel.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(btnUploadExternalEvent,
-                        GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                    .addGap(58)
+                        GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+                    .addGap(92)
                     .addComponent(rdbtnCompleteSimulation,
-                        GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(rdbtnOneExternalEvent)
                     .addPreferredGap(ComponentPlacement.RELATED)
@@ -203,7 +207,7 @@ public class MainWindow extends JFrame {
                         GroupLayout.PREFERRED_SIZE)
                     .addGap(18)
                     .addComponent(btnEatExternalEvents,
-                        GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                        GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
                     .addGap(45))
         );
     user_option_panel.setLayout(gl_user_option_panel);
@@ -316,9 +320,8 @@ public class MainWindow extends JFrame {
                                     .addGroup(
                                         gl_fifo_panel
                                             .createParallelGroup(
-                                                Alignment.TRAILING)
+                                                Alignment.LEADING)
                                             .addGroup(
-                                                Alignment.LEADING,
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
@@ -332,7 +335,6 @@ public class MainWindow extends JFrame {
                                                         GroupLayout.DEFAULT_SIZE,
                                                         139, Short.MAX_VALUE))
                                             .addGroup(
-                                                Alignment.LEADING,
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
@@ -346,22 +348,17 @@ public class MainWindow extends JFrame {
                                                         GroupLayout.DEFAULT_SIZE,
                                                         139, Short.MAX_VALUE))
                                             .addGroup(
-                                                Alignment.LEADING,
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
                                                         functional_state_tag_change_FIFO,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        139,
-                                                        GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(
-                                                        ComponentPlacement.RELATED,
-                                                        10, Short.MAX_VALUE)
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        139, Short.MAX_VALUE)
+                                                    .addGap(10)
                                                     .addComponent(
                                                         proof_state_tag_change_FIFOlist_3,
-                                                        GroupLayout.PREFERRED_SIZE,
-                                                        139,
-                                                        GroupLayout.PREFERRED_SIZE)
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        139, Short.MAX_VALUE)
                                                     .addPreferredGap(
                                                         ComponentPlacement.RELATED)))
                                     .addGap(10))))
@@ -374,32 +371,32 @@ public class MainWindow extends JFrame {
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(proof_internal_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
                             .addComponent(functionnal_internal_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.UNRELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(functionnal_temporary_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
                             .addComponent(proof_temporary_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.UNRELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(functional_state_tag_change_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                             .addComponent(proof_state_tag_change_FIFOlist_3,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(functionnal_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                             .addComponent(proof_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 82,
+                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 90,
                         Short.MAX_VALUE)
                     .addGap(12))
         );
