@@ -323,10 +323,12 @@ public class GraphSimulator implements
   @Override
   public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
 
-    execute(proof, starting_state, event, internal_proof_event_queue);
-
+    if (proof != null) {
+      execute(proof, starting_state, event, internal_proof_event_queue);
+    }
     processSingleEvent(model, starting_state, event,
         internal_functional_event_queue);
+
     @SuppressWarnings("unchecked")
     LinkedList<SingleEvent> transfert_list =
         (LinkedList<SingleEvent>) internal_functional_event_queue.clone();
@@ -340,7 +342,9 @@ public class GraphSimulator implements
       processSingleEvent(model, starting_state, head, transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
-      executeProof(starting_state, transfert_list);
+      if (proof != null) {
+        executeProof(starting_state, transfert_list);
+      }
     }
     return internal_global_state;
   }
