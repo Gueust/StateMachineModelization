@@ -1,6 +1,7 @@
 package graph;
 
 import graph.conditions.aefdParser.AEFDFormulaFactory;
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -15,8 +16,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import parserAEFDFormat.Fichier6lignes;
+import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
+import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.Events;
@@ -94,13 +99,14 @@ public class GraphFactoryAEFD {
    * </li>
    * </ol>
    */
-  private void parse(String file) throws IOException {
+  private boolean parse(String file) throws IOException {
 
     state_machines =
         new HashMap<String, StateMachine>();
 
     single_events = new HashMap<String, SingleEvent>();
 
+    boolean has_alarms = false;
     /*
      * We do two parsings:
      * - the first one to identify the ACT not FCI in the action fields
@@ -138,25 +144,23 @@ public class GraphFactoryAEFD {
 
       action = actions.second;
       if (action != null) {
+        has_alarms = true;
         transition =
             state_machine.addTransition(from, from, events, new NotFormula(
                 condition), action);
-
-        /*
-         * Adding the transition in the linked list to be able to right the file
-         * in the same order
-         */
-        initial_transition_order
-            .put(transition, new InitialTransition(state_machine, transition));
       }
     }
 
     /**
      * We check that we can generate the same file as the input file.
-     * TODO: the loaded format is too complex now to be able to compare simply.
-     * We have postponed (give up ?) this checking.
+     * It is done ONLY if there is no alarm, since alarms generate new
+     * transitions in the loaded model.
      */
-    // saveInFile("temporary_file");
+    // if (has_alarms) {
+    return has_alarms;
+    // }
+
+    // saveInFile6lines("temporary_file");
     // boolean is_build_coherent = compareFiles("temporary_file", file);
     // if (is_build_coherent) {
     // System.out
@@ -166,6 +170,7 @@ public class GraphFactoryAEFD {
     // " from the initial model. Aborting");
     // System.exit(-1);
     // }
+    // return has_alarms;
   }
 
   /**
@@ -184,7 +189,7 @@ public class GraphFactoryAEFD {
     initial_transition_order =
         new LinkedHashMap<Transition, InitialTransition>();
 
-    parse(file);
+    boolean has_alarms = parse(file);
 
     Model result = new Model(model_name);
     Iterator<StateMachine> sm_iterator = state_machines.values().iterator();
@@ -195,10 +200,14 @@ public class GraphFactoryAEFD {
     result.formulaFactory = factory;
     /* Required to generated internal data */
     result.build();
+
     /**
      * We check that the list of added transitions is exactly the transitions
-     * added in the model
+     * added in the model. This verification is done only if there is no alarms.
      */
+    if (has_alarms) {
+      return result;
+    }
     sm_iterator = result.iterator();
     int number_of_transitions = 0;
     while (sm_iterator.hasNext()) {
@@ -538,48 +547,71 @@ public class GraphFactoryAEFD {
    * @param file
    * @throws IOException
    */
-  private void saveInFile(String file) throws IOException {
+  @Deprecated
+  private void saveInFile6lines(String file) throws IOException {
+
     File selected_file = new File(file);
     BufferedWriter writer = new BufferedWriter(new FileWriter(selected_file));
     Iterator<InitialTransition> iterator =
         initial_transition_order.values().iterator();
     while (iterator.hasNext()) {
-      InitialTransition init_transition = iterator.next();
+      InitialTransition transition = iterator.next();
+      writer.write(writeTransition(transition.state_machine, transition.t));
 
-      writer.write(init_transition.state_machine.getName());
-      writer.write("\r\n");
-      writer.write(init_transition.t.getSource().getId());
-      writer.write("\r\n");
-      writer.write(init_transition.t.getDestination().getId());
-      writer.write("\r\n");
-      String temp = concatenateEventsWithOU(init_transition.t.getEvents());
-      if (temp != null) {
-        writer.write(temp + " Evenement");
-      } else {
-        writer.write("Evenement");
-      }
-      writer.write("\r\n");
-      temp = init_transition.t.getCondition().toString();
-      if (!temp.equals("")) {
-        writer.write(temp + " Condition");
-      } else {
-        writer.write("Condition");
-      }
-      writer.write("\r\n");
-      temp = init_transition.t.getActions().toString();
-      if (temp != null) {
-        writer.write(temp + " Action");
-      } else {
-        writer.write(" Action");
-      }
-      if (iterator.hasNext())
+      if (iterator.hasNext()) {
         writer.write("\r\n");
+      }
     }
 
     writer.close();
   }
 
-  private String concatenateEventsWithOU(Events events) {
+  static MyCustomizer customizer = new MyCustomizer();
+
+  /**
+   * Return the 6 lines format of a transition.
+   * Should not be used.
+   */
+  @Deprecated
+  static public String writeTransition(StateMachine state_machine,
+      Transition transition) {
+    StringBuffer result = new StringBuffer();
+
+    result.append(state_machine.getName());
+    result.append("\r\n");
+    result.append(transition.getSource().getId());
+    result.append("\r\n");
+    result.append(transition.getDestination().getId());
+    result.append("\r\n");
+    String temp = concatenateEventsWithOU(transition.getEvents());
+    if (temp != null && !temp.equals("")) {
+      result.append(temp + " Evenement");
+    } else {
+      result.append("Evenement");
+    }
+    result.append("\r\n");
+    if (transition.getCondition() == null) {
+      temp = "";
+    } else {
+      temp = transition.getCondition().toString(customizer);
+    }
+    if (!temp.equals("")) {
+      result.append(temp + " Condition");
+    } else {
+      result.append("Condition");
+    }
+    result.append("\r\n");
+    temp = transition.getActions().toString(customizer);
+    if (temp != null && !temp.equals("")) {
+      result.append(temp + "Action");
+    } else {
+      result.append("Action");
+    }
+
+    return result.toString();
+  }
+
+  static private String concatenateEventsWithOU(Events events) {
     StringBuilder sb = new StringBuilder();
     Iterator<SingleEvent> single_event_iterator = events.singleEvent();
     boolean first = true;
@@ -587,9 +619,9 @@ public class GraphFactoryAEFD {
 
       SingleEvent single_event = single_event_iterator.next();
       if (first) {
-        sb.append(single_event.toString());
+        sb.append(single_event.toString(customizer));
       } else {
-        sb.append(" OU " + single_event.toString());
+        sb.append(" OU " + single_event.toString(customizer));
       }
 
       first = false;
@@ -635,5 +667,37 @@ public class GraphFactoryAEFD {
   @Override
   public String toString() {
     return state_machines.toString();
+  }
+
+  public FormulaFactory getFactory() {
+    return factory;
+  }
+}
+
+class MyCustomizer extends CustomToString {
+  @Override
+  public String toString(Formula f) {
+    return super.toString(f);
+  }
+
+  @Override
+  public String toString(Literal l) {
+    Variable variable = ((Literal) l).getVariable();
+    boolean is_negated = ((Literal) l).isNegated();
+    if (is_negated) {
+
+      return GenerateFormulaAEFD.getOppositeName(variable.toString());
+    } else {
+      return variable.toString();
+    }
+  }
+
+  @Override
+  public String toString(NotFormula f) {
+    Formula A = f.getF();
+    if (A instanceof Variable) {
+      return GenerateFormulaAEFD.getOppositeName(A.toString());
+    }
+    return super.toString(f);
   }
 }

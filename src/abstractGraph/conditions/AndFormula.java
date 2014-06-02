@@ -50,11 +50,6 @@ public class AndFormula extends Formula {
     return vars;
   }
 
-  @Override
-  public String toString() {
-    return parenthesis(p) + " " + Formula.AND + " " + parenthesis(q);
-  }
-
   private String parenthesis(Formula f) {
     String left;
     if (f instanceof OrFormula) {
@@ -65,4 +60,8 @@ public class AndFormula extends Formula {
     return left;
   }
 
+  @Override
+  public String toString() {
+    return parenthesis(p) + " " + Formula.AND + " " + parenthesis(q);
+  }
 }

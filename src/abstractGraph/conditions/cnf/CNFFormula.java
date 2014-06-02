@@ -19,7 +19,7 @@ import abstractGraph.conditions.Variable;
  */
 public class CNFFormula extends Formula implements Collection<Clause> {
 
-  private Vector<Clause> clauses;
+  Vector<Clause> clauses;
 
   public CNFFormula() {
     this.clauses = new Vector<Clause>();
@@ -169,8 +169,8 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   @Override
   public String toString() {
     String s = "CNF Formula. Clauses are:\n";
-    for (Clause c : clauses) {
-      s += c.toString() + "\n";
+    for (Clause clause : clauses) {
+      s += clause.toString() + "\n";
     }
     return s;
   }

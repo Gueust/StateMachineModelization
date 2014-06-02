@@ -2,7 +2,6 @@ package abstractGraph.conditions.cnf;
 
 import java.util.HashSet;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
@@ -55,7 +54,8 @@ public class Literal extends Formula {
 
   @Override
   public HashSet<Variable> allVariables(HashSet<Variable> vars) {
-    throw new NotImplementedException();
+    vars.add(variable);
+    return vars;
   }
 
   @Override
@@ -66,5 +66,4 @@ public class Literal extends Formula {
       return variable.toString();
     }
   }
-
 }
