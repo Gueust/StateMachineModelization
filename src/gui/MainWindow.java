@@ -49,7 +49,7 @@ public class MainWindow extends JFrame {
   public MainWindow(final GraphSimulator simulator)
       throws HeadlessException {
     this.simulator = simulator;
-
+    this.simulator.init();
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
 
@@ -81,7 +81,7 @@ public class MainWindow extends JFrame {
         main_window.pack();
         main_window.setLocationRelativeTo(null);
         main_window.setVisible(true);
-
+        MainWindow.this.dispose();
       }
     });
 
@@ -490,6 +490,10 @@ public class MainWindow extends JFrame {
         fillInList(functionnal_external_event_FIFO, external_events);
       }
     });
+
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setPreferredSize(new Dimension(1200, 630));
+    pack();
   }
 
   private void updateLists() {

@@ -6,6 +6,7 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ import abstractGraph.events.VariableChange;
 public class GraphSimulator implements
     GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
 
-  private GlobalState internal_global_state = new GlobalState();
+  private GlobalState internal_global_state;
 
   /** This is the list of the different queues used in the simulator. */
   private LinkedList<SingleEvent> internal_functional_event_queue =
@@ -47,6 +48,24 @@ public class GraphSimulator implements
     this.model = model;
     this.proof = proof;
     this.internal_global_state = global_state;
+    checkCompatibility();
+  }
+
+  public GraphSimulator(Model model, GlobalState global_state) {
+    this.model = model;
+    this.internal_global_state = global_state;
+    checkCompatibility();
+  }
+
+  public GraphSimulator(Model model, Model proof) {
+    this.model = model;
+    this.proof = proof;
+    checkCompatibility();
+  }
+
+  public GraphSimulator(Model model) {
+    this.model = model;
+    checkCompatibility();
   }
 
   public LinkedList<SingleEvent> getInternalFunctionalEventQueue() {
@@ -63,20 +82,6 @@ public class GraphSimulator implements
 
   public LinkedList<SingleEvent> getExternalProofEventQueue() {
     return external_proof_event_queue;
-  }
-
-  public GraphSimulator(Model model, GlobalState global_state) {
-    this.model = model;
-    this.internal_global_state = global_state;
-  }
-
-  public GraphSimulator(Model model, Model proof) {
-    this.model = model;
-    this.proof = proof;
-  }
-
-  public GraphSimulator(Model model) {
-    this.model = model;
   }
 
   public GlobalState getGlobalState() {
@@ -144,6 +149,9 @@ public class GraphSimulator implements
     }
 
     if (internal_functional_event_queue.size() != 0) {
+      if (proof == null) {
+        external_proof_event_queue.clear();
+      }
       processSingleEvent(model, internal_global_state,
           internal_functional_event_queue.remove(), external_proof_event_queue);
 
@@ -156,6 +164,7 @@ public class GraphSimulator implements
       processSingleEvent(model, internal_global_state,
           external_event_to_execute, external_proof_event_queue);
       has_executed_external_event_in_proof = false;
+      internal_functional_event_queue.addAll(external_proof_event_queue);
     } else {
       external_event_to_execute = external_events.poll();
       processSingleEvent(proof, internal_global_state,
@@ -580,5 +589,25 @@ public class GraphSimulator implements
     }
 
     return true;
+  }
+
+  public void init() {
+    internal_global_state = new GlobalState();
+
+    for (StateMachine machine : model) {
+      getGlobalState().setState(machine, machine.getState("0"));
+    }
+    if (proof != null) {
+      for (StateMachine machine : proof) {
+        getGlobalState().setState(machine, machine.getState("0"));
+      }
+    }
+
+    LinkedList<ExternalEvent> initialization_events = new LinkedList<ExternalEvent>();
+    HashMap<String, String> pairs_of_ctl = model.regroupCTL();
+    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
+      initialization_events.add(new ExternalEvent(pair.getKey()));
+    }
+    executeAll(initialization_events);
   }
 }

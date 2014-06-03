@@ -1,13 +1,13 @@
 Page 1
 0
 1
-CTL_1 Evenement
+CTL_1_Actif Evenement
 Condition
 IND_1_Inactif; SYN_1; Action
 Page 2
 0
 1
-IND_1_Inactif Evenement
+IND_1_Inactif OU CTL_1_Inactif Evenement
 Condition
 Action
 Page 3
