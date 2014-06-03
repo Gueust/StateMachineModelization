@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class HomePage extends JFrame {
 
   public HomePage() throws HeadlessException {
+    ToolTipManager.sharedInstance().setInitialDelay(100);
 
     this.setTitle("New Simulation");
 
@@ -349,7 +350,7 @@ public class HomePage extends JFrame {
   }
 
   public static void main(String[] args) {
-    ToolTipManager.sharedInstance().setInitialDelay(100);
+
     HomePage home_page = new HomePage();
     home_page.pack();
     home_page.setLocationRelativeTo(null);

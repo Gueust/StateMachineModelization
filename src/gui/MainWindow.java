@@ -46,7 +46,7 @@ public class MainWindow extends JFrame {
   private GraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
 
-  public MainWindow(GraphSimulator simulator)
+  public MainWindow(final GraphSimulator simulator)
       throws HeadlessException {
     this.simulator = simulator;
 
@@ -58,9 +58,32 @@ public class MainWindow extends JFrame {
 
     JMenuItem mntmNewSimulation = new JMenuItem("New Simulation");
     mnFile.add(mntmNewSimulation);
+    mntmNewSimulation.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        HomePage home_page = new HomePage();
+        home_page.pack();
+        home_page.setLocationRelativeTo(null);
+        home_page.setVisible(true);
+        MainWindow.this.dispose();
+
+      }
+    });
 
     JMenuItem mntmRestartSimulation = new JMenuItem("Restart Simulation");
     mnFile.add(mntmRestartSimulation);
+    mntmRestartSimulation.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        MainWindow main_window = new MainWindow(simulator);
+        main_window.pack();
+        main_window.setLocationRelativeTo(null);
+        main_window.setVisible(true);
+
+      }
+    });
 
     JPanel fifo_panel = new JPanel();
     JPanel global_state_panel = new JPanel();
@@ -509,7 +532,6 @@ public class MainWindow extends JFrame {
     Iterator<StateMachine> state_machine_iterator = model.iterator();
     while (state_machine_iterator.hasNext()) {
       StateMachine state_machine = state_machine_iterator.next();
-      System.out.print(state_machine.getName() + "\n");
       listModel.addElement(state_machine.getName() + " --> "
           + global_state.getState(state_machine).getId());
     }

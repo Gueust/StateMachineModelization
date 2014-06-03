@@ -437,6 +437,8 @@ public class GraphSimulator implements
     SingleEvent curr_event = event;
 
     do {
+      transfert_list.clear();
+
       processSingleEvent(model, starting_state, curr_event, transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
@@ -463,10 +465,11 @@ public class GraphSimulator implements
    * of events
    */
   public GlobalState executeAll(GlobalState starting_state,
-      Iterable<ExternalEvent> list) {
+      LinkedList<ExternalEvent> list) {
     GlobalState result = starting_state;
-    for (ExternalEvent e : list) {
-      result = execute(starting_state, e);
+    while (!list.isEmpty()) {
+      ExternalEvent event = list.poll();
+      result = execute(starting_state, event);
     }
     return result;
   }
@@ -475,7 +478,7 @@ public class GraphSimulator implements
    * Same as {@link #executeAll(GlobalState, Iterable<ExternalEvent>)} but uses
    * the internal GlobalState.
    */
-  public GlobalState executeAll(Iterable<ExternalEvent> list) {
+  public GlobalState executeAll(LinkedList<ExternalEvent> list) {
     return executeAll(internal_global_state, list);
   }
 

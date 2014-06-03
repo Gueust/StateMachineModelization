@@ -5,6 +5,7 @@ import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.StateMachine;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -65,8 +66,9 @@ public class LaunchSimulationButton implements ActionListener {
       }
       frame.dispose();
       MainWindow main_window = new MainWindow(simulator);
+      main_window.setPreferredSize(new Dimension(1200, 630));
       main_window.pack();
-      main_window.setLocationRelativeTo(null);
+      main_window.setLocationRelativeTo(frame);
       main_window.setVisible(true);
     } else {
       JOptionPane.showMessageDialog(frame,
