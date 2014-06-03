@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.ButtonGroup;
@@ -18,30 +19,33 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
 
-import abstractGraph.events.CommandEvent;
+import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
-import abstractGraph.events.SingleEvent;
 import engine.GraphSimulator;
+import graph.GlobalState;
 import graph.Model;
+import graph.StateMachine;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-  JList<SingleEvent> proof_internal_event_FIFO;
-
-  JList<SingleEvent> functionnal_internal_event_FIFO;
-  JList<SingleEvent> proof_external_event_FIFO;
-  JList<ExternalEvent> functionnal_external_event_FIFO;
-  JList<CommandEvent> commands;
-  JList functional_state_tag_change_FIFO;
-  JList proof_state_tag_change_FIFO;
+  JList<String> proof_internal_event_FIFO;
+  JList<String> functionnal_internal_event_FIFO;
+  JList<String> proof_external_event_FIFO;
+  JList<String> functionnal_external_event_FIFO;
+  JList<String> commands;
+  JList<String> functional_state_tag_change_FIFO;
+  JList<String> proof_state_tag_change_FIFO;
 
   private JTable table;
   GraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
+  private JList<String> state_machines_current_state;
+  private JList<String> variables_list;
 
   public MainWindow(GraphSimulator simulator)
       throws HeadlessException {
@@ -63,56 +67,70 @@ public class MainWindow extends JFrame {
     JPanel global_state_panel = new JPanel();
     JPanel user_option_panel = new JPanel();
     JPanel transitions_panel = new JPanel();
+    proof_internal_event_FIFO = new JList<String>();
+    functionnal_internal_event_FIFO = new JList<String>();
+    proof_external_event_FIFO = new JList<String>();
+    functionnal_external_event_FIFO = new JList<String>();
+    commands = new JList<String>();
+    functional_state_tag_change_FIFO = new JList<String>();
+    proof_state_tag_change_FIFO = new JList<String>();
 
     GroupLayout groupLayout = new GroupLayout(getContentPane());
-    groupLayout.setHorizontalGroup(groupLayout
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(groupLayout
-            .createSequentialGroup()
-            .addContainerGap()
-            .addGroup(groupLayout
-                .createParallelGroup(Alignment.LEADING)
-                .addGroup(groupLayout
+    groupLayout
+        .setHorizontalGroup(
+        groupLayout
+            .createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                groupLayout
                     .createSequentialGroup()
-                    .addComponent(user_option_panel,
-                        GroupLayout.PREFERRED_SIZE, 184,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(global_state_panel,
-                        GroupLayout.DEFAULT_SIZE, 307,
-                        Short.MAX_VALUE)
-                    .addPreferredGap(
-                        ComponentPlacement.UNRELATED)
-                    .addComponent(fifo_panel,
-                        GroupLayout.DEFAULT_SIZE, 313,
-                        Short.MAX_VALUE))
-                .addComponent(transitions_panel,
-                    GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE))
-            .addGap(6))
+                    .addContainerGap()
+                    .addGroup(
+                        groupLayout
+                            .createParallelGroup(Alignment.LEADING)
+                            .addGroup(
+                                groupLayout
+                                    .createSequentialGroup()
+                                    .addComponent(user_option_panel,
+                                        GroupLayout.PREFERRED_SIZE, 184,
+                                        GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(ComponentPlacement.RELATED)
+                                    .addComponent(global_state_panel,
+                                        GroupLayout.DEFAULT_SIZE, 307,
+                                        Short.MAX_VALUE)
+                                    .addPreferredGap(
+                                        ComponentPlacement.UNRELATED)
+                                    .addComponent(fifo_panel,
+                                        GroupLayout.DEFAULT_SIZE, 313,
+                                        Short.MAX_VALUE))
+                            .addComponent(transitions_panel,
+                                GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE))
+                    .addGap(6))
         );
-    groupLayout.setVerticalGroup(groupLayout
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(groupLayout.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(groupLayout
-                .createParallelGroup(Alignment.LEADING, false)
-                .addComponent(user_option_panel, 0, 0,
-                    Short.MAX_VALUE)
-                .addComponent(global_state_panel,
-                    GroupLayout.DEFAULT_SIZE,
-                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(fifo_panel, GroupLayout.DEFAULT_SIZE,
-                    390, Short.MAX_VALUE))
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(transitions_panel,
-                GroupLayout.PREFERRED_SIZE, 181,
-                GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(117, Short.MAX_VALUE))
+    groupLayout.setVerticalGroup(
+        groupLayout.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                groupLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        groupLayout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(user_option_panel,
+                                GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(global_state_panel,
+                                GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(fifo_panel, GroupLayout.DEFAULT_SIZE,
+                                390, Short.MAX_VALUE))
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(transitions_panel,
+                        GroupLayout.PREFERRED_SIZE, 181,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(2))
         );
 
     ButtonGroup button_group = new ButtonGroup();
     final JRadioButton rdbtnCompleteSimulation =
         new JRadioButton("Complete Simulation");
+    rdbtnCompleteSimulation.setSelected(true);
     rdbtnCompleteSimulation.setPreferredSize(new Dimension(101, 23));
 
     JButton btnSimulate = new JButton("next");
@@ -130,8 +148,6 @@ public class MainWindow extends JFrame {
     btnEatExternalEvents.setMaximumSize(new Dimension(101, 23));
     btnEatExternalEvents.setMinimumSize(new Dimension(101, 23));
 
-    JTextPane textPane = new JTextPane();
-
     final JRadioButton rdbtnOneExternalEvent =
         new JRadioButton("One External Event Step");
 
@@ -142,143 +158,166 @@ public class MainWindow extends JFrame {
     button_group.add(rdbtnOneExternalEvent);
     button_group.add(rdbtnOneInternalEvent);
 
+    JScrollPane scrollPane = new JScrollPane();
     GroupLayout gl_user_option_panel = new GroupLayout(user_option_panel);
-    gl_user_option_panel.setHorizontalGroup(gl_user_option_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(Alignment.TRAILING,
-            gl_user_option_panel.createSequentialGroup()
-                .addGroup(gl_user_option_panel
-                    .createParallelGroup(Alignment.TRAILING)
+    gl_user_option_panel.setHorizontalGroup(
+        gl_user_option_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                Alignment.TRAILING,
+                gl_user_option_panel.createSequentialGroup()
+                    .addGroup(
+                        gl_user_option_panel.createParallelGroup(
+                            Alignment.TRAILING)
+                            .addGroup(
+                                Alignment.LEADING,
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(2)
+                                    .addComponent(btnEatExternalEvents,
+                                        GroupLayout.DEFAULT_SIZE, 180,
+                                        Short.MAX_VALUE))
+                            .addGroup(
+                                Alignment.LEADING,
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(2)
+                                    .addComponent(scrollPane,
+                                        GroupLayout.DEFAULT_SIZE, 180,
+                                        Short.MAX_VALUE))
+                            .addGroup(
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(4)
+                                    .addComponent(btnUploadExternalEvent,
+                                        GroupLayout.PREFERRED_SIZE, 176,
+                                        GroupLayout.PREFERRED_SIZE))
+                            .addGroup(
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(4)
+                                    .addComponent(rdbtnCompleteSimulation,
+                                        GroupLayout.PREFERRED_SIZE, 176,
+                                        GroupLayout.PREFERRED_SIZE))
+                            .addGroup(
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(4)
+                                    .addComponent(rdbtnOneExternalEvent,
+                                        GroupLayout.PREFERRED_SIZE, 176,
+                                        GroupLayout.PREFERRED_SIZE))
+                            .addGroup(
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(4)
+                                    .addComponent(rdbtnOneInternalEvent,
+                                        GroupLayout.PREFERRED_SIZE, 176,
+                                        GroupLayout.PREFERRED_SIZE))
+                            .addGroup(
+                                gl_user_option_panel.createSequentialGroup()
+                                    .addGap(4)
+                                    .addComponent(btnSimulate,
+                                        GroupLayout.PREFERRED_SIZE, 178,
+                                        GroupLayout.PREFERRED_SIZE)))
+                    .addGap(2))
+        );
+    gl_user_option_panel.setVerticalGroup(
+        gl_user_option_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_user_option_panel.createSequentialGroup()
+                    .addGap(11)
+                    .addComponent(btnUploadExternalEvent,
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(92)
+                    .addComponent(rdbtnCompleteSimulation,
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rdbtnOneExternalEvent)
+                    .addComponent(rdbtnOneInternalEvent)
+                    .addGap(2)
+                    .addComponent(btnSimulate, GroupLayout.PREFERRED_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addGap(18)
+                    .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 79,
+                        Short.MAX_VALUE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(btnEatExternalEvents,
-                        GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                    .addGroup(gl_user_option_panel.createSequentialGroup()
-                        .addGap(4)
-                        .addComponent(textPane,
-                            GroupLayout.DEFAULT_SIZE, 170,
-                            Short.MAX_VALUE))
-                    .addGroup(gl_user_option_panel.createSequentialGroup()
-                        .addGap(2)
-                        .addComponent(btnSimulate,
-                            GroupLayout.DEFAULT_SIZE, 172,
-                            Short.MAX_VALUE))
-                    .addGroup(Alignment.LEADING,
-                        gl_user_option_panel.createSequentialGroup()
-                            .addGap(4)
-                            .addGroup(gl_user_option_panel
-                                .createParallelGroup(Alignment.LEADING)
-                                .addComponent(
-                                    rdbtnCompleteSimulation,
-                                    Alignment.TRAILING,
-                                    GroupLayout.DEFAULT_SIZE, 170,
-                                    Short.MAX_VALUE)
-                                .addComponent(
-                                    rdbtnOneInternalEvent,
-                                    GroupLayout.DEFAULT_SIZE, 170,
-                                    Short.MAX_VALUE)
-                                .addComponent(
-                                    rdbtnOneExternalEvent,
-                                    GroupLayout.DEFAULT_SIZE, 170,
-                                    Short.MAX_VALUE)
-                                .addComponent(
-                                    btnUploadExternalEvent,
-                                    GroupLayout.DEFAULT_SIZE, 170,
-                                    Short.MAX_VALUE))))
-                .addContainerGap())
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(44))
         );
-    gl_user_option_panel.setVerticalGroup(gl_user_option_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(gl_user_option_panel.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(btnUploadExternalEvent,
-                GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-            .addGap(92)
-            .addComponent(rdbtnCompleteSimulation,
-                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(rdbtnOneExternalEvent)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(rdbtnOneInternalEvent)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnSimulate, GroupLayout.PREFERRED_SIZE,
-                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addGap(46)
-            .addComponent(textPane, GroupLayout.PREFERRED_SIZE, 70,
-                GroupLayout.PREFERRED_SIZE)
-            .addGap(18)
-            .addComponent(btnEatExternalEvents,
-                GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-            .addGap(45))
-        );
+
+    final JList<String> entry_list = new JList<String>(new SortedListModel());
+    scrollPane.setViewportView(entry_list);
+    entry_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    SortedListModel listModel = (SortedListModel) entry_list.getModel();
     user_option_panel.setLayout(gl_user_option_panel);
+    Iterator<ExternalEvent> data =
+        this.simulator.getModel().iteratorExternalEvents();
+    while (data.hasNext()) {
+      listModel.addElement(data.next().toString());
+    }
 
     table = new JTable();
     GroupLayout gl_transitions_panel = new GroupLayout(transitions_panel);
-    gl_transitions_panel.setHorizontalGroup(gl_transitions_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(gl_transitions_panel.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(table, GroupLayout.DEFAULT_SIZE, 799,
-                Short.MAX_VALUE)
-            .addContainerGap())
-        );
-    gl_transitions_panel.setVerticalGroup(gl_transitions_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(gl_transitions_panel.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(table, GroupLayout.DEFAULT_SIZE, 159,
-                Short.MAX_VALUE)
-            .addContainerGap())
-        );
-    transitions_panel.setLayout(gl_transitions_panel);
-
-    JList state_machines_current_state = new JList();
-
-    JList variables = new JList();
-
-    GroupLayout gl_global_state_panel = new GroupLayout(global_state_panel);
-    gl_global_state_panel.setHorizontalGroup(
-        gl_global_state_panel.createParallelGroup(Alignment.TRAILING)
-            .addGroup(Alignment.LEADING,
-                gl_global_state_panel.createSequentialGroup()
-                    .addGap(11)
-                    .addComponent(state_machines_current_state,
-                        GroupLayout.DEFAULT_SIZE, 138,
-                        Short.MAX_VALUE)
-                    .addPreferredGap(ComponentPlacement.UNRELATED)
-                    .addComponent(variables, GroupLayout.DEFAULT_SIZE, 138,
+    gl_transitions_panel.setHorizontalGroup(
+        gl_transitions_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_transitions_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(table, GroupLayout.DEFAULT_SIZE, 800,
                         Short.MAX_VALUE)
                     .addContainerGap())
         );
-    gl_global_state_panel.setVerticalGroup(
-        gl_global_state_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(gl_global_state_panel
-                .createSequentialGroup()
-                .addContainerGap()
-                .addGroup(gl_global_state_panel
-                    .createParallelGroup(Alignment.BASELINE)
-                    .addComponent(state_machines_current_state,
-                        GroupLayout.DEFAULT_SIZE, 364,
-                        Short.MAX_VALUE)
-                    .addComponent(variables, GroupLayout.DEFAULT_SIZE,
-                        364, Short.MAX_VALUE))
-                .addContainerGap())
+    gl_transitions_panel.setVerticalGroup(
+        gl_transitions_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_transitions_panel.createSequentialGroup()
+                    .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(table, GroupLayout.PREFERRED_SIZE, 159,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
         );
+    transitions_panel.setLayout(gl_transitions_panel);
+
+    JScrollPane state_machine_scroll_panel = new JScrollPane();
+
+    JScrollPane variables_scroll_panel = new JScrollPane();
+
+    GroupLayout gl_global_state_panel = new GroupLayout(global_state_panel);
+    gl_global_state_panel.setHorizontalGroup(
+        gl_global_state_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                Alignment.TRAILING,
+                gl_global_state_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(state_machine_scroll_panel,
+                        GroupLayout.DEFAULT_SIZE, 141,
+                        Short.MAX_VALUE)
+                    .addPreferredGap(ComponentPlacement.UNRELATED)
+                    .addComponent(variables_scroll_panel,
+                        GroupLayout.PREFERRED_SIZE,
+                        136, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+        );
+    gl_global_state_panel
+        .setVerticalGroup(
+        gl_global_state_panel
+            .createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_global_state_panel
+                    .createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        gl_global_state_panel.createParallelGroup(
+                            Alignment.BASELINE)
+                            .addComponent(state_machine_scroll_panel,
+                                GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                            .addComponent(variables_scroll_panel,
+                                GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
+                    .addContainerGap())
+        );
+
+    variables_list = new JList<String>();
+    variables_scroll_panel.setViewportView(variables_list);
+
+    state_machines_current_state = new JList<String>();
+    state_machine_scroll_panel.setViewportView(state_machines_current_state);
     global_state_panel.setLayout(gl_global_state_panel);
-
-    proof_internal_event_FIFO = new JList<SingleEvent>();
-
-    functionnal_internal_event_FIFO = new JList<SingleEvent>();
-
-    proof_external_event_FIFO = new JList<SingleEvent>();
-
-    functionnal_external_event_FIFO = new JList<ExternalEvent>();
-
-    commands = new JList<CommandEvent>();
-
-    functional_state_tag_change_FIFO = new JList();
-
-    proof_state_tag_change_FIFO = new JList();
 
     GroupLayout gl_fifo_panel = new GroupLayout(fifo_panel);
 
@@ -391,6 +430,14 @@ public class MainWindow extends JFrame {
         updateLists();
       }
     });
+
+    btnEatExternalEvents.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        external_events.add(new ExternalEvent(entry_list.getSelectedValue()));
+      }
+    });
   }
 
   private void updateLists() {
@@ -401,15 +448,55 @@ public class MainWindow extends JFrame {
         simulator.getInternalFunctionalEventQueue());
     fillInList(proof_internal_event_FIFO,
         simulator.getInternalProofEventQueue());
-
+    removeAllEllement(functional_state_tag_change_FIFO);
+    fillInCurrentStates(functional_state_tag_change_FIFO, simulator.getModel(),
+        simulator.getGlobalState());
+    fillInCurrentStates(functional_state_tag_change_FIFO, simulator.getProof(),
+        simulator.getGlobalState());
+    removeAllEllement(variables_list);
+    fillInVariables(variables_list, simulator.getModel(), simulator
+        .getGlobalState());
+    fillInVariables(variables_list, simulator.getProof(), simulator
+        .getGlobalState());
   }
 
-  private <T> void fillInList(JList<T> list, LinkedList<T> data) {
-    DefaultListModel<T> listModel = (DefaultListModel<T>) list.getModel();
+  private <T> void fillInList(JList<String> list, LinkedList<T> data) {
+    DefaultListModel<String> listModel = (DefaultListModel<String>) list
+        .getModel();
     listModel.removeAllElements();
     for (T one_data : data) {
-      listModel.addElement(one_data);
+      listModel.addElement(one_data.toString());
     }
+  }
+
+  private void fillInCurrentStates(JList<String> list, Model model,
+      GlobalState global_state) {
+    DefaultListModel<String> listModel = (DefaultListModel<String>) list
+        .getModel();
+    Iterator<StateMachine> state_machine_iterator = model.iterator();
+    while (state_machine_iterator.hasNext()) {
+      StateMachine state_machine = state_machine_iterator.next();
+      listModel.addElement(state_machine + " --> "
+          + global_state.getState(state_machine).toString());
+    }
+  }
+
+  private void fillInVariables(JList<String> list, Model model,
+      GlobalState global_state) {
+    DefaultListModel<String> listModel = (DefaultListModel<String>) list
+        .getModel();
+    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+    while (variable_iterator.hasNext()) {
+      Variable variable = variable_iterator.next();
+      listModel.addElement(variable + " = "
+          + global_state.getVariableValue(variable));
+    }
+  }
+
+  private void removeAllEllement(JList list) {
+    DefaultListModel<String> listModel = (DefaultListModel<String>) list
+        .getModel();
+    listModel.removeAllElements();
   }
 
   public static void main(String[] args) {
@@ -420,5 +507,4 @@ public class MainWindow extends JFrame {
     main_window.setLocationRelativeTo(null);
     main_window.setVisible(true);
   }
-
 }
