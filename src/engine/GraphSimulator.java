@@ -152,6 +152,7 @@ public class GraphSimulator implements
     }
 
     if (has_executed_external_event_in_proof || proof == null) {
+      external_event_to_execute = external_events.poll();
       processSingleEvent(model, internal_global_state,
           external_event_to_execute, external_proof_event_queue);
       has_executed_external_event_in_proof = false;

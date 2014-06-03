@@ -3,6 +3,7 @@ package gui;
 import engine.GraphSimulator;
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import graph.StateMachine;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,22 +36,32 @@ public class LaunchSimulationButton implements ActionListener {
         functional_model = loadFile(factory, functional_file_chooser,
             "functional model");
       } catch (IOException e1) {
-        // TODO Auto-generated catch block
         e1.printStackTrace();
+        return;
       }
       if (proof_file_chooser.getSelectedFile() != null) {
         try {
           proof_model = loadFile(factory, proof_file_chooser,
               "proof model");
+
         } catch (IOException e1) {
-          // TODO Auto-generated catch block
           e1.printStackTrace();
+          return;
         }
         // TODO add the initialization of a global state to add to the file
         simulator = new GraphSimulator(functional_model,
             proof_model);
+        /* the initialization of the state of the proof model */
+        for (StateMachine machine : proof_model) {
+          simulator.getGlobalState().setState(machine, machine.getState("0"));
+        }
+
       } else {
         simulator = new GraphSimulator(functional_model);
+      }
+      /* the initialization of the state of the functional model */
+      for (StateMachine machine : functional_model) {
+        simulator.getGlobalState().setState(machine, machine.getState("0"));
       }
       frame.dispose();
       MainWindow main_window = new MainWindow(simulator);
