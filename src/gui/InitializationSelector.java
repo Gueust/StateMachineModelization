@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -23,6 +24,8 @@ public class InitializationSelector extends JDialog {
 
   private LinkedList<JToggleButton> buttons =
       new LinkedList<JToggleButton>();
+
+  private boolean has_been_validated = false;
 
   /**
    * 
@@ -46,6 +49,15 @@ public class InitializationSelector extends JDialog {
     upper_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
     JButton button_OK = new JButton("Ok");
+    button_OK.addActionListener(new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        InitializationSelector.this.dispose();
+        has_been_validated = true;
+      }
+    });
+
     upper_panel.add(button_OK);
 
     JButton button_cancel =
@@ -84,11 +96,23 @@ public class InitializationSelector extends JDialog {
     setModalityType(ModalityType.DOCUMENT_MODAL);
   }
 
-  // Faire comme ExportChooser.showSaveDialog() qui retourne ue valeur
+  public static final int ERROR_OPTION = -1;
+
+  /**
+   * Make the Dialog visible. It does not return until the Dialog has been
+   * closed.
+   * 
+   * @return The HashSet of the selected buttons. null of no selection has been
+   *         done (Dialog closed without validating).
+   */
   public HashSet<String> showDialog() {
     setVisible(true);
 
-    return null;
+    if (has_been_validated) {
+      return getSelected();
+    } else {
+      return null;
+    }
   }
 
   /**
