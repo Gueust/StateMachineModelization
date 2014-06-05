@@ -4,8 +4,11 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -29,6 +32,7 @@ import abstractGraph.events.ExternalEvent;
 import engine.GraphSimulator;
 import graph.GlobalState;
 import graph.Model;
+import graph.State;
 import graph.StateMachine;
 
 @SuppressWarnings("serial")
@@ -49,11 +53,19 @@ public class MainWindow extends JFrame {
   public MainWindow(final GraphSimulator simulator)
       throws HeadlessException {
     this.simulator = simulator;
-    this.simulator.init();
+
+    HashSet<String> initialization_events = new HashSet<String>();
+    HashMap<String, String> pairs_of_ctl = simulator.getModel().regroupCTL();
+    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
+      initialization_events.add(pair.getKey());
+    }
+
+    this.simulator.init(initialization_events);
+
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
 
-    JMenu mnFile = new JMenu("New");
+    JMenu mnFile = new JMenu("Simulation");
     menuBar.add(mnFile);
 
     JMenuItem mntmNewSimulation = new JMenuItem("New Simulation");
@@ -82,6 +94,21 @@ public class MainWindow extends JFrame {
         main_window.setLocationRelativeTo(null);
         main_window.setVisible(true);
         MainWindow.this.dispose();
+      }
+    });
+
+    JMenuItem mntmInitializeSimulation = new JMenuItem("Initialize simulation");
+    mnFile.add(mntmInitializeSimulation);
+    mntmInitializeSimulation.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        InitializationSelector window =
+            new InitializationSelector(MainWindow.this,
+                simulator.getModel().regroupCTL());
+
+        HashSet<String> CTLs = window.showDialog();
+        simulator.init(CTLs);
       }
     });
 
@@ -284,6 +311,7 @@ public class MainWindow extends JFrame {
     }
 
     table = new JTable();
+
     GroupLayout gl_transitions_panel = new GroupLayout(transitions_panel);
     gl_transitions_panel.setHorizontalGroup(
         gl_transitions_panel.createParallelGroup(Alignment.LEADING)
@@ -366,17 +394,17 @@ public class MainWindow extends JFrame {
                                                 Alignment.TRAILING)
                                             .addComponent(
                                                 functionnal_external_event_FIFO,
-                                                GroupLayout.DEFAULT_SIZE, 140,
+                                                GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE)
                                             .addComponent(
                                                 functional_state_tag_change_FIFO,
                                                 Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 140,
+                                                GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE)
                                             .addComponent(
                                                 functionnal_internal_event_FIFO,
                                                 Alignment.LEADING,
-                                                GroupLayout.DEFAULT_SIZE, 140,
+                                                GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE))
                                     .addPreferredGap(ComponentPlacement.RELATED)
                                     .addGroup(
@@ -387,9 +415,9 @@ public class MainWindow extends JFrame {
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        proof_external_event_FIFO,
+                                                        proof_state_tag_change_FIFO,
                                                         GroupLayout.DEFAULT_SIZE,
-                                                        142, Short.MAX_VALUE)
+                                                        229, Short.MAX_VALUE)
                                                     .addContainerGap())
                                             .addGroup(
                                                 gl_fifo_panel
@@ -397,20 +425,20 @@ public class MainWindow extends JFrame {
                                                     .addComponent(
                                                         proof_internal_event_FIFO,
                                                         GroupLayout.DEFAULT_SIZE,
-                                                        142, Short.MAX_VALUE)
+                                                        229, Short.MAX_VALUE)
                                                     .addGap(10))
                                             .addGroup(
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        proof_state_tag_change_FIFO,
+                                                        proof_external_event_FIFO,
                                                         GroupLayout.DEFAULT_SIZE,
-                                                        142, Short.MAX_VALUE)
+                                                        229, Short.MAX_VALUE)
                                                     .addContainerGap())))
                             .addGroup(
                                 gl_fifo_panel.createSequentialGroup()
                                     .addComponent(commands,
-                                        GroupLayout.DEFAULT_SIZE, 288,
+                                        GroupLayout.DEFAULT_SIZE, 462,
                                         Short.MAX_VALUE)
                                     .addContainerGap())))
         );
@@ -422,28 +450,28 @@ public class MainWindow extends JFrame {
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
                             .addComponent(proof_internal_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
                             .addComponent(functionnal_internal_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE,
                             false)
                             .addComponent(functional_state_tag_change_FIFO,
-                                GroupLayout.PREFERRED_SIZE, 86,
+                                GroupLayout.PREFERRED_SIZE, 81,
                                 GroupLayout.PREFERRED_SIZE)
                             .addComponent(proof_state_tag_change_FIFO,
-                                GroupLayout.PREFERRED_SIZE, 86,
+                                GroupLayout.PREFERRED_SIZE, 81,
                                 GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(ComponentPlacement.UNRELATED)
-                    .addGroup(
-                        gl_fifo_panel.createParallelGroup(Alignment.LEADING)
-                            .addComponent(proof_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
-                            .addComponent(functionnal_external_event_FIFO,
-                                GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 92,
+                    .addGroup(
+                        gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(functionnal_external_event_FIFO,
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                            .addComponent(proof_external_event_FIFO,
+                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 84,
                         Short.MAX_VALUE)
                     .addGap(15))
         );
@@ -531,13 +559,14 @@ public class MainWindow extends JFrame {
   private void fillInCurrentStates(JList<String> list, Model model,
       GlobalState global_state) {
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    DefaultListModel<String> listModel = (DefaultListModel<String>) list
-        .getModel();
-    Iterator<StateMachine> state_machine_iterator = model.iterator();
-    while (state_machine_iterator.hasNext()) {
-      StateMachine state_machine = state_machine_iterator.next();
+    DefaultListModel<String> listModel =
+        (DefaultListModel<String>) list.getModel();
+
+    for (StateMachine state_machine : model) {
+      System.out.println(global_state);
+      State state = global_state.getState(state_machine);
       listModel.addElement(state_machine.getName() + " --> "
-          + global_state.getState(state_machine).getId());
+          + (state == null ? "??" : state.getId()));
     }
   }
 

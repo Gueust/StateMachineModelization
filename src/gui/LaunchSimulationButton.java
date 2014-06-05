@@ -54,7 +54,6 @@ public class LaunchSimulationButton implements ActionListener {
       }
       frame.dispose();
       MainWindow main_window = new MainWindow(simulator);
-
       main_window.setLocationRelativeTo(frame);
       main_window.setVisible(true);
     } else {

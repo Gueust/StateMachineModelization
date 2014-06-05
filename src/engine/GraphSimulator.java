@@ -6,7 +6,7 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -24,7 +24,7 @@ import abstractGraph.events.VariableChange;
 public class GraphSimulator implements
     GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
 
-  private GlobalState internal_global_state;
+  private GlobalState internal_global_state = new GlobalState();
 
   /** This is the list of the different queues used in the simulator. */
   private LinkedList<SingleEvent> internal_functional_event_queue =
@@ -591,9 +591,24 @@ public class GraphSimulator implements
     return true;
   }
 
-  public void init() {
-    internal_global_state = new GlobalState();
+  /**
+   * Initialize the model with the given set of CTL:
+   * <ol>
+   * <li>
+   * It does initialize all the states machines to the state "0"</li>
+   * <li>
+   * It executes ACT_Init with the given set of CTL as true variables.</li>
+   * <li>Clear the valuation of the CTLs that had previously been added.</li>
+   * </ol>
+   * 
+   * @param external_values
+   *          The set of CTLs to consider true during the initialization.
+   *          It must only contains CTLs and it must not contain opposite CTLs.
+   */
+  public void init(HashSet<String> external_values) {
+    internal_global_state.clear();
 
+    /* Initialization of the states of all the state machines */
     for (StateMachine machine : model) {
       getGlobalState().setState(machine, machine.getState("0"));
     }
@@ -603,11 +618,20 @@ public class GraphSimulator implements
       }
     }
 
-    LinkedList<ExternalEvent> initialization_events = new LinkedList<ExternalEvent>();
-    HashMap<String, String> pairs_of_ctl = model.regroupCTL();
-    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
-      initialization_events.add(new ExternalEvent(pair.getKey()));
+    /* We set the CTLs to true */
+    LinkedList<Variable> to_delete_from_valuation = new LinkedList<Variable>();
+    for (String event : external_values) {
+      Variable var = model.getVariable(event);
+      to_delete_from_valuation.add(var);
+      internal_global_state.setVariableValue(var, true);
     }
-    executeAll(initialization_events);
+
+    /* We execute ACT_Init */
+    execute(new ExternalEvent("ACT_Init"));
+
+    /* We delete the CTLs from the valuation */
+    for (Variable variable : to_delete_from_valuation) {
+      internal_global_state.getValuation().remove(variable);
+    }
   }
 }

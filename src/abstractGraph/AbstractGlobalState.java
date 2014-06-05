@@ -122,14 +122,25 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
   public void setIsSafe(boolean safe) {
     is_safe_state = safe;
   }
-  
+
   private boolean isNotP7 = true;
+
   public boolean isNotP7() {
     return isNotP7;
   }
 
   public void setNotP7(boolean NotP7) {
     isNotP7 = NotP7;
+  }
+
+  /**
+   * Clear the AbstractGlobalState: it is as new as a new instance.
+   */
+  public void clear() {
+    variables_values.clear();
+    state_machines_current_state.clear();
+    is_legal_state = true;
+    is_safe_state = true;
   }
 
   @Override

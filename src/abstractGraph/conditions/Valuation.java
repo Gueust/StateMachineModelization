@@ -1,8 +1,6 @@
 package abstractGraph.conditions;
 
-
 import java.util.HashMap;
-
 
 /**
  * Mapping of the variables to {true, false}.
@@ -52,13 +50,18 @@ public class Valuation {
     return old_value != null && !old_value.equals(value);
   }
 
+  /**
+   * Remove the given variable from the valuation.
+   */
+  public void remove(Variable var) {
+    valuation.remove(var);
+  }
+
   @Override
   public String toString() {
     return valuation.toString();
   }
 
-
-  
   @SuppressWarnings("unchecked")
   public Valuation clone() {
     Valuation result = new Valuation();
@@ -92,5 +95,9 @@ public class Valuation {
           "The valuation HashMap cannot be null since it is always initialized");
     }
     return this.valuation.equals(other);
+  }
+
+  public void clear() {
+    valuation.clear();
   }
 }

@@ -46,7 +46,6 @@ public abstract class FormulaFactory {
   private boolean united_model;
   private HashMap<String, Variable> existing_variables;
 
-
   /**
    * Initialize the FormulaFactory in the single formula mode.
    */
@@ -97,6 +96,16 @@ public abstract class FormulaFactory {
     }
 
     return temp_variable;
+  }
+
+  /**
+   * Remove a variable from the factory. Calling this function may break the
+   * factory. Only
+   * 
+   * @param variable_name
+   */
+  public void removeVariable(String variable_name) {
+    existing_variables.remove(variable_name);
   }
 
   /**

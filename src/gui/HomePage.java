@@ -229,60 +229,73 @@ public class HomePage extends JFrame {
 
     JButton btnSimulation = new JButton("Simulation");
 
+    JButton btnRemoveProofModel = new JButton("Remove proof model");
+
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
-    gl_file_upload_panel.setHorizontalGroup(gl_file_upload_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(gl_file_upload_panel.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(gl_file_upload_panel.createParallelGroup(
-                Alignment.TRAILING)
-                .addComponent(btnSimulation, Alignment.LEADING,
-                    GroupLayout.DEFAULT_SIZE,
-                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(Alignment.LEADING,
-                    gl_file_upload_panel.createParallelGroup(
-                        Alignment.TRAILING, false)
-                        .addComponent(btnLoadFunctionalModel,
-                            Alignment.LEADING,
-                            GroupLayout.DEFAULT_SIZE, 184,
-                            Short.MAX_VALUE)
-                        .addComponent(txtrFunctionalModel,
-                            Alignment.LEADING,
-                            GroupLayout.DEFAULT_SIZE, 184,
-                            Short.MAX_VALUE)
-                        .addComponent(btnLoadProofModel,
-                            Alignment.LEADING,
-                            GroupLayout.DEFAULT_SIZE, 184,
-                            Short.MAX_VALUE)
-                        .addComponent(txtrProofModel,
-                            Alignment.LEADING,
-                            GroupLayout.DEFAULT_SIZE, 184,
-                            Short.MAX_VALUE)))
-            .addContainerGap())
+    gl_file_upload_panel.setHorizontalGroup(
+        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                Alignment.TRAILING,
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        gl_file_upload_panel.createParallelGroup(
+                            Alignment.TRAILING)
+                            .addComponent(btnRemoveProofModel,
+                                Alignment.LEADING, GroupLayout.PREFERRED_SIZE,
+                                184, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSimulation, Alignment.LEADING,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addGroup(
+                                Alignment.LEADING,
+                                gl_file_upload_panel.createParallelGroup(
+                                    Alignment.TRAILING, false)
+                                    .addComponent(btnLoadFunctionalModel,
+                                        Alignment.LEADING,
+                                        GroupLayout.DEFAULT_SIZE, 184,
+                                        Short.MAX_VALUE)
+                                    .addComponent(txtrFunctionalModel,
+                                        Alignment.LEADING,
+                                        GroupLayout.DEFAULT_SIZE, 184,
+                                        Short.MAX_VALUE)
+                                    .addComponent(btnLoadProofModel,
+                                        Alignment.LEADING,
+                                        GroupLayout.DEFAULT_SIZE, 184,
+                                        Short.MAX_VALUE)
+                                    .addComponent(txtrProofModel,
+                                        Alignment.LEADING,
+                                        GroupLayout.DEFAULT_SIZE, 184,
+                                        Short.MAX_VALUE)))
+                    .addContainerGap())
         );
     gl_file_upload_panel.setVerticalGroup(
         gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(gl_file_upload_panel.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtrFunctionalModel,
-                    GroupLayout.PREFERRED_SIZE, 41,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnLoadFunctionalModel,
-                    GroupLayout.PREFERRED_SIZE, 42,
-                    GroupLayout.PREFERRED_SIZE)
-                .addGap(11)
-                .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
-                    42, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnLoadProofModel,
-                    GroupLayout.PREFERRED_SIZE, 42,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED, 100,
-                    Short.MAX_VALUE)
-                .addComponent(btnSimulation, GroupLayout.PREFERRED_SIZE,
-                    58, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addGroup(
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(txtrFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(11)
+                    .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
+                        42, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadProofModel,
+                        GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnRemoveProofModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED, 53,
+                        Short.MAX_VALUE)
+                    .addComponent(btnSimulation, GroupLayout.PREFERRED_SIZE,
+                        58, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
     // TODO Auto-generated constructor stub

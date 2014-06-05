@@ -1,7 +1,7 @@
 Page 1
 0
 1
-CTL_1_Actif Evenement
+CTL_1 Evenement
 Condition
 IND_1_Inactif; SYN_1; Action
 Page 2
