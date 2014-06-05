@@ -24,6 +24,7 @@ public class Verifier {
       super();
       addVerification(new SingleWritingChecker());
       addVerification(new DeterminismChecker());
+      addVerification(new SingleWritingChecker());
     }
   }
 

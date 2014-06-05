@@ -6,6 +6,7 @@ import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
+import graph.verifiers.InitializationProperty;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.Verifier;
@@ -329,6 +330,30 @@ public class Graph_Verifiers_PackagesTesting {
         false,
         false,
         true
+    };
+
+    generalTest(verifier, files, results);
+  }
+
+  @Test
+  public void InitializationPropertyChecker() {
+    Verifier verifier = new Verifier();
+    verifier.addVerification(new InitializationProperty());
+
+    String[] files = {
+        "Graph_without_initialisation_error.txt",
+        "Graph_without_initial_state.txt",
+        "Graph_with_SYN_in_initialisation_transition.txt",
+        "Graph_with_variable_in_initialisation_transition.txt",
+        "Graph_with_event_in_initialisation_transition.txt"
+    };
+
+    Boolean[] results = {
+        true,
+        false,
+        false,
+        false,
+        false
     };
 
     generalTest(verifier, files, results);
