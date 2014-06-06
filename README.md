@@ -17,6 +17,8 @@ This one should be download at <a>http://www.antlr.org/download.html</a>
 or <a>https://github.com/antlr/website-antlr4/tree/gh-pages/download</a> and
 then added in the /lib directory.
 
+swingx-all-1.6.4.jar
+
 Build
 -------------
 
