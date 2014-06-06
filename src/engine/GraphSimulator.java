@@ -206,7 +206,8 @@ public class GraphSimulator implements
 
     for (StateMachine state_machine : model) {
       State current_state = global_state.getState(state_machine);
-      assert current_state != null : "No state selected for a state machine.";
+      assert current_state != null : "No state selected for the state machine "
+          + state_machine.getName();
       Iterator<Transition> transition_iterator =
           current_state.iteratorTransitions(event);
       while (transition_iterator.hasNext()) {

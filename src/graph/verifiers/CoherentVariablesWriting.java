@@ -220,7 +220,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
          * We visit the states linked to the current one if they have not
          * already been visited.
          */
-        it_trans = state.iteratorTransitions();
+        it_trans = state.iterator();
         while (it_trans.hasNext()) {
           Transition transition = it_trans.next();
           State destination = transition.getDestination();

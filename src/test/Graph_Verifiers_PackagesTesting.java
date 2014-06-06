@@ -6,7 +6,7 @@ import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
-import graph.verifiers.InitializationProperty;
+import graph.verifiers.InitializationProperties;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.Verifier;
@@ -52,8 +52,9 @@ public class Graph_Verifiers_PackagesTesting {
   private void generalTest(Verifier verifier, String[] files, Boolean[] results) {
     assertTrue(files.length == results.length);
 
+    int i = 0;
     try {
-      for (int i = 0; i < files.length; i++) {
+      for (i = 0; i < files.length; i++) {
         assertTrue("Error on " + files[i],
             verifier.check(loadFile(files[i]), true) == results[i]);
         assertTrue("Error on " + files[i],
@@ -61,7 +62,7 @@ public class Graph_Verifiers_PackagesTesting {
       }
     } catch (IOException e) {
       e.printStackTrace();
-      fail("Unexpected exception.");
+      fail("Unexpected exception while loading " + files[i]);
     }
   }
 
@@ -185,7 +186,8 @@ public class Graph_Verifiers_PackagesTesting {
    *          the same event, and with an incompatible condition.</li>
    *          <li>
    *          Determinism_two_identical_transitions.txt: two identical
-   *          transitions that should not raise an error, but only a warning.</li>
+   *          transitions that should not raise an error, but only a
+   *          warning.</li>
    *          </ol>
    */
   @Test
@@ -338,7 +340,7 @@ public class Graph_Verifiers_PackagesTesting {
   @Test
   public void InitializationPropertyChecker() {
     Verifier verifier = new Verifier();
-    verifier.addVerification(new InitializationProperty());
+    verifier.addVerification(new InitializationProperties());
 
     String[] files = {
         "Graph_without_initialisation_error.txt",

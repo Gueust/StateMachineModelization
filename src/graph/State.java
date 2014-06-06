@@ -19,7 +19,7 @@ public class State extends AbstractState<Transition> {
   }
 
   @Override
-  public Iterator<Transition> iteratorTransitions() {
+  public Iterator<Transition> iterator() {
     return transitions.iterator();
   }
 
@@ -47,7 +47,7 @@ public class State extends AbstractState<Transition> {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("STATE: " + getId() + "\n");
-    Iterator<Transition> transitions_iterator = iteratorTransitions();
+    Iterator<Transition> transitions_iterator = iterator();
     while (transitions_iterator.hasNext()) {
       Transition t = transitions_iterator.next();
       sb.append(" ¤ " + t.toString() + "\n");

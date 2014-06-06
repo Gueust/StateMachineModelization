@@ -36,7 +36,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
 
       public TransitionsIterator() {
         if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().iteratorTransitions();
+          transitions_iterator = states_iterator.next().iterator();
         }
       }
 
@@ -49,7 +49,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
         if (transitions_iterator.hasNext()) {
           return true;
         } else if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().iteratorTransitions();
+          transitions_iterator = states_iterator.next().iterator();
           return hasNext();
         } else {
           return false;
@@ -65,7 +65,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
         if (transitions_iterator.hasNext()) {
           return transitions_iterator.next();
         } else if (states_iterator.hasNext()) {
-          transitions_iterator = states_iterator.next().iteratorTransitions();
+          transitions_iterator = states_iterator.next().iterator();
           return next();
         } else {
           throw new NoSuchElementException();
