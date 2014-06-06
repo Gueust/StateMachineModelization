@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
       initialization_events.add(pair.getKey());
     }
 
-    this.simulator.init(initialization_events);
+    // this.simulator.init(initialization_events);
 
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
