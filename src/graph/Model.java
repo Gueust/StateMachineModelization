@@ -329,4 +329,23 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       }
     }
   }
+
+  /**
+   * Add `model` to the current model. The user MUST build the resulting model
+   * to have coherent internal data.
+   * 
+   * @param model
+   * @return true if the addition of the given model has been done successfully.
+   *         false if the addition failed. In that case, the result of the
+   *         addition is not specified (it may have been partially modified).
+   */
+  public boolean add(Model model) {
+    for (StateMachine machine : model) {
+      if (state_machines.containsKey(machine.getName())) {
+        return false;
+      }
+      addStateMachine(machine);
+    }
+    return true;
+  }
 }

@@ -1,0 +1,10 @@
+target: myfile.fr
+content:
+- instanciate: file1
+  named_as: toto
+  with: 
+    a: b
+    c : 'h'
+- instanciate: file3/se.txt
+  with:
+    '<Aig1>': aiguille1
