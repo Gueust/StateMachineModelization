@@ -108,18 +108,6 @@ public class MainWindow extends JFrame {
 
     JMenuItem mntmInitializeSimulation = new JMenuItem("Initialize simulation");
     mnFile.add(mntmInitializeSimulation);
-    mntmInitializeSimulation.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        InitializationSelector window =
-            new InitializationSelector(MainWindow.this,
-                simulator.getModel().regroupCTL());
-
-        HashSet<String> CTLs = window.showDialog();
-        simulator.init(CTLs);
-      }
-    });
 
     JPanel fifo_panel = new JPanel();
     JPanel global_state_panel = new JPanel();
@@ -183,15 +171,16 @@ public class MainWindow extends JFrame {
                                         GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(ComponentPlacement.RELATED)
                                     .addComponent(global_state_panel,
-                                        GroupLayout.DEFAULT_SIZE, 307,
+                                        GroupLayout.DEFAULT_SIZE, 481,
                                         Short.MAX_VALUE)
                                     .addPreferredGap(
                                         ComponentPlacement.UNRELATED)
                                     .addComponent(fifo_panel,
-                                        GroupLayout.DEFAULT_SIZE, 313,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.DEFAULT_SIZE,
                                         Short.MAX_VALUE))
                             .addComponent(transitions_panel,
-                                GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 1168, Short.MAX_VALUE))
                     .addGap(6))
         );
     groupLayout.setVerticalGroup(
@@ -204,14 +193,12 @@ public class MainWindow extends JFrame {
                             .addComponent(user_option_panel,
                                 GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(global_state_panel,
-                                GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                             .addComponent(fifo_panel, GroupLayout.DEFAULT_SIZE,
-                                390, Short.MAX_VALUE))
+                                371, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(transitions_panel,
-                        GroupLayout.PREFERRED_SIZE, 181,
-                        GroupLayout.PREFERRED_SIZE)
+                    .addComponent(transitions_panel, GroupLayout.DEFAULT_SIZE,
+                        181, Short.MAX_VALUE)
                     .addGap(2))
         );
 
@@ -222,6 +209,9 @@ public class MainWindow extends JFrame {
     rdbtnCompleteSimulation.setPreferredSize(new Dimension(101, 23));
 
     JButton btnSimulate = new JButton("next");
+    btnSimulate
+        .setToolTipText("To enable this button, you must initialize the simulation. You can do it by clicking on Simulation then initialize simulation.");
+    btnSimulate.setEnabled(false);
     btnSimulate.setPreferredSize(new Dimension(101, 23));
     btnSimulate.setMinimumSize(new Dimension(101, 23));
     btnSimulate.setMaximumSize(new Dimension(101, 23));
@@ -232,6 +222,9 @@ public class MainWindow extends JFrame {
     btnUploadExternalEvent.setMaximumSize(new Dimension(101, 23));
 
     JButton btnEatExternalEvents = new JButton("Eat External Events");
+    btnEatExternalEvents
+        .setToolTipText("To enable this button, you must initialize the simulation. You can do it by clicking on Simulation then initialize simulation.");
+    btnEatExternalEvents.setEnabled(false);
     btnEatExternalEvents.setPreferredSize(new Dimension(101, 23));
     btnEatExternalEvents.setMaximumSize(new Dimension(101, 23));
     btnEatExternalEvents.setMinimumSize(new Dimension(101, 23));
@@ -365,18 +358,16 @@ public class MainWindow extends JFrame {
                 gl_transitions_panel.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(table_scroll_pane, GroupLayout.DEFAULT_SIZE,
-                        800,
-                        Short.MAX_VALUE)
+                        1148, Short.MAX_VALUE)
                     .addContainerGap())
         );
     gl_transitions_panel.setVerticalGroup(
         gl_transitions_panel.createParallelGroup(Alignment.LEADING)
             .addGroup(
                 gl_transitions_panel.createSequentialGroup()
-                    .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(table_scroll_pane,
-                        GroupLayout.PREFERRED_SIZE, 159,
-                        GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap()
+                    .addComponent(table_scroll_pane, GroupLayout.DEFAULT_SIZE,
+                        159, Short.MAX_VALUE)
                     .addContainerGap())
         );
     transitions_panel.setLayout(gl_transitions_panel);
@@ -572,9 +563,35 @@ public class MainWindow extends JFrame {
       }
     });
 
+    mntmInitializeSimulation.addActionListener(new InitializeSimulation(
+        btnSimulate, btnEatExternalEvents));
+
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setPreferredSize(new Dimension(1200, 630));
     pack();
+  }
+
+  private class InitializeSimulation implements ActionListener {
+
+    private JButton next;
+    private JButton eat;
+
+    public InitializeSimulation(JButton next, JButton eat) {
+      this.eat = eat;
+      this.next = next;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      InitializationSelector window =
+          new InitializationSelector(MainWindow.this,
+              simulator.getModel().regroupCTL());
+
+      HashSet<String> CTLs = window.showDialog();
+      simulator.init(CTLs);
+      eat.setEnabled(true);
+      next.setEnabled(true);
+    }
   }
 
   private void updateLists() {

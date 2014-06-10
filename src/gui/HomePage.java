@@ -141,6 +141,8 @@ public class HomePage extends JFrame {
     chckbxWrittenAtLeast.setSelected(true);
 
     JCheckBox chckbxGoodInitialization = new JCheckBox("Good initialization");
+    chckbxGoodInitialization
+        .setToolTipText("Verify that every graph contains a state 0. That those state have just only event \"ACT_Init\". And that for those transition, the only variable in the conditions are CTL.");
     chckbxGoodInitialization.setSelected(true);
     chckbxGoodInitialization.setEnabled(false);
 
