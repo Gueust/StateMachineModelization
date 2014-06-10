@@ -26,6 +26,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumnModel;
 
 import org.jdesktop.swingx.JXTable;
@@ -37,9 +39,9 @@ import graph.GlobalState;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
-import gui.variousModels.TransitionModel;
 import gui.variousModels.SortedListModel;
 import gui.variousModels.TextAreaRenderer;
+import gui.variousModels.TransitionModel;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -125,17 +127,38 @@ public class MainWindow extends JFrame {
     JPanel transitions_panel = new JPanel();
     proof_internal_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    proof_internal_event_FIFO.setBorder(new TitledBorder(null,
+        "proof internal event", TitledBorder.LEADING, TitledBorder.TOP, null,
+        null));
     functionnal_internal_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    functionnal_internal_event_FIFO.setBorder(new TitledBorder(null,
+        "functionnal internal event", TitledBorder.LEADING, TitledBorder.TOP,
+        null, null));
     proof_external_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    proof_external_event_FIFO.setBorder(new TitledBorder(null,
+        "proof external events", TitledBorder.LEADING, TitledBorder.TOP, null,
+        null));
     functionnal_external_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    functionnal_external_event_FIFO.setBorder(new TitledBorder(null,
+        "functionnal external events", TitledBorder.LEADING, TitledBorder.TOP,
+        null, null));
     commands = new JList<String>(new DefaultListModel<String>());
+    commands.setBorder(new TitledBorder(null, "commands", TitledBorder.LEADING,
+        TitledBorder.TOP, null, null));
     functional_state_tag_change_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    functional_state_tag_change_FIFO.setBorder(new TitledBorder(UIManager
+        .getBorder("TitledBorder.border"),
+        "functionnal transitions pull by event", TitledBorder.LEADING,
+        TitledBorder.TOP, null, null));
     proof_state_tag_change_FIFO = new JList<String>(
         new DefaultListModel<String>());
+    proof_state_tag_change_FIFO.setBorder(new TitledBorder(null,
+        "proof transitions pull by event", TitledBorder.LEADING,
+        TitledBorder.TOP, null, null));
     variables_list = new JList<String>(new DefaultListModel<String>());
     state_machines_current_state = new JList<String>(
         new DefaultListModel<String>());

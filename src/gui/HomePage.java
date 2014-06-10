@@ -2,6 +2,7 @@ package gui;
 
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
+import graph.verifiers.InitializationProperties;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.WrittenAtLeastOnceChecker;
@@ -139,6 +140,10 @@ public class HomePage extends JFrame {
         .setToolTipText("Check that all the variables that are in the condition or event fields are written at least once (i.e. found in a field Action).");
     chckbxWrittenAtLeast.setSelected(true);
 
+    JCheckBox chckbxGoodInitialization = new JCheckBox("Good initialization");
+    chckbxGoodInitialization.setSelected(true);
+    chckbxGoodInitialization.setEnabled(false);
+
     HashMap<Class<?>, JCheckBox> property_hashmap = new HashMap<Class<?>, JCheckBox>();
     property_hashmap.put(DeterminismChecker.class, chckbxDeterminism);
     property_hashmap
@@ -148,6 +153,8 @@ public class HomePage extends JFrame {
         .put(CoherentVariablesWriting.class, chckbxCoherentWritting);
     property_hashmap
         .put(WrittenAtLeastOnceChecker.class, chckbxWrittenAtLeast);
+    property_hashmap
+        .put(InitializationProperties.class, chckbxGoodInitialization);
 
     GroupLayout gl_checkbox_panel = new GroupLayout(checkbox_panel);
     gl_checkbox_panel.setHorizontalGroup(
@@ -167,32 +174,32 @@ public class HomePage extends JFrame {
                             .addGroup(
                                 gl_checkbox_panel.createSequentialGroup()
                                     .addContainerGap()
-                                    .addComponent(chckbxUselessVariables,
-                                        GroupLayout.DEFAULT_SIZE, 344,
-                                        Short.MAX_VALUE))
+                                    .addGroup(
+                                        gl_checkbox_panel.createParallelGroup(
+                                            Alignment.LEADING)
+                                            .addComponent(
+                                                chckbxUselessVariables,
+                                                GroupLayout.DEFAULT_SIZE, 349,
+                                                Short.MAX_VALUE)
+                                            .addComponent(
+                                                chckbxCoherentWritting,
+                                                GroupLayout.DEFAULT_SIZE, 349,
+                                                Short.MAX_VALUE)
+                                            .addComponent(
+                                                chckbxNoConcurrentWritting,
+                                                GroupLayout.DEFAULT_SIZE, 349,
+                                                Short.MAX_VALUE)
+                                            .addComponent(chckbxDeterminism,
+                                                GroupLayout.DEFAULT_SIZE, 349,
+                                                Short.MAX_VALUE)
+                                            .addComponent(chckbxWrittenAtLeast,
+                                                GroupLayout.DEFAULT_SIZE, 349,
+                                                Short.MAX_VALUE)))
                             .addGroup(
                                 gl_checkbox_panel.createSequentialGroup()
                                     .addContainerGap()
-                                    .addComponent(chckbxCoherentWritting,
-                                        GroupLayout.DEFAULT_SIZE, 344,
-                                        Short.MAX_VALUE))
-                            .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(chckbxNoConcurrentWritting,
-                                        GroupLayout.DEFAULT_SIZE, 344,
-                                        Short.MAX_VALUE))
-                            .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(chckbxDeterminism,
-                                        GroupLayout.DEFAULT_SIZE, 344,
-                                        Short.MAX_VALUE))
-                            .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(chckbxWrittenAtLeast,
-                                        GroupLayout.DEFAULT_SIZE, 344,
+                                    .addComponent(chckbxGoodInitialization,
+                                        GroupLayout.DEFAULT_SIZE, 349,
                                         Short.MAX_VALUE)))
                     .addContainerGap())
         );
@@ -200,7 +207,9 @@ public class HomePage extends JFrame {
         gl_checkbox_panel.createParallelGroup(Alignment.TRAILING)
             .addGroup(
                 gl_checkbox_panel.createSequentialGroup()
-                    .addContainerGap()
+                    .addGap(10)
+                    .addComponent(chckbxGoodInitialization)
+                    .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxDeterminism)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxNoConcurrentWritting)
@@ -210,7 +219,7 @@ public class HomePage extends JFrame {
                     .addComponent(chckbxUselessVariables)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxWrittenAtLeast)
-                    .addPreferredGap(ComponentPlacement.RELATED, 177,
+                    .addPreferredGap(ComponentPlacement.RELATED, 151,
                         Short.MAX_VALUE)
                     .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
