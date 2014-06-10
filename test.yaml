@@ -1,9 +1,12 @@
-target: myfile.fr
+target: generated_graph.txt
+inputs:
+- [CLT_Zone4_Libre, CTL_Zone4_Occupee]
+- [CLT_Zone4B_Libre, CTL_Zone4B_Occupee]
 content:
 - instanciate: file1
   with: 
     a: b
-    c : 'h'
+    c: h
 - instanciate: file3/se.txt
   with:
-    '<Aig1>': aiguille1
+    "Aig1": aiguille1

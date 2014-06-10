@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.TypeDescription;
@@ -32,6 +33,7 @@ public class GeneratorFromTemplate {
     Constructor constructor = new Constructor(TemplatedModel.class);
     TypeDescription model_descr = new TypeDescription(TemplatedModel.class);
     model_descr.putListPropertyType("content", Instanciation.class);
+    // model_descr.putListPropertyType("inputs", LinkedList.class);
     constructor.addTypeDescription(model_descr);
 
     Yaml yaml = new Yaml(constructor);
@@ -43,6 +45,27 @@ public class GeneratorFromTemplate {
     BufferedWriter out =
         new BufferedWriter(new FileWriter(templated_model.getTarget()));
 
+    boolean first = true;
+    /* We generate the CLT-IND graphs */
+    for (LinkedList<String> list : templated_model.getInputs()) {
+      if (list.size() != 2) {
+        out.close();
+        throw new Error("The data within 'inputs' must be pairs.");
+      }
+
+      String graph =
+          GraphFactoryAEFD.generateAutomateForCTL(list.get(0), list.get(1));
+
+      if (first) {
+        first = false;
+      } else {
+        out.write("\r\n");
+      }
+      out.write(graph);
+      out.flush();
+    }
+
+    /* We instanciate the templated graphs */
     for (Instanciation instanciation : templated_model.getContent()) {
       String file_name = instanciation.getInstanciate();
 

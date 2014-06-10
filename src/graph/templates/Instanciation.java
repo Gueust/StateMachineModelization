@@ -5,7 +5,6 @@ import java.util.HashMap;
 public class Instanciation {
 
   private String instanciate;
-
   private HashMap<String, String> with = new HashMap<String, String>();
 
   public String getInstanciate() {

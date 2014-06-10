@@ -1,9 +1,7 @@
 import engine.GraphSimulator;
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.State;
 import graph.StateMachine;
-import graph.Transition;
 import graph.verifiers.Verifier;
 
 import java.io.File;
@@ -15,19 +13,12 @@ import java.lang.management.MemoryUsage;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import utils.TeeOutputStream;
-import abstractGraph.conditions.FormulaFactory;
-import abstractGraph.conditions.Variable;
-import abstractGraph.conditions.cnf.Literal;
-import abstractGraph.events.Actions;
-import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
-import abstractGraph.events.VariableChange;
 
 public class Main {
 
@@ -180,71 +171,4 @@ public class Main {
     System.out.printf("Total peak memory reserved: %,d%n", total_commited);
   }
 
-  private static void generateAutomateForCTL(
-      FormulaFactory factory,
-      String CTL_pos,
-      String CTL_neg) {
-
-    String variable_name =
-        CTL_pos.substring(CTL_pos.indexOf('_') + 1, CTL_pos.length());
-    variable_name = variable_name.substring(0, variable_name.lastIndexOf('_'));
-
-    String positive_suffix =
-        CTL_pos.substring(CTL_pos.lastIndexOf('_') + 1, CTL_pos.length());
-    String negative_suffix =
-        CTL_neg.substring(CTL_neg.lastIndexOf('_') + 1, CTL_neg.length());
-
-    String IND_actif_name = "IND_" + variable_name + "_" + positive_suffix;
-    String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
-
-    StateMachine machine = new StateMachine("GRAPH_" + IND_actif_name);
-
-    State init_state = machine.addState("0");
-    State positive_state = machine.addState("1");
-    State negative_state = machine.addState("2");
-
-    Events events;
-    Actions actions;
-    Variable variable = factory.getVariable(IND_actif_name);
-
-    /* Transition from 0 to 1 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_pos));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable)));
-    machine.addTransition(init_state, positive_state,
-        events, null, actions);
-
-    /* Transition from 0 to 2 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_neg));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable, true)));
-    machine.addTransition(init_state, negative_state,
-        events, null, actions);
-
-    /* Transition from 1 to 2 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_neg));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable, true)));
-    machine.addTransition(positive_state, negative_state,
-        events, null, actions);
-
-    /* Transition from 2 to 1 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_pos));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable)));
-    machine.addTransition(negative_state, positive_state,
-        events, null, actions);
-
-    System.out.println(machine);
-
-    Iterator<Transition> trans_it = machine.iteratorTransitions();
-    while (trans_it.hasNext()) {
-      System.out.println(GraphFactoryAEFD.writeTransition(machine, trans_it
-          .next()));
-    }
-  }
 }
