@@ -115,9 +115,33 @@ public class VerifyPorpertyGui implements ActionListener {
         + functional_file_chooser.getSelectedFile().getName() + " : \n\n");
     if (check_all.isSelected()) {
 
-      verifier.checkAll(model, true);
+      if (verifier.checkAll(model, true)) {
+        JOptionPane.showMessageDialog(frame,
+            "All the properties are respected by the functionnal model.",
+            "Success",
+            JOptionPane.PLAIN_MESSAGE);
+      } else {
+        JOptionPane
+            .showMessageDialog(
+                frame,
+                "Some properties aren't respected by the functionnal model. Look in the log file for more details",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+      }
     } else {
-      verifier.check(model, true);
+      if (verifier.check(model, true)) {
+        JOptionPane.showMessageDialog(frame,
+            "All the properties are respected by the functionnal model.",
+            "Success",
+            JOptionPane.PLAIN_MESSAGE);
+      } else {
+        JOptionPane
+            .showMessageDialog(
+                frame,
+                "Some properties aren't respected by the functionnal model. Look in the log file for more details",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+      }
     }
 
     if (proof_file_chooser.getSelectedFile() != null) {
@@ -135,9 +159,33 @@ public class VerifyPorpertyGui implements ActionListener {
           + functional_file_chooser.getSelectedFile().getName() + " : \n\n");
 
       if (check_all.isSelected()) {
-        verifier.checkAll(proof, true);
+        if (verifier.checkAll(proof, true)) {
+          JOptionPane.showMessageDialog(frame,
+              "All the properties are respected by the proof model.",
+              "Success",
+              JOptionPane.PLAIN_MESSAGE);
+        } else {
+          JOptionPane
+              .showMessageDialog(
+                  frame,
+                  "Some properties aren't respected by the proof model. Look in the log file for more details",
+                  "Error",
+                  JOptionPane.ERROR_MESSAGE);
+        }
       } else {
-        verifier.check(proof, true);
+        if (verifier.check(proof, true)) {
+          JOptionPane.showMessageDialog(frame,
+              "All the properties are respected by the functionnal model.",
+              "Success",
+              JOptionPane.PLAIN_MESSAGE);
+        } else {
+          JOptionPane
+              .showMessageDialog(
+                  frame,
+                  "Some properties aren't respected by the functionnal model. Look in the log file for more details",
+                  "Error",
+                  JOptionPane.ERROR_MESSAGE);
+        }
       }
     }
   }

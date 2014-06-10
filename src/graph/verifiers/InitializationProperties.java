@@ -15,13 +15,11 @@ import abstractGraph.events.VariableChange;
 /**
  * Check that for each state machine:
  * <ol>
- * <li> there is a state "0" </li>
- * <li> the event field of the transitions of that state is "ACT_Init" </li>
- * <li> there are only CTLs as variables in the condition of these transitions
- * </li>
- * <li> the action fields of these transitions do not contain any
- * synchronization or variable change events</li>
- * or SYN.
+ * <li>there is a state "0"</li>
+ * <li>the event field of the transitions of that state is "ACT_Init"</li>
+ * <li>there are only CTLs as variables in the condition of these transitions</li>
+ * <li>the action fields of these transitions do not contain any synchronization
+ * or variable change events</li> or SYN.
  */
 public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_without_state_0 =
@@ -96,13 +94,14 @@ public class InitializationProperties extends AbstractVerificationUnit {
       }
     }
     HashSet<Variable> variable_list = new HashSet<Variable>();
-
-    for (Variable variable : transition.getCondition().allVariables(
-        variable_list)) {
-      if (!variable.getVarname().startsWith("CTL_")) {
-        state_machine_with_ctl_error.add(state_machine);
-        if (stop_at_first_error) {
-          return false;
+    if (transition.getCondition() != null) {
+      for (Variable variable : transition.getCondition().allVariables(
+          variable_list)) {
+        if (!variable.getVarname().startsWith("CTL_")) {
+          state_machine_with_ctl_error.add(state_machine);
+          if (stop_at_first_error) {
+            return false;
+          }
         }
       }
     }
