@@ -33,6 +33,10 @@ public class GraphSimulator implements
       new LinkedList<SingleEvent>();
   private LinkedList<SingleEvent> temporary_queue =
       new LinkedList<SingleEvent>();
+  private LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
+      new LinkedHashMap<StateMachine, State>();
+  private LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
+      new LinkedHashMap<StateMachine, State>();
 
   /* Only used when executing the micro-steps */
   private LinkedList<SingleEvent> external_proof_event_queue =
@@ -66,6 +70,14 @@ public class GraphSimulator implements
   public GraphSimulator(Model model) {
     this.model = model;
     checkCompatibility();
+  }
+
+  public LinkedHashMap<StateMachine, State> getFunctionnalTransitionsPullList() {
+    return functionnal_transitions_pull_list;
+  }
+
+  public LinkedHashMap<StateMachine, State> getProofTransitionsPullList() {
+    return proof_transitions_pull_list;
   }
 
   public LinkedList<SingleEvent> getInternalFunctionalEventQueue() {
@@ -137,18 +149,21 @@ public class GraphSimulator implements
   public void processSingleEvent(LinkedList<ExternalEvent> external_events) {
 
     if (proof != null && internal_proof_event_queue.size() != 0) {
+      proof_transitions_pull_list.clear();
       processSingleEvent(proof, internal_global_state,
           internal_proof_event_queue.remove(), internal_proof_event_queue);
       return;
     }
 
     if (proof != null && external_proof_event_queue.size() != 0) {
+      proof_transitions_pull_list.clear();
       processSingleEvent(proof, internal_global_state,
           external_proof_event_queue.remove(), internal_proof_event_queue);
       return;
     }
 
     if (internal_functional_event_queue.size() != 0) {
+      functionnal_transitions_pull_list.clear();
       if (proof == null) {
         external_proof_event_queue.clear();
       }
@@ -160,12 +175,14 @@ public class GraphSimulator implements
     }
 
     if (has_executed_external_event_in_proof || proof == null) {
+      functionnal_transitions_pull_list.clear();
       external_event_to_execute = external_events.poll();
       processSingleEvent(model, internal_global_state,
           external_event_to_execute, external_proof_event_queue);
       has_executed_external_event_in_proof = false;
       internal_functional_event_queue.addAll(external_proof_event_queue);
     } else {
+      proof_transitions_pull_list.clear();
       external_event_to_execute = external_events.poll();
       processSingleEvent(proof, internal_global_state,
           external_event_to_execute, internal_proof_event_queue);
@@ -219,7 +236,13 @@ public class GraphSimulator implements
               global_state, event_list);
         }
       }
-      // Update the states machines tags in the global state.
+      // Update the states machines tags in the global state after saving the
+      // list of transitions pull.
+      if (model == this.model) {
+        functionnal_transitions_pull_list.putAll(temporary_tag);
+      } else {
+        proof_transitions_pull_list.putAll(temporary_tag);
+      }
       for (Entry<StateMachine, State> entry : temporary_tag.entrySet()) {
         global_state.setState(entry.getKey(), entry.getValue());
       }
@@ -437,7 +460,8 @@ public class GraphSimulator implements
    */
   @Override
   public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
-
+    functionnal_transitions_pull_list.clear();
+    proof_transitions_pull_list.clear();
     if (proof != null) {
       execute(proof, starting_state, event, internal_proof_event_queue);
     }

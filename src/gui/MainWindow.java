@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -217,6 +218,8 @@ public class MainWindow extends JFrame {
     btnSimulate.setMaximumSize(new Dimension(101, 23));
 
     JButton btnUploadExternalEvent = new JButton("Upload External Event");
+    btnUploadExternalEvent.setToolTipText("Not implemented yet");
+    btnUploadExternalEvent.setEnabled(false);
     btnUploadExternalEvent.setPreferredSize(new Dimension(101, 23));
     btnUploadExternalEvent.setMinimumSize(new Dimension(101, 23));
     btnUploadExternalEvent.setMaximumSize(new Dimension(101, 23));
@@ -608,12 +611,16 @@ public class MainWindow extends JFrame {
     removeAllEllement(variables_list);
     fillInVariables(variables_list, simulator.getModel(), simulator
         .getGlobalState());
+    fillInTransitionPull(functional_state_tag_change_FIFO, simulator
+        .getFunctionnalTransitionsPullList());
     if (simulator.getProof() != null) {
       fillInCurrentStates(state_machines_current_state, simulator
           .getProof(),
           simulator.getGlobalState());
       fillInVariables(variables_list, simulator.getProof(), simulator
           .getGlobalState());
+      fillInTransitionPull(proof_state_tag_change_FIFO, simulator
+          .getProofTransitionsPullList());
     }
   }
 
@@ -654,6 +661,22 @@ public class MainWindow extends JFrame {
             + "??");
       }
 
+    }
+  }
+
+  private void fillInTransitionPull(JList<String> list,
+      LinkedHashMap<StateMachine, State> current_state_change_list) {
+    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    DefaultListModel<String> listModel =
+        (DefaultListModel<String>) list.getModel();
+    listModel.removeAllElements();
+    Iterator<Entry<StateMachine, State>> transitions_iterator = current_state_change_list
+        .entrySet()
+        .iterator();
+    while (transitions_iterator.hasNext()) {
+      Entry<StateMachine, State> transition = transitions_iterator.next();
+      listModel.addElement(transition.getKey().getName() + " --> "
+          + transition.getValue().getId());
     }
   }
 
