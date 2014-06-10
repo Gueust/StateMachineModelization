@@ -1,12 +1,25 @@
 target: generated_graph.txt
 inputs:
-- [CLT_Zone4_Libre, CTL_Zone4_Occupee]
-- [CLT_Zone4B_Libre, CTL_Zone4B_Occupee]
+- [CTL_Zone4_Libre, CTL_Zone4_Occupee]
+- [CTL_Zone4B_Libre, CTL_Zone4B_Occupee]
 content:
-- instanciate: file1
+- instanciate: Templates/Voies.txt
   with: 
-    a: b
-    c: h
-- instanciate: file3/se.txt
+    MSG_Pd_Entree_Enclenchee: MSG_Pd_Entree_Enclenchee
+    MSG_Pd_Sortie_Enclenchee : MSG_Pd_Sortie_Enclenchee
+    IND_Tronçon_Libre : IND_Voie_Libre
+    IND_Zone_Libre: IND_Zone4_Libre
+    IND_Zone_courte_Libre : IND_Zone4B_Libre
+    CTL_Zone_Libre : CTL_Zone4_Libre
+    CTL_Zone_courte_Libre : CTL_Zone4B_Libre
+    FTP_Time_Out : FTP_Time_Out
+    DTP_Time_Out : DTP_Time_Out
+    ATP_Time_Out : ATP_Time_Out
+    Automate_Voies : Automate_Voies
+- instanciate: Templates/barriere.txt
   with:
-    "Aig1": aiguille1
+    IND_Tronçon_Libre : IND_Voie_Libre
+    Tout_les_CTL_de_zone_a_Libre : IND_Zone4_Libre ET IND_Zone4B_Libre
+    Un_des_CTL_de_zone_a_Libre : IND_Zone4_Libre OU IND_Zone4B_Libre
+    Un_des_CTL_de_zone_a_Occupee : IND_Zone4_Occupee OU IND_Zone4B_Occupee
+    

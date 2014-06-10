@@ -67,6 +67,11 @@ public class GeneratorFromTemplate {
 
     /* We instanciate the templated graphs */
     for (Instanciation instanciation : templated_model.getContent()) {
+      if (first) {
+        first = false;
+      } else {
+        out.write("\r\n");
+      }
       String file_name = instanciation.getInstanciate();
 
       byte[] encoded = Files.readAllBytes(Paths.get(file_name));
@@ -75,7 +80,7 @@ public class GeneratorFromTemplate {
       for (Entry<String, String> entry : instanciation.getWith().entrySet()) {
         String key = entry.getKey();
         String value = entry.getValue();
-        template.replaceAll("<" + key + ">", value);
+        template = template.replaceAll("<" + key + ">", value);
       }
 
       if (template.indexOf('<') != -1) {
@@ -85,6 +90,7 @@ public class GeneratorFromTemplate {
             + "exists <variables>.");
       }
       out.write(template);
+
     }
 
     out.close();

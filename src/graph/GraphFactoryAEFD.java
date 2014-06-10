@@ -39,8 +39,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- * Model m = factory.buildModel();
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -326,7 +326,8 @@ public class GraphFactoryAEFD {
 
     for (int i = 0; i < array_of_events.length; i++) {
       String event_string = array_of_events[i].trim();
-      if (event_string.lastIndexOf(' ') != -1) {
+      if (event_string.lastIndexOf(' ') != -1
+          && !event_string.startsWith("NON ")) {
         throw new UnsupportedOperationException(
             "When parsing the single event : " + event_string);
       }
@@ -392,9 +393,14 @@ public class GraphFactoryAEFD {
       String event_string = array_of_actions[i].trim();
 
       if (event_string.lastIndexOf(' ') != -1
-          && !event_string.startsWith("DTP_")) {
+          && !event_string.startsWith("DTP_")
+          && !event_string.startsWith("NON")) {
         throw new UnsupportedOperationException(
             "When parsing the action : " + event_string);
+      } else if (event_string.startsWith("NON ")) {
+        event_string = GenerateFormulaAEFD.getOppositeName(event_string
+            .substring(4, event_string.length())
+            .trim());
       }
       if (!event_string.equals("")) {
         SingleEvent new_action = actionFactory(event_string);
@@ -444,6 +450,7 @@ public class GraphFactoryAEFD {
               + event_name + ". It is invalid because no '_' appears in it.");
     }
     switch (prefix) {
+    case "CMD":
     case "MSG":
     case "CTL":
     case "FTP":
@@ -462,6 +469,10 @@ public class GraphFactoryAEFD {
     case "SYN":
       new_event = new SynchronisationEvent(event_name);
       break;
+    case "NON":
+      event_name = GenerateFormulaAEFD.getOppositeName(event_name.substring(4,
+          event_name.length()).trim());
+      new_event = new VariableChange(factory.getLiteral(event_name));
     default:
       System.out.println(toString());
       throw new UnsupportedOperationException(
