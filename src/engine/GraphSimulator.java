@@ -349,8 +349,7 @@ public class GraphSimulator implements
   /**
    * {@inheritDoc #executeOnlyFunctional(GlobalState, LinkedList)}
    */
-  private void executeOnlyFunctional(
-      ExternalEvent external_events) {
+  private void executeOnlyFunctional(ExternalEvent external_events) {
     execute(model, external_events, internal_functional_event_queue);
   }
 

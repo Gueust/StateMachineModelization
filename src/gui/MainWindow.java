@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -23,9 +24,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.TableColumnModel;
+
+import org.jdesktop.swingx.JXTable;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
@@ -34,6 +37,9 @@ import graph.GlobalState;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
+import gui.variousModels.TransitionModel;
+import gui.variousModels.SortedListModel;
+import gui.variousModels.TextAreaRenderer;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -46,7 +52,8 @@ public class MainWindow extends JFrame {
   private JList<String> proof_state_tag_change_FIFO;
   private JList<String> state_machines_current_state;
   private JList<String> variables_list;
-  private JTable table;
+  private JXTable table;
+  private JScrollPane table_scroll_pane;
   private GraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
 
@@ -310,7 +317,23 @@ public class MainWindow extends JFrame {
       listModel.addElement(data.next().toString());
     }
 
-    table = new JTable();
+    TransitionModel transitions_model = new TransitionModel();
+    transitions_model.addModel(simulator.getModel());
+    transitions_model.addModel(simulator.getProof());
+
+    table = new JXTable(transitions_model);
+    table.packColumn(1, 1);
+    table_scroll_pane = new JScrollPane(table);
+
+    table.getColumnModel().getColumn(1).setMaxWidth(50);
+    table.getColumnModel().getColumn(2).setMaxWidth(50);
+
+    TableColumnModel cmodel = table.getColumnModel();
+    TextAreaRenderer textAreaRenderer = new TextAreaRenderer();
+
+    for (int i = 0; i < table.getColumnCount(); i++) {
+      cmodel.getColumn(i).setCellRenderer(textAreaRenderer);
+    }
 
     GroupLayout gl_transitions_panel = new GroupLayout(transitions_panel);
     gl_transitions_panel.setHorizontalGroup(
@@ -318,7 +341,8 @@ public class MainWindow extends JFrame {
             .addGroup(
                 gl_transitions_panel.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(table, GroupLayout.DEFAULT_SIZE, 800,
+                    .addComponent(table_scroll_pane, GroupLayout.DEFAULT_SIZE,
+                        800,
                         Short.MAX_VALUE)
                     .addContainerGap())
         );
@@ -327,15 +351,21 @@ public class MainWindow extends JFrame {
             .addGroup(
                 gl_transitions_panel.createSequentialGroup()
                     .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(table, GroupLayout.PREFERRED_SIZE, 159,
+                    .addComponent(table_scroll_pane,
+                        GroupLayout.PREFERRED_SIZE, 159,
                         GroupLayout.PREFERRED_SIZE)
                     .addContainerGap())
         );
     transitions_panel.setLayout(gl_transitions_panel);
 
     JScrollPane state_machine_scroll_panel = new JScrollPane();
+    state_machine_scroll_panel
+        .setBorder(BorderFactory
+            .createTitledBorder("Automaton > Current State"));
 
     JScrollPane variables_scroll_panel = new JScrollPane();
+    variables_scroll_panel
+        .setBorder(BorderFactory.createTitledBorder("Variable > Value"));
 
     GroupLayout gl_global_state_panel = new GroupLayout(global_state_panel);
     gl_global_state_panel.setHorizontalGroup(
@@ -563,7 +593,6 @@ public class MainWindow extends JFrame {
         (DefaultListModel<String>) list.getModel();
 
     for (StateMachine state_machine : model) {
-      System.out.println(global_state);
       State state = global_state.getState(state_machine);
       listModel.addElement(state_machine.getName() + " --> "
           + (state == null ? "??" : state.getId()));

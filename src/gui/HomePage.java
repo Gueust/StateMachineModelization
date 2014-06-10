@@ -5,6 +5,7 @@ import graph.verifiers.DeterminismChecker;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.WrittenAtLeastOnceChecker;
+import gui.actions.LaunchSimulationAction;
 
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,7 @@ public class HomePage extends JFrame {
 
   public HomePage() throws HeadlessException {
     ToolTipManager.sharedInstance().setInitialDelay(100);
+    ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 
     this.setTitle("New Simulation");
 
@@ -111,14 +113,14 @@ public class HomePage extends JFrame {
 
     JCheckBox chckbxDeterminism = new JCheckBox("Determinism");
     chckbxDeterminism
-        .setToolTipText("For each state, check that all the transitions with a same event are exclusive.");
+        .setToolTipText("For each state, check that all the transitions with a same event and (a different destination state or a different list of actions) are exclusive.");
     chckbxDeterminism.setEnabled(false);
     chckbxDeterminism.setSelected(true);
 
     JCheckBox chckbxNoConcurrentWritting =
         new JCheckBox("No concurrent writting");
     chckbxNoConcurrentWritting
-        .setToolTipText("Check that each variable is written by just one graph.");
+        .setToolTipText("Check that all variable are written by at most one graph.");
     chckbxNoConcurrentWritting.setEnabled(false);
     chckbxNoConcurrentWritting.setSelected(true);
 
@@ -134,7 +136,7 @@ public class HomePage extends JFrame {
 
     JCheckBox chckbxWrittenAtLeast = new JCheckBox("Written at least once");
     chckbxWrittenAtLeast
-        .setToolTipText("Check that all the variable that are in the field condition or event are written at least once (found in the field Action).");
+        .setToolTipText("Check that all the variables that are in the condition or event fields are written at least once (i.e. found in a field Action).");
     chckbxWrittenAtLeast.setSelected(true);
 
     HashMap<Class<?>, JCheckBox> property_hashmap = new HashMap<Class<?>, JCheckBox>();
@@ -359,7 +361,7 @@ public class HomePage extends JFrame {
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,
         functional_file_chooser, proof_file_chooser, this));
-    btnSimulation.addActionListener(new LaunchSimulationButton(
+    btnSimulation.addActionListener(new LaunchSimulationAction(
         functional_file_chooser, proof_file_chooser, this));
     btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
         txtrProofModel));

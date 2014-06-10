@@ -1,8 +1,9 @@
-package gui;
+package gui.actions;
 
 import engine.GraphSimulator;
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import gui.MainWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,12 +13,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class LaunchSimulationButton implements ActionListener {
+public class LaunchSimulationAction implements ActionListener {
   private JFileChooser functional_file_chooser;
   private JFileChooser proof_file_chooser;
   private JFrame frame;
 
-  public LaunchSimulationButton(JFileChooser functional_file_chooser,
+  public LaunchSimulationAction(JFileChooser functional_file_chooser,
       JFileChooser proof_file_chooser, JFrame frame) {
     this.functional_file_chooser = functional_file_chooser;
     this.proof_file_chooser = proof_file_chooser;

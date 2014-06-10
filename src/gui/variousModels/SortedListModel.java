@@ -1,4 +1,4 @@
-package gui;
+package gui.variousModels;
 
 import java.util.Iterator;
 import java.util.SortedSet;

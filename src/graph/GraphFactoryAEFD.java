@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import parserAEFDFormat.Fichier6lignes;
+import utils.Pair;
 import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
@@ -38,8 +39,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -127,7 +128,8 @@ public class GraphFactoryAEFD {
 
       /* Create the new transition in the associated state machine. */
       /* We deal with the case of alarms by creating 2 transitions if needed */
-      Pair<Actions> actions = getActions(parser.getAction(), state_machine);
+      Pair<Actions, Actions> actions =
+          getActions(parser.getAction(), state_machine);
 
       Formula condition = getCondition(parser.getCondition(), state_machine);
       Events events = getEvents(parser.getEvent(), state_machine);
@@ -336,15 +338,6 @@ public class GraphFactoryAEFD {
     return result;
   }
 
-  private class Pair<E> {
-    public E first, second;
-
-    public Pair(E first, E second) {
-      this.first = first;
-      this.second = second;
-    }
-  }
-
   /**
    * Return a pair of Actions object representing the events listed in the
    * `actions`
@@ -358,7 +351,7 @@ public class GraphFactoryAEFD {
    * @param m
    *          The state machine where the action field is parsed
    */
-  private Pair<Actions> getActions(String actions, StateMachine m) {
+  private Pair<Actions, Actions> getActions(String actions, StateMachine m) {
     /* We check it respects the syntax */
     if (!actions.endsWith(";") && !actions.equals("")) {
       throw new UnsupportedOperationException(
@@ -381,10 +374,10 @@ public class GraphFactoryAEFD {
 
       Actions alarm = new Actions();
       addActions(alarm, action_alarm[1], m);
-      return new Pair<Actions>(result, alarm);
+      return new Pair<Actions, Actions>(result, alarm);
     } else {
       addActions(result, actions, m);
-      return new Pair<Actions>(result, null);
+      return new Pair<Actions, Actions>(result, null);
     }
   }
 
