@@ -1,7 +1,6 @@
 target: myfile.fr
 content:
 - instanciate: file1
-  named_as: toto
   with: 
     a: b
     c : 'h'
