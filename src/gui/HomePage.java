@@ -7,6 +7,8 @@ import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.WrittenAtLeastOnceChecker;
 
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 
@@ -215,6 +217,7 @@ public class HomePage extends JFrame {
     verification_panel.setLayout(gl_verification_panel);
 
     JTextArea txtrFunctionalModel = new JTextArea();
+    txtrFunctionalModel.setWrapStyleWord(true);
     txtrFunctionalModel.setEditable(false);
     txtrFunctionalModel.setFocusable(false);
     txtrFunctionalModel.setText("Functional model");
@@ -222,6 +225,7 @@ public class HomePage extends JFrame {
     JButton btnLoadFunctionalModel = new JButton("Load functional model");
 
     JTextArea txtrProofModel = new JTextArea();
+    txtrProofModel.setWrapStyleWord(true);
     txtrProofModel.setEditable(false);
     txtrProofModel.setText("Proof model");
 
@@ -233,39 +237,37 @@ public class HomePage extends JFrame {
 
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
     gl_file_upload_panel.setHorizontalGroup(
-        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
+        gl_file_upload_panel.createParallelGroup(Alignment.TRAILING)
             .addGroup(
-                Alignment.TRAILING,
                 gl_file_upload_panel.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(
                         gl_file_upload_panel.createParallelGroup(
                             Alignment.TRAILING)
-                            .addComponent(btnRemoveProofModel,
-                                Alignment.LEADING, GroupLayout.PREFERRED_SIZE,
-                                184, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLoadProofModel, Alignment.LEADING,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(btnSimulation, Alignment.LEADING,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addGroup(
                                 Alignment.LEADING,
                                 gl_file_upload_panel.createParallelGroup(
-                                    Alignment.TRAILING, false)
-                                    .addComponent(btnLoadFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
+                                    Alignment.TRAILING)
                                     .addComponent(txtrFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(btnLoadProofModel,
                                         Alignment.LEADING,
                                         GroupLayout.DEFAULT_SIZE, 184,
                                         Short.MAX_VALUE)
                                     .addComponent(txtrProofModel,
                                         Alignment.LEADING,
                                         GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)))
+                                        Short.MAX_VALUE)
+                                    .addComponent(btnLoadFunctionalModel,
+                                        Alignment.LEADING,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE))
+                            .addComponent(btnRemoveProofModel,
+                                Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
+                                184, Short.MAX_VALUE))
                     .addContainerGap())
         );
     gl_file_upload_panel.setVerticalGroup(
@@ -359,8 +361,29 @@ public class HomePage extends JFrame {
         functional_file_chooser, proof_file_chooser, this));
     btnSimulation.addActionListener(new LaunchSimulationButton(
         functional_file_chooser, proof_file_chooser, this));
+    btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
+        txtrProofModel));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+  }
+
+  public class RemoveProof implements ActionListener {
+    JFileChooser proof_file_chooser;
+    JTextArea text_area;
+
+    public RemoveProof(JFileChooser proof_file_chooser, JTextArea text_area) {
+      this.proof_file_chooser = proof_file_chooser;
+      this.text_area = text_area;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      proof_file_chooser.setSelectedFile(null);
+      text_area.setText("Proof model");
+      text_area.setToolTipText("");
+
+    }
+
   }
 
   public static void main(String[] args) {
