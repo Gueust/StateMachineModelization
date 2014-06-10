@@ -19,7 +19,7 @@ content:
 - instanciate: Templates/barriere.txt
   with:
     IND_Tronçon_Libre : IND_Voie_Libre
-    Tout_les_CTL_de_zone_a_Libre : IND_Zone4_Libre ET IND_Zone4B_Libre
-    Un_des_CTL_de_zone_a_Libre : IND_Zone4_Libre OU IND_Zone4B_Libre
-    Un_des_CTL_de_zone_a_Occupee : IND_Zone4_Occupee OU IND_Zone4B_Occupee
+    Tout_les_CTL_de_zone_a_Libre : CTL_Zone4_Libre ET CTL_Zone4B_Libre
+    Un_des_CTL_de_zone_a_Libre : CTL_Zone4_Libre OU CTL_Zone4B_Libre
+    Un_des_CTL_de_zone_a_Occupee : CTL_Zone4_Occupee OU CTL_Zone4B_Occupee
     
