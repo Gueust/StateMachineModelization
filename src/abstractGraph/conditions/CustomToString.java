@@ -21,6 +21,10 @@ public class CustomToString {
       return toString((NotFormula) formula);
     } else if (formula instanceof Variable) {
       return toString((Variable) formula);
+    } else if (formula instanceof True) {
+      return toString((True) formula);
+    } else if (formula instanceof False) {
+      return toString((False) formula);
     } else {
       throw new Error("Invalid: " + formula.getClass());
     }
@@ -88,4 +92,11 @@ public class CustomToString {
     return left;
   }
 
+  public String toString(True formula) {
+    return formula.toString();
+  }
+
+  public String toString(False formula) {
+    return formula.toString();
+  }
 }

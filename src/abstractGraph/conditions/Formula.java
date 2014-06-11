@@ -20,12 +20,18 @@ import abstractGraph.conditions.parser.BooleanExpressionFactory;
  */
 public abstract class Formula {
 
-  /* The AND keyword */
+  /** The AND keyword */
   public static final String AND = "ET";
-  /* The OR keyword */
+  /** The OR keyword */
   public static final String OR = "OU";
-  /* The NOT keyword */
+  /** The NOT keyword */
   public static final String NOT = "NON";
+
+  /** The unique immutable TRUE value */
+  public static final True TRUE = new True();
+
+  /** The unique immutable FALSE value */
+  public static final False FALSE = new False();
 
   /**
    * A default factory that parses boolean expressions that uses only OR, AND,
