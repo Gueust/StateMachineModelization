@@ -1,5 +1,6 @@
 package gui;
 
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import gui.actions.CancelAction;
 
 import java.awt.FlowLayout;
@@ -7,7 +8,6 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -105,7 +105,7 @@ public class InitializationSelector extends JDialog {
    * @return The HashSet of the selected buttons. null of no selection has been
    *         done (Dialog closed without validating).
    */
-  public HashSet<String> showDialog() {
+  public HashMap<String, Boolean> showDialog() {
     setVisible(true);
 
     if (has_been_validated) {
@@ -118,11 +118,16 @@ public class InitializationSelector extends JDialog {
   /**
    * @return A hashSet containing the selected options.
    */
-  public HashSet<String> getSelected() {
-    HashSet<String> result = new HashSet<String>();
+  public HashMap<String, Boolean> getSelected() {
+    HashMap<String, Boolean> result = new HashMap<String, Boolean>();
     for (JToggleButton button : buttons) {
       if (button.isSelected()) {
-        result.add(button.getText());
+        String CTL_name = button.getText();
+        if (GenerateFormulaAEFD.isPositive(CTL_name)) {
+          result.put(CTL_name, true);
+        } else {
+          result.put(GenerateFormulaAEFD.getOppositeName(CTL_name), false);
+        }
       }
     }
     return result;

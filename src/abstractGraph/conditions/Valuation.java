@@ -1,6 +1,7 @@
 package abstractGraph.conditions;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 /**
  * Mapping of the variables to {true, false}.
@@ -27,7 +28,8 @@ public class Valuation {
   public boolean getValue(Variable v) {
     Boolean res = valuation.get(v);
     if (res == null) {
-      throw new NullPointerException("The value for " + v + " does not exist.");
+      throw new NoSuchElementException("The value for " + v
+          + " does not exist.");
     }
 
     return res.booleanValue();

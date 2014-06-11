@@ -1,5 +1,14 @@
 package gui;
 
+import engine.GraphSimulator;
+import graph.GlobalState;
+import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import gui.variousModels.SortedListModel;
+import gui.variousModels.TextAreaRenderer;
+import gui.variousModels.TransitionModel;
+
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -9,13 +18,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -25,9 +34,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumnModel;
 
@@ -35,14 +45,6 @@ import org.jdesktop.swingx.JXTable;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
-import engine.GraphSimulator;
-import graph.GlobalState;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import gui.variousModels.SortedListModel;
-import gui.variousModels.TextAreaRenderer;
-import gui.variousModels.TransitionModel;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -114,40 +116,74 @@ public class MainWindow extends JFrame {
     JPanel global_state_panel = new JPanel();
     JPanel user_option_panel = new JPanel();
     JPanel transitions_panel = new JPanel();
-    proof_internal_event_FIFO = new JList<String>(
-        new DefaultListModel<String>());
-    proof_internal_event_FIFO.setBorder(new TitledBorder(null,
-        "proof internal event", TitledBorder.LEADING, TitledBorder.TOP, null,
-        null));
+
+    /* Panel for the internal events of the functionnal model */
     functionnal_internal_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
-    functionnal_internal_event_FIFO.setBorder(new TitledBorder(null,
+    JScrollPane functionnal_internal_event_FIFO_scroll_panel =
+        new JScrollPane(functionnal_internal_event_FIFO);
+    functionnal_internal_event_FIFO_scroll_panel.setBorder(new TitledBorder(
+        null,
         "functionnal internal event", TitledBorder.LEADING, TitledBorder.TOP,
         null, null));
-    proof_external_event_FIFO = new JList<String>(
-        new DefaultListModel<String>());
-    proof_external_event_FIFO.setBorder(new TitledBorder(null,
-        "proof external events", TitledBorder.LEADING, TitledBorder.TOP, null,
-        null));
+
+    /* Panels for the external events */
     functionnal_external_event_FIFO = new JList<String>(
         new DefaultListModel<String>());
-    functionnal_external_event_FIFO.setBorder(new TitledBorder(null,
+    JScrollPane functionnal_external_event_FIFO_scroll_panel =
+        new JScrollPane(functionnal_external_event_FIFO);
+    functionnal_external_event_FIFO_scroll_panel.setBorder(new TitledBorder(
+        null,
         "functionnal external events", TitledBorder.LEADING, TitledBorder.TOP,
         null, null));
+
+    /* Panels for the command */
     commands = new JList<String>(new DefaultListModel<String>());
-    commands.setBorder(new TitledBorder(null, "commands", TitledBorder.LEADING,
+    JScrollPane commands_scroll_panel =
+        new JScrollPane(commands);
+    commands_scroll_panel.setBorder(new TitledBorder(null, "commands",
+        TitledBorder.LEADING,
         TitledBorder.TOP, null, null));
-    functional_state_tag_change_FIFO = new JList<String>(
-        new DefaultListModel<String>());
-    functional_state_tag_change_FIFO.setBorder(new TitledBorder(UIManager
-        .getBorder("TitledBorder.border"),
+
+    /* Panels for the modifications of the states */
+    functional_state_tag_change_FIFO =
+        new JList<String>(new DefaultListModel<String>());
+    JScrollPane functional_state_tag_change_FIFO_scroll_panel =
+        new JScrollPane(functional_state_tag_change_FIFO);
+    functional_state_tag_change_FIFO_scroll_panel.setBorder(new TitledBorder(
+        UIManager
+            .getBorder("TitledBorder.border"),
         "functionnal transitions pull by event", TitledBorder.LEADING,
         TitledBorder.TOP, null, null));
+
+    /* Panel for the modification of states of the proof model */
     proof_state_tag_change_FIFO = new JList<String>(
         new DefaultListModel<String>());
-    proof_state_tag_change_FIFO.setBorder(new TitledBorder(null,
+    JScrollPane proof_state_tag_change_FIFO_scroll_panel =
+        new JScrollPane(proof_state_tag_change_FIFO);
+    proof_state_tag_change_FIFO_scroll_panel.setBorder(new TitledBorder(null,
         "proof transitions pull by event", TitledBorder.LEADING,
         TitledBorder.TOP, null, null));
+
+    /* Panel for internal event of the proof model */
+    proof_internal_event_FIFO = new JList<String>(
+        new DefaultListModel<String>());
+    JScrollPane proof_internal_event_FIFO_scroll_panel =
+        new JScrollPane(proof_internal_event_FIFO);
+    proof_internal_event_FIFO_scroll_panel.setBorder(new TitledBorder(null,
+        "proof internal event", TitledBorder.LEADING, TitledBorder.TOP, null,
+        null));
+
+    /* Panel for the external events of the proof model */
+    proof_external_event_FIFO = new JList<String>(
+        new DefaultListModel<String>());
+    JScrollPane proof_external_event_FIFO_scroll_panel =
+        new JScrollPane(proof_external_event_FIFO);
+    proof_external_event_FIFO_scroll_panel.setBorder(new TitledBorder(null,
+        "proof external events", TitledBorder.LEADING, TitledBorder.TOP, null,
+        null));
+
+    /* Panel for the variables */
     variables_list = new JList<String>(new DefaultListModel<String>());
     state_machines_current_state = new JList<String>(
         new DefaultListModel<String>());
@@ -440,16 +476,16 @@ public class MainWindow extends JFrame {
                                             .createParallelGroup(
                                                 Alignment.TRAILING)
                                             .addComponent(
-                                                functionnal_external_event_FIFO,
+                                                functionnal_external_event_FIFO_scroll_panel,
                                                 GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE)
                                             .addComponent(
-                                                functional_state_tag_change_FIFO,
+                                                functional_state_tag_change_FIFO_scroll_panel,
                                                 Alignment.LEADING,
                                                 GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE)
                                             .addComponent(
-                                                functionnal_internal_event_FIFO,
+                                                functionnal_internal_event_FIFO_scroll_panel,
                                                 Alignment.LEADING,
                                                 GroupLayout.DEFAULT_SIZE, 227,
                                                 Short.MAX_VALUE))
@@ -462,7 +498,7 @@ public class MainWindow extends JFrame {
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        proof_state_tag_change_FIFO,
+                                                        proof_state_tag_change_FIFO_scroll_panel,
                                                         GroupLayout.DEFAULT_SIZE,
                                                         229, Short.MAX_VALUE)
                                                     .addContainerGap())
@@ -470,7 +506,7 @@ public class MainWindow extends JFrame {
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        proof_internal_event_FIFO,
+                                                        proof_internal_event_FIFO_scroll_panel,
                                                         GroupLayout.DEFAULT_SIZE,
                                                         229, Short.MAX_VALUE)
                                                     .addGap(10))
@@ -478,13 +514,13 @@ public class MainWindow extends JFrame {
                                                 gl_fifo_panel
                                                     .createSequentialGroup()
                                                     .addComponent(
-                                                        proof_external_event_FIFO,
+                                                        proof_external_event_FIFO_scroll_panel,
                                                         GroupLayout.DEFAULT_SIZE,
                                                         229, Short.MAX_VALUE)
                                                     .addContainerGap())))
                             .addGroup(
                                 gl_fifo_panel.createSequentialGroup()
-                                    .addComponent(commands,
+                                    .addComponent(commands_scroll_panel,
                                         GroupLayout.DEFAULT_SIZE, 462,
                                         Short.MAX_VALUE)
                                     .addContainerGap())))
@@ -496,29 +532,36 @@ public class MainWindow extends JFrame {
                     .addContainerGap()
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(proof_internal_event_FIFO,
+                            .addComponent(
+                                proof_internal_event_FIFO_scroll_panel,
                                 GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-                            .addComponent(functionnal_internal_event_FIFO,
+                            .addComponent(
+                                functionnal_internal_event_FIFO_scroll_panel,
                                 GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE,
                             false)
-                            .addComponent(functional_state_tag_change_FIFO,
+                            .addComponent(
+                                functional_state_tag_change_FIFO_scroll_panel,
                                 GroupLayout.PREFERRED_SIZE, 81,
                                 GroupLayout.PREFERRED_SIZE)
-                            .addComponent(proof_state_tag_change_FIFO,
+                            .addComponent(
+                                proof_state_tag_change_FIFO_scroll_panel,
                                 GroupLayout.PREFERRED_SIZE, 81,
                                 GroupLayout.PREFERRED_SIZE))
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addGroup(
                         gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(functionnal_external_event_FIFO,
+                            .addComponent(
+                                functionnal_external_event_FIFO_scroll_panel,
                                 GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                            .addComponent(proof_external_event_FIFO,
+                            .addComponent(
+                                proof_external_event_FIFO_scroll_panel,
                                 GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                     .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(commands, GroupLayout.DEFAULT_SIZE, 84,
+                    .addComponent(commands_scroll_panel,
+                        GroupLayout.DEFAULT_SIZE, 84,
                         Short.MAX_VALUE)
                     .addGap(15))
         );
@@ -590,8 +633,10 @@ public class MainWindow extends JFrame {
           new InitializationSelector(MainWindow.this,
               simulator.getModel().regroupCTL());
 
-      HashSet<String> CTLs = window.showDialog();
+      HashMap<String, Boolean> CTLs = window.showDialog();
+
       simulator.init(CTLs);
+      updateLists();
       eat.setEnabled(true);
       next.setEnabled(true);
     }
@@ -648,20 +693,23 @@ public class MainWindow extends JFrame {
 
   private void fillInVariables(JList<String> list, Model model,
       GlobalState global_state) {
-    DefaultListModel<String> listModel = (DefaultListModel<String>) list
-        .getModel();
+    DefaultListModel<String> listModel =
+        (DefaultListModel<String>) list.getModel();
     Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
       Variable variable = variable_iterator.next();
+      if (variable.getVarname().startsWith("CTL_")) {
+        continue;
+      }
       try {
         listModel.addElement(variable + " = "
             + global_state.getVariableValue(variable));
-      } catch (NullPointerException e) {
-        listModel.addElement(variable + " = "
-            + "??");
+      } catch (NoSuchElementException e) {
+        listModel.addElement(variable + " = " + "??");
       }
 
     }
+
   }
 
   private void fillInTransitionPull(JList<String> list,

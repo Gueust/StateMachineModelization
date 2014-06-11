@@ -6,11 +6,12 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Variable;
@@ -230,7 +231,17 @@ public class GraphSimulator implements
       while (transition_iterator.hasNext()) {
         Transition transition = transition_iterator.next();
 
-        if (transition.evalCondition(global_state)) {
+        boolean evaluation;
+
+        try {
+          evaluation = transition.evalCondition(global_state);
+        } catch (NoSuchElementException e) {
+          throw new Error("When evaluation the transition " + transition
+              + ", it was impossible to retrieve a value. The error was:\n "
+              + e.toString());
+        }
+
+        if (evaluation) {
           temporary_tag.put(state_machine, transition.getDestination());
           processAction(transition.getActions().iterator(),
               global_state, event_list);
@@ -621,15 +632,15 @@ public class GraphSimulator implements
    * <li>
    * It does initialize all the states machines to the state "0"</li>
    * <li>
-   * It executes ACT_Init with the given set of CTL as true variables.</li>
+   * It executes ACT_Init with the given value for the CTLs.</li>
    * <li>Clear the valuation of the CTLs that had previously been added.</li>
    * </ol>
    * 
    * @param external_values
-   *          The set of CTLs to consider true during the initialization.
+   *          The list of the couple (CTL, value for this CTL).
    *          It must only contains CTLs and it must not contain opposite CTLs.
    */
-  public void init(HashSet<String> external_values) {
+  public void init(HashMap<String, Boolean> external_values) {
     internal_global_state.clear();
 
     /* Initialization of the states of all the state machines */
@@ -644,10 +655,10 @@ public class GraphSimulator implements
 
     /* We set the CTLs to true */
     LinkedList<Variable> to_delete_from_valuation = new LinkedList<Variable>();
-    for (String event : external_values) {
-      Variable var = model.getVariable(event);
+    for (Entry<String, Boolean> assignation : external_values.entrySet()) {
+      Variable var = model.getVariable(assignation.getKey());
       to_delete_from_valuation.add(var);
-      internal_global_state.setVariableValue(var, true);
+      internal_global_state.setVariableValue(var, assignation.getValue());
     }
 
     /* We execute ACT_Init */

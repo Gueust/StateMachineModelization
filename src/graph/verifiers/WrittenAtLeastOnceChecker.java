@@ -27,17 +27,19 @@ public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
 
     while (variables.hasNext()) {
       Variable variable = variables.next();
-      LinkedList<StateMachine> writing_state_machine =
-          written_variables.get(variable);
+      if (!variable.getVarname().startsWith("CTL")) {
+        LinkedList<StateMachine> writing_state_machine =
+            written_variables.get(variable);
 
-      if (writing_state_machine != null) {
-        if (writing_state_machine.size() == 0) {
+        if (writing_state_machine != null) {
+          if (writing_state_machine.size() == 0) {
+            is_error = true;
+            counter_example_not_writen.add(variable);
+          }
+        } else {
           is_error = true;
           counter_example_not_writen.add(variable);
         }
-      } else {
-        is_error = true;
-        counter_example_not_writen.add(variable);
       }
     }
 

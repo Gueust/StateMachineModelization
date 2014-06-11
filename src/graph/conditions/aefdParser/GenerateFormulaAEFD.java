@@ -71,26 +71,69 @@ public class GenerateFormulaAEFD extends
       "_cde",
       "_en_cours" };
 
-  static public String getOppositeSuffix(String suffix) {
+  /**
+   * @details Compare the given string with the given positive suffixes. Because
+   *          some positive suffixes are included in the negative suffixes, we
+   *          first check that the given string does not contain a negative
+   *          suffix.
+   * @param input
+   * @return true if the given string is a positive variable. false otherwise.
+   */
+  static public boolean isPositive(String input) {
+    if (isNegative(input)) {
+      return false;
+    }
+    return removePositiveSuffix(input) != null;
+  }
+
+  /**
+   * 
+   * @param input
+   * @return true if the given string is a positive variable. false otherwise.
+   */
+  static public boolean isNegative(String input) {
+    return removeNegativeSuffix(input) != null;
+  }
+
+  static private String getOppositeSuffix(String suffix) {
+
+    /*
+     * The test about the negative suffix MUST be done before the positive
+     * suffix, since the latter is included in the former
+     */
+    for (int i = 0; i < negative_suffix.length; i++) {
+      if (negative_suffix[i].equals(suffix)) {
+        return positive_suffix[i];
+      }
+    }
 
     for (int i = 0; i < positive_suffix.length; i++) {
       if (positive_suffix[i].equals(suffix)) {
         return negative_suffix[i];
       }
     }
-
-    for (int i = 0; i < negative_suffix.length; i++) {
-      if (negative_suffix[i].equals(suffix)) {
-        return positive_suffix[i];
-      }
-    }
     throw new Error("Not found.");
   }
 
+  /**
+   * 
+   * @param name
+   * @return
+   */
   static public String getOppositeName(String name) {
-    String suffix = name.substring(name.lastIndexOf('_'), name.length());
-    String tmp = name.substring(0, name.lastIndexOf('_'));
-    return tmp + getOppositeSuffix(suffix);
+    String tmp, opposite_suffix;
+    if (isPositive(name)) {
+      tmp = removePositiveSuffix(name);
+    } else if (isNegative(name)) {
+      tmp = removeNegativeSuffix(name);
+    } else {
+      return null;
+    }
+
+    opposite_suffix =
+        getOppositeSuffix(name.substring(tmp.length(), name.length()));
+
+    return tmp + opposite_suffix;
   }
 
   /**
@@ -221,7 +264,7 @@ public class GenerateFormulaAEFD extends
    * @return The variable name without the first matched negative suffix.
    *         null if the suffix did not match any registered negative suffix.
    */
-  public static String removeNegativeSuffix(String input) {
+  private static String removeNegativeSuffix(String input) {
     int length_variable;
 
     for (String suffixe : negative_suffix) {
@@ -240,7 +283,7 @@ public class GenerateFormulaAEFD extends
    * @return The variable name without the first matched positive suffix.
    *         null if the suffix did not match any registered positive suffix.
    */
-  public static String removePositiveSuffix(String input) {
+  private static String removePositiveSuffix(String input) {
     int length_variable;
     String tmp;
 

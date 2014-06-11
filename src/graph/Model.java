@@ -288,11 +288,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       String ctl_opposite_name = GenerateFormulaAEFD.getOppositeName(ctl_name);
 
       if (list_of_ctl_names.contains(ctl_opposite_name)) {
-        if (GenerateFormulaAEFD.removePositiveSuffix(ctl_name) != null) {
+        if (GenerateFormulaAEFD.isPositive(ctl_name)) {
           pairs_of_ctl.put(ctl_name, ctl_opposite_name);
-        }
-        else {
+        } else if (GenerateFormulaAEFD.isNegative(ctl_name)) {
           pairs_of_ctl.put(ctl_opposite_name, ctl_name);
+        } else {
+          throw new Error("The CTL " + ctl_name
+              + " does not contain a correct variable suffix.");
         }
         list_of_ctl_names.remove(ctl_opposite_name);
       } else {
