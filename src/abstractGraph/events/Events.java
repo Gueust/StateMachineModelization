@@ -7,6 +7,9 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 
 public class Events implements Iterable<SingleEvent> {
 
+  /** An empty unique instance of Events */
+  public static final Events NONE = new Events();
+
   protected LinkedHashMap<String, SingleEvent> events;
 
   public Events() {

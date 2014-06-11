@@ -7,6 +7,9 @@ import abstractGraph.conditions.CustomToString;
 
 public class Actions implements Iterable<SingleEvent> {
 
+  /** A unique instance of an empty Actions */
+  public static final Actions NONE = new Actions();
+
   private LinkedList<SingleEvent> events;
 
   public Actions() {

@@ -1,13 +1,16 @@
 package graph;
 
-import abstractGraph.AbstractTransition;
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.Formula;
 import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 
 public class Transition extends AbstractTransition<State> {
 
+  /***
+   * {@inheritDoc}
+   */
   public Transition(State from, State to, Events event,
       Formula condition, Actions actions) {
     super(from, to, event, condition, actions);
