@@ -186,8 +186,7 @@ public class Graph_Verifiers_PackagesTesting {
    *          the same event, and with an incompatible condition.</li>
    *          <li>
    *          Determinism_two_identical_transitions.txt: two identical
-   *          transitions that should not raise an error, but only a
-   *          warning.</li>
+   *          transitions that should not raise an error, but only a warning.</li>
    *          </ol>
    */
   @Test
@@ -345,14 +344,12 @@ public class Graph_Verifiers_PackagesTesting {
     String[] files = {
         "Graph_without_initialisation_error.txt",
         "Graph_without_initial_state.txt",
-        "Graph_with_SYN_in_initialisation_transition.txt",
         "Graph_with_variable_in_initialisation_transition.txt",
         "Graph_with_event_in_initialisation_transition.txt"
     };
 
     Boolean[] results = {
         true,
-        false,
         false,
         false,
         false

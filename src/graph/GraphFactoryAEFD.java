@@ -702,23 +702,26 @@ public class GraphFactoryAEFD {
 
     Events events;
     Actions actions;
+    Formula condition;
     Variable variable = factory.getVariable(IND_actif_name);
 
     /* Transition from 0 to 1 */
     events = new Events();
-    events.addEvent(new ExternalEvent(CTL_pos));
+    events.addEvent(new ExternalEvent("ACT_Init"));
+    condition = factory.parse(CTL_pos);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable)));
     machine.addTransition(init_state, positive_state,
-        events, null, actions);
+        events, condition, actions);
 
     /* Transition from 0 to 2 */
     events = new Events();
-    events.addEvent(new ExternalEvent(CTL_neg));
+    events.addEvent(new ExternalEvent("ACT_Init"));
+    condition = factory.parse(CTL_neg);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable, true)));
     machine.addTransition(init_state, negative_state,
-        events, null, actions);
+        events, condition, actions);
 
     /* Transition from 1 to 2 */
     events = new Events();

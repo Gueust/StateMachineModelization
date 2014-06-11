@@ -9,8 +9,6 @@ import java.util.HashSet;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.SingleEvent;
-import abstractGraph.events.SynchronisationEvent;
-import abstractGraph.events.VariableChange;
 
 /**
  * Check that for each state machine:
@@ -18,8 +16,6 @@ import abstractGraph.events.VariableChange;
  * <li>there is a state "0"</li>
  * <li>the event field of the transitions of that state is "ACT_Init"</li>
  * <li>there are only CTLs as variables in the condition of these transitions</li>
- * <li>the action fields of these transitions do not contain any synchronization
- * or variable change events</li> or SYN.
  */
 public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_without_state_0 =
@@ -27,8 +23,6 @@ public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_with_act_init_error =
       new HashSet<StateMachine>();
   private HashSet<StateMachine> state_machine_with_ctl_error =
-      new HashSet<StateMachine>();
-  private HashSet<StateMachine> state_machine_with_action_error =
       new HashSet<StateMachine>();
 
   @Override
@@ -57,7 +51,6 @@ public class InitializationProperties extends AbstractVerificationUnit {
 
     state_machine_with_act_init_error.clear();
     state_machine_with_ctl_error.clear();
-    state_machine_with_action_error.clear();
     state_machine_without_state_0.clear();
 
     for (StateMachine state_machine : m) {
@@ -70,8 +63,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
     }
     return (state_machine_without_state_0.size() == 0
         && state_machine_with_act_init_error.size() == 0
-        && state_machine_with_ctl_error.size() == 0
-        && state_machine_with_action_error.size() == 0);
+        && state_machine_with_ctl_error.size() == 0);
 
   }
 
@@ -102,16 +94,6 @@ public class InitializationProperties extends AbstractVerificationUnit {
           if (stop_at_first_error) {
             return false;
           }
-        }
-      }
-    }
-
-    for (SingleEvent action : transition.getActions()) {
-      if (action instanceof VariableChange
-          || action instanceof SynchronisationEvent) {
-        state_machine_with_action_error.add(state_machine);
-        if (stop_at_first_error) {
-          return false;
         }
       }
     }
@@ -150,11 +132,6 @@ public class InitializationProperties extends AbstractVerificationUnit {
       error.append("[FAILURE]These state machines have other variable than "
           + "CTL in the condition field of their initial state: \n"
           + extractStateMachineName(state_machine_with_ctl_error) + "}\n");
-    }
-    if (!state_machine_with_action_error.isEmpty()) {
-      error.append("[FAILURE]These state machines have illegal actions "
-          + "in the action field of their initial state: \n"
-          + extractStateMachineName(state_machine_with_action_error) + "}\n");
     }
     return error.toString();
   }
