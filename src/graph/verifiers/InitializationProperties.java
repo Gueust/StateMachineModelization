@@ -1,5 +1,6 @@
 package graph.verifiers;
 
+import engine.GraphSimulator;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
@@ -14,8 +15,9 @@ import abstractGraph.events.SingleEvent;
  * Check that for each state machine:
  * <ol>
  * <li>there is a state "0"</li>
- * <li>the event field of the transitions of that state is "ACT_Init"</li>
- * <li>there are only CTLs as variables in the condition of these transitions</li>
+ * <li>the event field of the transitions of that state is ACT_INIT</li>
+ * <li>there are only CTLs as variables in the condition of these
+ * transitions</li>
  */
 public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_without_state_0 =
@@ -77,8 +79,10 @@ public class InitializationProperties extends AbstractVerificationUnit {
 
   private boolean checkTransition(StateMachine state_machine,
       Transition transition, boolean stop_at_first_error) {
+    transition.getEvents()
+        .containsEvent(GraphSimulator.ACT_INIT);
     for (SingleEvent event : transition.getEvents()) {
-      if (!event.getName().equals("ACT_Init")) {
+      if (!event.getName().equals(GraphSimulator.ACT_INIT)) {
         state_machine_with_act_init_error.add(state_machine);
         if (stop_at_first_error) {
           return false;
@@ -124,7 +128,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
     }
     if (!state_machine_with_act_init_error.isEmpty()) {
       error.append("[FAILURE]These state machines have an event different than"
-          + " ACT_Init in their transition: \n"
+          + GraphSimulator.ACT_INIT + " in their transition: \n"
           + extractStateMachineName(state_machine_with_act_init_error)
           + "}n");
     }

@@ -25,6 +25,12 @@ import abstractGraph.events.VariableChange;
 public class GraphSimulator implements
     GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
 
+  /**
+   * The initial event given to the machine to force its
+   * initialization
+   */
+  public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
+
   private GlobalState internal_global_state = new GlobalState();
 
   /** This is the list of the different queues used in the simulator. */
@@ -638,7 +644,7 @@ public class GraphSimulator implements
    * <li>
    * It does initialize all the states machines to the state "0"</li>
    * <li>
-   * It executes ACT_Init with the given value for the CTLs.</li>
+   * It executes ACT_INIT with the given set of CTL as true variables.</li>
    * <li>Clear the valuation of the CTLs that had previously been added.</li>
    * </ol>
    * 
@@ -667,8 +673,8 @@ public class GraphSimulator implements
       internal_global_state.setVariableValue(var, assignation.getValue());
     }
 
-    /* We execute ACT_Init */
-    execute(new ExternalEvent("ACT_Init"));
+    /* We execute ACT_INIT */
+    execute(ACT_INIT);
 
     /* We delete the CTLs from the valuation */
     for (Variable variable : to_delete_from_valuation) {

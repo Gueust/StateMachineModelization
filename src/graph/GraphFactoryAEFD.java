@@ -1,5 +1,6 @@
 package graph;
 
+import engine.GraphSimulator;
 import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
@@ -39,8 +40,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -710,7 +711,7 @@ public class GraphFactoryAEFD {
 
     /* Transition from 0 to 1 */
     events = new Events();
-    events.addEvent(new ExternalEvent("ACT_Init"));
+    events.addEvent(GraphSimulator.ACT_INIT);
     condition = factory.parse(CTL_pos);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable)));
@@ -719,7 +720,7 @@ public class GraphFactoryAEFD {
 
     /* Transition from 0 to 2 */
     events = new Events();
-    events.addEvent(new ExternalEvent("ACT_Init"));
+    events.addEvent(GraphSimulator.ACT_INIT);
     condition = factory.parse(CTL_neg);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable, true)));

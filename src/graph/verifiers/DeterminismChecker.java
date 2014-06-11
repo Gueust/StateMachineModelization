@@ -65,6 +65,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     list_counter_example_t1.clear();
     list_counter_example_t2.clear();
     list_counter_example_machine.clear();
+    solution_details.clear();
 
     /* For all StateMachines */
     Iterator<StateMachine> it = m.iterator();
