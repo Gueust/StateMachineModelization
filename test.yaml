@@ -1,25 +1,85 @@
 target: generated_graph.txt
 inputs:
-- [CTL_Zone4_Libre, CTL_Zone4_Occupee]
-- [CTL_Zone4B_Libre, CTL_Zone4B_Occupee]
+- [CTL_Pd_Sortie_voie_A_Actif, CTL_Pd_Sortie_voie_A_Inactif]
+- [CTL_Pd_Entree_voie_A_Actif, CTL_Pd_Entree_voie_A_Inactif]
+- [CTL_Zone_courte_voie_A_Actif, CTL_Zone_courte_voie_A_Inactif]
+- [CTL_Zone_voie_A_Actif, CTL_Zone_voie_A_Inactif]
+- [CTL_Pd_Sortie_voie_B_Actif, CTL_Pd_Sortie_voie_B_Inactif]
+- [CTL_Pd_Entree_voie_B_Actif, CTL_Pd_Entree_voie_B_Inactif]
+- [CTL_Zone_courte_voie_B_Actif, CTL_Zone_courte_voie_B_Inactif]
+- [CTL_Zone_voie_B_Actif, CTL_Zone_voie_B_Inactif]
+- [CTL_Pd_Sortie_voie_A_I_Actif, CTL_Pd_Sortie_voie_A_I_Inactif]
+- [CTL_Pd_Entree_voie_A_I_Actif, CTL_Pd_Entree_voie_A_I_Inactif]
+- [CTL_Zone_courte_voie_A_I_Actif, CTL_Zone_courte_voie_A_I_Inactif]
+- [CTL_Zone_voie_A_I_Actif, CTL_Zone_voie_A_I_Inactif]
+- [CTL_Pd_Sortie_voie_B_I_Actif, CTL_Pd_Sortie_voie_B_I_Inactif]
+- [CTL_Pd_Entree_voie_B_I_Actif, CTL_Pd_Entree_voie_B_I_Inactif]
+- [CTL_Zone_courte_voie_B_I_Actif, CTL_Zone_courte_voie_B_I_Inactif]
+- [CTL_Zone_voie_B_I_Actif, CTL_Zone_voie_B_I_Inactif]
 content:
-- instanciate: Templates/Voies.txt
+- instanciate: Templates/PN_permissif_voies.txt
   with: 
-    MSG_Pd_Entree_Enclenchee: MSG_Pd_Entree_Enclenchee
-    MSG_Pd_Sortie_Enclenchee : MSG_Pd_Sortie_Enclenchee
-    IND_Tronçon_Libre : IND_Voie_Libre
-    IND_Zone_Libre: IND_Zone4_Libre
-    IND_Zone_courte_Libre : IND_Zone4B_Libre
-    CTL_Zone_Libre : CTL_Zone4_Libre
-    CTL_Zone_courte_Libre : CTL_Zone4B_Libre
-    FTP_Time_Out : FTP_Time_Out
-    DTP_Time_Out : DTP_Time_Out
-    ATP_Time_Out : ATP_Time_Out
-    Automate_Voies : Automate_Voies
-- instanciate: Templates/barriere.txt
+    CTL_Pd_Entree_Actif : CTL_Pd_Entree_voie_A_Actif
+    CTL_Pd_Sortie_Actif : CTL_Pd_Sortie_voie_A_Actif
+    CTL_Zone_courte_Actif : CTL_Zone_courte_voie_A_Actif
+    CTL_Zone_Actif : CTL_Zone_voie_A_Actif
+    IND_Pd_Entree_Actif : IND_Pd_Entree_voie_A_Actif
+    IND_Pd_Sortie_Actif : IND_Pd_Sortie_voie_A_Actif
+    IND_Zone_courte_Actif : IND_Zone_courte_voie_A_Actif
+    IND_Zone_Actif : IND_Zone_voie_A_Actif
+    IND_Train_Present_Actif : IND_Train_Present_voie_A_Actif
+    FTP_Time_Out : FTP_Time_Out_voie_A
+    DTP_Time_Out : DTP_Time_Out_voie_A
+    ATP_Time_Out : ATP_Time_Out_voie_A
+    Voie : Voie_A
+- instanciate: Templates/PN_permissif_voies.txt
+  with: 
+    CTL_Pd_Entree_Actif : CTL_Pd_Entree_voie_B_Actif
+    CTL_Pd_Sortie_Actif : CTL_Pd_Sortie_voie_B_Actif
+    CTL_Zone_courte_Actif : CTL_Zone_courte_voie_B_Actif
+    CTL_Zone_Actif : CTL_Zone_voie_B_Actif
+    IND_Pd_Entree_Actif : IND_Pd_Entree_voie_B_Actif
+    IND_Pd_Sortie_Actif : IND_Pd_Sortie_voie_B_Actif
+    IND_Zone_courte_Actif : IND_Zone_courte_voie_B_Actif
+    IND_Zone_Actif : IND_Zone_voie_B_Actif
+    IND_Train_Present_Actif : IND_Train_Present_voie_B_Actif
+    FTP_Time_Out : FTP_Time_Out_voie_B
+    DTP_Time_Out : DTP_Time_Out_voie_B
+    ATP_Time_Out : ATP_Time_Out_voie_B
+    Voie : Voie_B
+- instanciate: Templates/PN_permissif_voies.txt
+  with: 
+    CTL_Pd_Entree_Actif : CTL_Pd_Entree_voie_A_I_Actif
+    CTL_Pd_Sortie_Actif : CTL_Pd_Sortie_voie_A_I_Actif
+    CTL_Zone_courte_Actif : CTL_Zone_courte_voie_A_I_Actif
+    CTL_Zone_Actif : CTL_Zone_voie_A_I_Actif
+    IND_Pd_Entree_Actif : IND_Pd_Entree_voie_A_I_Actif
+    IND_Pd_Sortie_Actif : IND_Pd_Sortie_voie_A_I_Actif
+    IND_Zone_courte_Actif : IND_Zone_courte_voie_A_I_Actif
+    IND_Zone_Actif : IND_Zone_voie_A_I_Actif
+    IND_Train_Present_Actif : IND_Train_Present_voie_A_I_Actif
+    FTP_Time_Out : FTP_Time_Out_voie_A_I
+    DTP_Time_Out : DTP_Time_Out_voie_A_I
+    ATP_Time_Out : ATP_Time_Out_voie_A_I
+    Voie : Voie_A_I
+- instanciate: Templates/PN_permissif_voies.txt
+  with: 
+    CTL_Pd_Entree_Actif : CTL_Pd_Entree_voie_B_I_Actif
+    CTL_Pd_Sortie_Actif : CTL_Pd_Sortie_voie_B_I_Actif
+    CTL_Zone_courte_Actif : CTL_Zone_courte_voie_B_I_Actif
+    CTL_Zone_Actif : CTL_Zone_voie_B_I_Actif
+    IND_Pd_Entree_Actif : IND_Pd_Entree_voie_B_I_Actif
+    IND_Pd_Sortie_Actif : IND_Pd_Sortie_voie_B_I_Actif
+    IND_Zone_courte_Actif : IND_Zone_courte_voie_B_I_Actif
+    IND_Zone_Actif : IND_Zone_voie_B_I_Actif
+    IND_Train_Present_Actif : IND_Train_Present_voie_B_I_Actif
+    FTP_Time_Out : FTP_Time_Out_voie_B_I
+    DTP_Time_Out : DTP_Time_Out_voie_B_I
+    ATP_Time_Out : ATP_Time_Out_voie_B_I
+    Voie : Voie_B_I
+- instanciate: Templates/PN_permissif_commande_barriere.txt
   with:
-    IND_Tronçon_Libre : IND_Voie_Libre
-    Tout_les_CTL_de_zone_a_Libre : CTL_Zone4_Libre ET CTL_Zone4B_Libre
-    Un_des_CTL_de_zone_a_Libre : CTL_Zone4_Libre OU CTL_Zone4B_Libre
-    Un_des_CTL_de_zone_a_Occupee : CTL_Zone4_Occupee OU CTL_Zone4B_Occupee
+    Un_des_indicateurs_trains_absent : NON IND_Train_Present_voie_A_Actif OU NON IND_Train_Present_voie_A_I_Actif OU NON IND_Train_Present_voie_B_Actif OU NON IND_Train_Present_voie_B_I_Actif
+    Au_moins_un_indicateur_train_present : IND_Train_Present_voie_A_Actif OU IND_Train_Present_voie_A_I_Actif OU IND_Train_Present_voie_B_Actif OU IND_Train_Present_voie_B_I_Actif
+     
     

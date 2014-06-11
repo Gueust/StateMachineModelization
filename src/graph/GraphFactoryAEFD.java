@@ -469,14 +469,17 @@ public class GraphFactoryAEFD {
     case "SYN":
       new_event = new SynchronisationEvent(event_name);
       break;
-    case "NON":
-      event_name = GenerateFormulaAEFD.getOppositeName(event_name.substring(4,
-          event_name.length()).trim());
-      new_event = new VariableChange(factory.getLiteral(event_name));
     default:
-      System.out.println(toString());
-      throw new UnsupportedOperationException(
-          "When parsing the events field : " + event_name);
+      if (prefix.startsWith("NON ")) {
+        event_name = GenerateFormulaAEFD.getOppositeName(event_name.substring(
+            4,
+            event_name.length()).trim());
+        new_event = eventFactory(event_name);
+      } else {
+        System.out.println(toString());
+        throw new UnsupportedOperationException(
+            "When parsing the events field : " + event_name);
+      }
     }
     single_events.put(new_event.getName(), new_event);
 
