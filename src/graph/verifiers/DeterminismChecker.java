@@ -109,8 +109,8 @@ public class DeterminismChecker extends AbstractVerificationUnit {
                   result = false;
                   if (!check_all) {
                     if (verbose) {
-                      System.out
-                          .println("[FAILURE] Transitions exclusion not verified.\n");
+                      System.out.println("[FAILURE] Transitions exclusion not"
+                          + " verified. Execution stopped at the first error");
                       System.out.println(errorMessage(machine, t1, t2,
                           solver.solution()));
                     }
@@ -164,7 +164,9 @@ public class DeterminismChecker extends AbstractVerificationUnit {
   public String errorMessage() {
     StringBuffer result = new StringBuffer();
     int n = list_counter_example_machine.size();
-    result.append("[FAILURE] " + n + " errors have been found.\n");
+
+    result.append("[FAILURE] Transitions exclusion not verified:"
+        + n + " errors have been found.\n");
     for (int i = 0; i < n; i++) {
       result.append(errorMessage(list_counter_example_machine.get(i),
           list_counter_example_t1.get(i), list_counter_example_t2.get(i),
