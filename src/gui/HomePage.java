@@ -25,6 +25,7 @@ import graph.verifiers.DeterminismChecker;
 import graph.verifiers.InitializationProperties;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.TautologyFromStateZero;
 import graph.verifiers.WrittenAtLeastOnceChecker;
 import gui.actions.LaunchExplorationAction;
 import gui.actions.LaunchSimulationAction;
@@ -114,6 +115,13 @@ public class HomePage extends JFrame {
                     .addContainerGap())
         );
 
+    JCheckBox chckbxTautologyFromState = new JCheckBox(
+        "Tautology from state zero");
+    chckbxTautologyFromState
+        .setToolTipText("For each initial state, check that all the transitions form a totology, to assure that when we initialize the model, no state machine will remain in the state 0 a get stuck in it.");
+    chckbxTautologyFromState.setSelected(true);
+    chckbxTautologyFromState.setEnabled(false);
+
     JCheckBox chckbxDeterminism = new JCheckBox("Determinism");
     chckbxDeterminism
         .setToolTipText("For each state, check that all the transitions with a same event and (a different destination state or a different list of actions) are exclusive.");
@@ -162,12 +170,17 @@ public class HomePage extends JFrame {
         .put(WrittenAtLeastOnceChecker.class, chckbxWrittenAtLeast);
     property_hashmap
         .put(InitializationProperties.class, chckbxGoodInitialization);
+    property_hashmap
+        .put(TautologyFromStateZero.class, chckbxTautologyFromState);
 
     GroupLayout gl_checkbox_panel = new GroupLayout(checkbox_panel);
-    gl_checkbox_panel.setHorizontalGroup(
-        gl_checkbox_panel.createParallelGroup(Alignment.LEADING)
+    gl_checkbox_panel
+        .setHorizontalGroup(
+        gl_checkbox_panel
+            .createParallelGroup(Alignment.LEADING)
             .addGroup(
-                gl_checkbox_panel.createSequentialGroup()
+                gl_checkbox_panel
+                    .createSequentialGroup()
                     .addGroup(
                         gl_checkbox_panel
                             .createParallelGroup(Alignment.LEADING)
@@ -179,33 +192,46 @@ public class HomePage extends JFrame {
                                         GroupLayout.DEFAULT_SIZE,
                                         GroupLayout.PREFERRED_SIZE))
                             .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
+                                Alignment.TRAILING,
+                                gl_checkbox_panel
+                                    .createSequentialGroup()
                                     .addContainerGap()
                                     .addGroup(
-                                        gl_checkbox_panel.createParallelGroup(
-                                            Alignment.LEADING)
+                                        gl_checkbox_panel
+                                            .createParallelGroup(
+                                                Alignment.LEADING)
+                                            .addGroup(
+                                                gl_checkbox_panel
+                                                    .createParallelGroup(
+                                                        Alignment.LEADING)
+                                                    .addComponent(
+                                                        chckbxUselessVariables,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        349, Short.MAX_VALUE)
+                                                    .addComponent(
+                                                        chckbxCoherentWritting,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        349, Short.MAX_VALUE)
+                                                    .addComponent(
+                                                        chckbxNoConcurrentWritting,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        349, Short.MAX_VALUE)
+                                                    .addComponent(
+                                                        chckbxDeterminism,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        349, Short.MAX_VALUE)
+                                                    .addComponent(
+                                                        chckbxWrittenAtLeast,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        349, Short.MAX_VALUE))
                                             .addComponent(
-                                                chckbxUselessVariables,
-                                                GroupLayout.DEFAULT_SIZE, 349,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                chckbxCoherentWritting,
-                                                GroupLayout.DEFAULT_SIZE, 349,
-                                                Short.MAX_VALUE)
-                                            .addComponent(
-                                                chckbxNoConcurrentWritting,
-                                                GroupLayout.DEFAULT_SIZE, 349,
-                                                Short.MAX_VALUE)
-                                            .addComponent(chckbxDeterminism,
-                                                GroupLayout.DEFAULT_SIZE, 349,
-                                                Short.MAX_VALUE)
-                                            .addComponent(chckbxWrittenAtLeast,
+                                                chckbxGoodInitialization,
                                                 GroupLayout.DEFAULT_SIZE, 349,
                                                 Short.MAX_VALUE)))
                             .addGroup(
                                 gl_checkbox_panel.createSequentialGroup()
                                     .addContainerGap()
-                                    .addComponent(chckbxGoodInitialization,
+                                    .addComponent(chckbxTautologyFromState,
                                         GroupLayout.DEFAULT_SIZE, 349,
                                         Short.MAX_VALUE)))
                     .addContainerGap())
@@ -214,7 +240,9 @@ public class HomePage extends JFrame {
         gl_checkbox_panel.createParallelGroup(Alignment.TRAILING)
             .addGroup(
                 gl_checkbox_panel.createSequentialGroup()
-                    .addGap(10)
+                    .addGap(11)
+                    .addComponent(chckbxTautologyFromState)
+                    .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxGoodInitialization)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxDeterminism)
@@ -226,7 +254,7 @@ public class HomePage extends JFrame {
                     .addComponent(chckbxUselessVariables)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(chckbxWrittenAtLeast)
-                    .addPreferredGap(ComponentPlacement.RELATED, 151,
+                    .addPreferredGap(ComponentPlacement.RELATED, 127,
                         Short.MAX_VALUE)
                     .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
                         GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -255,12 +283,17 @@ public class HomePage extends JFrame {
 
     JButton btnExploration = new JButton("Exploration");
 
+    JCheckBox chckbxVerboseExploration = new JCheckBox("Verbose exploration");
+    chckbxVerboseExploration
+        .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
+    chckbxVerboseExploration.setSelected(true);
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
     gl_file_upload_panel
         .setHorizontalGroup(
         gl_file_upload_panel
             .createParallelGroup(Alignment.TRAILING)
             .addGroup(
+                Alignment.LEADING,
                 gl_file_upload_panel
                     .createSequentialGroup()
                     .addContainerGap()
@@ -280,6 +313,8 @@ public class HomePage extends JFrame {
                             .addComponent(btnRemoveProofModel,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(btnExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(chckbxVerboseExploration,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
                     .addContainerGap())
         );
@@ -306,8 +341,10 @@ public class HomePage extends JFrame {
                     .addComponent(btnRemoveProofModel,
                         GroupLayout.PREFERRED_SIZE, 41,
                         GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED, 59,
+                    .addPreferredGap(ComponentPlacement.RELATED, 34,
                         Short.MAX_VALUE)
+                    .addComponent(chckbxVerboseExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(btnExploration)
                     .addPreferredGap(ComponentPlacement.RELATED)
                     .addComponent(btnSimulation)
@@ -378,7 +415,8 @@ public class HomePage extends JFrame {
     btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
         txtrProofModel));
     btnExploration.addActionListener(new LaunchExplorationAction(
-        functional_file_chooser, proof_file_chooser, this));
+        functional_file_chooser, proof_file_chooser, this,
+        chckbxVerboseExploration));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }

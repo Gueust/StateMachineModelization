@@ -111,6 +111,10 @@ public class GraphSimulator implements
     this.internal_global_state = global_state;
   }
 
+  public void setVerbose(boolean value) {
+    this.verbose = value;
+  }
+
   public Model getModel() {
     return model;
   }
@@ -135,6 +139,8 @@ public class GraphSimulator implements
   private boolean has_executed_external_event_in_proof = false;
   /* The last external event processed by the proof model */
   private ExternalEvent external_event_to_execute = null;
+
+  private boolean verbose = true;
 
   /**
    * This function execute the smallest step possible:
@@ -272,12 +278,13 @@ public class GraphSimulator implements
     }
     // Put the variables change event at the end of the event queue.
     event_list.addAll(temporary_queue);
-
     temporary_queue.clear();
-    System.out.print("-->" + ((event != null) ? event.toString() : "null")
-        + " -->\n"
-        + "Internal FIFO " + event_list.toString() + "\n"
-        + global_state);
+    if (this.verbose) {
+      System.out.print("-->" + ((event != null) ? event.toString() : "null")
+          + " -->\n"
+          + "Internal FIFO " + event_list.toString() + "\n"
+          + global_state);
+    }
   }
 
   /**
@@ -345,6 +352,29 @@ public class GraphSimulator implements
     }
   }
 
+  private void execute(Model m, GlobalState global_state,
+      LinkedList<ExternalEvent> external_events_list) {
+
+    LinkedList<SingleEvent> single_event_list;
+    if (m == model) {
+      single_event_list = internal_functional_event_queue;
+    } else if (m == proof) {
+      single_event_list = internal_proof_event_queue;
+    } else {
+      throw new Error();
+    }
+    if (verbose) {
+      System.out.print("Initial external FIFO " + external_events_list + "\n");
+    }
+    while (!external_events_list.isEmpty()) {
+      ExternalEvent head = external_events_list.removeFirst();
+      if (verbose) {
+        System.out.print("External FIFO " + external_events_list + "\n");
+      }
+      execute(m, global_state, head, single_event_list);
+    }
+  }
+
   /**
    * Execute the model m, starting from the given GlobalState, on the event e
    * and using the internal event queue `single_event_queue`.
@@ -399,12 +429,15 @@ public class GraphSimulator implements
       throw new NullPointerException(
           "This simulator does not contain a proof model.");
     }
-
-    System.out.print(
-        "Initial external proof FIFO " + external_events_list + "\n");
+    if (verbose) {
+      System.out.print(
+          "Initial external proof FIFO " + external_events_list + "\n");
+    }
     while (!external_events_list.isEmpty()) {
       SingleEvent head = external_events_list.removeFirst();
-      System.out.print("External Proof FIFO " + external_events_list + "\n");
+      if (verbose) {
+        System.out.print("External Proof FIFO " + external_events_list + "\n");
+      }
       execute(proof, global_state, head, internal_proof_event_queue);
     }
   }
