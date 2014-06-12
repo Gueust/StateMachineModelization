@@ -34,6 +34,8 @@ public class GraphSimulator implements
       new LinkedList<SingleEvent>();
   private LinkedList<SingleEvent> temporary_queue =
       new LinkedList<SingleEvent>();
+  private LinkedList<SingleEvent> commands_queue =
+      new LinkedList<SingleEvent>();
   private LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
   private LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
@@ -95,6 +97,10 @@ public class GraphSimulator implements
 
   public LinkedList<SingleEvent> getExternalProofEventQueue() {
     return external_proof_event_queue;
+  }
+
+  public LinkedList<SingleEvent> getCommandsQueue() {
+    return commands_queue;
   }
 
   public GlobalState getGlobalState() {
@@ -177,6 +183,7 @@ public class GraphSimulator implements
 
     if (has_executed_external_event_in_proof || proof == null) {
       functionnal_transitions_pull_list.clear();
+      commands_queue.clear();
       external_event_to_execute = external_events.poll();
       processSingleEvent(model, internal_global_state,
           external_event_to_execute, external_proof_event_queue);
@@ -313,9 +320,7 @@ public class GraphSimulator implements
       } else if (single_event instanceof SynchronisationEvent) {
         event_list.add(single_event);
       } else if (single_event instanceof CommandEvent) {
-        // TODO implements the external environment
-        System.out.print("The external command " + single_event
-            + " has to be executed by the environment.\n");
+        commands_queue.add(single_event);
       } else if (single_event instanceof ModelCheckerEvent) {
         switch (single_event.getName()) {
         case "P_5":
@@ -473,6 +478,7 @@ public class GraphSimulator implements
   public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();
+    commands_queue.clear();
     if (proof != null) {
       execute(proof, starting_state, event, internal_proof_event_queue);
     }

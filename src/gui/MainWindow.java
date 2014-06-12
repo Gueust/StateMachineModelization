@@ -1,14 +1,5 @@
 package gui;
 
-import engine.GraphSimulator;
-import graph.GlobalState;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import gui.variousModels.SortedListModel;
-import gui.variousModels.TextAreaRenderer;
-import gui.variousModels.TransitionModel;
-
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -18,13 +9,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -34,10 +26,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumnModel;
 
@@ -45,6 +36,14 @@ import org.jdesktop.swingx.JXTable;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
+import engine.GraphSimulator;
+import graph.GlobalState;
+import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import gui.variousModels.SortedListModel;
+import gui.variousModels.TextAreaRenderer;
+import gui.variousModels.TransitionModel;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -650,6 +649,7 @@ public class MainWindow extends JFrame {
         simulator.getInternalFunctionalEventQueue());
     fillInList(proof_internal_event_FIFO,
         simulator.getInternalProofEventQueue());
+    fillInList(commands, simulator.getCommandsQueue());
     removeAllEllement(state_machines_current_state);
     fillInCurrentStates(state_machines_current_state, simulator.getModel(),
         simulator.getGlobalState());
