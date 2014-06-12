@@ -82,7 +82,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
     transition.getEvents()
         .containsEvent(GraphSimulator.ACT_INIT);
     for (SingleEvent event : transition.getEvents()) {
-      if (!event.getName().equals(GraphSimulator.ACT_INIT)) {
+      if (!event.getName().equals(GraphSimulator.ACT_INIT.getName())) {
         state_machine_with_act_init_error.add(state_machine);
         if (stop_at_first_error) {
           return false;
@@ -124,18 +124,18 @@ public class InitializationProperties extends AbstractVerificationUnit {
     StringBuffer error = new StringBuffer();
     if (!state_machine_without_state_0.isEmpty()) {
       error.append("[FAILURE]These state machines don't have a state 0: \n"
-          + extractStateMachineName(state_machine_without_state_0) + "}\n");
+          + extractStateMachineName(state_machine_without_state_0) + "\n");
     }
     if (!state_machine_with_act_init_error.isEmpty()) {
-      error.append("[FAILURE]These state machines have an event different than"
-          + GraphSimulator.ACT_INIT + " in their transition: \n"
+      error.append("[FAILURE]These state machines have an event different"
+          + " than " + GraphSimulator.ACT_INIT + " in their transition: \n"
           + extractStateMachineName(state_machine_with_act_init_error)
-          + "}n");
+          + "\n");
     }
     if (!state_machine_with_ctl_error.isEmpty()) {
       error.append("[FAILURE]These state machines have other variable than "
           + "CTL in the condition field of their initial state: \n"
-          + extractStateMachineName(state_machine_with_ctl_error) + "}\n");
+          + extractStateMachineName(state_machine_with_ctl_error) + "\n");
     }
     return error.toString();
   }
