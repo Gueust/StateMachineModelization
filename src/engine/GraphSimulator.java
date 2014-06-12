@@ -38,8 +38,6 @@ public class GraphSimulator implements
       new LinkedList<SingleEvent>();
   private LinkedList<SingleEvent> internal_proof_event_queue =
       new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> temporary_queue =
-      new LinkedList<SingleEvent>();
   private LinkedList<SingleEvent> commands_queue =
       new LinkedList<SingleEvent>();
   private LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
@@ -95,10 +93,6 @@ public class GraphSimulator implements
 
   public LinkedList<SingleEvent> getInternalProofEventQueue() {
     return internal_proof_event_queue;
-  }
-
-  public LinkedList<SingleEvent> getTemporaryQueue() {
-    return temporary_queue;
   }
 
   public LinkedList<SingleEvent> getExternalProofEventQueue() {
@@ -205,6 +199,12 @@ public class GraphSimulator implements
 
   }
 
+  /* Used for the next function */
+  private LinkedHashMap<StateMachine, State> temporary_tag =
+      new LinkedHashMap<StateMachine, State>();
+  private LinkedList<SingleEvent> temporary_queue =
+      new LinkedList<SingleEvent>();
+
   /**
    * Execute a single event (that can be either external or internal).
    * 
@@ -232,8 +232,7 @@ public class GraphSimulator implements
       AbstractGlobalState<StateMachine, State, Transition> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
-    LinkedHashMap<StateMachine, State> temporary_tag =
-        new LinkedHashMap<StateMachine, State>();
+    temporary_tag.clear();
 
     for (StateMachine state_machine : model) {
       State current_state = global_state.getState(state_machine);
@@ -367,35 +366,38 @@ public class GraphSimulator implements
   }
 
   /**
-   * Execute all the list of external events in the right order using the
-   * current states and the variables value in the global state of the argument
-   * in the model.
+   * Execute the model m, starting from the given GlobalState, on the event e
+   * and using the internal event queue `single_event_queue`.
    * 
-   * @param global_state
-   * @param external_events_list
-   *          This list is emptied by this function.
+   * @param m
+   *          The model to run.
+   * @param starting_state
+   *          The state to use. It will be modified in place.
+   * @param e
+   *          The event to execute.
+   * @param single_event_queue
+   *          The queue to use for the internal events.
+   * @return
    */
-  private void executeOnlyFunctional(GlobalState global_state,
-      LinkedList<ExternalEvent> external_events_list) {
-    Model temporary = proof;
-    proof = null;
-    execute(model, global_state, external_events_list);
-    proof = temporary;
+  private GlobalState execute(Model m, GlobalState starting_state,
+      SingleEvent e,
+      LinkedList<SingleEvent> single_event_queue) {
+
+    processSingleEvent(m, starting_state, e, single_event_queue);
+    while (!single_event_queue.isEmpty()) {
+      SingleEvent head = single_event_queue.remove();
+      processSingleEvent(m, starting_state, head, single_event_queue);
+    }
+    return starting_state;
   }
 
   /**
-   * {@inheritDoc #executeOnlyFunctional(GlobalState, LinkedList)}
+   * {@inheritDoc #execute(Model, GlobalState, SingleEvent, LinkedList)}
    */
-  public void executeOnlyFunctional(
-      LinkedList<ExternalEvent> external_events_list) {
-    executeOnlyFunctional(internal_global_state, external_events_list);
-  }
-
-  /**
-   * {@inheritDoc #executeOnlyFunctional(GlobalState, LinkedList)}
-   */
-  private void executeOnlyFunctional(ExternalEvent external_events) {
-    execute(model, external_events, internal_functional_event_queue);
+  private GlobalState execute(Model m, SingleEvent e,
+      LinkedList<SingleEvent> single_event_queue) {
+    execute(m, internal_global_state, e, single_event_queue);
+    return internal_global_state;
   }
 
   /**
@@ -425,42 +427,6 @@ public class GraphSimulator implements
       System.out.print("External Proof FIFO " + external_events_list + "\n");
       execute(proof, global_state, head, internal_proof_event_queue);
     }
-  }
-
-  /**
-   * Execute the model m, starting from the given GlobalState, on the event e
-   * and using the internal event queue `single_event_queue`.
-   * 
-   * @param m
-   *          The model to run.
-   * @param starting_state
-   *          The state to use. It will be modified in place.
-   * @param e
-   *          The event to execute.
-   * @param single_event_queue
-   *          The queue to use for the internal events.
-   * @return
-   */
-  private GlobalState execute(Model m, GlobalState starting_state,
-      SingleEvent e,
-      LinkedList<SingleEvent> single_event_queue) {
-
-    processSingleEvent(m, starting_state, e, single_event_queue);
-    while (!single_event_queue.isEmpty()) {
-      SingleEvent head = single_event_queue.remove();
-      processSingleEvent(m, starting_state, head, single_event_queue);
-    }
-    return starting_state;
-  }
-
-  /**
-   * 
-   * {@inheritDoc #execute(Model, GlobalState, SingleEvent, LinkedList)}
-   */
-  private GlobalState execute(Model m, SingleEvent e,
-      LinkedList<SingleEvent> single_event_queue) {
-    execute(m, internal_global_state, e, single_event_queue);
-    return internal_global_state;
   }
 
   /**

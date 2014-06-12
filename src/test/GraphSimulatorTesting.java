@@ -102,7 +102,6 @@ public class GraphSimulatorTesting {
     LinkedList<GraphSimulator> liste_simulator = initListOfSimulator(files);
     LinkedList<LinkedList<ExternalEvent>> liste_of_list_external_event_proof = new LinkedList<LinkedList<ExternalEvent>>();
     LinkedList<GraphSimulator> liste_simulator_proof = initListOfSimulatorWithProofModel(files_for_proof_testing);
-    GraphSimulator simulator;
     // TODO fill in external event
 
     String[] events = { "CTL_1", "MSG_1" };
@@ -127,23 +126,23 @@ public class GraphSimulatorTesting {
     events = new String[] { "CTL_1" };
     addListeExternalEvent(liste_of_list_external_event_proof, events);
 
-    simulator = liste_simulator.removeFirst();
+    GraphSimulator simulator = liste_simulator.removeFirst();
     // Test the file "Graph_with_no_external_events.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "0".
     assertTrue("Error on " + files[0], simulator.getGlobalState().getState(
         "Graph_with_no_external_event").getId().equals("0"));
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_testing_different_external_event.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "4".
     assertTrue("Error on " + files[1], simulator.getGlobalState().getState(
         "Page 1").getId().equals("4"));
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_with_propagation.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine "Page 1" is "1".
     assertTrue("Error on " + files[2], simulator.getGlobalState().getState(
         "Page 1").getId().equals("1"));
@@ -156,14 +155,14 @@ public class GraphSimulatorTesting {
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_with_condition.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "2".
     assertTrue("Error on " + files[3], simulator.getGlobalState().getState(
         "Page 1").getId().equals("2"));
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_testing_variables_value.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine "Page 1" is "1".
     assertTrue("Error on " + files[4], simulator.getGlobalState().getState(
         "Page 1").getId().equals("1"));
@@ -188,25 +187,25 @@ public class GraphSimulatorTesting {
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_P5.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "4".
     assertTrue("Error on " + files[5], !simulator.getGlobalState().isSafe());
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_P6.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "4".
     assertTrue("Error on " + files[5], !simulator.getGlobalState().isLegal());
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_P7.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine is "4".
     assertTrue("Error on " + files[5], !simulator.getGlobalState().isNotP7());
 
     simulator = liste_simulator.removeFirst();
     // Test the file "Graph_with_alarm.txt"
-    simulator.executeOnlyFunctional(liste_of_list_external_event.removeFirst());
+    simulator.executeAll(liste_of_list_external_event.removeFirst());
     // Verify that the current state of the state machine "Page 1" is "1".
     assertTrue("Error on " + files[6], simulator.getGlobalState().getState(
         "Page 1").getId().equals("0"));
@@ -274,8 +273,7 @@ public class GraphSimulatorTesting {
           StateMachine state_machine = state_machine_iterator.next();
           global_state.setState(state_machine, state_machine.getState("0"));
         }
-        GraphSimulator simulator;
-        simulator = new GraphSimulator(model, global_state);
+        GraphSimulator simulator = new GraphSimulator(model, global_state);
         liste_simulator.add(simulator);
 
       }
