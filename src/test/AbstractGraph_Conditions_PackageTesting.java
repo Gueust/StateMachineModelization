@@ -173,14 +173,37 @@ public class AbstractGraph_Conditions_PackageTesting {
     assertEquals(formula.testToString(), "");
 
     /* Not formulas */
-    input = build("!(Q)");
+    input = build("P");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
+
+    input = build("!(P)");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
+
+    input = build("!(P | Q)");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
+
+    input = build("!(P & Q)");
     initial_formula = factory.parse(input);
     formula = CNFFormula.ConvertToCNF(initial_formula);
     assertTrue(initial_formula.equals(formula));
 
     /* Or formulas */
+    input = build("(P | Q)");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
 
     /* And formulas */
+    input = build("(P & Q)");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
 
     /* Only one clause */
     input = build("(A | B | C | D | E)");
