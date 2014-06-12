@@ -11,6 +11,7 @@ import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
+import abstractGraph.conditions.True;
 import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 
@@ -84,7 +85,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
    * @return An equivalent CNF formula
    */
   static public CNFFormula ConvertToCNF(Formula f) {
-    if (f == null)
+    if (f == null || f instanceof True)
       return new CNFFormula();
 
     if (f instanceof Variable) {
@@ -162,8 +163,9 @@ public class CNFFormula extends Formula implements Collection<Clause> {
       return result;
     } else {
       throw new UnsupportedOperationException(
-          "Only formulas using Or, And and Not operators can be converted" +
-              " into a CNF formula");
+          "Only formulas using True, Or, And and Not operators can be converted"
+              +
+              " into a CNF formula. The formula was:\n" + f);
     }
   }
 
