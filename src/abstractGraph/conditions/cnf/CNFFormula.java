@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.AndFormula;
+import abstractGraph.conditions.False;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
@@ -53,6 +54,11 @@ public class CNFFormula extends Formula implements Collection<Clause> {
     return vars;
   }
 
+  private static final Literal true_literal =
+      new Literal(new Variable("true_var"));
+  private static final Literal not_true_literal =
+      new Literal(true_literal.getVariable(), true);
+
   /**
    * In order to get the formula solved in a SAT solver we need to write the CNF
    * formula in Dimacs format. To do so, we must give to each variable a unique
@@ -88,14 +94,27 @@ public class CNFFormula extends Formula implements Collection<Clause> {
     if (f == null || f instanceof True)
       return new CNFFormula();
 
-    if (f instanceof Variable) {
+    if (f instanceof False) {
+      CNFFormula result = new CNFFormula();
+      result.add(new Clause(true_literal));
+      result.add(new Clause(not_true_literal));
+      return result;
+    } else if (f instanceof Variable) {
       // this is a CNF formula consisting of 1 clause that contains 1 literal
       return new CNFFormula((Variable) f);
     } else if (f instanceof NotFormula) {
       /* The formula is of the form Not A */
       Formula A = ((NotFormula) f).getF();
 
-      if (A instanceof Variable) {
+      if (A instanceof False) {
+        return new CNFFormula();
+      } else if (A instanceof True) {
+        /* We transform Not true into true_var & (NOT true_var) */
+        CNFFormula result = new CNFFormula();
+        result.add(new Clause(true_literal));
+        result.add(new Clause(not_true_literal));
+        return result;
+      } else if (A instanceof Variable) {
         /* If f has the form ~A for some variable A, then return f. */
         CNFFormula result = new CNFFormula();
         result.add(new Clause(new Literal((Variable) A, true)));
@@ -120,7 +139,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         Formula q = ((OrFormula) A).getSecond();
         return ConvertToCNF(new AndFormula(new NotFormula(p), new NotFormula(q)));
       }
-      System.err.println(A + "is instance of " + A.getClass());
+      System.err.println(A + " is an instance of " + A.getClass());
       throw new NotImplementedException();
     } else if (f instanceof AndFormula) {
       /*

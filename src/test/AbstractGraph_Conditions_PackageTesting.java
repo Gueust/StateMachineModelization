@@ -172,6 +172,17 @@ public class AbstractGraph_Conditions_PackageTesting {
     formula = CNFFormula.ConvertToCNF(factory.parse(input));
     assertEquals(formula.testToString(), "");
 
+    /* true and false */
+    initial_formula = Formula.TRUE;
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
+
+    initial_formula = Formula.FALSE;
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    System.out.println(initial_formula);
+    System.out.println(formula);
+    assertTrue(initial_formula.equals(formula));
+
     /* Not formulas */
     input = build("P");
     initial_formula = factory.parse(input);
@@ -213,7 +224,6 @@ public class AbstractGraph_Conditions_PackageTesting {
     input = build("A | B | C | D | E");
     formula = CNFFormula.ConvertToCNF(factory.parse(input));
     assertEquals(formula.testToString(), "(" + input + ")");
-    // while(true){}
 
     /* Already CNF formulas */
     input = build("(A | B | C | D | E) & (C | D | E) & (A)");

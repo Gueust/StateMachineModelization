@@ -77,12 +77,12 @@ public abstract class Formula {
     HashSet<Variable> s1 = f1.allVariables(new HashSet<Variable>());
     HashSet<Variable> s2 = f2.allVariables(new HashSet<Variable>());
 
-    if (!s1.equals(s2)) {
-      return false;
-    }
+    /* We use the greater set of variables */
+    HashSet<Variable> all_variables = new HashSet<Variable>(s1);
+    all_variables.addAll(s2);
 
     Valuation valuation = new Valuation();
-    return partialEquals(s1, valuation, f1, f2);
+    return partialEquals(all_variables, valuation, f1, f2);
   }
 
   /**
