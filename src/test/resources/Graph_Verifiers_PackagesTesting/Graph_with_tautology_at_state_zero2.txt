@@ -1,0 +1,12 @@
+Graph_with_tautology_at_state_zero2
+0
+1
+ACT_Init Evenement
+CTL_1_Actif Condition
+Action
+Graph_with_tautology_at_state_zero2
+0
+1
+ACT_Init Evenement
+CTL_1_Inactif Condition
+Action

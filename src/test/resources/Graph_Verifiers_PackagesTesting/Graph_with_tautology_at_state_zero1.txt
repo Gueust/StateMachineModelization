@@ -1,0 +1,6 @@
+Graph_with_tautology_at_state_zero1
+0
+1
+ACT_Init Evenement
+Condition
+Action

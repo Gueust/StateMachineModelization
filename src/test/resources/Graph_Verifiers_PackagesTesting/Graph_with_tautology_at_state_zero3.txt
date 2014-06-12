@@ -1,0 +1,18 @@
+Graph_with_tautology_at_state_zero3
+0
+1
+ACT_Init Evenement
+CTL_1_Actif Condition
+Action
+Graph_with_tautology_at_state_zero3
+0
+1
+ACT_Init Evenement
+CTL_1_Inactif ET CLT_2_Actif Condition
+Action
+Graph_with_tautology_at_state_zero3
+0
+1
+ACT_Init Evenement
+CTL_1_Inactif ET CLT_2_Inactif  Condition
+Action

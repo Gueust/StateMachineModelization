@@ -9,6 +9,7 @@ import graph.verifiers.DeterminismChecker;
 import graph.verifiers.InitializationProperties;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.TautologyFromStateZero;
 import graph.verifiers.Verifier;
 import graph.verifiers.WrittenAtLeastOnceChecker;
 
@@ -36,7 +37,7 @@ public class Graph_Verifiers_PackagesTesting {
     GraphFactoryAEFD test = new GraphFactoryAEFD();
     Model model = test.buildModel(
         "src/test/resources/" + class_name + "/" + name,
-        "Testing model");
+        name);
     return model;
   }
 
@@ -62,7 +63,7 @@ public class Graph_Verifiers_PackagesTesting {
       }
     } catch (IOException e) {
       e.printStackTrace();
-      fail("Unexpected exception while loading " + files[i]);
+      fail("Unexpected exception while loading " + files[i] + ":\n" + e);
     }
   }
 
@@ -186,7 +187,8 @@ public class Graph_Verifiers_PackagesTesting {
    *          the same event, and with an incompatible condition.</li>
    *          <li>
    *          Determinism_two_identical_transitions.txt: two identical
-   *          transitions that should not raise an error, but only a warning.</li>
+   *          transitions that should not raise an error, but only a
+   *          warning.</li>
    *          </ol>
    */
   @Test
@@ -353,6 +355,30 @@ public class Graph_Verifiers_PackagesTesting {
         false,
         false,
         false
+    };
+
+    generalTest(verifier, files, results);
+  }
+
+  @Test
+  public void TautologyFromStateZeroChecker() {
+    Verifier verifier = new Verifier();
+    verifier.addVerification(new TautologyFromStateZero());
+
+    String[] files = {
+        "Graph_without_tautology_at_state_zero1.txt",
+        "Graph_without_tautology_at_state_zero2.txt",
+        "Graph_with_tautology_at_state_zero1.txt",
+        "Graph_with_tautology_at_state_zero2.txt",
+        "Graph_with_tautology_at_state_zero3.txt"
+    };
+
+    Boolean[] results = {
+        false,
+        false,
+        true,
+        true,
+        true
     };
 
     generalTest(verifier, files, results);

@@ -1,0 +1,6 @@
+Graph_without_tautology_at_state_zero1
+0
+1
+ACT_Init Evenement
+CTL_1_Actif Condition
+Action
