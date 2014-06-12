@@ -41,6 +41,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     possible_events = new LinkedList<ExternalEvent>(events);
   }
 
+  public void configureExternalEvents(Iterator<ExternalEvent> events) {
+    possible_events = new LinkedList<ExternalEvent>();
+    while (events.hasNext()) {
+      possible_events.add(events.next());
+    }
+
+  }
+
   /**
    * Initialize the initial states as the ones contained in `init`.
    * It does not take the given collection but creates and underlying HashMap
@@ -53,8 +61,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
   }
 
   public void configureInitialGlobalStates(GS init) {
-    unvisited_states.clear();
-    unvisited_states.add(init);
+    initial_states.clear();
+    initial_states.add(init);
   }
 
   /**
@@ -84,6 +92,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
       for (ExternalEvent e : possible_events) {
         @SuppressWarnings("unchecked")
         GS next_state = simulator.execute((GS) state.clone(), e);
+        i++;
+        System.err.println("Eploring N° " + i);
 
         /* Illegal state */
         if (!next_state.isLegal()) {
@@ -105,6 +115,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
         }
       }
     }
+
     return null;
   }
+
+  private int i = 0;
 }

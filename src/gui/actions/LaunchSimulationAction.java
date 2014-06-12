@@ -66,7 +66,7 @@ public class LaunchSimulationAction implements ActionListener {
 
   }
 
-  public Model loadFile(GraphFactoryAEFD factory,
+  private Model loadFile(GraphFactoryAEFD factory,
       JFileChooser model_file_chooser, String name) throws IOException {
     return factory.buildModel(model_file_chooser
         .getSelectedFile()

@@ -26,6 +26,7 @@ import graph.verifiers.InitializationProperties;
 import graph.verifiers.NoUselessVariables;
 import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.WrittenAtLeastOnceChecker;
+import gui.actions.LaunchExplorationAction;
 import gui.actions.LaunchSimulationAction;
 
 @SuppressWarnings("serial")
@@ -252,39 +253,34 @@ public class HomePage extends JFrame {
 
     JButton btnRemoveProofModel = new JButton("Remove proof model");
 
+    JButton btnExploration = new JButton("Exploration");
+
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
-    gl_file_upload_panel.setHorizontalGroup(
-        gl_file_upload_panel.createParallelGroup(Alignment.TRAILING)
+    gl_file_upload_panel
+        .setHorizontalGroup(
+        gl_file_upload_panel
+            .createParallelGroup(Alignment.TRAILING)
             .addGroup(
-                gl_file_upload_panel.createSequentialGroup()
+                gl_file_upload_panel
+                    .createSequentialGroup()
                     .addContainerGap()
                     .addGroup(
                         gl_file_upload_panel.createParallelGroup(
-                            Alignment.TRAILING)
-                            .addComponent(btnLoadProofModel, Alignment.LEADING,
+                            Alignment.LEADING)
+                            .addComponent(btnSimulation,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnSimulation, Alignment.LEADING,
+                            .addComponent(btnLoadProofModel,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addGroup(
-                                Alignment.LEADING,
-                                gl_file_upload_panel.createParallelGroup(
-                                    Alignment.TRAILING)
-                                    .addComponent(txtrFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(txtrProofModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE, 184,
-                                        Short.MAX_VALUE)
-                                    .addComponent(btnLoadFunctionalModel,
-                                        Alignment.LEADING,
-                                        GroupLayout.DEFAULT_SIZE,
-                                        GroupLayout.DEFAULT_SIZE,
-                                        Short.MAX_VALUE))
+                            .addComponent(txtrFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrProofModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnLoadFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(btnRemoveProofModel,
-                                Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-                                184, Short.MAX_VALUE))
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
                     .addContainerGap())
         );
     gl_file_upload_panel.setVerticalGroup(
@@ -310,10 +306,11 @@ public class HomePage extends JFrame {
                     .addComponent(btnRemoveProofModel,
                         GroupLayout.PREFERRED_SIZE, 41,
                         GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED, 53,
+                    .addPreferredGap(ComponentPlacement.RELATED, 59,
                         Short.MAX_VALUE)
-                    .addComponent(btnSimulation, GroupLayout.PREFERRED_SIZE,
-                        58, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnSimulation)
                     .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
@@ -380,6 +377,8 @@ public class HomePage extends JFrame {
         functional_file_chooser, proof_file_chooser, this));
     btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
         txtrProofModel));
+    btnExploration.addActionListener(new LaunchExplorationAction(
+        functional_file_chooser, proof_file_chooser, this));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }

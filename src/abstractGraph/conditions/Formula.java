@@ -101,7 +101,6 @@ public abstract class Formula {
 
     /* Recursion */
     Iterator<Variable> it = vars.iterator();
-    it.hasNext();
     Variable v = it.next();
     it.remove();
 

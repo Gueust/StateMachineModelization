@@ -105,5 +105,6 @@ public class GeneratorFromTemplate {
 
   public static void main(String[] args) throws IOException {
     GeneratorFromTemplate.load("test.yaml");
+    GeneratorFromTemplate.load("preuve.yaml");
   }
 }
