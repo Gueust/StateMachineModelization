@@ -40,7 +40,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   protected FormulaFactory formulaFactory;
 
   /* All the external events that can trigger the model */
-  private HashMap<String, ExternalEvent> external_events;
+  public HashMap<String, ExternalEvent> external_events;
   /* All the commands that the model can generate */
   private HashMap<String, CommandEvent> commands_events;
   private HashMap<String, SynchronisationEvent> synchronisation_events;

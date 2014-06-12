@@ -1,6 +1,9 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -145,6 +148,7 @@ public class AbstractGraph_Conditions_PackageTesting {
   @Test
   public void CNFConverterTesting() {
     String input;
+    Formula initial_formula;
     CNFFormula formula;
 
     /* Zero clause */
@@ -167,6 +171,16 @@ public class AbstractGraph_Conditions_PackageTesting {
     input = build("\r");
     formula = CNFFormula.ConvertToCNF(factory.parse(input));
     assertEquals(formula.testToString(), "");
+
+    /* Not formulas */
+    input = build("!(Q)");
+    initial_formula = factory.parse(input);
+    formula = CNFFormula.ConvertToCNF(initial_formula);
+    assertTrue(initial_formula.equals(formula));
+
+    /* Or formulas */
+
+    /* And formulas */
 
     /* Only one clause */
     input = build("(A | B | C | D | E)");

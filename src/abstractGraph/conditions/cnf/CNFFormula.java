@@ -110,7 +110,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         Formula p = ((AndFormula) A).getFirst();
         Formula q = ((AndFormula) A).getSecond();
         return ConvertToCNF(new OrFormula(new NotFormula(p), new NotFormula(q)));
-      } else if (f instanceof OrFormula) {
+      } else if (A instanceof OrFormula) {
         /*
          * If f has the form ~(P v Q), then return CONVERT(~P ^ ~Q).(de Morgan's
          * Law)
@@ -119,6 +119,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         Formula q = ((OrFormula) A).getSecond();
         return ConvertToCNF(new AndFormula(new NotFormula(p), new NotFormula(q)));
       }
+      System.err.println(A + "is instance of " + A.getClass());
       throw new NotImplementedException();
     } else if (f instanceof AndFormula) {
       /*
