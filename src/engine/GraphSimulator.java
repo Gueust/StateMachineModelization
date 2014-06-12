@@ -345,26 +345,6 @@ public class GraphSimulator implements
     }
   }
 
-  private void execute(Model m, GlobalState global_state,
-      LinkedList<ExternalEvent> external_events_list) {
-
-    LinkedList<SingleEvent> single_event_list;
-    if (m == model) {
-      single_event_list = internal_functional_event_queue;
-    } else if (m == proof) {
-      single_event_list = internal_proof_event_queue;
-    } else {
-      throw new Error();
-    }
-    System.out.print("Initial external FIFO " + external_events_list + "\n");
-    while (!external_events_list.isEmpty()) {
-      ExternalEvent head = external_events_list.removeFirst();
-      System.out.print("External FIFO " + external_events_list + "\n");
-
-      execute(m, global_state, head, single_event_list);
-    }
-  }
-
   /**
    * Execute the model m, starting from the given GlobalState, on the event e
    * and using the internal event queue `single_event_queue`.
@@ -524,11 +504,31 @@ public class GraphSimulator implements
    *          </ol>
    * @return true if the models are ok
    */
-  public boolean checkCompatibility() {
+  private boolean checkCompatibility() {
     if (model == null) {
-      System.err.println("The functionnal model within the simulator is null");
-      return false;
+      throw new Error("The functionnal model within the simulator is null");
     }
+
+    /* Verification of 4) */
+    for (StateMachine machine : model) {
+      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+      while (transition_iterator.hasNext()) {
+        Transition transition = transition_iterator.next();
+
+        for (SingleEvent event : transition.getActions()) {
+          /* Verification of 4) */
+          if (event instanceof ModelCheckerEvent) {
+
+            System.err.println(
+                "The functional model does write a variable that is reserved"
+                    + " to proof models: " + event);
+            return false;
+
+          }
+        }
+      }
+    }
+
     if (proof == null) {
       return true;
     }
@@ -577,26 +577,6 @@ public class GraphSimulator implements
             return false;
           }
 
-        }
-      }
-    }
-
-    /* Verification of 4) */
-    for (StateMachine machine : model) {
-      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
-      while (transition_iterator.hasNext()) {
-        Transition transition = transition_iterator.next();
-
-        for (SingleEvent event : transition.getActions()) {
-          /* Verification of 4) */
-          if (event instanceof ModelCheckerEvent) {
-
-            System.err.println(
-                "The functional model does write a variable that is reserved"
-                    + " to proof models: " + event);
-            return false;
-
-          }
         }
       }
     }

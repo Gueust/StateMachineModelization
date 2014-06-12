@@ -45,7 +45,6 @@ public class Main {
     proof.build();
 
     GraphSimulator simulator = new GraphSimulator(model);
-    simulator.checkCompatibility();
 
     /* Initialization */
     for (StateMachine machine : model) {
