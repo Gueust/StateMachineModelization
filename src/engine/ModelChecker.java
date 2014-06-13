@@ -46,7 +46,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     while (events.hasNext()) {
       possible_events.add(events.next());
     }
-
   }
 
   /**
@@ -98,7 +97,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
 
       for (ExternalEvent e : possible_events) {
         @SuppressWarnings("unchecked")
-        GS next_state = simulator.execute((GS) state.clone(), e);
+        GS next_state = simulator.execute(state, e);
         i++;
         System.err.flush();
         System.out.flush();
