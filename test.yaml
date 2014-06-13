@@ -20,6 +20,7 @@ content:
     DTP_Time_Out : DTP_Time_Out_voie_A
     ATP_Time_Out : ATP_Time_Out_voie_A
     Voie : Voie_A
+    Gestion_tempo : Gestion_tempo_voie_A
 - instanciate: Templates/PN_permissif_commande_barriere.txt
   with:
     Un_des_indicateurs_trains_absent : NON IND_Train_Present_voie_A_Actif

@@ -60,6 +60,10 @@ public class MainWindow extends JFrame {
   private JScrollPane table_scroll_pane;
   private GraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
+  private HashMap<String, Boolean> initial_CTLs;
+
+  JButton btnSimulate;
+  JButton btnEatExternalEvents;
 
   public MainWindow(final GraphSimulator simulator)
       throws HeadlessException {
@@ -95,16 +99,22 @@ public class MainWindow extends JFrame {
     });
 
     JMenuItem mntmRestartSimulation = new JMenuItem("Restart Simulation");
+    mntmRestartSimulation.setEnabled(false);
+    mntmRestartSimulation
+        .setToolTipText("Restart the simulation with the initialization chosen in the beginning. It's enabled after the initialization is done.");
     mnFile.add(mntmRestartSimulation);
     mntmRestartSimulation.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        simulator.init(initial_CTLs);
         MainWindow main_window = new MainWindow(simulator);
         main_window.pack();
         main_window.setLocationRelativeTo(null);
         main_window.setVisible(true);
+        main_window.enableExecutionButton();
         MainWindow.this.dispose();
+
       }
     });
 
@@ -244,7 +254,7 @@ public class MainWindow extends JFrame {
     rdbtnCompleteSimulation.setSelected(true);
     rdbtnCompleteSimulation.setPreferredSize(new Dimension(101, 23));
 
-    JButton btnSimulate = new JButton("next");
+    btnSimulate = new JButton("next");
     btnSimulate
         .setToolTipText("To enable this button, you must initialize the simulation. You can do it by clicking on Simulation then initialize simulation.");
     btnSimulate.setEnabled(false);
@@ -259,7 +269,7 @@ public class MainWindow extends JFrame {
     btnUploadExternalEvent.setMinimumSize(new Dimension(101, 23));
     btnUploadExternalEvent.setMaximumSize(new Dimension(101, 23));
 
-    JButton btnEatExternalEvents = new JButton("Eat External Events");
+    btnEatExternalEvents = new JButton("Eat External Events");
     btnEatExternalEvents
         .setToolTipText("To enable this button, you must initialize the simulation. You can do it by clicking on Simulation then initialize simulation.");
     btnEatExternalEvents.setEnabled(false);
@@ -608,8 +618,9 @@ public class MainWindow extends JFrame {
       }
     });
 
-    mntmInitializeSimulation.addActionListener(new InitializeSimulation(
-        btnSimulate, btnEatExternalEvents));
+    mntmInitializeSimulation
+        .addActionListener(new InitializeSimulation(
+            btnSimulate, btnEatExternalEvents, mntmRestartSimulation));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setPreferredSize(new Dimension(1200, 630));
@@ -620,12 +631,16 @@ public class MainWindow extends JFrame {
 
     private JButton next;
     private JButton eat;
+    private JMenuItem mntmRestartSimulation;
 
-    public InitializeSimulation(JButton next, JButton eat) {
+    public InitializeSimulation(JButton next, JButton eat,
+        JMenuItem mntmRestartSimulation) {
       this.eat = eat;
       this.next = next;
+      this.mntmRestartSimulation = mntmRestartSimulation;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void actionPerformed(ActionEvent e) {
       InitializationSelector window =
@@ -633,11 +648,15 @@ public class MainWindow extends JFrame {
               simulator.getModel().regroupCTL());
 
       HashMap<String, Boolean> CTLs = window.showDialog();
+      System.out.print(CTLs);
+      initial_CTLs = (HashMap<String, Boolean>) CTLs.clone();
 
       simulator.init(CTLs);
       updateLists();
+
       eat.setEnabled(true);
       next.setEnabled(true);
+      mntmRestartSimulation.setEnabled(true);
     }
   }
 
@@ -741,5 +760,10 @@ public class MainWindow extends JFrame {
     main_window.pack();
     main_window.setLocationRelativeTo(null);
     main_window.setVisible(true);
+  }
+
+  public void enableExecutionButton() {
+    btnEatExternalEvents.setEnabled(true);
+    btnSimulate.setEnabled(true);
   }
 }

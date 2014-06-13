@@ -17,10 +17,7 @@ public class Events implements Iterable<SingleEvent> {
   }
 
   public boolean containsEvent(SingleEvent event) {
-    if (event == null) {
-      throw new NullPointerException();
-    }
-    return events.get(event.name) != null;
+    return event != null && events.get(event.name) != null;
   }
 
   /**

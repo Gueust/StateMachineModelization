@@ -40,6 +40,8 @@ public class GraphSimulator implements
       new LinkedList<SingleEvent>();
   private LinkedList<SingleEvent> commands_queue =
       new LinkedList<SingleEvent>();
+  private LinkedList<SingleEvent> temporary_commands_queue =
+      new LinkedList<SingleEvent>();
   private LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
   private LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
@@ -184,6 +186,10 @@ public class GraphSimulator implements
           internal_functional_event_queue.remove(), external_proof_event_queue);
 
       internal_functional_event_queue.addAll(external_proof_event_queue);
+      if (proof != null) {
+        external_proof_event_queue.addAll(temporary_commands_queue);
+        temporary_commands_queue.clear();
+      }
       return;
     }
 
@@ -195,6 +201,10 @@ public class GraphSimulator implements
           external_event_to_execute, external_proof_event_queue);
       has_executed_external_event_in_proof = false;
       internal_functional_event_queue.addAll(external_proof_event_queue);
+      if (proof != null) {
+        external_proof_event_queue.addAll(temporary_commands_queue);
+        temporary_commands_queue.clear();
+      }
     } else {
       proof_transitions_pull_list.clear();
       external_event_to_execute = external_events.poll();
@@ -280,7 +290,10 @@ public class GraphSimulator implements
     event_list.addAll(temporary_queue);
     temporary_queue.clear();
     if (this.verbose) {
-      System.out.print("-->" + ((event != null) ? event.toString() : "null")
+      System.out.print("-->"
+          + ((event != null) ? event.toString() : "null")
+          + ((model == this.proof) ? " in proof model"
+              : " in functionnal model")
           + " -->\n"
           + "Internal FIFO " + event_list.toString() + "\n"
           + global_state);
@@ -333,7 +346,11 @@ public class GraphSimulator implements
         event_list.add(single_event);
       } else if (single_event instanceof CommandEvent) {
         commands_queue.add(single_event);
+        if (proof != null) {
+          temporary_commands_queue.add(single_event);
+        }
       } else if (single_event instanceof ModelCheckerEvent) {
+        commands_queue.add(single_event);
         switch (single_event.getName()) {
         case "P_5":
           global_state.setIsSafe(false);
@@ -474,11 +491,12 @@ public class GraphSimulator implements
 
     do {
       transfert_list.clear();
-
       processSingleEvent(model, starting_state, curr_event, transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
       if (proof != null) {
+        transfert_list.addAll(temporary_commands_queue);
+        temporary_commands_queue.clear();
         executeProof(starting_state, transfert_list);
       }
 

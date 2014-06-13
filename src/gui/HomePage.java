@@ -388,15 +388,10 @@ public class HomePage extends JFrame {
 
     JFileChooser functional_file_chooser = new JFileChooser();
     functional_file_chooser.setFileFilter(filter);
-    btnLoadFunctionalModel.addActionListener(new LinkFileChoserToTextArea(
-        functional_file_chooser,
-        txtrFunctionalModel));
 
     JFileChooser proof_file_chooser = new JFileChooser();
     proof_file_chooser.setSelectedFile(null);
     proof_file_chooser.setFileFilter(filter);
-    btnLoadProofModel.addActionListener(
-        new LinkFileChoserToTextArea(proof_file_chooser, txtrProofModel));
 
     JFileChooser log_file_chooser = new JFileChooser();
     String default_log_file_name = "verification_log.txt";
@@ -404,8 +399,16 @@ public class HomePage extends JFrame {
     txtrVerificationLog.setText(default_log_file_name);
     log_file_chooser.setSelectedFile(default_log);
     log_file_chooser.setFileFilter(filter);
-    btnChangeLogFile.addActionListener(
-        new LinkFileChoserToTextArea(log_file_chooser, txtrVerificationLog));
+
+    btnLoadFunctionalModel.addActionListener(new LinkFileChoserToTextArea(
+        functional_file_chooser, txtrFunctionalModel, proof_file_chooser));
+
+    btnLoadProofModel.addActionListener(
+        new LinkFileChoserToTextArea(proof_file_chooser, txtrProofModel,
+            functional_file_chooser));
+
+    btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
+        log_file_chooser, txtrVerificationLog, functional_file_chooser));
 
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,
