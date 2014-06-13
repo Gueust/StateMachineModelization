@@ -84,6 +84,16 @@ public class AbstractGraph_Conditions_PackageTesting {
     formula = factory.parse(input);
     assertNull(formula);
 
+    /* True and False */
+    input = build("true");
+    formula = factory.parse(input);
+    System.out.println("formula " + formula);
+    assertTrue(formula == Formula.TRUE);
+
+    input = build("false");
+    formula = factory.parse(input);
+    assertTrue(formula == Formula.FALSE);
+
     /* Testing of simple AND, OR or NOT */
     input = "A " + AND + " B";
     formula = factory.parse(input);

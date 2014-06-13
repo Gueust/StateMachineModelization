@@ -7,6 +7,8 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
+import abstractGraph.conditions.parser.BooleanExpressionParser.FalseExprContext;
+import abstractGraph.conditions.parser.BooleanExpressionParser.TrueExprContext;
 
 class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
 
@@ -84,5 +86,15 @@ class GenerateFormula extends BooleanExpressionBaseVisitor<Formula> {
     String variable_name = ctx.ID().getText().trim();
 
     return factory.getVariable(variable_name);
+  }
+
+  @Override
+  public Formula visitFalseExpr(FalseExprContext ctx) {
+    return Formula.FALSE;
+  }
+
+  @Override
+  public Formula visitTrueExpr(TrueExprContext ctx) {
+    return Formula.TRUE;
   }
 }

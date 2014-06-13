@@ -11,11 +11,13 @@ package abstractGraph.conditions.parser;
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
 booleanExpression
 :
-  NOT booleanExpression                     # notExpr
-  | booleanExpression AND booleanExpression # andExpr
-  | booleanExpression OR booleanExpression  # orExpr
-  | LBRACKET booleanExpression RBRACKET     # bracketExpr
-  | ID                                      # idExpr
+  NOT booleanExpression #notExpr
+  | booleanExpression AND booleanExpression #andExpr
+  | booleanExpression OR booleanExpression #orExpr
+  | LBRACKET booleanExpression RBRACKET #bracketExpr
+  | TRUE #trueExpr
+  | FALSE #falseExpr
+  | ID #idExpr
 ;
 
 //Tokens
@@ -41,6 +43,16 @@ OR
   | 'OU'
   | '||'
   | '|'
+;
+
+TRUE
+:
+  'true'
+;
+
+FALSE
+:
+  'false'
 ;
 
 LBRACKET
