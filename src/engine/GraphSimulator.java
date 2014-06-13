@@ -457,7 +457,8 @@ public class GraphSimulator implements
    *          an external to the simulator global state. It will be modified in
    *          place and will be the result value.
    * @param event
-   * @return The global state modified after the beginning of the
+   * @return The global state on which to execute the external event. It will be
+   *         modified in place and will be returned at the end of the execution.
    */
   @Override
   public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
