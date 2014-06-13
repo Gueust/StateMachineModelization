@@ -15,6 +15,8 @@ booleanExpression
   |booleanExpression AND booleanExpression				#andExpr
   | booleanExpression OR booleanExpression				#orExpr
   | LBRACKET booleanExpression RBRACKET					#bracketExpr
+  | TRUE                                                #trueExpr
+  | FALSE                                               #falseExpr
   | IDNEGATIF											#idnegatifExpr
   | IDPOSITIF											#idpositifExpr
 ;
@@ -22,6 +24,19 @@ booleanExpression
 
 
 //Tokens
+TRUE
+:
+	'true'
+	| 'True'
+	| 'TRUE'
+;
+
+FALSE
+:
+	'false'
+	| 'False'
+	| 'FALSE'
+;
 
 NOT
 :

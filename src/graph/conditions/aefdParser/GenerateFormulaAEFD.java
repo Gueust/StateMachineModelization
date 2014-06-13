@@ -170,6 +170,29 @@ public class GenerateFormulaAEFD extends
   }
 
   /**
+   * This function is launched when the parser meets a "true".
+   * 
+   * @return
+   */
+  public Formula visitTrueExpr(
+      @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
+    Formula temp_formula = Formula.TRUE;
+    return temp_formula;
+  }
+
+  /**
+   * This function is launched when the parser meets a "false".
+   * 
+   * @return
+   */
+
+  public Formula visitFalseExpr(
+      @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
+    Formula temp_formula = Formula.FALSE;
+    return temp_formula;
+  }
+
+  /**
    * This function is launched when the parser meets an AND expression.
    * 
    * @return An AndFormula
