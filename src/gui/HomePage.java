@@ -174,90 +174,82 @@ public class HomePage extends JFrame {
         .put(TautologyFromStateZero.class, chckbxTautologyFromState);
 
     GroupLayout gl_checkbox_panel = new GroupLayout(checkbox_panel);
-    gl_checkbox_panel
-        .setHorizontalGroup(
-        gl_checkbox_panel
-            .createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_checkbox_panel
+    gl_checkbox_panel.setHorizontalGroup(gl_checkbox_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_checkbox_panel
+            .createSequentialGroup()
+            .addGroup(gl_checkbox_panel
+                .createParallelGroup(Alignment.LEADING)
+                .addGroup(gl_checkbox_panel
                     .createSequentialGroup()
-                    .addGroup(
-                        gl_checkbox_panel
-                            .createParallelGroup(Alignment.LEADING)
-                            .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
-                                    .addGap(223)
-                                    .addComponent(scrollPane,
-                                        GroupLayout.PREFERRED_SIZE,
-                                        GroupLayout.DEFAULT_SIZE,
-                                        GroupLayout.PREFERRED_SIZE))
-                            .addGroup(
-                                Alignment.TRAILING,
-                                gl_checkbox_panel
-                                    .createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(
-                                        gl_checkbox_panel
-                                            .createParallelGroup(
-                                                Alignment.LEADING)
-                                            .addGroup(
-                                                gl_checkbox_panel
-                                                    .createParallelGroup(
-                                                        Alignment.LEADING)
-                                                    .addComponent(
-                                                        chckbxUselessVariables,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        349, Short.MAX_VALUE)
-                                                    .addComponent(
-                                                        chckbxCoherentWritting,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        349, Short.MAX_VALUE)
-                                                    .addComponent(
-                                                        chckbxNoConcurrentWritting,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        349, Short.MAX_VALUE)
-                                                    .addComponent(
-                                                        chckbxDeterminism,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        349, Short.MAX_VALUE)
-                                                    .addComponent(
-                                                        chckbxWrittenAtLeast,
-                                                        GroupLayout.DEFAULT_SIZE,
-                                                        349, Short.MAX_VALUE))
-                                            .addComponent(
-                                                chckbxGoodInitialization,
-                                                GroupLayout.DEFAULT_SIZE, 349,
-                                                Short.MAX_VALUE)))
-                            .addGroup(
-                                gl_checkbox_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(chckbxTautologyFromState,
-                                        GroupLayout.DEFAULT_SIZE, 349,
-                                        Short.MAX_VALUE)))
-                    .addContainerGap())
+                    .addGap(223)
+                    .addComponent(scrollPane,
+                        GroupLayout.PREFERRED_SIZE,
+                        GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE))
+                .addGroup(Alignment.TRAILING,
+                    gl_checkbox_panel
+                        .createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(gl_checkbox_panel
+                            .createParallelGroup(
+                                Alignment.LEADING)
+                            .addGroup(gl_checkbox_panel
+                                .createParallelGroup(
+                                    Alignment.LEADING)
+                                .addComponent(
+                                    chckbxUselessVariables,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    349, Short.MAX_VALUE)
+                                .addComponent(
+                                    chckbxCoherentWritting,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    349, Short.MAX_VALUE)
+                                .addComponent(
+                                    chckbxNoConcurrentWritting,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    349, Short.MAX_VALUE)
+                                .addComponent(
+                                    chckbxDeterminism,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    349, Short.MAX_VALUE)
+                                .addComponent(
+                                    chckbxWrittenAtLeast,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    349, Short.MAX_VALUE))
+                            .addComponent(chckbxGoodInitialization,
+                                GroupLayout.DEFAULT_SIZE, 349,
+                                Short.MAX_VALUE)))
+                .addGroup(gl_checkbox_panel
+                    .createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(chckbxTautologyFromState,
+                        GroupLayout.DEFAULT_SIZE, 349,
+                        Short.MAX_VALUE)))
+            .addContainerGap())
         );
     gl_checkbox_panel.setVerticalGroup(
         gl_checkbox_panel.createParallelGroup(Alignment.TRAILING)
-            .addGroup(
-                gl_checkbox_panel.createSequentialGroup()
-                    .addGap(11)
-                    .addComponent(chckbxTautologyFromState)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxGoodInitialization)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxDeterminism)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxNoConcurrentWritting)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxCoherentWritting)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxUselessVariables)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(chckbxWrittenAtLeast)
-                    .addPreferredGap(ComponentPlacement.RELATED, 127,
-                        Short.MAX_VALUE)
-                    .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addGroup(gl_checkbox_panel
+                .createSequentialGroup()
+                .addGap(11)
+                .addComponent(chckbxTautologyFromState)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxGoodInitialization)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxDeterminism)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxNoConcurrentWritting)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxCoherentWritting)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxUselessVariables)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(chckbxWrittenAtLeast)
+                .addPreferredGap(ComponentPlacement.RELATED, 127,
+                    Short.MAX_VALUE)
+                .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
+                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         );
     checkbox_panel.setLayout(gl_checkbox_panel);
     verification_panel.setLayout(gl_verification_panel);
@@ -288,67 +280,63 @@ public class HomePage extends JFrame {
         .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
     chckbxVerboseExploration.setSelected(true);
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
-    gl_file_upload_panel
-        .setHorizontalGroup(
-        gl_file_upload_panel
-            .createParallelGroup(Alignment.TRAILING)
-            .addGroup(
-                Alignment.LEADING,
-                gl_file_upload_panel
-                    .createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(
-                        gl_file_upload_panel.createParallelGroup(
-                            Alignment.LEADING)
-                            .addComponent(btnSimulation,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnLoadProofModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(txtrFunctionalModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(txtrProofModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnLoadFunctionalModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnRemoveProofModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnExploration,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(chckbxVerboseExploration,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
-                    .addContainerGap())
-        );
-    gl_file_upload_panel.setVerticalGroup(
-        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_file_upload_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(txtrFunctionalModel,
-                        GroupLayout.PREFERRED_SIZE, 41,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnLoadFunctionalModel,
-                        GroupLayout.PREFERRED_SIZE, 42,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addGap(11)
-                    .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
-                        42, GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
+    gl_file_upload_panel.setHorizontalGroup(gl_file_upload_panel
+        .createParallelGroup(Alignment.TRAILING)
+        .addGroup(Alignment.LEADING,
+            gl_file_upload_panel
+                .createSequentialGroup()
+                .addContainerGap()
+                .addGroup(gl_file_upload_panel
+                    .createParallelGroup(Alignment.LEADING)
+                    .addComponent(btnSimulation,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                     .addComponent(btnLoadProofModel,
-                        GroupLayout.PREFERRED_SIZE, 42,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(txtrFunctionalModel,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(txtrProofModel,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(btnLoadFunctionalModel,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                     .addComponent(btnRemoveProofModel,
-                        GroupLayout.PREFERRED_SIZE, 41,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED, 34,
-                        Short.MAX_VALUE)
-                    .addComponent(chckbxVerboseExploration)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnExploration)
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(btnSimulation)
-                    .addContainerGap())
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(btnExploration,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(chckbxVerboseExploration,
+                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+    gl_file_upload_panel.setVerticalGroup(gl_file_upload_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_file_upload_panel
+            .createSequentialGroup()
+            .addContainerGap()
+            .addComponent(txtrFunctionalModel,
+                GroupLayout.PREFERRED_SIZE, 41,
+                GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnLoadFunctionalModel,
+                GroupLayout.PREFERRED_SIZE, 42,
+                GroupLayout.PREFERRED_SIZE)
+            .addGap(11)
+            .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
+                42, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnLoadProofModel,
+                GroupLayout.PREFERRED_SIZE, 42,
+                GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnRemoveProofModel,
+                GroupLayout.PREFERRED_SIZE, 41,
+                GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED, 34,
+                Short.MAX_VALUE)
+            .addComponent(chckbxVerboseExploration)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnExploration)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(btnSimulation)
+            .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
     // TODO Auto-generated constructor stub
