@@ -118,7 +118,7 @@ public class HomePage extends JFrame {
     JCheckBox chckbxTautologyFromState = new JCheckBox(
         "Tautology from state zero");
     chckbxTautologyFromState
-        .setToolTipText("For each initial state, check that all the transitions form a totology, to assure that when we initialize the model, no state machine will remain in the state 0 a get stuck in it.");
+        .setToolTipText("For each initial state, check that all the transitions form a tautology, to assure that when we initialize the model, no state machine will remain in the state 0 and get stuck in it.");
     chckbxTautologyFromState.setSelected(true);
     chckbxTautologyFromState.setEnabled(false);
 
