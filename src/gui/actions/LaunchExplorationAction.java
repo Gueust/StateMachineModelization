@@ -37,14 +37,14 @@ public class LaunchExplorationAction implements ActionListener {
       new ModelChecker<GlobalState, StateMachine, State, Transition>();
   private GraphSimulator simulator;
   private int i = 0;
-  private boolean verbose;
+  private JCheckBox verbose_box;
 
   public LaunchExplorationAction(JFileChooser functional_file_chooser,
       JFileChooser proof_file_chooser, JFrame frame, JCheckBox verbose_box) {
     this.functional_file_chooser = functional_file_chooser;
     this.proof_file_chooser = proof_file_chooser;
     this.frame = frame;
-    this.verbose = verbose_box.isSelected();
+    this.verbose_box = verbose_box;
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -83,8 +83,7 @@ public class LaunchExplorationAction implements ActionListener {
     // TODO add the initialization of a global state to add to the file
     simulator = new GraphSimulator(functional_model, proof_model);
     HashMap<String, String> CTL_list = functional_model.regroupCTL();
-    System.out.print(verbose);
-    simulator.setVerbose(verbose);
+    simulator.setVerbose(verbose_box.isSelected());
 
     LinkedList<GlobalState> global_states = new LinkedList<GlobalState>();
     long startTime = System.nanoTime();
@@ -97,11 +96,11 @@ public class LaunchExplorationAction implements ActionListener {
 
     GlobalState result = model_checker.verify(simulator);
     System.out.println("Result : " + result);
+
     long estimatedTime = System.nanoTime() - startTime;
-
     printFullPeakMemoryUsage();
-
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
+
     if (proof_file_chooser.getSelectedFile() == null) {
       JOptionPane.showMessageDialog(frame,
           "Proof failed.",
