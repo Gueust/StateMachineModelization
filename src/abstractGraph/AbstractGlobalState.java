@@ -200,21 +200,28 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
       return false;
     @SuppressWarnings("unchecked")
     AbstractGlobalState<M, S, T> other = (AbstractGlobalState<M, S, T>) obj;
-    if (is_legal_state != other.is_legal_state)
+    if (is_legal_state != other.is_legal_state) {
       return false;
-    if (is_safe_state != other.is_safe_state)
+    }
+    if (is_safe_state != other.is_safe_state) {
       return false;
+    }
     if (state_machines_current_state == null) {
-      if (other.state_machines_current_state != null)
+      if (other.state_machines_current_state != null) {
+        System.out.println("3");
         return false;
+      }
     } else if (!state_machines_current_state
-        .equals(other.state_machines_current_state))
+        .equals(other.state_machines_current_state)) {
       return false;
+    }
     if (variables_values == null) {
-      if (other.variables_values != null)
+      if (other.variables_values != null) {
         return false;
-    } else if (!variables_values.equals(other.variables_values))
+      }
+    } else if (!variables_values.equals(other.variables_values)) {
       return false;
+    }
     return true;
   }
 

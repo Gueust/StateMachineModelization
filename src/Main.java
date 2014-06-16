@@ -1,22 +1,23 @@
 import engine.GraphSimulator;
+import engine.ModelChecker;
+import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import graph.State;
 import graph.StateMachine;
+import graph.Transition;
+import graph.templates.GeneratorFromTemplate;
 import graph.verifiers.Verifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 
+import utils.Monitoring;
 import utils.TeeOutputStream;
 import abstractGraph.events.ExternalEvent;
 
@@ -33,10 +34,10 @@ public class Main {
 
     long startTime = System.nanoTime();
 
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    String functional_model = GeneratorFromTemplate.load("test.yaml");
+    String proof_model = GeneratorFromTemplate.load("preuve.yaml");
 
-    String functional_model = "PN/PN_SAL_N_Fonct_Auto.txt";
-    String proof_model = "PN/PN_SAL_N_Preuv_Auto.txt";
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -44,36 +45,42 @@ public class Main {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    GraphSimulator simulator = new GraphSimulator(model);
-
-    /* Initialization */
-    for (StateMachine machine : model) {
-      simulator.getGlobalState().setState(machine, machine.getState("0"));
-    }
-
+    GraphSimulator simulator = new GraphSimulator(model, proof);
+    simulator.setVerbose(false);
     verifyModel(model);
     verifyModel(proof);
 
-    LinkedList<ExternalEvent> initialization_events = new LinkedList<ExternalEvent>();
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+        new ModelChecker<>();
+
+    /* The all CTL true initial state */
+    HashMap<String, Boolean> initialization_variables =
+        new HashMap<String, Boolean>();
     HashMap<String, String> pairs_of_ctl = model.regroupCTL();
     for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
-
-      initialization_events.add(new ExternalEvent(pair.getKey()));
+      initialization_variables.put(new ExternalEvent(pair.getKey()).getName(),
+          true);
     }
-    System.out.println("Pair of CTLs:" + pairs_of_ctl.toString());
 
-    System.out.println(initialization_events);
+    System.out.println("TOTAL NUMBER OF STATES "
+        + simulator.getAllInitialStates().size());
+    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
-    simulator.executeAll(initialization_events);
+    model_checker.configureExternalEvents(simulator
+        .getModel()
+        .iteratorExternalEvents());
+
+    GlobalState result = model_checker.verify(simulator);
+    if (result == null) {
+      System.err.println("Sucess of the proof");
+    } else {
+      System.err.println("A state is not safe:\n" + result);
+    }
 
     long estimatedTime = System.nanoTime() - startTime;
-
-    printFullPeakMemoryUsage();
-
+    Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
-
-    // generateAutomateForCTL(graph_factory.getFactory(),
-    // "CTL_Zone2_Libre", "CTL_Zone2_Occupee");
 
   }
 
@@ -135,39 +142,6 @@ public class Main {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Print the total peak memory usage.
-   */
-  static void printPeakMemoryUsage() {
-    List<MemoryPoolMXBean> pools = ManagementFactory
-        .getMemoryPoolMXBeans();
-    for (MemoryPoolMXBean pool : pools) {
-      MemoryUsage peak = pool.getPeakUsage();
-      System.out.printf("Peak %s memory used: %,d%n", pool.getName(),
-          peak.getUsed());
-      System.out.printf("Peak %s memory reserved: %,d%n", pool.getName(),
-          peak.getCommitted());
-    }
-  }
-
-  /**
-   * Print the detail of the peak memory usage of all java threads.
-   */
-  static void printFullPeakMemoryUsage() {
-    List<MemoryPoolMXBean> pools = ManagementFactory
-        .getMemoryPoolMXBeans();
-    long total_used = 0, total_commited = 0;
-
-    for (MemoryPoolMXBean pool : pools) {
-      MemoryUsage peak = pool.getPeakUsage();
-      total_used += peak.getUsed();
-      total_commited += peak.getCommitted();
-    }
-    System.out.println();
-    System.out.printf("Total peak memory used: %,d%n", total_used);
-    System.out.printf("Total peak memory reserved: %,d%n", total_commited);
   }
 
 }

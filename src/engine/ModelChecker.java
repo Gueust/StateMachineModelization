@@ -134,7 +134,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
 
     System.err.flush();
     System.out.flush();
-
+    System.err.println("Initial states size : " + initial_states.size());
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
     while (unvisited_states.size() != 0) {
@@ -145,9 +145,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
       visited_states.add(state);
       System.err.println("Number of visited states: "
           + visited_states.size());
+      System.err.println("Number of unvisited states "
+          + unvisited_states.size());
 
       for (ExternalEvent e : possible_events) {
-        @SuppressWarnings("unchecked")
         GS next_state = simulator.execute(state, e);
         i++;
         System.err.flush();
@@ -159,7 +160,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
         }
       }
     }
-    System.err.println("No error");
     System.err.println("Total number of visited states: "
         + visited_states.size());
     System.err.println("Total number of illegal states found:" +

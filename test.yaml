@@ -1,3 +1,4 @@
+# A single itinerary.
 target: generated_graph_func.txt
 inputs:
 - [CTL_Pd_Sortie_voie_A_Actif, CTL_Pd_Sortie_voie_A_Inactif]

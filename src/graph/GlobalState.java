@@ -11,5 +11,4 @@ public class GlobalState extends
     super.copyTo(this, result);
     return result;
   }
-
 }

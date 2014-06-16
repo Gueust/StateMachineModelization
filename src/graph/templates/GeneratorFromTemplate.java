@@ -21,12 +21,18 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 public class GeneratorFromTemplate {
 
-  public static Model load(String file_name) throws IOException {
+  public static String load(String file_name) throws IOException {
     File file = new File(file_name);
     return load(file);
   }
 
-  public static Model load(File file) throws IOException {
+  /**
+   * 
+   * @param file
+   * @return The name of the file where the model has be generated.
+   * @throws IOException
+   */
+  public static String load(File file) throws IOException {
 
     InputStream input = new FileInputStream(file);
 
@@ -99,7 +105,7 @@ public class GeneratorFromTemplate {
     Model result = factory.buildModel(templated_model.getTarget(),
         "Merge instanciated model");
     result.build();
-    return result;
+    return templated_model.getTarget();
 
   }
 
