@@ -27,7 +27,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * The states that are excluded from the exploration by the postulate states
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
-  private HashSet<GS> illegal_states;
+  private HashSet<GS> illegal_states = new HashSet<GS>();
 
   /**
    * Initialize the external events that will be tested.
@@ -81,6 +81,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    *         error) otherwise.
    */
   private GS processGS(GS state) {
+    assert state != null;
     /* The state is already known. */
     if (visited_states.contains(state) || illegal_states.contains(state)) {
       return null;
