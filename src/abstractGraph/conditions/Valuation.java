@@ -96,7 +96,7 @@ public class Valuation {
       throw new Error(
           "The valuation HashMap cannot be null since it is always initialized");
     }
-    return this.valuation.equals(other);
+    return this.valuation.equals(other.valuation);
   }
 
   public void clear() {
