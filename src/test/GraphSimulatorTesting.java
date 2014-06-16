@@ -1,7 +1,6 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import engine.GraphSimulator;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
@@ -22,6 +21,9 @@ import abstractGraph.events.ExternalEvent;
 
 public class GraphSimulatorTesting {
 
+  private static final String class_name = GraphSimulatorTesting.class
+      .getSimpleName();
+
   /**
    * Load a file and build the model associated to that file.
    * 
@@ -32,11 +34,7 @@ public class GraphSimulatorTesting {
    * @throws IOException
    */
   private Model loadFile(String name) throws IOException {
-
-    String class_name = this.getClass().getSimpleName();
-
-    GraphFactoryAEFD test =
-        new GraphFactoryAEFD();
+    GraphFactoryAEFD test = new GraphFactoryAEFD();
     Model model = test.buildModel("src/test/resources/" + class_name + "/"
         + name, "Testing model");
     return model;
@@ -80,256 +78,169 @@ public class GraphSimulatorTesting {
   @Test
   public void TraceTesting() throws IOException {
 
-    String[] files = {
-        "Graph_with_no_external_events.txt",
-        "Graph_testing_different_external_event.txt",
-        "Graph_with_propagation.txt",
-        "Graph_with_condition.txt",
-        "Graph_testing_variables_value.txt",
-        "Graph_P5.txt",
-        "Graph_P6.txt",
-        "Graph_P7.txt",
-        "Graph_with_alarm.txt",
+    LinkedList<ExternalEvent> events;
+    String file_name;
 
-    };
-
-    String[] files_for_proof_testing = {
-        "Graph_with_safety_error.txt",
-        "AP_of_Graph_with_safety_error.txt"
-    };
-
-    LinkedList<LinkedList<ExternalEvent>> liste_of_list_external_event = new LinkedList<LinkedList<ExternalEvent>>();
-    LinkedList<GraphSimulator> liste_simulator = initListOfSimulator(files);
-    LinkedList<LinkedList<ExternalEvent>> liste_of_list_external_event_proof = new LinkedList<LinkedList<ExternalEvent>>();
-    LinkedList<GraphSimulator> liste_simulator_proof = initListOfSimulatorWithProofModel(files_for_proof_testing);
-    // TODO fill in external event
-
-    String[] events = { "CTL_1", "MSG_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1", "MSG_1", "ACT_1", "FTP_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event, events);
-
-    events = new String[] { "CTL_1" };
-    addListeExternalEvent(liste_of_list_external_event_proof, events);
-
-    GraphSimulator simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_with_no_external_events.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
+    /* Test the file "Graph_with_no_external_events.txt" */
+    file_name = "Graph_with_no_external_events.txt";
+    GraphSimulator simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1" });
+    simulator.executeAll(events);
     // Verify that the current state of the state machine is "0".
-    assertTrue("Error on " + files[0], simulator.getGlobalState().getState(
-        "Graph_with_no_external_event").getId().equals("0"));
+    assertInState("Error on " + file_name, simulator,
+        "Graph_with_no_external_event", "0");
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_testing_different_external_event.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine is "4".
-    assertTrue("Error on " + files[1], simulator.getGlobalState().getState(
-        "Page 1").getId().equals("4"));
+    /* Test the file "Graph_testing_different_external_event.txt" */
+    file_name = "Graph_testing_different_external_event.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1", "ACT_1",
+        "FTP_1" });
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_with_propagation.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine "Page 1" is "1".
-    assertTrue("Error on " + files[2], simulator.getGlobalState().getState(
-        "Page 1").getId().equals("1"));
-    // Verify that the current state of the state machine "Page 2" is "1".
-    assertTrue("Error on " + files[2], simulator.getGlobalState().getState(
-        "Page 2").getId().equals("1"));
-    // Verify that the current state of the state machine "Page 3" is "1".
-    assertTrue("Error on " + files[2], simulator.getGlobalState().getState(
-        "Page 3").getId().equals("1"));
+    simulator.executeAll(events);
+    assertInState("Error on " + file_name, simulator, "Page 1", "4");
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_with_condition.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine is "2".
-    assertTrue("Error on " + files[3], simulator.getGlobalState().getState(
-        "Page 1").getId().equals("2"));
+    /* Test the file "Graph_with_propagation.txt" */
+    file_name = "Graph_with_propagation.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertInState("Error on " + file_name, simulator, "Page 1", "1");
+    assertInState("Error on " + file_name, simulator, "Page 2", "1");
+    assertInState("Error on " + file_name, simulator, "Page 3", "1");
 
-    simulator = liste_simulator.removeFirst();
+    /* Test the file "Graph_with_condition.txt" */
+    file_name = "Graph_with_condition.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertInState("Error on " + file_name, simulator, "Page 1", "2");
+
     // Test the file "Graph_testing_variables_value.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine "Page 1" is "1".
-    assertTrue("Error on " + files[4], simulator.getGlobalState().getState(
-        "Page 1").getId().equals("1"));
-    // Verify that the current state of the state machine "Page 2" is "1".
-    assertTrue("Error on " + files[4], simulator.getGlobalState().getState(
-        "Page 2").getId().equals("1"));
-    // Verify that the current state of the state machine "Page 3" is "1".
-    assertTrue("Error on " + files[4], simulator.getGlobalState().getState(
-        "Page 3").getId().equals("1"));
+    file_name = "Graph_testing_variables_value.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertInState("Error on " + file_name, simulator, "Page 1", "1");
+    assertInState("Error on " + file_name, simulator, "Page 2", "1");
+    assertInState("Error on " + file_name, simulator, "Page 3", "1");
+
     // Verify that the value of the variables are corrects.
     // Retrieve the variable from the name
     Model model_tmp = simulator.getModel();
-    assertTrue("Error on " + files[4], simulator
+    assertTrue("Error on " + file_name, simulator
         .getGlobalState()
         .getVariableValue(model_tmp.getVariable("IND_A_Actif")) == false);
-    assertTrue("Error on " + files[4], simulator
+    assertTrue("Error on " + file_name, simulator
         .getGlobalState()
         .getVariableValue(model_tmp.getVariable("IND_B_Actif")) == false);
-    assertTrue("Error on " + files[4], simulator
+    assertTrue("Error on " + file_name, simulator
         .getGlobalState()
         .getVariableValue(model_tmp.getVariable("IND_C_Actif")) == true);
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_P5.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine is "4".
-    assertTrue("Error on " + files[5], !simulator.getGlobalState().isSafe());
+    /* Test the file "Graph_P5.txt" */
+    file_name = "Graph_P5.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertTrue("Error on " + file_name, !simulator.getGlobalState().isSafe());
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_P6.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine is "4".
-    assertTrue("Error on " + files[5], !simulator.getGlobalState().isLegal());
+    /* Test the file "Graph_P6.txt" */
+    file_name = "Graph_P6.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertTrue("Error on " + file_name, !simulator.getGlobalState().isLegal());
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_P7.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine is "4".
-    assertTrue("Error on " + files[5], !simulator.getGlobalState().isNotP7());
+    /* Test the file "Graph_P7.txt" */
+    file_name = "Graph_P7.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertTrue("Error on " + file_name, !simulator.getGlobalState().isNotP7());
 
-    simulator = liste_simulator.removeFirst();
-    // Test the file "Graph_with_alarm.txt"
-    simulator.executeAll(liste_of_list_external_event.removeFirst());
-    // Verify that the current state of the state machine "Page 1" is "1".
-    assertTrue("Error on " + files[6], simulator.getGlobalState().getState(
-        "Page 1").getId().equals("0"));
-    // Verify that the current state of the state machine "Page 2" is "1".
-    assertTrue("Error on " + files[6], simulator.getGlobalState().getState(
-        "Page 2").getId().equals("0"));
-    // Verify that the current state of the state machine "Page 3" is "1".
-    assertTrue("Error on " + files[6], simulator.getGlobalState().getState(
-        "Page 3").getId().equals("1"));
+    /* Test the file "Graph_with_alarm.txt" */
+    file_name = "Graph_with_alarm.txt";
+    simulator = loadSimulator(file_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertInState("Error on " + file_name, simulator, "Page 1", "0");
+    assertInState("Error on " + file_name, simulator, "Page 2", "0");
+    assertInState("Error on " + file_name, simulator, "Page 3", "1");
 
-    simulator = liste_simulator_proof.removeFirst();
-    simulator.executeAll(liste_of_list_external_event_proof.removeFirst());
-    assertTrue("Error on " + files_for_proof_testing[0],
+    /* Test the file Graph_with_safety_error.txt */
+    file_name = "Graph_with_safety_error.txt";
+    String proof_model_name = "AP_of_Graph_with_safety_error.txt";
+    simulator = loadSimulator(file_name, proof_model_name);
+    events = convertToExternalEvent(new String[] { "CTL_1" });
+    simulator.executeAll(events);
+    assertTrue("Error on " + file_name,
         !simulator
             .getGlobalState()
             .isSafe());
 
   }
 
-  /**
-   * Add the list of external event to the list of list of external event.
-   * 
-   * @param liste_of_list_external_event
-   * @param list_name_event
-   */
-  private void addListeExternalEvent(
-      LinkedList<LinkedList<ExternalEvent>> liste_of_list_external_event,
-      String[] list_name_event) {
-    LinkedList<ExternalEvent> liste_external_events = new LinkedList<ExternalEvent>();
-    for (String name_event : list_name_event) {
-      ExternalEvent external_event = new ExternalEvent(name_event);
-      liste_external_events.add(external_event);
-    }
-    liste_of_list_external_event.add(liste_external_events);
+  private void assertInState(String error_message, GraphSimulator simulator,
+      String sm_name, String targeted_state) {
+    assertTrue(error_message, getState(simulator, sm_name).equals(
+        targeted_state));
+  }
 
+  private String getState(GraphSimulator simulator, String automaton_name) {
+    return simulator.getGlobalState().getState(automaton_name).getId();
+  }
+
+  private LinkedList<ExternalEvent> convertToExternalEvent(String[] events) {
+    LinkedList<ExternalEvent> result = new LinkedList<ExternalEvent>();
+    for (int i = 0; i < events.length; i++) {
+      result.add(new ExternalEvent(events[i]));
+    }
+    return result;
   }
 
   /**
-   * Create the simulators from the text files by generating the models and
-   * initializing the global state.
-   * 
-   * @param files
-   *          an array of files to test.
-   * @return a list of simulator.
+   * Create a simulator from a file
    */
-
-  private LinkedList<GraphSimulator> initListOfSimulator(String[] files) {
-
-    GlobalState global_state;
-    LinkedList<GraphSimulator> liste_simulator = new LinkedList<GraphSimulator>();
+  private GraphSimulator loadSimulator(String file_name) {
+    Model model;
     try {
-      for (int i = 0; i < files.length; i++) {
-        Model model = new Model(files[i]);
-        model = loadFile(files[i]);
-        global_state = new GlobalState();
-        Iterator<Variable> variable_iterator = model
-            .iteratorExistingVariables();
-        while (variable_iterator.hasNext()) {
-          Variable variable = variable_iterator.next();
-          global_state.setVariableValue(variable, true);
-        }
-        Iterator<StateMachine> state_machine_iterator = model
-            .iterator();
-        while (state_machine_iterator.hasNext()) {
-          StateMachine state_machine = state_machine_iterator.next();
-          global_state.setState(state_machine, state_machine.getState("0"));
-        }
-        GraphSimulator simulator = new GraphSimulator(model, global_state);
-        liste_simulator.add(simulator);
-
-      }
-
-      return liste_simulator;
-
+      model = loadFile(file_name);
     } catch (IOException e) {
       e.printStackTrace();
-      fail("Unexpected exception.");
+      throw new Error();
     }
-
-    return null;
-
-  }
-
-  /**
-   * Create the simulators from the text files by generating the models and
-   * initializing the global state. Create the simulators with proof model. Scan
-   * the tab of files two by two, the first file is the functional file and the
-   * second, the proof file.
-   * 
-   * @param files
-   *          an array of files to test.
-   * @return a list of simulator.
-   */
-  private LinkedList<GraphSimulator> initListOfSimulatorWithProofModel(
-      String[] files) throws IOException {
-
     GlobalState global_state = new GlobalState();
-    LinkedList<GraphSimulator> liste_simulator = new LinkedList<GraphSimulator>();
-    String class_name = this.getClass().getSimpleName();
-
-    GraphFactoryAEFD test = new GraphFactoryAEFD();
-    try {
-      for (int i = 0; i < files.length - 1; i = i + 2) {
-        Model model = test.buildModel("src/test/resources/" + class_name + "/"
-            + files[i], "Testing model");
-        Model proof = test.buildModel("src/test/resources/" + class_name + "/"
-            + files[i + 1], "Testing proof model");
-        initGlobalState(model, global_state);
-        initGlobalState(proof, global_state);
-        GraphSimulator simulator;
-        simulator = new GraphSimulator(model, proof, global_state);
-        liste_simulator.add(simulator);
-
-      }
-
-      return liste_simulator;
-
-    } catch (IOException e) {
-      e.printStackTrace();
-      fail("Unexpected exception.");
+    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+    while (variable_iterator.hasNext()) {
+      global_state.setVariableValue(variable_iterator.next(), true);
     }
 
-    return null;
+    for (StateMachine state_machine : model) {
+      global_state.setState(state_machine, state_machine.getState("0"));
+    }
+    return new GraphSimulator(model, global_state);
+  }
 
+  /**
+   * Create a simulator from the text files by generating the models and
+   * initializing the global state. Create the simulator with proof model.
+   * 
+   * @throws IOException
+   */
+  private GraphSimulator loadSimulator(String model_file_name,
+      String proof_file_name) throws IOException {
+    GlobalState global_state = new GlobalState();
+
+    GraphFactoryAEFD factory = new GraphFactoryAEFD();
+
+    Model model = factory.buildModel("src/test/resources/" + class_name + "/"
+        + model_file_name, "Testing model");
+    Model proof = factory.buildModel("src/test/resources/" + class_name + "/"
+        + proof_file_name, "Testing proof model");
+    initGlobalState(model, global_state);
+    initGlobalState(proof, global_state);
+
+    return new GraphSimulator(model, proof, global_state);
   }
 
   /**
@@ -349,10 +260,8 @@ public class GraphSimulatorTesting {
       Variable variable = variable_iterator.next();
       global_state.setVariableValue(variable, true);
     }
-    Iterator<StateMachine> state_machine_iterator = model
-        .iterator();
-    while (state_machine_iterator.hasNext()) {
-      StateMachine state_machine = state_machine_iterator.next();
+
+    for (StateMachine state_machine : model) {
       global_state.setState(state_machine, state_machine.getState("0"));
     }
   }
