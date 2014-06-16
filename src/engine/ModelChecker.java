@@ -127,7 +127,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
      */
     for (GS global_state : initial_states) {
       GS result = processGS(global_state);
-      if (result == null) {
+      if (result != null) {
         return result;
       }
     }
