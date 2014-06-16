@@ -23,8 +23,9 @@ public class Verifier {
     public DefaultVerifier() {
       super();
       addVerification(new SingleWritingChecker());
+      addVerification(new InitializationProperties());
+      addVerification(new TautologyFromStateZero());
       addVerification(new DeterminismChecker());
-      addVerification(new SingleWritingChecker());
     }
   }
 
