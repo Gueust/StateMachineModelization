@@ -6,12 +6,15 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Variable;
@@ -138,6 +141,55 @@ public class GraphSimulator implements
 
   public Model getProof() {
     return proof;
+  }
+
+  /**
+   * 
+   * @return A linked list containing all the initial states that can be
+   *         generated using all the possible combination of CTLs.
+   */
+  public LinkedList<GlobalState>
+      getAllInitialStates() {
+    HashMap<String, String> CTL_list = getModel().regroupCTL();
+
+    LinkedList<GlobalState> initial_global_states =
+        new LinkedList<GlobalState>();
+
+    generateAllInitialStates(CTL_list.keySet(), new HashMap<String, Boolean>(),
+        initial_global_states);
+
+    return initial_global_states;
+  }
+
+  /**
+   * Generate recursively all the initial states.
+   * 
+   * @param set
+   *          The list of the positive CTL in the model without a value assigned
+   *          to them.
+   * @param tmp
+   *          An empty HashMap used internally to store the already set CTLs.
+   */
+  private void generateAllInitialStates(Set<String> set,
+      HashMap<String, Boolean> tmp,
+      Collection<GlobalState> result) {
+    /* Terminal case */
+    if (set.isEmpty()) {
+      init(tmp);
+      result.add(getGlobalState().clone());
+      return;
+    }
+
+    /* Recursion */
+    Iterator<String> ctl_iterator = set.iterator();
+    String ctl_name = ctl_iterator.next();
+    ctl_iterator.remove();
+
+    tmp.put(ctl_name, true);
+    generateAllInitialStates(new HashSet<String>(set), tmp, result);
+
+    tmp.put(ctl_name, false);
+    generateAllInitialStates(new HashSet<String>(set), tmp, result);
   }
 
   /**

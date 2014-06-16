@@ -3,22 +3,13 @@ package gui.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import utils.Monitoring;
 import engine.GraphSimulator;
 import engine.ModelChecker;
 import graph.GlobalState;
@@ -36,7 +27,6 @@ public class LaunchExplorationAction implements ActionListener {
   private ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
       new ModelChecker<GlobalState, StateMachine, State, Transition>();
   private GraphSimulator simulator;
-  private int i = 0;
   private JCheckBox verbose_box;
 
   public LaunchExplorationAction(JFileChooser functional_file_chooser,
@@ -82,14 +72,11 @@ public class LaunchExplorationAction implements ActionListener {
     }
     // TODO add the initialization of a global state to add to the file
     simulator = new GraphSimulator(functional_model, proof_model);
-    HashMap<String, String> CTL_list = functional_model.regroupCTL();
     simulator.setVerbose(verbose_box.isSelected());
 
-    LinkedList<GlobalState> global_states = new LinkedList<GlobalState>();
     long startTime = System.nanoTime();
-    verifyWithAllInitialValue(CTL_list.keySet(),
-        new HashMap<String, Boolean>(), global_states);
-    model_checker.configureInitialGlobalStates(global_states);
+
+    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
     model_checker.configureExternalEvents(simulator
         .getModel()
         .iteratorExternalEvents());
@@ -98,7 +85,7 @@ public class LaunchExplorationAction implements ActionListener {
     System.out.println("Result : " + result);
 
     long estimatedTime = System.nanoTime() - startTime;
-    printFullPeakMemoryUsage();
+    Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
 
     if (proof_file_chooser.getSelectedFile() == null) {
@@ -112,7 +99,6 @@ public class LaunchExplorationAction implements ActionListener {
           "Success",
           JOptionPane.PLAIN_MESSAGE);
     }
-
   }
 
   private Model loadFile(GraphFactoryAEFD factory,
@@ -121,53 +107,5 @@ public class LaunchExplorationAction implements ActionListener {
         .getSelectedFile()
         .getAbsolutePath()
         .toString(), name);
-  }
-
-  /**
-   * 
-   * @param set
-   *          The list of the positive CTL in the model without a value assigned
-   *          to them.
-   * @param tmp
-   *          An empty HashMap used internally to store the already set CTLs.
-   * @return null if the verification finish without meeting
-   */
-  private void verifyWithAllInitialValue(Set<String> set,
-      HashMap<String, Boolean> tmp,
-      Collection<GlobalState> result) {
-    /* Terminal case */
-    if (set.isEmpty()) {
-      System.out.println(this.i++);
-      simulator.init(tmp);
-      result.add(simulator.getGlobalState().clone());
-      return;
-    }
-
-    /* Recursion */
-    Iterator<String> ctl_iterator = set.iterator();
-    String ctl_name = ctl_iterator.next();
-    ctl_iterator.remove();
-
-    tmp.put(ctl_name, true);
-    verifyWithAllInitialValue(new HashSet<String>(set), tmp, result);
-
-    tmp.put(ctl_name, false);
-    verifyWithAllInitialValue(new HashSet<String>(set), tmp, result);
-
-  }
-
-  private void printFullPeakMemoryUsage() {
-    List<MemoryPoolMXBean> pools = ManagementFactory
-        .getMemoryPoolMXBeans();
-    long total_used = 0, total_commited = 0;
-
-    for (MemoryPoolMXBean pool : pools) {
-      MemoryUsage peak = pool.getPeakUsage();
-      total_used += peak.getUsed();
-      total_commited += peak.getCommitted();
-    }
-    System.out.println();
-    System.out.printf("Total peak memory used: %,d%n", total_used);
-    System.out.printf("Total peak memory reserved: %,d%n", total_commited);
   }
 }
