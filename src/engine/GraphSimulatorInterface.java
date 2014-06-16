@@ -27,5 +27,5 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T>
    * {@link #executeOnlyFunctional(AbstractGlobalState, ExternalEvent)} using
    * the GlobalState contained in the GraphSimulator instance.
    */
-  public GS execute(ExternalEvent e);
+  public void execute(ExternalEvent e);
 }

@@ -394,9 +394,8 @@ public class GraphSimulator implements
    *          The event to execute.
    * @param single_event_queue
    *          The queue to use for the internal events.
-   * @return
    */
-  private GlobalState execute(Model m, GlobalState starting_state,
+  private void execute(Model m, GlobalState starting_state,
       SingleEvent e,
       LinkedList<SingleEvent> single_event_queue) {
 
@@ -405,7 +404,6 @@ public class GraphSimulator implements
       SingleEvent head = single_event_queue.remove();
       processSingleEvent(m, starting_state, head, single_event_queue);
     }
-    return starting_state;
   }
 
   /**
@@ -460,6 +458,7 @@ public class GraphSimulator implements
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();
     commands_queue.clear();
+
     if (proof != null) {
       execute(proof, copied_starting_state, event, internal_proof_event_queue);
     }
@@ -482,7 +481,7 @@ public class GraphSimulator implements
 
       curr_event = internal_functional_event_queue.poll();
     } while (curr_event != null);
-    return internal_global_state;
+    return copied_starting_state;
   }
 
   /**
@@ -490,8 +489,8 @@ public class GraphSimulator implements
    * the internal GlobalState as the initial global_sate.
    */
   @Override
-  public GlobalState execute(ExternalEvent event) {
-    return execute(internal_global_state, event);
+  public void execute(ExternalEvent event) {
+    internal_global_state = execute(internal_global_state, event);
   }
 
   /**
@@ -503,7 +502,7 @@ public class GraphSimulator implements
     GlobalState result = starting_state;
     while (!list.isEmpty()) {
       ExternalEvent event = list.poll();
-      result = execute(starting_state, event);
+      result = execute(result, event);
     }
     return result;
   }
@@ -512,8 +511,8 @@ public class GraphSimulator implements
    * Same as {@link #executeAll(GlobalState, Iterable<ExternalEvent>)} but uses
    * the internal GlobalState.
    */
-  public GlobalState executeAll(LinkedList<ExternalEvent> list) {
-    return executeAll(internal_global_state, list);
+  public void executeAll(LinkedList<ExternalEvent> list) {
+    internal_global_state = executeAll(internal_global_state, list);
   }
 
   /**
