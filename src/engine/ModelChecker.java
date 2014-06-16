@@ -65,7 +65,11 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * @param init
    */
   public void configureInitialGlobalStates(GS init) {
-    initial_states.clear();
+    if (initial_states == null) {
+      initial_states = new LinkedList<GS>();
+    } else {
+      initial_states.clear();
+    }
     initial_states.add(init);
   }
 
