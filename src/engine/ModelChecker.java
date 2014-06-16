@@ -59,9 +59,44 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     initial_states = new LinkedList<GS>(init);
   }
 
+  /**
+   * Set the given `init` state as the single initial state to explore from.
+   * 
+   * @param init
+   */
   public void configureInitialGlobalStates(GS init) {
     initial_states.clear();
     initial_states.add(init);
+  }
+
+  /**
+   * Process an explored global state.
+   * 
+   * @param state
+   * @return null is everything went fine. The error state (i.e. not safe or
+   *         error) otherwise.
+   */
+  private GS processGS(GS state) {
+    /* The state is already known. */
+    if (visited_states.contains(state) || illegal_states.contains(state)) {
+      return null;
+    }
+
+    /* The state is illegal */
+    if (!state.isLegal()) {
+      illegal_states.add(state);
+      return null;
+    }
+
+    /* The state is unsafe ! We return it (i.e. mark it as an error) */
+    if (!state.isSafe() || !state.isNotP7()) {
+      return state;
+    }
+
+    /* If everything went fine, it is a new state to visit */
+    unvisited_states.add(state);
+
+    return null;
   }
 
   /**
@@ -69,6 +104,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    *          Properties to verify:
    *          - unvisited_states and visited_states have never one item in
    *          common.
+   *          - all states added in visited_states must be legal. To ensure this
+   *          invariant, we verify it for the states added to unvisited_states.
    * @param simulator
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
@@ -79,7 +116,16 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     assert (possible_events != null);
 
     unvisited_states.clear();
-    unvisited_states.addAll(initial_states);
+    /*
+     * We need to check that all the initial states are legal before adding
+     * them.
+     */
+    for (GS global_state : initial_states) {
+      GS result = processGS(global_state);
+      if (result == null) {
+        return result;
+      }
+    }
 
     System.err.flush();
     System.out.flush();
@@ -88,9 +134,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
         + " states");
     while (unvisited_states.size() != 0) {
       Iterator<GS> it = unvisited_states.iterator();
-
       GS state = it.next();
       it.remove();
+
       visited_states.add(state);
       System.err.println("Number of visited states: "
           + visited_states.size());
@@ -103,22 +149,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
         System.out.flush();
         System.err.println("Eploring N° " + i);
 
-        /* Illegal state */
-        if (!next_state.isLegal()) {
-          /* If we reach this code, the state is not in illegal_sates */
-          if (!illegal_states.contains(next_state)) {
-            illegal_states.add(next_state);
-          }
-          continue;
-        }
-
-        if (visited_states.contains(next_state)) {
-          continue;
-        }
-        unvisited_states.add(next_state);
-
-        /* Safety property not respected */
-        if (!next_state.isSafe()) {
+        if (processGS(next_state) != null) {
           return next_state;
         }
       }
@@ -126,7 +157,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     System.err.println("No error");
     System.err.println("Total number of visited states: "
         + visited_states.size());
-
+    System.err.println("Total number of illegal states found:" +
+        illegal_states.size());
+    System.err.println("Total number of explored node: " + i);
     return null;
   }
 
