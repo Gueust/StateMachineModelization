@@ -20,7 +20,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
   /** The states to explore */
   private LinkedHashSet<GS> unvisited_states = new LinkedHashSet<GS>();
 
-  private LinkedList<ExternalEvent> possible_events;
   private LinkedList<GS> initial_states;
 
   /**
@@ -28,25 +27,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
   private HashSet<GS> illegal_states = new HashSet<GS>();
-
-  /**
-   * Initialize the external events that will be tested.
-   * It does not take the given collection but creates an underlying Linkedlist
-   * containing the elements of `events`.
-   * 
-   * @param events
-   *          A collection from which to retrieve the external events.
-   */
-  public void configureExternalEvents(Collection<ExternalEvent> events) {
-    possible_events = new LinkedList<ExternalEvent>(events);
-  }
-
-  public void configureExternalEvents(Iterator<ExternalEvent> events) {
-    possible_events = new LinkedList<ExternalEvent>();
-    while (events.hasNext()) {
-      possible_events.add(events.next());
-    }
-  }
 
   /**
    * Initialize the initial states as the ones contained in `init`.
@@ -118,7 +98,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
   public GS verify(
       GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
-    assert (possible_events != null);
 
     unvisited_states.clear();
     /*

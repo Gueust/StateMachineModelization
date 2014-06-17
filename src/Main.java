@@ -68,10 +68,6 @@ public class Main {
     // simulator.init(initialization_variables);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
-    model_checker.configureExternalEvents(simulator
-        .getModel()
-        .iteratorExternalEvents());
-
     GlobalState result = model_checker.verify(simulator);
     if (result == null) {
       System.err.println("Success of the proof");

@@ -44,6 +44,11 @@ public class State extends AbstractState<Transition> {
   }
 
   @Override
+  public int hashCode() {
+    return transitions.hashCode();
+  }
+
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("STATE: " + getId() + "\n");
@@ -60,4 +65,5 @@ public class State extends AbstractState<Transition> {
     Transition[] t = new Transition[transitions.size()];
     return transitions.toArray(t);
   }
+
 }
