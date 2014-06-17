@@ -15,6 +15,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
       new HashMap<M, S>();
 
   private boolean is_legal_state = true, is_safe_state = true;
+  private boolean isNotP7 = true;
 
   public AbstractGlobalState() {
     variables_values = new Valuation();
@@ -115,8 +116,6 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     is_safe_state = safe;
   }
 
-  private boolean isNotP7 = true;
-
   public boolean isNotP7() {
     return isNotP7;
   }
@@ -146,6 +145,8 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     }
     result = result + "The value of the variables are : "
         + variables_values + ".\n";
+    result += "Safe: " + is_safe_state + ", legal: " + is_legal_state
+        + "isNotP7: " + isNotP7;
     return result;
   }
 

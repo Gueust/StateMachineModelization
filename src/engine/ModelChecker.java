@@ -156,6 +156,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
         System.err.println("Eploring N° " + i);
 
         if (processGS(next_state) != null) {
+          System.out.print("FAILURE from state \n" + state + "\n Event : " + e
+              + "\n" + next_state);
           return next_state;
         }
       }
