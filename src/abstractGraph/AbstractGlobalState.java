@@ -224,5 +224,4 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     }
     return true;
   }
-
 }

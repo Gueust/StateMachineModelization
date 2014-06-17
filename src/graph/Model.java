@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -16,6 +17,7 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
+import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
@@ -349,5 +351,27 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       addStateMachine(machine);
     }
     return true;
+  }
+
+  public LinkedHashSet<ExternalEvent> getPossibleExternalEvent(
+      GlobalState global_state) {
+    LinkedHashSet<ExternalEvent> list_events =
+        new LinkedHashSet<ExternalEvent>();
+    for (StateMachine state_machine : state_machines.values()) {
+      State current_state = global_state.getState(state_machine);
+      Iterator<Transition> transition_iterator = current_state.iterator();
+      while (transition_iterator.hasNext()) {
+        Transition transition = transition_iterator.next();
+        Events events = transition.getEvents();
+        Iterator<SingleEvent> single_event_iterator = events.iterator();
+        while (single_event_iterator.hasNext()) {
+          SingleEvent single_event = single_event_iterator.next();
+          if (single_event instanceof ExternalEvent) {
+            list_events.add((ExternalEvent) single_event);
+          }
+        }
+      }
+    }
+    return list_events;
   }
 }

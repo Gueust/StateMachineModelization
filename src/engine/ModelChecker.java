@@ -148,7 +148,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
       System.err.println("Number of unvisited states "
           + unvisited_states.size());
 
-      for (ExternalEvent e : possible_events) {
+      for (ExternalEvent e : simulator.getPossibleEvent(state)) {
         GS next_state = simulator.execute(state, e);
         i++;
         System.err.flush();

@@ -34,8 +34,10 @@ public class Main {
 
     long startTime = System.nanoTime();
 
-    String functional_model = GeneratorFromTemplate.load("test.yaml");
-    String proof_model = GeneratorFromTemplate.load("preuve.yaml");
+    String functional_model = GeneratorFromTemplate
+        .load("fonctionnel2voie.yaml");
+    String proof_model = GeneratorFromTemplate
+        .load("preuve2voie.yaml");
 
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 

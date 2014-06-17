@@ -710,4 +710,13 @@ public class GraphSimulator implements
       internal_global_state.getValuation().remove(variable);
     }
   }
+
+  @Override
+  public Iterable<ExternalEvent> getPossibleEvent(GlobalState global_state) {
+    return model.getPossibleExternalEvent(global_state);
+  }
+
+  public Iterable<ExternalEvent> getPossibleEvent() {
+    return model.getPossibleExternalEvent(internal_global_state);
+  }
 }
