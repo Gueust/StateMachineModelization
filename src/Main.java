@@ -74,7 +74,7 @@ public class Main {
 
     GlobalState result = model_checker.verify(simulator);
     if (result == null) {
-      System.err.println("Sucess of the proof");
+      System.err.println("Success of the proof");
     } else {
       System.err.println("A state is not safe:\n" + result);
     }

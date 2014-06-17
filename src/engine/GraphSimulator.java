@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -712,7 +713,7 @@ public class GraphSimulator implements
   }
 
   @Override
-  public Iterable<ExternalEvent> getPossibleEvent(GlobalState global_state) {
+  public LinkedHashSet<ExternalEvent> getPossibleEvent(GlobalState global_state) {
     return model.getPossibleExternalEvent(global_state);
   }
 

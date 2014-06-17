@@ -137,6 +137,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     System.err.println("Initial states size : " + initial_states.size());
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
+
     while (unvisited_states.size() != 0) {
       Iterator<GS> it = unvisited_states.iterator();
       GS state = it.next();
@@ -148,12 +149,16 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
       System.err.println("Number of unvisited states "
           + unvisited_states.size());
 
-      for (ExternalEvent e : simulator.getPossibleEvent(state)) {
+      LinkedHashSet<ExternalEvent> possible_external_events =
+          simulator.getPossibleEvent(state);
+      System.err.println("Eploring N° " + i + ".\nCreating "
+          + possible_external_events.size());
+
+      for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
         i++;
         System.err.flush();
         System.out.flush();
-        System.err.println("Eploring N° " + i);
 
         if (processGS(next_state) != null) {
           System.out.print("FAILURE from state \n" + state + "\n Event : " + e

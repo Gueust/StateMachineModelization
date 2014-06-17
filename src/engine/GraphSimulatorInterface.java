@@ -1,5 +1,7 @@
 package engine;
 
+import java.util.LinkedHashSet;
+
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
@@ -34,5 +36,5 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T>
    * @return An iterable over the external events that the simulator can eat
    *         from the current states of the state machines.
    */
-  public Iterable<ExternalEvent> getPossibleEvent(GS global_state);
+  public LinkedHashSet<ExternalEvent> getPossibleEvent(GS global_state);
 }
