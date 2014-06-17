@@ -245,16 +245,21 @@ public class GraphSimulator implements
 
     if (internal_functional_event_queue.size() != 0) {
       functionnal_transitions_pull_list.clear();
-      if (proof == null) {
-        external_proof_event_queue.clear();
-      }
+
       processSingleEvent(model, internal_global_state,
           internal_functional_event_queue.remove(), external_proof_event_queue);
 
       internal_functional_event_queue.addAll(external_proof_event_queue);
+
       if (proof != null) {
         external_proof_event_queue.addAll(temporary_commands_queue);
         temporary_commands_queue.clear();
+      } else {
+        /*
+         * If the proof model is empty, we need to clear its queue that will
+         * otherwise never be emptied
+         */
+        external_proof_event_queue.clear();
       }
       return;
     }
@@ -339,6 +344,7 @@ public class GraphSimulator implements
           temporary_tag.put(state_machine, transition.getDestination());
           processAction(transition.getActions().iterator(),
               global_state, event_list);
+          break;
         }
       }
       // Update the states machines tags in the global state after saving the
