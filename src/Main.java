@@ -64,9 +64,8 @@ public class Main {
           true);
     }
 
-    System.out.println("TOTAL NUMBER OF STATES "
-        + simulator.getAllInitialStates().size());
     model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    // simulator.init(initialization_variables);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
     model_checker.configureExternalEvents(simulator
