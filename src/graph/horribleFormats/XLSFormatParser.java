@@ -33,6 +33,8 @@ public class XLSFormatParser {
         new BufferedWriter(new FileWriter(output_file_name));
 
     boolean first = true;
+    StringBuffer result = new StringBuffer();
+
     Iterator<Row> rowIterator = worksheet.iterator();
     rowIterator.next();
     while (rowIterator.hasNext()) {
@@ -63,10 +65,10 @@ public class XLSFormatParser {
       if (first) {
         first = false;
       } else {
-        out.write(NEWLINE);
+        result.append(NEWLINE);
       }
 
-      out.write(automaton + NEWLINE
+      result.append(automaton + NEWLINE
           + from + NEWLINE
           + to + NEWLINE
           + events + NEWLINE
@@ -74,7 +76,27 @@ public class XLSFormatParser {
           + actions);
     }
     fileInputStream.close();
+    String string_to_write = result.toString();
+    /* Replacing some occurences */
+    string_to_write = string_to_write.replaceAll("ACT_Init[a-zA-Z0-9_]*",
+        "ACT_Init");
+    string_to_write = string_to_write
+        .replaceAll("Occupe(?=[^e])", "Occupee");
+    string_to_write = string_to_write
+        .replaceAll("_Decondamnee", "_Decondamne");
+    string_to_write = string_to_write
+        .replaceAll("_Condamnee", "_Condamne");
+    string_to_write = string_to_write
+        .replaceAll("_Controlee", "_Controle");
+    string_to_write = string_to_write
+        .replaceAll("_Restituee", "_non_Prise");
+    string_to_write = string_to_write
+        .replaceAll("_non_Libere", "_en_Action");
+    string_to_write = string_to_write
+        .replaceAll("_non_en_Action", "_Libere");
+    out.write(string_to_write);
     out.close();
+    CTLReplacer ctl_replacer = new CTLReplacer(output_file_name);
   }
 
   public static void main(String[] args) throws IOException {

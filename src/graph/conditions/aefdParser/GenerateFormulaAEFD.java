@@ -44,7 +44,8 @@ public class GenerateFormulaAEFD extends
       "_Declenche",
       "_NOK",
       "_non_cde",
-      "_non_en_cours" };
+      "_non_en_cours",
+      "_pas_Init" };
   private static final String[] positive_suffix = { "_Bloque",
       "_Condamne", "_Decondamne",
       "_Etabli", "_Excite", "_Actif",
@@ -69,7 +70,8 @@ public class GenerateFormulaAEFD extends
       "_Rearme",
       "_OK",
       "_cde",
-      "_en_cours" };
+      "_en_cours",
+      "_en_Init" };
 
   /**
    * @details Compare the given string with the given positive suffixes. Because

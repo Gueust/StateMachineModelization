@@ -16,8 +16,7 @@ import abstractGraph.events.SingleEvent;
  * <ol>
  * <li>there is a state "0"</li>
  * <li>the event field of the transitions of that state is ACT_INIT</li>
- * <li>there are only CTLs as variables in the condition of these
- * transitions</li>
+ * <li>there are only CTLs as variables in the condition of these transitions</li>
  */
 public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_without_state_0 =
@@ -145,7 +144,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
     return "[SUCCESS] Checking the initialization constraints (i.e. all the "
         + "state machines have a state 0, ACT_init is the only event in the "
         + "event field of the transitions from a 0 state and they have only "
-        + "CTLs in the condition fields)...OK";
+        + "CTLs in the condition fields)...OK\n";
   }
 
 }

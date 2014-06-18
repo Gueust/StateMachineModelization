@@ -94,6 +94,7 @@ IDNEGATIF
   | ID'_NOK'
   | ID'_non_cde'
   | ID'_non_en_cours'
+  | ID'_pas_Init'
 ;
 IDPOSITIF
 :
@@ -125,6 +126,7 @@ IDPOSITIF
   | ID'_OK'
   | ID'_cde'  
   | ID'_en_cours'
+  | ID'_en_Init'
   
 
 ;
