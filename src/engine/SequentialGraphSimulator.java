@@ -1,9 +1,10 @@
 package engine;
 
-import java.util.LinkedList;
-
 import graph.GlobalState;
 import graph.Model;
+
+import java.util.LinkedList;
+
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
@@ -62,8 +63,7 @@ public class SequentialGraphSimulator extends GraphSimulator {
    * any</li>
    * <li>
    * Otherwise, it executes the first external event in the functional model
-   * (has_executed_external_event_in_functional set to true).
-   * </li>
+   * (has_executed_external_event_in_functional set to true).</li>
    * </ol>
    * 
    * @param external_events
@@ -174,11 +174,11 @@ public class SequentialGraphSimulator extends GraphSimulator {
       processSingleEvent(model, copied_starting_state, curr_event,
           transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
-      internal_functional_event_queue.addAll(commands_queue);
 
       external_proof_event_queue.add(curr_event);
       external_proof_event_queue.addAll(transfert_list);
-      external_proof_event_queue.addAll(commands_queue);
+      external_proof_event_queue.addAll(temporary_commands_queue);
+      temporary_commands_queue.clear();
 
       curr_event = internal_functional_event_queue.poll();
     } while (curr_event != null);
