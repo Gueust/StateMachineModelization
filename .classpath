@@ -7,5 +7,9 @@
 	<classpathentry kind="lib" path="lib/sat4j-core-v20130525/org.sat4j.core.jar"/>
 	<classpathentry kind="lib" path="lib/swingx-all-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/snakeyaml-1.13.jar"/>
+	<classpathentry kind="lib" path="lib/POI HSSF/commons-codec-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/POI HSSF/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/POI HSSF/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/POI HSSF/poi-3.10-FINAL-20140208.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

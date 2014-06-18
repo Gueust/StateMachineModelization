@@ -19,6 +19,14 @@ then added in the /lib directory.
 
 - swingx-all-1.6.4.jar
 
+To build automaton for a horrible proprietary XLS file:
+poi-3.10-FINAL-20140208.jar
+
+which uses :
+- commons-codec-1.5.jar
+- commons-logging-1.1.jar
+- log4j-1.2.13.jar
+
 Build
 -------------
 
