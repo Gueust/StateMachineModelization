@@ -28,6 +28,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    */
   private HashSet<GS> illegal_states = new HashSet<GS>();
 
+  private int i = 0;
+
   /**
    * Initialize the initial states as the ones contained in `init`.
    * It does not take the given collection but creates and underlying HashMap
@@ -99,7 +101,12 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
       GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
+    /* We reset all the data to empty data */
     unvisited_states.clear();
+    illegal_states.clear();
+    visited_states.clear();
+    i = 0;
+
     /*
      * We need to check that all the initial states are legal before adding
      * them.
@@ -154,5 +161,15 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     return null;
   }
 
-  private int i = 0;
+  public LinkedHashSet<GS> getVisited_states() {
+    return visited_states;
+  }
+
+  public LinkedHashSet<GS> getUnvisited_states() {
+    return unvisited_states;
+  }
+
+  public HashSet<GS> getIllegal_states() {
+    return illegal_states;
+  }
 }

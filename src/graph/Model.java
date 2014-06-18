@@ -367,6 +367,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         while (single_event_iterator.hasNext()) {
           SingleEvent single_event = single_event_iterator.next();
           if (single_event instanceof ExternalEvent) {
+            assert (!single_event.getName().startsWith("IND_"));
             list_events.add((ExternalEvent) single_event);
           }
         }

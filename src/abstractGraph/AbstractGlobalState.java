@@ -146,7 +146,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     result = result + "The value of the variables are : "
         + variables_values + ".\n";
     result += "Safe: " + is_safe_state + ", legal: " + is_legal_state
-        + "isNotP7: " + isNotP7;
+        + "isNotP7: " + isNotP7 + "\n";
     return result;
   }
 

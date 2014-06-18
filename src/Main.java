@@ -35,9 +35,9 @@ public class Main {
     long startTime = System.nanoTime();
 
     String functional_model = GeneratorFromTemplate
-        .load("fonctionnel2voie.yaml");
+        .load("fonctionnel1voie.yaml");
     String proof_model = GeneratorFromTemplate
-        .load("preuve2voie.yaml");
+        .load("preuve1voie.yaml");
 
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
@@ -47,7 +47,7 @@ public class Main {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    GraphSimulator simulator = new GraphSimulator(model, proof);
+    GraphSimulator simulator = new GraphSimulator(model);
     simulator.setVerbose(false);
     verifyModel(model);
     verifyModel(proof);
@@ -69,6 +69,7 @@ public class Main {
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
     GlobalState result = model_checker.verify(simulator);
+    System.out.print(model_checker.getVisited_states());
     if (result == null) {
       System.err.println("Success of the proof");
     } else {
