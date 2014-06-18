@@ -603,7 +603,7 @@ public class MainWindow extends JFrame {
           ExternalEvent event = external_events.poll();
           MainWindow.this.simulator.execute(event);
         } else if (rdbtnOneInternalEvent.isSelected()) {
-          MainWindow.this.simulator.processSingleEvent(external_events);
+          MainWindow.this.simulator.processSmallestStep(external_events);
         }
         updateLists();
       }

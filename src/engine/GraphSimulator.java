@@ -41,31 +41,33 @@ public class GraphSimulator implements
    */
   public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
 
-  private GlobalState internal_global_state = new GlobalState();
+  protected GlobalState internal_global_state = new GlobalState();
 
   /** This is the list of the different queues used in the simulator. */
-  private LinkedList<SingleEvent> internal_functional_event_queue =
+  protected LinkedList<SingleEvent> internal_functional_event_queue =
       new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> internal_proof_event_queue =
+  protected LinkedList<SingleEvent> internal_proof_event_queue =
       new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> commands_queue =
+  protected LinkedList<SingleEvent> commands_queue =
       new LinkedList<SingleEvent>();
-  private LinkedList<SingleEvent> temporary_commands_queue =
+  protected LinkedList<SingleEvent> temporary_commands_queue =
       new LinkedList<SingleEvent>();
-  private LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
+  protected LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
-  private LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
+  protected LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
 
   /* Only used when executing the micro-steps */
-  private LinkedList<SingleEvent> external_proof_event_queue =
+  protected LinkedList<SingleEvent> external_proof_event_queue =
       new LinkedList<SingleEvent>();
 
   /** This is the model to execute */
-  private Model model;
+  protected Model model;
 
   /** This is the model of the proof */
-  private Model proof;
+  protected Model proof;
+
+  protected boolean verbose = true;
 
   public GraphSimulator(Model model, Model proof, GlobalState global_state) {
     this.model = model;
@@ -129,8 +131,6 @@ public class GraphSimulator implements
   public void setGlobalState(GlobalState global_state) {
     this.internal_global_state = global_state;
   }
-
-  private boolean verbose = true;
 
   public void setVerbose(boolean value) {
     this.verbose = value;
@@ -227,7 +227,7 @@ public class GraphSimulator implements
    * 
    * @param external_events
    */
-  public void processSingleEvent(LinkedList<ExternalEvent> external_events) {
+  public void processSmallestStep(LinkedList<ExternalEvent> external_events) {
 
     if (proof != null && internal_proof_event_queue.size() != 0) {
       proof_transitions_pull_list.clear();
@@ -315,7 +315,7 @@ public class GraphSimulator implements
    * @param event_list
    *          The list in which the generated internal events will be added.
    */
-  private void processSingleEvent(Model model,
+  protected void processSingleEvent(Model model,
       AbstractGlobalState<StateMachine, State, Transition> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
@@ -454,7 +454,7 @@ public class GraphSimulator implements
    * @param single_event_queue
    *          The queue to use for the internal events.
    */
-  private void execute(Model m, GlobalState starting_state,
+  protected void execute(Model m, GlobalState starting_state,
       SingleEvent e,
       LinkedList<SingleEvent> single_event_queue) {
 
@@ -476,7 +476,7 @@ public class GraphSimulator implements
    *          an external to the simulator global state. It will be modified in
    *          place and will be the result value.
    */
-  private void executeProof(GlobalState global_state,
+  protected void executeProofCompletely(GlobalState global_state,
       LinkedList<SingleEvent> external_events_list) {
 
     if (proof == null) {
@@ -535,7 +535,7 @@ public class GraphSimulator implements
       if (proof != null) {
         transfert_list.addAll(temporary_commands_queue);
         temporary_commands_queue.clear();
-        executeProof(copied_starting_state, transfert_list);
+        executeProofCompletely(copied_starting_state, transfert_list);
       }
 
       curr_event = internal_functional_event_queue.poll();
