@@ -1,0 +1,18 @@
+<Graph>
+0
+1
+ACT_Init Evenement
+Condition
+<INIT>; Action
+<Graph>
+1
+2
+<MSG_1> <OU_IND_A> Evenement
+Condition
+<IND_A>; Action
+<Graph>
+2
+1
+<MSG_2> Evenement
+<Condition_NON_IND_A> Condition
+<NON_IND_A>; Action

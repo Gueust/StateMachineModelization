@@ -1,0 +1,36 @@
+Graph_A
+0
+1
+ACT_Init Evenement
+Condition
+NON IND_A_Actif; Action
+Graph_A
+1
+2
+MSG_A_1  Evenement
+Condition
+IND_A_Actif; Action
+Graph_A
+2
+1
+MSG_A_2 Evenement
+ Condition
+NON IND_A_Actif; Action
+Graph_B
+0
+1
+ACT_Init Evenement
+Condition
+; Action
+Graph_B
+1
+2
+MSG_B_1 OU IND_A_Actif Evenement
+Condition
+; Action
+Graph_B
+2
+1
+MSG_B_2 Evenement
+NON IND_A_Actif Condition
+; Action

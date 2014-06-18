@@ -1,0 +1,25 @@
+# Graph_A is independent with respect to Graph_B.
+# Graph_A generate a SYN to force Graph_B to be in sate 2 if Graph_A is in a state 2.
+target: generated_graph_func.txt
+inputs:
+content:
+- instanciate: graph_with_dependency.txt
+  with:
+    Graph : Graph_A
+    MSG_1 : MSG_A_1
+    MSG_2 : MSG_A_2
+    Condition_NON_IND_A : ""
+    NON_IND_A : NON IND_A_Actif
+    OU_IND_A : ""
+    IND_A : IND_A_Actif
+    INIT : NON IND_A_Actif
+- instanciate: graph_with_dependency.txt
+  with:
+    Graph : Graph_B
+    MSG_1 : MSG_B_1
+    MSG_2 : MSG_B_2
+    Condition_NON_IND_A : NON IND_A_Actif
+    NON_IND_A : ""
+    OU_IND_A : OU IND_A_Actif
+    IND_A : ""
+    INIT : ""

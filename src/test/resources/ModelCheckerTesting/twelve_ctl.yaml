@@ -1,0 +1,14 @@
+target: generated_graph_func.txt
+inputs:
+- [CTL_Pd_Sortie_voie_A_Actif, CTL_Pd_Sortie_voie_A_Inactif]
+- [CTL_Pd_Entree_voie_A_Actif, CTL_Pd_Entree_voie_A_Inactif]
+- [CTL_Zone_courte_voie_A_Actif, CTL_Zone_courte_voie_A_Inactif]
+- [CTL_Zone_voie_A_Actif, CTL_Zone_voie_A_Inactif]
+- [CTL_Pd_Sortie_voie_B_Actif, CTL_Pd_Sortie_voie_B_Inactif]
+- [CTL_Pd_Entree_voie_B_Actif, CTL_Pd_Entree_voie_B_Inactif]
+- [CTL_Zone_courte_voie_B_Actif, CTL_Zone_courte_voie_B_Inactif]
+- [CTL_Zone_voie_B_Actif, CTL_Zone_voie_B_Inactif]
+- [CTL_Pd_Sortie_voie_A_I_Actif, CTL_Pd_Sortie_voie_A_I_Inactif]
+- [CTL_Pd_Entree_voie_A_I_Actif, CTL_Pd_Entree_voie_A_I_Inactif]
+- [CTL_Zone_voie_A_I_Actif, CTL_Zone_voie_A_I_Inactif]
+- [CTL_Pd_Sortie_voie_B_I_Actif, CTL_Pd_Sortie_voie_B_I_Inactif]
