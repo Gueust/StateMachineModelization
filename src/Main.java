@@ -11,6 +11,7 @@ import graph.verifiers.Verifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
@@ -35,47 +36,11 @@ public class Main {
     long startTime = System.nanoTime();
 
     String functional_model = GeneratorFromTemplate
-        .load("fonctionnel1voie.yaml");
+        .load("fonctionnel2voie.yaml");
     String proof_model = GeneratorFromTemplate
-        .load("preuve1voie.yaml");
+        .load("preuve2voie.yaml");
 
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
-
-    Model model = graph_factory
-        .buildModel(functional_model, functional_model);
-    model.build();
-    Model proof = graph_factory.buildModel(proof_model, proof_model);
-    proof.build();
-
-    GraphSimulator simulator = new GraphSimulator(model);
-    simulator.setVerbose(false);
-    verifyModel(model);
-    verifyModel(proof);
-
-    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
-        new ModelChecker<>();
-
-    /* The all CTL true initial state */
-    HashMap<String, Boolean> initialization_variables =
-        new HashMap<String, Boolean>();
-    HashMap<String, String> pairs_of_ctl = model.regroupCTL();
-    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
-      initialization_variables.put(new ExternalEvent(pair.getKey()).getName(),
-          true);
-    }
-
-    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
-    // simulator.init(initialization_variables);
-    // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
-
-    GlobalState result = model_checker.verify(simulator);
-    System.out.print(model_checker.getVisited_states());
-    if (result == null) {
-      System.err.println("Success of the proof");
-    } else {
-      System.err.println("A state is not safe:\n" + result);
-    }
-
+    launcheModelChecking(functional_model, proof_model);
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
@@ -142,4 +107,135 @@ public class Main {
     }
   }
 
+  private static void launcheModelCheckingWithProofTesting(
+      String functional_model,
+      String proof_model) throws IOException, InterruptedException {
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+
+    Model model = graph_factory
+        .buildModel(functional_model, functional_model);
+    model.build();
+    Model proof = graph_factory.buildModel(proof_model, proof_model);
+    proof.build();
+
+    final GraphSimulator simulator = new GraphSimulator(model, proof);
+    final GraphSimulator simulator_without_proof = new GraphSimulator(model);
+
+    simulator.setVerbose(false);
+    simulator_without_proof.setVerbose(false);
+    verifyModel(model);
+    verifyModel(proof);
+
+    final ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+        new ModelChecker<>();
+    final ModelChecker<GlobalState, StateMachine, State, Transition> model_checker_without_proof =
+        new ModelChecker<>();
+
+    /* The all CTL true initial state */
+    HashMap<String, Boolean> initialization_variables =
+        new HashMap<String, Boolean>();
+    HashMap<String, String> pairs_of_ctl = model.regroupCTL();
+    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
+      initialization_variables.put(new ExternalEvent(pair.getKey()).getName(),
+          true);
+    }
+
+    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    model_checker_without_proof
+        .configureInitialGlobalStates(simulator_without_proof
+            .getAllInitialStates());
+    // simulator.init(initialization_variables);
+    // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
+
+    final GlobalState[] result_with_proof = new GlobalState[1];
+    final GlobalState[] result_without_proof = new GlobalState[1];
+
+    Thread model_checker_thread = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        GlobalState result = model_checker.verify(simulator);
+        if (result == null) {
+          System.err.println("Success of the proof");
+        } else {
+          System.err.println("A state is not safe:\n" + result);
+        }
+        assert result_with_proof != null;
+        result_with_proof[0] = result;
+      }
+    });
+
+    Thread model_checker_thread_without_proof = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        GlobalState result = model_checker_without_proof
+            .verify(simulator_without_proof);
+
+        assert result_without_proof != null;
+        result_without_proof[0] = result;
+
+      }
+    });
+
+    model_checker_thread.start();
+    model_checker_thread_without_proof.start();
+
+    model_checker_thread.join();
+    model_checker_thread_without_proof.join();
+
+    if (result_without_proof[0] != null) {
+      System.err.println("Error with the model checker without proof");
+    }
+
+    if (model_checker.getVisited_states().size() != model_checker_without_proof
+        .getVisited_states()
+        .size()) {
+      System.err
+          .println("Error: the execution with a proof and without a proof do not explore the same number of states");
+    }
+  }
+
+  private static void launcheModelChecking(
+      String functional_model,
+      String proof_model) throws IOException {
+
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+
+    Model model = graph_factory
+        .buildModel(functional_model, functional_model);
+    model.build();
+    Model proof = graph_factory.buildModel(proof_model, proof_model);
+    proof.build();
+
+    GraphSimulator simulator = new GraphSimulator(model);
+    simulator.setVerbose(false);
+    verifyModel(model);
+    verifyModel(proof);
+
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+        new ModelChecker<>();
+
+    /* The all CTL true initial state */
+    HashMap<String, Boolean> initialization_variables =
+        new HashMap<String, Boolean>();
+    HashMap<String, String> pairs_of_ctl = model.regroupCTL();
+    for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
+      initialization_variables.put(new ExternalEvent(pair.getKey()).getName(),
+          true);
+    }
+
+    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    // simulator.init(initialization_variables);
+    // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
+
+    GlobalState result = model_checker.verify(simulator);
+    System.out.print(model_checker.getVisited_states());
+    if (result == null) {
+      System.err.println("Success of the proof");
+    } else {
+      System.err.println("A state is not safe:\n" + result);
+    }
+  }
 }
