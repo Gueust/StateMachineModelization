@@ -6,16 +6,21 @@ import graph.Model;
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.GeneratorFromTemplate;
 import graph.verifiers.Verifier;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import utils.Monitoring;
@@ -35,12 +40,18 @@ public class Main {
 
     long startTime = System.nanoTime();
 
+    GraphFactoryAEFD factory = new GraphFactoryAEFD();
+
+    // launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
+    // "Proof_with_corrected_CTL.txt");
+
     String functional_model = GeneratorFromTemplate
-        .load("fonctionnel2voie.yaml");
+        .load("fonctionnel1voie.yaml");
     String proof_model = GeneratorFromTemplate
-        .load("preuve2voie.yaml");
+        .load("preuve1voie_avecP6.yaml");
 
     launcheModelChecking(functional_model, proof_model);
+
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
@@ -119,7 +130,8 @@ public class Main {
     proof.build();
 
     final GraphSimulator simulator = new GraphSimulator(model, proof);
-    final GraphSimulator simulator_without_proof = new GraphSimulator(model);
+    final GraphSimulator simulator_without_proof = new GraphSimulator(model,
+        proof);
 
     simulator.setVerbose(false);
     simulator_without_proof.setVerbose(false);
@@ -231,11 +243,86 @@ public class Main {
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
     GlobalState result = model_checker.verify(simulator);
-    System.out.print(model_checker.getVisited_states());
+    // System.out.print(model_checker.getVisited_states());
     if (result == null) {
       System.err.println("Success of the proof");
     } else {
       System.err.println("A state is not safe:\n" + result);
     }
+  }
+
+  private static void launchNurieuxWithRestrainedEventList(
+      String functional_model,
+      String proof_model) throws IOException {
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+
+    Model model = graph_factory
+        .buildModel(functional_model, functional_model);
+    model.build();
+    Model proof = graph_factory.buildModel(proof_model, proof_model);
+    proof.build();
+
+    BufferedReader reader = new BufferedReader(new FileReader(
+        "Nurieux/Liste_evenement_externe.txt"));
+    LinkedList<String> external_event_list_string = new LinkedList<String>();
+    HashMap<String, String> CTL_list = new HashMap<String, String>();
+    String event_read = reader.readLine();
+    while (event_read != null) {
+      external_event_list_string.add(event_read.trim());
+      if (event_read.trim().startsWith("CTL_")) {
+        String ctl_opposite_name = GenerateFormulaAEFD
+            .getOppositeName(event_read.trim());
+        external_event_list_string.add(ctl_opposite_name);
+        if (GenerateFormulaAEFD.isNegative(event_read)) {
+          CTL_list.put(ctl_opposite_name, event_read.trim());
+        } else if (GenerateFormulaAEFD.isPositive(event_read)) {
+          CTL_list.put(event_read, ctl_opposite_name);
+        } else {
+          throw new Error("The CTL " + event_read
+              + " doesn't have a correct suffixe");
+        }
+      }
+      event_read = reader.readLine();
+    }
+    reader.close();
+    LinkedList<ExternalEvent> external_event_list = new LinkedList<ExternalEvent>();
+    HashMap<String, String> all_CTL_list = model.regroupCTL();
+    HashMap<String, Boolean> restrained_ctl_value_list = new HashMap<String, Boolean>();
+    HashMap<String, Boolean> all_ctl_value_list = new HashMap<String, Boolean>();
+    Iterator<ExternalEvent> external_event_iterator = model
+        .iteratorExternalEvents();
+    while (external_event_iterator.hasNext()) {
+      ExternalEvent external_event = external_event_iterator.next();
+      if (external_event_list_string.contains(external_event.getName())) {
+        external_event_list.add(external_event);
+      }
+    }
+    for (String ctl_name : all_CTL_list.keySet()) {
+      if (!CTL_list.containsKey(ctl_name) && !CTL_list.containsValue(ctl_name)) {
+        if (ctl_name.contains("KTS") || ctl_name.contains("Zone")
+            || ctl_name.contains("KLMG")) {
+          restrained_ctl_value_list.put(ctl_name, true);
+          all_ctl_value_list.put(ctl_name, true);
+        } else {
+          restrained_ctl_value_list.put(ctl_name, false);
+          all_ctl_value_list.put(ctl_name, false);
+        }
+      }
+      all_ctl_value_list.put(ctl_name, true);
+    }
+    GraphSimulator simulator = new GraphSimulator(model, proof);
+    // simulator.setRestrainedExternalEventList(external_event_list);
+    simulator.setVerbose(false);
+    System.out.print("restrained " + restrained_ctl_value_list + "\n" + "all "
+        + all_ctl_value_list + "\n");
+    // LinkedList<GlobalState> global_state_list = simulator
+    // .getAllInitialStates(CTL_list, restrained_ctl_value_list);
+    simulator.init(all_ctl_value_list);
+    GlobalState global_state_list = simulator.getInternalGlobalState();
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker = new ModelChecker<GlobalState, StateMachine, State, Transition>();
+    model_checker.configureInitialGlobalStates(global_state_list);
+    model_checker.verify(simulator);
+    // System.out.print(model_checker.getVisited_states());
+
   }
 }

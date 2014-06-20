@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -17,7 +16,6 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
-import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
@@ -213,6 +211,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return existingVariables.containsKey(variable_name);
   }
 
+  public boolean containsSynchronousEvents(String synchronous_event) {
+    return synchronous_event.contains(synchronous_event);
+  }
+
   /**
    * @return An iterator over the variables of the model (contained in a
    *         event field, condition field or written in a action field).
@@ -290,26 +292,25 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       String ctl_opposite_name = GenerateFormulaAEFD.getOppositeName(ctl_name);
 
       if (list_of_ctl_names.contains(ctl_opposite_name)) {
-        if (GenerateFormulaAEFD.isPositive(ctl_name)) {
-          pairs_of_ctl.put(ctl_name, ctl_opposite_name);
-        } else if (GenerateFormulaAEFD.isNegative(ctl_name)) {
-          pairs_of_ctl.put(ctl_opposite_name, ctl_name);
-        } else {
-          throw new Error("The CTL " + ctl_name
-              + " does not contain a correct variable suffix.");
-        }
         list_of_ctl_names.remove(ctl_opposite_name);
       } else {
         has_error = true;
         list_of_ctl_without_opposite.add(ctl_name);
       }
-
+      if (GenerateFormulaAEFD.isPositive(ctl_name)) {
+        pairs_of_ctl.put(ctl_name, ctl_opposite_name);
+      } else if (GenerateFormulaAEFD.isNegative(ctl_name)) {
+        pairs_of_ctl.put(ctl_opposite_name, ctl_name);
+      } else {
+        throw new Error("The CTL " + ctl_name
+            + " does not contain a correct variable suffix.");
+      }
       list_of_ctl_names.remove(ctl_name);
-
     }
     if (has_error) {
-      throw new Error("This list of CTL doesn't have an opposite "
-          + list_of_ctl_without_opposite.toString() + "\n");
+      System.err
+          .print("This list of CTL didn't have an opposite and we had to generate their opposites :  "
+              + list_of_ctl_without_opposite.toString() + "\n");
     }
     return pairs_of_ctl;
   }
@@ -353,26 +354,4 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return true;
   }
 
-  public LinkedHashSet<ExternalEvent> getPossibleExternalEvent(
-      GlobalState global_state) {
-    LinkedHashSet<ExternalEvent> list_events =
-        new LinkedHashSet<ExternalEvent>();
-    for (StateMachine state_machine : state_machines.values()) {
-      State current_state = global_state.getState(state_machine);
-      Iterator<Transition> transition_iterator = current_state.iterator();
-      while (transition_iterator.hasNext()) {
-        Transition transition = transition_iterator.next();
-        Events events = transition.getEvents();
-        Iterator<SingleEvent> single_event_iterator = events.iterator();
-        while (single_event_iterator.hasNext()) {
-          SingleEvent single_event = single_event_iterator.next();
-          if (single_event instanceof ExternalEvent) {
-            assert (!single_event.getName().startsWith("IND_"));
-            list_events.add((ExternalEvent) single_event);
-          }
-        }
-      }
-    }
-    return list_events;
-  }
 }

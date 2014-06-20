@@ -20,6 +20,7 @@ import java.util.Set;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
+import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
@@ -56,6 +57,7 @@ public class GraphSimulator implements
       new LinkedHashMap<StateMachine, State>();
   protected LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
+  protected LinkedList<ExternalEvent> restrained_external_event_list = null;
 
   /* Only used when executing the micro-steps */
   protected LinkedList<SingleEvent> external_proof_event_queue =
@@ -144,6 +146,11 @@ public class GraphSimulator implements
     return proof;
   }
 
+  public void setRestrainedExternalEventList(
+      LinkedList<ExternalEvent> external_event_list) {
+    restrained_external_event_list = external_event_list;
+  }
+
   /**
    * 
    * @return A linked list containing all the initial states that can be
@@ -163,6 +170,24 @@ public class GraphSimulator implements
   }
 
   /**
+   * 
+   * @return A linked list containing all the initial states that can be
+   *         generated using all the possible combination of CTL_list and fixing
+   *         the fixed_CTL_list
+   */
+  public LinkedList<GlobalState>
+      getAllInitialStates(HashMap<String, String> CTL_list,
+          HashMap<String, Boolean> fixed_CTL_list) {
+    LinkedList<GlobalState> initial_global_states =
+        new LinkedList<GlobalState>();
+
+    generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
+        initial_global_states);
+
+    return initial_global_states;
+  }
+
+  /**
    * Generate recursively all the initial states.
    * 
    * @param set
@@ -171,13 +196,18 @@ public class GraphSimulator implements
    * @param tmp
    *          An empty HashMap used internally to store the already set CTLs.
    */
+  int i = 0;
+
   private void generateAllInitialStates(Set<String> set,
       HashMap<String, Boolean> tmp,
       Collection<GlobalState> result) {
+    System.out.print(i++ + "\n");
     /* Terminal case */
     if (set.isEmpty()) {
       init(tmp);
-      result.add(getGlobalState().clone());
+      if (getGlobalState().isLegal()) {
+        result.add(getGlobalState().clone());
+      }
       return;
     }
 
@@ -720,10 +750,52 @@ public class GraphSimulator implements
 
   @Override
   public LinkedHashSet<ExternalEvent> getPossibleEvent(GlobalState global_state) {
-    return model.getPossibleExternalEvent(global_state);
+    LinkedHashSet<ExternalEvent> list_events =
+        new LinkedHashSet<ExternalEvent>();
+    for (StateMachine state_machine : getModel()) {
+      State current_state = global_state.getState(state_machine);
+      for (Transition transition : current_state) {
+        Events events = transition.getEvents();
+        for (SingleEvent single_event : events) {
+          if (single_event instanceof ExternalEvent) {
+            assert (!single_event.getName().startsWith("IND_"));
+            if (restrained_external_event_list == null
+                || restrained_external_event_list.contains(single_event)) {
+              list_events.add((ExternalEvent) single_event);
+            }
+          }
+        }
+      }
+    }
+    /*
+     * Add all the external events of the proof that are not internal
+     * events of the functional
+     */
+    if (proof != null) {
+      for (StateMachine state_machine : getProof()) {
+        State current_state = global_state.getState(state_machine);
+        for (Transition transition : current_state) {
+          Events events = transition.getEvents();
+          for (SingleEvent single_event : events) {
+            if (single_event instanceof ExternalEvent) {
+              if (!getModel().containsVariable(single_event.getName())
+                  && !getModel()
+                      .containsSynchronousEvents(single_event.getName())) {
+                if (restrained_external_event_list == null
+                    || restrained_external_event_list.contains(single_event)) {
+                  list_events.add((ExternalEvent) single_event);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return list_events;
   }
 
-  public Iterable<ExternalEvent> getPossibleEvent() {
-    return model.getPossibleExternalEvent(internal_global_state);
+  public GlobalState getInternalGlobalState() {
+    return internal_global_state;
   }
+
 }

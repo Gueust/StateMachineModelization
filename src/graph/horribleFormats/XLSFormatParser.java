@@ -96,7 +96,11 @@ public class XLSFormatParser {
         .replaceAll("_non_en_Action", "_Libere");
     out.write(string_to_write);
     out.close();
-    CTLReplacer ctl_replacer = new CTLReplacer(output_file_name);
+    CTLReplacer ctl_replacer = new CTLReplacer(output_file_name,
+        "Graph_with_corrected_CTL.txt", false);
+    ctl_replacer = new CTLReplacer("Nurieux/NurieuxTestJLPreuv_Auto.txt",
+        "Proof_with_corrected_CTL.txt", true);
+
   }
 
   public static void main(String[] args) throws IOException {

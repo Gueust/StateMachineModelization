@@ -64,25 +64,23 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    */
   private GS processGS(GS state) {
     assert state != null;
-    /* The state is already known. */
-    if (visited_states.contains(state) || illegal_states.contains(state)) {
-      return null;
-    }
-
     /* The state is illegal */
-    if (!state.isLegal()) {
+    if (state.isLegal()) {
+      /* The state is already known. */
+      if (visited_states.contains(state) || illegal_states.contains(state)) {
+        return null;
+      }
+
+      /* The state is unsafe ! We return it (i.e. mark it as an error) */
+      if (!state.isSafe() || !state.isNotP7()) {
+        return state;
+      }
+
+      /* If everything went fine, it is a new state to visit */
+      unvisited_states.add(state);
+    } else {
       illegal_states.add(state);
-      return null;
     }
-
-    /* The state is unsafe ! We return it (i.e. mark it as an error) */
-    if (!state.isSafe() || !state.isNotP7()) {
-      return state;
-    }
-
-    /* If everything went fine, it is a new state to visit */
-    unvisited_states.add(state);
-
     return null;
   }
 
