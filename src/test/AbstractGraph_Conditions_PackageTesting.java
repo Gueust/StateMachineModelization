@@ -9,17 +9,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.AndFormula;
-import abstractGraph.conditions.CompactValuation;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
+import abstractGraph.conditions.valuation.AbstractValuation;
+import abstractGraph.conditions.valuation.CompactValuation;
+import abstractGraph.conditions.valuation.Valuation;
 
 /**
  * Testing of the main functions of the abstractGraph.conditions package:

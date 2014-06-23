@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
@@ -204,6 +205,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return writing_state_machines;
   }
 
+  public HashMap<String, Variable> getExistingVariables() {
+    return existingVariables;
+  }
+
   /**
    * Allow to check the existence of a variable in a Condition field.
    * 
@@ -386,16 +391,19 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return The events that can trigger a transition of the model.
    */
   public LinkedHashSet<ExternalEvent> getPossibleExternalEvent(
-      GlobalState global_state) {
-    LinkedHashSet<ExternalEvent> list_events =
-        new LinkedHashSet<ExternalEvent>();
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state) {
+
+    LinkedHashSet<ExternalEvent> list_events = new LinkedHashSet<ExternalEvent>();
+
     for (StateMachine state_machine : state_machines.values()) {
       State current_state = global_state.getState(state_machine);
       Iterator<Transition> transition_iterator = current_state.iterator();
       while (transition_iterator.hasNext()) {
         Transition transition = transition_iterator.next();
         Events events = transition.getEvents();
+
         Iterator<SingleEvent> single_event_iterator = events.iterator();
+
         while (single_event_iterator.hasNext()) {
           SingleEvent single_event = single_event_iterator.next();
           if (single_event instanceof ExternalEvent) {

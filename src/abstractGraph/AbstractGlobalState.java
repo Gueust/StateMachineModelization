@@ -5,8 +5,8 @@ import graph.conditions.aefdParser.AEFDFormulaFactory;
 import java.util.HashMap;
 
 import utils.javaAgent.ObjectSizeFetcher;
-import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 import abstractGraph.events.VariableChange;
 
 public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>, V extends AbstractValuation> {
@@ -137,7 +137,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     result = result + "The value of the variables are : "
         + variables_values + ".\n";
     result += "Safe: " + is_safe_state + ", legal: " + is_legal_state
-        + "isNotP7: " + isNotP7 + "\n";
+        + ", isNotP7: " + isNotP7 + "\n";
     return result;
   }
 

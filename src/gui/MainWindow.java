@@ -61,6 +61,7 @@ public class MainWindow extends JFrame {
   private GraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
   private HashMap<String, Boolean> initial_CTLs;
+  private GlobalState global_state = new GlobalState();
 
   JButton btnSimulate;
   JButton btnEatExternalEvents;
@@ -74,8 +75,6 @@ public class MainWindow extends JFrame {
     for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
       initialization_events.add(pair.getKey());
     }
-
-    // this.simulator.init(initialization_events);
 
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
@@ -107,7 +106,7 @@ public class MainWindow extends JFrame {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        simulator.init(initial_CTLs);
+        global_state = simulator.init(initial_CTLs);
         MainWindow main_window = new MainWindow(simulator);
         main_window.pack();
         main_window.setLocationRelativeTo(null);
@@ -534,45 +533,44 @@ public class MainWindow extends JFrame {
                                         Short.MAX_VALUE)
                                     .addContainerGap())))
         );
-    gl_fifo_panel.setVerticalGroup(
-        gl_fifo_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(
-                gl_fifo_panel.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(
-                        gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(
-                                proof_internal_event_FIFO_scroll_panel,
-                                GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-                            .addComponent(
-                                functionnal_internal_event_FIFO_scroll_panel,
-                                GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addGroup(
-                        gl_fifo_panel.createParallelGroup(Alignment.BASELINE,
-                            false)
-                            .addComponent(
-                                functional_state_tag_change_FIFO_scroll_panel,
-                                GroupLayout.PREFERRED_SIZE, 81,
-                                GroupLayout.PREFERRED_SIZE)
-                            .addComponent(
-                                proof_state_tag_change_FIFO_scroll_panel,
-                                GroupLayout.PREFERRED_SIZE, 81,
-                                GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addGroup(
-                        gl_fifo_panel.createParallelGroup(Alignment.BASELINE)
-                            .addComponent(
-                                functionnal_external_event_FIFO_scroll_panel,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                            .addComponent(
-                                proof_external_event_FIFO_scroll_panel,
-                                GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
-                    .addPreferredGap(ComponentPlacement.RELATED)
-                    .addComponent(commands_scroll_panel,
-                        GroupLayout.DEFAULT_SIZE, 84,
-                        Short.MAX_VALUE)
-                    .addGap(15))
+    gl_fifo_panel.setVerticalGroup(gl_fifo_panel
+        .createParallelGroup(Alignment.LEADING)
+        .addGroup(gl_fifo_panel
+            .createSequentialGroup()
+            .addContainerGap()
+            .addGroup(gl_fifo_panel
+                .createParallelGroup(Alignment.BASELINE)
+                .addComponent(
+                    proof_internal_event_FIFO_scroll_panel,
+                    GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(
+                    functionnal_internal_event_FIFO_scroll_panel,
+                    GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addGroup(gl_fifo_panel
+                .createParallelGroup(Alignment.BASELINE, false)
+                .addComponent(
+                    functional_state_tag_change_FIFO_scroll_panel,
+                    GroupLayout.PREFERRED_SIZE, 81,
+                    GroupLayout.PREFERRED_SIZE)
+                .addComponent(
+                    proof_state_tag_change_FIFO_scroll_panel,
+                    GroupLayout.PREFERRED_SIZE, 81,
+                    GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addGroup(gl_fifo_panel
+                .createParallelGroup(Alignment.BASELINE)
+                .addComponent(
+                    functionnal_external_event_FIFO_scroll_panel,
+                    GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                .addComponent(
+                    proof_external_event_FIFO_scroll_panel,
+                    GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(commands_scroll_panel,
+                GroupLayout.DEFAULT_SIZE, 84,
+                Short.MAX_VALUE)
+            .addGap(15))
         );
     fifo_panel.setLayout(gl_fifo_panel);
     getContentPane().setLayout(groupLayout);
@@ -580,30 +578,32 @@ public class MainWindow extends JFrame {
 
     /* fill the lists of variables and current_state */
     fillInCurrentStates(state_machines_current_state, simulator.getModel(),
-        simulator.getGlobalState());
+        global_state);
     removeAllEllement(variables_list);
-    fillInVariables(variables_list, simulator.getModel(), simulator
-        .getGlobalState());
+    fillInVariables(variables_list, simulator.getModel(), global_state);
     if (this.simulator.getProof() != null) {
       fillInCurrentStates(state_machines_current_state, simulator
-          .getProof(),
-          simulator.getGlobalState());
-      fillInVariables(variables_list, simulator.getProof(), simulator
-          .getGlobalState());
+          .getProof(), global_state);
+      fillInVariables(variables_list, simulator.getProof(), global_state);
     }
     /* listener for the next button */
     btnSimulate.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         if (rdbtnCompleteSimulation.isSelected()) {
-          MainWindow.this.simulator.executeAll(external_events);
+          MainWindow.this.global_state =
+              MainWindow.this.simulator.executeAll(global_state,
+                  external_events);
         } else if (rdbtnOneExternalEvent.isSelected()) {
           /* Finish to execute the functional and proof models */
-          MainWindow.this.simulator.execute(null);
+          MainWindow.this.global_state =
+              MainWindow.this.simulator.execute(global_state, null);
           ExternalEvent event = external_events.poll();
-          MainWindow.this.simulator.execute(event);
+          MainWindow.this.global_state =
+              MainWindow.this.simulator.execute(global_state, event);
         } else if (rdbtnOneInternalEvent.isSelected()) {
-          MainWindow.this.simulator.processSmallestStep(external_events);
+          MainWindow.this.simulator.processSmallestStep(global_state,
+              external_events);
         }
         updateLists();
       }
@@ -651,7 +651,7 @@ public class MainWindow extends JFrame {
       System.out.print(CTLs);
       initial_CTLs = (HashMap<String, Boolean>) CTLs.clone();
 
-      simulator.init(CTLs);
+      global_state = simulator.init(CTLs);
       updateLists();
 
       eat.setEnabled(true);
@@ -671,18 +671,16 @@ public class MainWindow extends JFrame {
     fillInList(commands, simulator.getCommandsQueue());
     removeAllEllement(state_machines_current_state);
     fillInCurrentStates(state_machines_current_state, simulator.getModel(),
-        simulator.getGlobalState());
+        global_state);
     removeAllEllement(variables_list);
-    fillInVariables(variables_list, simulator.getModel(), simulator
-        .getGlobalState());
+    fillInVariables(variables_list, simulator.getModel(), global_state);
     fillInTransitionPull(functional_state_tag_change_FIFO, simulator
         .getFunctionnalTransitionsPullList());
     if (simulator.getProof() != null) {
       fillInCurrentStates(state_machines_current_state, simulator
           .getProof(),
-          simulator.getGlobalState());
-      fillInVariables(variables_list, simulator.getProof(), simulator
-          .getGlobalState());
+          global_state);
+      fillInVariables(variables_list, simulator.getProof(), global_state);
       fillInTransitionPull(proof_state_tag_change_FIFO, simulator
           .getProofTransitionsPullList());
     }

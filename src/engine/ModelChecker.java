@@ -98,8 +98,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public GS verify(
-      GraphSimulatorInterface<GS, M, S, T> simulator) {
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
     /* We reset all the data to empty data */

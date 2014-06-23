@@ -15,8 +15,8 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import utils.Pair;
 import abstractGraph.AbstractGlobalState;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
 
@@ -84,111 +84,129 @@ public class GraphSimulatorTesting {
 
     /* Test the file "Graph_with_no_external_events.txt" */
     file_name = "Graph_with_no_external_events.txt";
-    GraphSimulator simulator = loadSimulator(file_name);
+    Pair<GlobalState, GraphSimulator> pair = loadSimulator(file_name);
+    GlobalState global_state = pair.getFirst();
+    GraphSimulator simulator = pair.getSecond();
+
     events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1" });
-    simulator.executeAll(events);
+    global_state = simulator.executeAll(global_state, events);
     // Verify that the current state of the state machine is "0".
-    assertInState("Error on " + file_name, simulator,
+    assertInState("Error on " + file_name, global_state,
         "Graph_with_no_external_event", "0");
 
     /* Test the file "Graph_testing_different_external_event.txt" */
     file_name = "Graph_testing_different_external_event.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1", "ACT_1",
         "FTP_1" });
 
-    simulator.executeAll(events);
-    assertInState("Error on " + file_name, simulator, "Page 1", "4");
+    global_state = simulator.executeAll(global_state, events);
+    assertInState("Error on " + file_name, global_state, "Page 1", "4");
 
     /* Test the file "Graph_with_propagation.txt" */
     file_name = "Graph_with_propagation.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertInState("Error on " + file_name, simulator, "Page 1", "1");
-    assertInState("Error on " + file_name, simulator, "Page 2", "1");
-    assertInState("Error on " + file_name, simulator, "Page 3", "1");
+    global_state = simulator.executeAll(global_state, events);
+    assertInState("Error on " + file_name, global_state, "Page 1", "1");
+    assertInState("Error on " + file_name, global_state, "Page 2", "1");
+    assertInState("Error on " + file_name, global_state, "Page 3", "1");
 
     /* Test the file "Graph_with_condition.txt" */
     file_name = "Graph_with_condition.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertInState("Error on " + file_name, simulator, "Page 1", "2");
+    global_state = simulator.executeAll(global_state, events);
+    assertInState("Error on " + file_name, global_state, "Page 1", "2");
 
     // Test the file "Graph_testing_variables_value.txt"
     file_name = "Graph_testing_variables_value.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertInState("Error on " + file_name, simulator, "Page 1", "1");
-    assertInState("Error on " + file_name, simulator, "Page 2", "1");
-    assertInState("Error on " + file_name, simulator, "Page 3", "1");
+    global_state = simulator.executeAll(global_state, events);
+    assertInState("Error on " + file_name, global_state, "Page 1", "1");
+    assertInState("Error on " + file_name, global_state, "Page 2", "1");
+    assertInState("Error on " + file_name, global_state, "Page 3", "1");
 
     // Verify that the value of the variables are corrects.
     // Retrieve the variable from the name
     Model model_tmp = simulator.getModel();
-    assertTrue("Error on " + file_name, simulator
-        .getGlobalState()
+    assertTrue("Error on " + file_name, global_state
         .getVariableValue(model_tmp.getVariable("IND_A_Actif")) == false);
-    assertTrue("Error on " + file_name, simulator
-        .getGlobalState()
+    assertTrue("Error on " + file_name, global_state
         .getVariableValue(model_tmp.getVariable("IND_B_Actif")) == false);
-    assertTrue("Error on " + file_name, simulator
-        .getGlobalState()
+    assertTrue("Error on " + file_name, global_state
         .getVariableValue(model_tmp.getVariable("IND_C_Actif")) == true);
 
     /* Test the file "Graph_P5.txt" */
     file_name = "Graph_P5.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertTrue("Error on " + file_name, !simulator.getGlobalState().isSafe());
+    global_state = simulator.executeAll(global_state, events);
+    assertTrue("Error on " + file_name, !global_state.isSafe());
 
     /* Test the file "Graph_P6.txt" */
     file_name = "Graph_P6.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertTrue("Error on " + file_name, !simulator.getGlobalState().isLegal());
+    global_state = simulator.executeAll(global_state, events);
+    assertTrue("Error on " + file_name, !global_state.isLegal());
 
     /* Test the file "Graph_P7.txt" */
     file_name = "Graph_P7.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertTrue("Error on " + file_name, !simulator.getGlobalState().isNotP7());
+    global_state = simulator.executeAll(global_state, events);
+    assertTrue("Error on " + file_name, !global_state.isNotP7());
 
     /* Test the file "Graph_with_alarm.txt" */
     file_name = "Graph_with_alarm.txt";
-    simulator = loadSimulator(file_name);
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
-    assertInState("Error on " + file_name, simulator, "Page 1", "0");
-    assertInState("Error on " + file_name, simulator, "Page 2", "0");
-    assertInState("Error on " + file_name, simulator, "Page 3", "1");
+    global_state = simulator.executeAll(global_state, events);
+    assertInState("Error on " + file_name, global_state, "Page 1", "0");
+    assertInState("Error on " + file_name, global_state, "Page 2", "0");
+    assertInState("Error on " + file_name, global_state, "Page 3", "1");
 
     /* Test the file Graph_with_safety_error.txt */
     file_name = "Graph_with_safety_error.txt";
     String proof_model_name = "AP_of_Graph_with_safety_error.txt";
-    simulator = loadSimulator(file_name, proof_model_name);
+    pair = loadSimulator(file_name, proof_model_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
     events = convertToExternalEvent(new String[] { "CTL_1" });
-    simulator.executeAll(events);
+    global_state = simulator.executeAll(global_state, events);
     assertTrue("Error on " + file_name,
-        !simulator
-            .getGlobalState()
-            .isSafe());
+        !global_state.isSafe());
 
   }
 
-  private void assertInState(String error_message, GraphSimulator simulator,
+  private void assertInState(String error_message,
+      AbstractGlobalState<?, ?, ?, ?> global_state,
       String sm_name, String targeted_state) {
-    assertTrue(error_message, getState(simulator, sm_name).equals(
+    assertTrue(error_message, getState(global_state, sm_name).equals(
         targeted_state));
   }
 
-  private String getState(GraphSimulator simulator, String automaton_name) {
-    return simulator.getGlobalState().getState(automaton_name).getId();
+  private String getState(AbstractGlobalState<?, ?, ?, ?> global_state,
+      String automaton_name) {
+    return global_state.getState(automaton_name).getId();
   }
 
   private LinkedList<ExternalEvent> convertToExternalEvent(String[] events) {
@@ -202,7 +220,8 @@ public class GraphSimulatorTesting {
   /**
    * Create a simulator from a file
    */
-  private GraphSimulator loadSimulator(String file_name) {
+  private Pair<GlobalState, GraphSimulator> loadSimulator(
+      String file_name) {
     Model model;
     try {
       model = loadFile(file_name);
@@ -210,7 +229,11 @@ public class GraphSimulatorTesting {
       e.printStackTrace();
       throw new Error();
     }
-    GlobalState global_state = new GlobalState(new Valuation());
+
+    GraphSimulator simulator = new GraphSimulator(model);
+    simulator.setVerbose(false);
+    GlobalState global_state = simulator.emptyGlobalState();
+
     Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
       global_state.setVariableValue(variable_iterator.next(), true);
@@ -219,7 +242,7 @@ public class GraphSimulatorTesting {
     for (StateMachine state_machine : model) {
       global_state.setState(state_machine, state_machine.getState("0"));
     }
-    return new GraphSimulator(model, global_state);
+    return new Pair<>(global_state, simulator);
   }
 
   /**
@@ -228,9 +251,9 @@ public class GraphSimulatorTesting {
    * 
    * @throws IOException
    */
-  private GraphSimulator loadSimulator(String model_file_name,
+  private Pair<GlobalState, GraphSimulator> loadSimulator(
+      String model_file_name,
       String proof_file_name) throws IOException {
-    GlobalState global_state = new GlobalState(new Valuation());
 
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
@@ -238,10 +261,15 @@ public class GraphSimulatorTesting {
         + model_file_name, "Testing model");
     Model proof = factory.buildModel("src/test/resources/" + class_name + "/"
         + proof_file_name, "Testing proof model");
+
+    GraphSimulator simulator = new GraphSimulator(model, proof);
+    simulator.setVerbose(false);
+    GlobalState global_state = simulator.emptyGlobalState();
+
     initGlobalState(model, global_state);
     initGlobalState(proof, global_state);
 
-    return new GraphSimulator(model, proof, global_state);
+    return new Pair<>(global_state, simulator);
   }
 
   /**
@@ -255,10 +283,7 @@ public class GraphSimulatorTesting {
    */
   private void initGlobalState(Model model,
       AbstractGlobalState<StateMachine, State, Transition, ?> global_state) {
-    Iterator<Variable> variable_iterator = model
-        .iteratorExistingVariables();
-    while (variable_iterator.hasNext()) {
-      Variable variable = variable_iterator.next();
+    for (Variable variable : model.getExistingVariables().values()) {
       global_state.setVariableValue(variable, true);
     }
 

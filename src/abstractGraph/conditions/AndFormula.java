@@ -2,6 +2,8 @@ package abstractGraph.conditions;
 
 import java.util.HashSet;
 
+import abstractGraph.conditions.valuation.AbstractValuation;
+
 public class AndFormula extends Formula {
 
   Formula p;

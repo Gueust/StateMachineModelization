@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
+import abstractGraph.conditions.valuation.AbstractValuation;
+import abstractGraph.conditions.valuation.Valuation;
 
 /**
  * @package abstractGraph.conditions

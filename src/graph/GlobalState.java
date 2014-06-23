@@ -1,13 +1,17 @@
 package graph;
 
 import abstractGraph.AbstractGlobalState;
-import abstractGraph.conditions.Valuation;
+import abstractGraph.conditions.valuation.Valuation;
 
 public class GlobalState extends
     AbstractGlobalState<StateMachine, State, Transition, Valuation> {
 
   public GlobalState(Valuation variables_values) {
     super(variables_values);
+  }
+
+  public GlobalState() {
+    super(new Valuation());
   }
 
   /**

@@ -17,15 +17,6 @@ import abstractGraph.events.SingleEvent;
  */
 public class SequentialGraphSimulator extends GraphSimulator {
 
-  public SequentialGraphSimulator(Model model, GlobalState global_state) {
-    super(model, global_state);
-  }
-
-  public SequentialGraphSimulator(Model model, Model proof,
-      GlobalState global_state) {
-    super(model, proof, global_state);
-  }
-
   public SequentialGraphSimulator(Model model, Model proof) {
     super(model, proof);
   }
@@ -68,14 +59,15 @@ public class SequentialGraphSimulator extends GraphSimulator {
    * 
    * @param external_events
    */
-  public void processSmallestStep(LinkedList<ExternalEvent> external_events) {
+  public void processSmallestStep(GlobalState global_state,
+      LinkedList<ExternalEvent> external_events) {
 
     /* If there are internal events in the functional model */
     if (internal_functional_event_queue.size() != 0) {
       functionnal_transitions_pull_list.clear();
       commands_queue.clear();
 
-      processSingleEvent(model, internal_global_state,
+      processSingleEvent(model, global_state,
           internal_functional_event_queue.remove(), external_proof_event_queue);
 
       internal_functional_event_queue.addAll(external_proof_event_queue);
@@ -95,7 +87,7 @@ public class SequentialGraphSimulator extends GraphSimulator {
       commands_queue.clear();
 
       ExternalEvent external_event_to_execute = external_events.poll();
-      processSingleEvent(model, internal_global_state,
+      processSingleEvent(model, global_state,
           external_event_to_execute, external_proof_event_queue);
       functional_model_allowed_to_execute_next_ext_event = false;
       internal_functional_event_queue.addAll(external_proof_event_queue);
@@ -112,7 +104,7 @@ public class SequentialGraphSimulator extends GraphSimulator {
     /* If there are internal events to execute in the proof model */
     if (proof != null && internal_proof_event_queue.size() != 0) {
       proof_transitions_pull_list.clear();
-      processSingleEvent(proof, internal_global_state,
+      processSingleEvent(proof, global_state,
           internal_proof_event_queue.remove(), internal_proof_event_queue);
       /*
        * If we have ended the execution, we let the functional execute an other
@@ -131,12 +123,12 @@ public class SequentialGraphSimulator extends GraphSimulator {
      */
     if (proof != null && external_events.size() == 0) {
       proof_transitions_pull_list.clear();
-      processSingleEvent(proof, internal_global_state,
+      processSingleEvent(proof, global_state,
           external_proof_event_queue.remove(), internal_proof_event_queue);
     }
 
     if (proof != null && external_proof_event_queue.size() != 0) {
-      processSingleEvent(proof, internal_global_state,
+      processSingleEvent(proof, global_state,
           external_proof_event_queue.remove(), internal_proof_event_queue);
       return;
     }
@@ -157,7 +149,8 @@ public class SequentialGraphSimulator extends GraphSimulator {
    * proof models to be ready for the next external event.
    */
   @Override
-  public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
+  public GlobalState execute(GlobalState starting_state,
+      ExternalEvent event) {
 
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();

@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import utils.Monitoring;
 import utils.TeeOutputStream;
+import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.events.ExternalEvent;
 
 public class Main {
@@ -107,7 +108,7 @@ public class Main {
     }
   }
 
-  private static void launcheModelCheckingWithProofTesting(
+  public static void launcheModelCheckingWithProofTesting(
       String functional_model,
       String proof_model) throws IOException, InterruptedException {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
@@ -197,7 +198,7 @@ public class Main {
     }
   }
 
-  private static void launcheModelChecking(
+  public static void launcheModelChecking(
       String functional_model,
       String proof_model) throws IOException {
 
@@ -205,7 +206,7 @@ public class Main {
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
-    model.build();
+    // model.build();
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
@@ -226,12 +227,17 @@ public class Main {
           true);
     }
 
-    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
     // simulator.init(initialization_variables);
+    // GlobalState global_state = simulator.getGlobalState();
+    // System.out.println(global_state);
+    // System.out.println("Size of a GS: " + (global_state == null)
+    // + ObjectSizeFetcher.deepSizeOf(global_state));
+    // System.exit(-1);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
+    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+
     GlobalState result = model_checker.verify(simulator);
-    System.out.print(model_checker.getVisited_states());
     if (result == null) {
       System.err.println("Success of the proof");
     } else {

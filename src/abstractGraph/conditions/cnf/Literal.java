@@ -2,9 +2,9 @@ package abstractGraph.conditions.cnf;
 
 import java.util.HashSet;
 
-import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * Literals are used in CNFFormulas.

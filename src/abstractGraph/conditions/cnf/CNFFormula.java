@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.False;
 import abstractGraph.conditions.Formula;
@@ -15,6 +14,7 @@ import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.True;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * A conjunction of clauses (i.e. AND of clauses).

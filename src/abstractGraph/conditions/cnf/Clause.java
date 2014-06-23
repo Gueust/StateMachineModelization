@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * A clause is a disjunction of literals (i.e. an OR over literals).

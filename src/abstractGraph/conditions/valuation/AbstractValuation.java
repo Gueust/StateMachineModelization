@@ -1,4 +1,6 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.valuation;
+
+import abstractGraph.conditions.Variable;
 
 public abstract class AbstractValuation {
 

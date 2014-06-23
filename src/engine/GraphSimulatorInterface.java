@@ -25,13 +25,6 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T,
   public GS execute(GS starting_state, ExternalEvent e);
 
   /**
-   * {@inheritDoc #execute(AbstractGlobalState, ExternalEvent)} Same as
-   * {@link #executeOnlyFunctional(AbstractGlobalState, ExternalEvent)} using
-   * the GlobalState contained in the GraphSimulator instance.
-   */
-  public void execute(ExternalEvent e);
-
-  /**
    * 
    * @return An iterable over the external events that the simulator can eat
    *         from the current states of the state machines.

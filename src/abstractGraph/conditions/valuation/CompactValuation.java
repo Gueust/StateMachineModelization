@@ -1,10 +1,10 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.valuation;
 
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import abstractGraph.conditions.Variable;
 
 /**
  * Mapping of the variables to {true, false}. Not defined variable are
@@ -27,7 +27,7 @@ public class CompactValuation extends AbstractValuation {
   public CompactValuation(Valuation val) {
     this(val.size());
     for (Entry<Variable, Boolean> entry : val.valuation.entrySet()) {
-      this.valuation[entry.getKey().identifier] = entry
+      this.valuation[entry.getKey().getIdentifier()] = entry
           .getValue()
           .booleanValue();
     }
@@ -35,7 +35,7 @@ public class CompactValuation extends AbstractValuation {
 
   @Override
   public boolean getValue(Variable v) {
-    Boolean res = valuation[v.identifier];
+    Boolean res = valuation[v.getIdentifier()];
     if (res == null) {
       throw new NoSuchElementException("The value for " + v
           + " does not exist.");
@@ -46,22 +46,28 @@ public class CompactValuation extends AbstractValuation {
 
   @Override
   public boolean setValue(Variable var, boolean value) {
-    Boolean old_value = valuation[var.identifier];
-    valuation[var.identifier] = value;
+    Boolean old_value = valuation[var.getIdentifier()];
+    valuation[var.getIdentifier()] = value;
 
     return old_value != null && !old_value.equals(value);
   }
 
-  /**
-   * Remove the given variable from the valuation.
-   */
-  public void remove(Variable var) {
-    throw new NotImplementedException();
-  }
-
   @Override
   public String toString() {
-    return valuation.toString();
+    return Arrays.toString(valuation);
+  }
+
+  public String toString(Iterable<Variable> variables) {
+    StringBuffer string_buffer = new StringBuffer();
+    boolean first = true;
+    for (Variable var : variables) {
+      if (!first) {
+        string_buffer.append(", ");
+      }
+      string_buffer.append(var.getVarname() + ": " + getValue(var));
+      first = false;
+    }
+    return string_buffer.toString();
   }
 
   public CompactValuation clone() {
@@ -71,39 +77,31 @@ public class CompactValuation extends AbstractValuation {
   }
 
   @Override
+  public int size() {
+    return valuation.length;
+  }
+
+  /* Generated using Eclipse */
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((valuation == null) ? 0 : valuation.hashCode());
+    result = prime * result + Arrays.hashCode(valuation);
     return result;
   }
 
+  /* Generated using Eclipse */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
     CompactValuation other = (CompactValuation) obj;
-    /* The valuation should not be null */
-    if ((valuation == null || other.valuation == null)) {
-      throw new Error(
-          "The valuation HashMap cannot be null since it is always initialized");
-    }
-    return this.valuation.equals(other.valuation);
-  }
-
-  public void clear() {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public int size() {
-    return valuation.length;
+    if (!Arrays.equals(valuation, other.valuation))
+      return false;
+    return true;
   }
 }

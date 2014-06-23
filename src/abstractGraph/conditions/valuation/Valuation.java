@@ -1,7 +1,9 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.valuation;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+
+import abstractGraph.conditions.Variable;
 
 /**
  * Mapping of the variables to {true, false}.
