@@ -14,10 +14,12 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
+import abstractGraph.conditions.valuation.AbstractValuation;
+import abstractGraph.conditions.valuation.CompactValuation;
+import abstractGraph.conditions.valuation.Valuation;
 
 /**
  * Testing of the main functions of the abstractGraph.conditions package:
@@ -299,20 +301,26 @@ public class AbstractGraph_Conditions_PackageTesting {
     FormulaFactory f;
 
     f = new BooleanExpressionFactory(true);
-    formulaEvaluationTest(f);
+    formulaEvaluationTest(f, new Valuation(10));
 
     f = new BooleanExpressionFactory(false);
-    formulaEvaluationTest(f);
+    formulaEvaluationTest(f, new Valuation(10));
+
+    f = new BooleanExpressionFactory(true);
+    formulaEvaluationTest(f, new CompactValuation(10));
+
+    f = new BooleanExpressionFactory(false);
+    formulaEvaluationTest(f, new CompactValuation(10));
 
   }
 
   /**
    * We test the evaluation for a given FormulaFactory
    */
-  public void formulaEvaluationTest(FormulaFactory f) {
+  public void formulaEvaluationTest(FormulaFactory f,
+      AbstractValuation valuation) {
     String input;
     Formula formula;
-    Valuation valuation = new Valuation();
 
     /* Evaluation testing */
 

@@ -3,8 +3,8 @@ package abstractGraph.conditions.cnf;
 import java.util.HashSet;
 
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * Literals are used in CNFFormulas.
@@ -39,7 +39,7 @@ public class Literal extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     if (is_negated) {
       return !variable.eval(valuation);
     } else {

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import abstractGraph.conditions.Variable;
 
 /**
- * Check that all the variables in the graphs are written exactly once.
+ * Check that all the variables in the graphs are written at most once
  */
 public class SingleWritingChecker extends AbstractVerificationUnit {
   private HashMap<Variable, LinkedList<StateMachine>> counter_example_written_more_than_once =
@@ -34,7 +34,7 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
           written_variables.get(variable);
 
       if (writing_state_machine != null) {
-        if (writing_state_machine.size()>1) {
+        if (writing_state_machine.size() > 1) {
           is_error = true;
           counter_example_written_more_than_once.put(variable,
               writing_state_machine);
@@ -70,7 +70,7 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
 
   @Override
   public String successMessage() {
-    return "[SUCCESS] Checking that all variables are written exactly once...OK";
+    return "[SUCCESS] Checking that all variables are written at most once...OK";
   }
 
   private String myPrint(HashMap<Variable, LinkedList<StateMachine>> input) {

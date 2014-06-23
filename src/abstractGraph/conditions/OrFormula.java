@@ -2,6 +2,8 @@ package abstractGraph.conditions;
 
 import java.util.HashSet;
 
+import abstractGraph.conditions.valuation.AbstractValuation;
+
 public class OrFormula extends Formula {
 
   Formula p, q;
@@ -20,7 +22,7 @@ public class OrFormula extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return p.eval(valuation) || q.eval(valuation);
   }
 

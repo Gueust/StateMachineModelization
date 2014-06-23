@@ -2,6 +2,8 @@ package abstractGraph.conditions;
 
 import java.util.HashSet;
 
+import abstractGraph.conditions.valuation.AbstractValuation;
+
 public class NotFormula extends Formula {
 
   Formula f;
@@ -17,7 +19,7 @@ public class NotFormula extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return !f.eval(valuation);
   }
 

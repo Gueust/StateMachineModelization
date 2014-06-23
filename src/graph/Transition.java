@@ -18,7 +18,7 @@ public class Transition extends AbstractTransition<State> {
 
   // TODO verify that it works and add the tests.
   @Override
-  public boolean evalCondition(AbstractGlobalState<?, State, ?> global_state) {
+  public boolean evalCondition(AbstractGlobalState<?, State, ?, ?> global_state) {
     if (condition == null) {
       return true;
     }

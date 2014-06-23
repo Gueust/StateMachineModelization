@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * A clause is a disjunction of literals (i.e. an OR over literals).
@@ -36,7 +36,7 @@ public class Clause extends Formula implements Collection<Literal> {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     for (Literal l : this) {
       if (l.eval(valuation)) {
         return true;

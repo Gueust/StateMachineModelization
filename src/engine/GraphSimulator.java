@@ -1,5 +1,6 @@
 package engine;
 
+import graph.CompactGlobalState;
 import graph.GlobalState;
 import graph.Model;
 import graph.State;
@@ -33,7 +34,8 @@ import abstractGraph.events.VariableChange;
  * 
  * @details This class is NOT thread safe.
  */
-public class GraphSimulator implements
+public class GraphSimulator
+    implements
     GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
 
   /**
@@ -41,8 +43,6 @@ public class GraphSimulator implements
    * initialization
    */
   public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
-
-  protected GlobalState internal_global_state = new GlobalState();
 
   /** This is the list of the different queues used in the simulator. */
   protected LinkedList<SingleEvent> internal_functional_event_queue =
@@ -71,28 +71,24 @@ public class GraphSimulator implements
 
   protected boolean verbose = true;
 
-  public GraphSimulator(Model model, Model proof, GlobalState global_state) {
-    this.model = model;
-    this.proof = proof;
-    this.internal_global_state = global_state;
-    checkCompatibility();
-  }
-
-  public GraphSimulator(Model model, GlobalState global_state) {
-    this.model = model;
-    this.internal_global_state = global_state;
-    checkCompatibility();
-  }
+  protected HashSet<Variable> all_variables;
 
   public GraphSimulator(Model model, Model proof) {
     this.model = model;
+    all_variables = new HashSet<Variable>(model.getExistingVariables().values());
     this.proof = proof;
+    all_variables.addAll(proof.getExistingVariables().values());
     checkCompatibility();
   }
 
   public GraphSimulator(Model model) {
     this.model = model;
+    all_variables = new HashSet<Variable>(model.getExistingVariables().values());
     checkCompatibility();
+  }
+
+  public GlobalState emptyGlobalState() {
+    return new GlobalState();
   }
 
   @Override
@@ -126,14 +122,6 @@ public class GraphSimulator implements
     return commands_queue;
   }
 
-  public GlobalState getGlobalState() {
-    return internal_global_state;
-  }
-
-  public void setGlobalState(GlobalState global_state) {
-    this.internal_global_state = global_state;
-  }
-
   public void setVerbose(boolean value) {
     this.verbose = value;
   }
@@ -146,6 +134,15 @@ public class GraphSimulator implements
     return proof;
   }
 
+  /**
+   * 
+   * @return All the variables present both in the functionnal and the proof
+   *         model.
+   */
+  public HashSet<Variable> getAll_variables() {
+    return all_variables;
+  }
+
   public void setRestrainedExternalEventList(
       LinkedList<ExternalEvent> external_event_list) {
     restrained_external_event_list = external_event_list;
@@ -156,14 +153,14 @@ public class GraphSimulator implements
    * @return A linked list containing all the initial states that can be
    *         generated using all the possible combination of CTLs.
    */
-  public LinkedList<GlobalState>
-      getAllInitialStates() {
+  public LinkedList<GlobalState> getAllInitialStates() {
     HashMap<String, String> CTL_list = getModel().regroupCTL();
 
     LinkedList<GlobalState> initial_global_states =
         new LinkedList<GlobalState>();
 
     generateAllInitialStates(CTL_list.keySet(), new HashMap<String, Boolean>(),
+        emptyGlobalState(),
         initial_global_states);
 
     return initial_global_states;
@@ -182,6 +179,7 @@ public class GraphSimulator implements
         new LinkedList<GlobalState>();
 
     generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
+        emptyGlobalState(),
         initial_global_states);
 
     return initial_global_states;
@@ -200,13 +198,16 @@ public class GraphSimulator implements
 
   private void generateAllInitialStates(Set<String> set,
       HashMap<String, Boolean> tmp,
+      GlobalState current_state,
       Collection<GlobalState> result) {
-    System.out.print(i++ + "\n");
+
     /* Terminal case */
     if (set.isEmpty()) {
-      init(tmp);
-      if (getGlobalState().isLegal()) {
-        result.add(getGlobalState().clone());
+      GlobalState gs = init(tmp);
+      if (gs.isLegal()) {
+        System.out.print(i++ + "\n");
+
+        result.add(gs);
       }
       return;
     }
@@ -217,10 +218,12 @@ public class GraphSimulator implements
     ctl_iterator.remove();
 
     tmp.put(ctl_name, true);
-    generateAllInitialStates(new HashSet<String>(set), tmp, result);
+    generateAllInitialStates(new HashSet<String>(set), tmp, current_state,
+        result);
 
     tmp.put(ctl_name, false);
-    generateAllInitialStates(new HashSet<String>(set), tmp, result);
+    generateAllInitialStates(new HashSet<String>(set), tmp, current_state,
+        result);
   }
 
   /**
@@ -257,7 +260,8 @@ public class GraphSimulator implements
    * 
    * @param external_events
    */
-  public void processSmallestStep(LinkedList<ExternalEvent> external_events) {
+  public void processSmallestStep(GlobalState internal_global_state,
+      LinkedList<ExternalEvent> external_events) {
 
     if (proof != null && internal_proof_event_queue.size() != 0) {
       proof_transitions_pull_list.clear();
@@ -346,7 +350,7 @@ public class GraphSimulator implements
    *          The list in which the generated internal events will be added.
    */
   protected void processSingleEvent(Model model,
-      AbstractGlobalState<StateMachine, State, Transition> global_state,
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
     temporary_tag.clear();
@@ -428,7 +432,7 @@ public class GraphSimulator implements
    *          The event list in which the new events will be added.
    */
   private void processAction(Iterator<SingleEvent> single_event_iterator,
-      AbstractGlobalState<StateMachine, State, Transition> global_state,
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
       LinkedList<SingleEvent> event_list) {
 
     while (single_event_iterator.hasNext()) {
@@ -453,6 +457,7 @@ public class GraphSimulator implements
         }
       } else if (single_event instanceof ModelCheckerEvent) {
         commands_queue.add(single_event);
+
         switch (single_event.getName()) {
         case "P_5":
           global_state.setIsSafe(false);
@@ -472,7 +477,8 @@ public class GraphSimulator implements
   }
 
   /**
-   * Execute the model m, starting from the given GlobalState, on the event e
+   * Execute the model m, starting from the given CompactGlobalState, on the
+   * event e
    * and using the internal event queue `single_event_queue`.
    * 
    * @param m
@@ -540,7 +546,8 @@ public class GraphSimulator implements
    * functional model to be ready for the next external event.
    */
   @Override
-  public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
+  public GlobalState execute(GlobalState starting_state,
+      ExternalEvent event) {
 
     GlobalState copied_starting_state = starting_state.clone();
 
@@ -574,16 +581,8 @@ public class GraphSimulator implements
   }
 
   /**
-   * Same as {@link #execute(GlobalState, ExternalEvent)} but uses
-   * the internal GlobalState as the initial global_sate.
-   */
-  @Override
-  public void execute(ExternalEvent event) {
-    internal_global_state = execute(internal_global_state, event);
-  }
-
-  /**
-   * Same as {@link #execute(GlobalState, ExternalEvent)} but uses a LinkedList
+   * Same as {@link #execute(CompactGlobalState, ExternalEvent)} but uses a
+   * LinkedList
    * of events
    */
   public GlobalState executeAll(GlobalState starting_state,
@@ -594,14 +593,6 @@ public class GraphSimulator implements
       result = execute(result, event);
     }
     return result;
-  }
-
-  /**
-   * Same as {@link #executeAll(GlobalState, Iterable<ExternalEvent>)} but uses
-   * the internal GlobalState.
-   */
-  public void executeAll(LinkedList<ExternalEvent> list) {
-    internal_global_state = executeAll(internal_global_state, list);
   }
 
   /**
@@ -718,16 +709,17 @@ public class GraphSimulator implements
    *          The list of the couple (CTL, value for this CTL).
    *          It must only contains CTLs and it must not contain opposite CTLs.
    */
-  public void init(HashMap<String, Boolean> external_values) {
-    internal_global_state.clear();
+  public GlobalState init(HashMap<String, Boolean> external_values) {
+
+    GlobalState global_state = new GlobalState();
 
     /* Initialization of the states of all the state machines */
     for (StateMachine machine : model) {
-      getGlobalState().setState(machine, machine.getState("0"));
+      global_state.setState(machine, machine.getState("0"));
     }
     if (proof != null) {
       for (StateMachine machine : proof) {
-        getGlobalState().setState(machine, machine.getState("0"));
+        global_state.setState(machine, machine.getState("0"));
       }
     }
 
@@ -736,16 +728,18 @@ public class GraphSimulator implements
     for (Entry<String, Boolean> assignation : external_values.entrySet()) {
       Variable var = model.getVariable(assignation.getKey());
       to_delete_from_valuation.add(var);
-      internal_global_state.setVariableValue(var, assignation.getValue());
+      global_state.setVariableValue(var, assignation.getValue());
     }
 
     /* We execute ACT_INIT */
-    execute(ACT_INIT);
+    global_state = execute(global_state, ACT_INIT);
 
     /* We delete the CTLs from the valuation */
     for (Variable variable : to_delete_from_valuation) {
-      internal_global_state.getValuation().remove(variable);
+      global_state.getValuation().remove(variable);
     }
+
+    return global_state;
   }
 
   @Override
@@ -792,10 +786,6 @@ public class GraphSimulator implements
       }
     }
     return list_events;
-  }
-
-  public GlobalState getInternalGlobalState() {
-    return internal_global_state;
   }
 
 }

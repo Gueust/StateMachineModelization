@@ -51,9 +51,9 @@ public class TeeOutputStream extends FilterOutputStream {
    * Constructs a TeeOutputStream.
    * 
    * @param out
-   *          the main OutputStream
+   *          The main OutputStream
    * @param branch
-   *          the second OutputStream
+   *          The second OutputStream
    */
   public TeeOutputStream(OutputStream out, OutputStream branch) {
     super(out);

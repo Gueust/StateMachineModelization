@@ -2,13 +2,15 @@ package abstractGraph.conditions;
 
 import java.util.HashSet;
 
+import abstractGraph.conditions.valuation.AbstractValuation;
+
 public class True extends Formula {
 
   True() {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return true;
   }
 

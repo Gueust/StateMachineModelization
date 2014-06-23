@@ -40,8 +40,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- * Model m = factory.buildModel();
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -519,6 +519,7 @@ public class GraphFactoryAEFD {
           "The following string has been found in an action field: "
               + event_name + ". It is invalid because no '_' appears in it.");
     }
+
     switch (prefix) {
     case "DTP":
     case "ATP":

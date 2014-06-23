@@ -32,7 +32,11 @@ public class ModelCheckerTesting {
           .getAllInitialStates());
       model_checker.verify(simulator);
 
-      System.err.print(model_checker.getVisited_states());
+      /*
+       * for (GlobalState gs : model_checker.getVisited_states()) {
+       * System.err.print(gs.toString(simulator.getAll_variables()));
+       * }
+       */
       int number_visited_states = model_checker.getVisited_states().size();
 
       assertTrue("Error on " + files[i] +

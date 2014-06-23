@@ -27,6 +27,13 @@ which uses :
 - commons-logging-1.1.jar
 - log4j-1.2.13.jar
 
+
+Java Agent
+----------
+
+To get a JVM implementation dependent size, a java agent is used. To build the
+jar file, an eclipse configuration file exist in java_agent.jardesc.
+
 Build
 -------------
 

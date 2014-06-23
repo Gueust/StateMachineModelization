@@ -1,30 +1,35 @@
-package abstractGraph.conditions;
+package abstractGraph.conditions.valuation;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import abstractGraph.conditions.Variable;
+
 /**
  * Mapping of the variables to {true, false}.
  */
-public class Valuation {
+public class Valuation extends AbstractValuation {
 
   /* Equality of variable is pointer equality ! */
-  private HashMap<Variable, Boolean> valuation;
+  protected HashMap<Variable, Boolean> valuation;
 
   /**
    * Create a new empty valuation.
    */
   public Valuation() {
+    super(0);
     valuation = new HashMap<Variable, Boolean>();
   }
 
   /**
-   * Retrieve the value of variable `v` in the current valuation.
-   * 
-   * @param v
-   *          The variable.
-   * @return The boolean value of the variable..
+   * Create a new empty valuation.
    */
+  public Valuation(int nb_variables) {
+    super(nb_variables);
+    valuation = new HashMap<Variable, Boolean>(nb_variables);
+  }
+
+  @Override
   public boolean getValue(Variable v) {
     Boolean res = valuation.get(v);
     if (res == null) {
@@ -35,16 +40,7 @@ public class Valuation {
     return res.booleanValue();
   }
 
-  /**
-   * Set the value or a variable in the valuation.
-   * 
-   * @param var
-   *          The variable to modify.
-   * @param value
-   *          The value to set.
-   * @return False if the value doesn't change or its precedent value was
-   *         not defined. True otherwise.
-   */
+  @Override
   public boolean setValue(Variable var, boolean value) {
     Boolean old_value = valuation.get(var);
     valuation.put(var, value);
@@ -66,7 +62,7 @@ public class Valuation {
 
   @SuppressWarnings("unchecked")
   public Valuation clone() {
-    Valuation result = new Valuation();
+    Valuation result = new Valuation(valuation.size());
     result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
     return result;
   }
@@ -101,5 +97,10 @@ public class Valuation {
 
   public void clear() {
     valuation.clear();
+  }
+
+  @Override
+  public int size() {
+    return valuation.size();
   }
 }

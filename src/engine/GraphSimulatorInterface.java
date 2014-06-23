@@ -8,7 +8,7 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
 
-public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   public GraphSimulatorInterface<GS, M, S, T> clone();
 
@@ -23,13 +23,6 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T>
    * @return A global state being the result of the execution.
    */
   public GS execute(GS starting_state, ExternalEvent e);
-
-  /**
-   * {@inheritDoc #execute(AbstractGlobalState, ExternalEvent)} Same as
-   * {@link #executeOnlyFunctional(AbstractGlobalState, ExternalEvent)} using
-   * the GlobalState contained in the GraphSimulator instance.
-   */
-  public void execute(ExternalEvent e);
 
   /**
    * 

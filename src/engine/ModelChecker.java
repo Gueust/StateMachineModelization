@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -12,7 +11,7 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
 
-public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
   private LinkedHashSet<GS> visited_states = new LinkedHashSet<GS>();
@@ -26,7 +25,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * The states that are excluded from the exploration by the postulate states
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
-  private HashSet<GS> illegal_states = new HashSet<GS>();
+  // private HashSet<GS> illegal_states = new HashSet<GS>();
+  private int number_illegal_states = 0;
 
   private int i = 0;
 
@@ -64,23 +64,31 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    */
   private GS processGS(GS state) {
     assert state != null;
+
     /* The state is illegal */
-    if (state.isLegal()) {
-      /* The state is already known. */
-      if (visited_states.contains(state) || illegal_states.contains(state)) {
-        return null;
-      }
-
-      /* The state is unsafe ! We return it (i.e. mark it as an error) */
-      if (!state.isSafe() || !state.isNotP7()) {
-        return state;
-      }
-
-      /* If everything went fine, it is a new state to visit */
-      unvisited_states.add(state);
-    } else {
-      illegal_states.add(state);
+    if (!state.isLegal()) {
+      number_illegal_states++;
+      return null;
     }
+
+    /* The state is already known. */
+    if (visited_states.contains(state)) { // || illegal_states.contains(state)){
+      return null;
+    }
+
+    /* The state is already known. */
+    if (visited_states.contains(state)) { // || illegal_states.contains(state)){
+      return null;
+    }
+
+    /* The state is unsafe ! We return it (i.e. mark it as an error) */
+    if (!state.isSafe() || !state.isNotP7()) {
+      return state;
+    }
+
+    /* If everything went fine, it is a new state to visit */
+    unvisited_states.add(state);
+
     return null;
   }
 
@@ -95,13 +103,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public GS verify(
-      GraphSimulatorInterface<GS, M, S, T> simulator) {
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
     /* We reset all the data to empty data */
     unvisited_states.clear();
-    illegal_states.clear();
+    // /illegal_states.clear();
+    number_illegal_states = 0;
     visited_states.clear();
     i = 0;
 
@@ -154,7 +162,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     System.err.println("Total number of visited states: "
         + visited_states.size());
     System.err.println("Total number of illegal states found:" +
-        illegal_states.size());
+        number_illegal_states);
     System.err.println("Total number of explored node: " + i);
     return null;
   }
@@ -167,7 +175,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     return unvisited_states;
   }
 
-  public HashSet<GS> getIllegal_states() {
-    return illegal_states;
-  }
+  /*
+   * public HashSet<GS> getIllegal_states() {
+   * return illegal_states;
+   * }
+   */
 }

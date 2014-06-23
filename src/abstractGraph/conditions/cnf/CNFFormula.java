@@ -13,8 +13,8 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.True;
-import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * A conjunction of clauses (i.e. AND of clauses).
@@ -37,7 +37,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     for (Clause c : this) {
       if (!c.eval(valuation)) {
         return false;

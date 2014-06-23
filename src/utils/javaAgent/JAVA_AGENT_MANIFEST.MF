@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Premain-class: utils.javaAgent.InstrumentationGrabber
+Agent-class: utils.javaAgent.InstrumentationGrabber
