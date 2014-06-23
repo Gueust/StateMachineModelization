@@ -66,7 +66,7 @@ public abstract class Formula {
    *          The valuation for the variables.
    * @return The evaluation of the formula.
    */
-  public abstract boolean eval(Valuation valuation);
+  public abstract boolean eval(AbstractValuation valuation);
 
   @Override
   final public boolean equals(Object o) {
@@ -81,7 +81,7 @@ public abstract class Formula {
     HashSet<Variable> all_variables = new HashSet<Variable>(s1);
     all_variables.addAll(s2);
 
-    Valuation valuation = new Valuation();
+    Valuation valuation = new Valuation(all_variables.size());
     return partialEquals(all_variables, valuation, f1, f2);
   }
 

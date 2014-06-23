@@ -11,7 +11,7 @@ import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
 
-public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
   private LinkedHashSet<GS> visited_states = new LinkedHashSet<GS>();

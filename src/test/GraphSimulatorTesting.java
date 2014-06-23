@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import org.junit.Test;
 
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
 
@@ -209,7 +210,7 @@ public class GraphSimulatorTesting {
       e.printStackTrace();
       throw new Error();
     }
-    GlobalState global_state = new GlobalState();
+    GlobalState global_state = new GlobalState(new Valuation());
     Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
       global_state.setVariableValue(variable_iterator.next(), true);
@@ -229,7 +230,7 @@ public class GraphSimulatorTesting {
    */
   private GraphSimulator loadSimulator(String model_file_name,
       String proof_file_name) throws IOException {
-    GlobalState global_state = new GlobalState();
+    GlobalState global_state = new GlobalState(new Valuation());
 
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
@@ -253,7 +254,7 @@ public class GraphSimulatorTesting {
    * @param global_state
    */
   private void initGlobalState(Model model,
-      AbstractGlobalState<StateMachine, State, Transition> global_state) {
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state) {
     Iterator<Variable> variable_iterator = model
         .iteratorExistingVariables();
     while (variable_iterator.hasNext()) {

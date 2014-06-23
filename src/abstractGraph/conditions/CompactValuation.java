@@ -1,35 +1,31 @@
 package abstractGraph.conditions;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
- * Mapping of the variables to {true, false}.
+ * Mapping of the variables to {true, false}. Not defined variable are
+ * considered
+ * false.
  */
-public class Valuation extends AbstractValuation {
+public class CompactValuation extends AbstractValuation {
 
   /* Equality of variable is pointer equality ! */
-  private HashMap<Variable, Boolean> valuation;
+  private boolean[] valuation;
 
   /**
    * Create a new empty valuation.
    */
-  public Valuation() {
-    super(0);
-    valuation = new HashMap<Variable, Boolean>();
-  }
-
-  /**
-   * Create a new empty valuation.
-   */
-  public Valuation(int nb_variables) {
+  public CompactValuation(int nb_variables) {
     super(nb_variables);
-    valuation = new HashMap<Variable, Boolean>(nb_variables);
+    valuation = new boolean[nb_variables];
   }
 
   @Override
   public boolean getValue(Variable v) {
-    Boolean res = valuation.get(v);
+    Boolean res = valuation[v.identifier];
     if (res == null) {
       throw new NoSuchElementException("The value for " + v
           + " does not exist.");
@@ -40,8 +36,8 @@ public class Valuation extends AbstractValuation {
 
   @Override
   public boolean setValue(Variable var, boolean value) {
-    Boolean old_value = valuation.get(var);
-    valuation.put(var, value);
+    Boolean old_value = valuation[var.identifier];
+    valuation[var.identifier] = value;
 
     return old_value != null && !old_value.equals(value);
   }
@@ -50,7 +46,7 @@ public class Valuation extends AbstractValuation {
    * Remove the given variable from the valuation.
    */
   public void remove(Variable var) {
-    valuation.remove(var);
+    throw new NotImplementedException();
   }
 
   @Override
@@ -58,10 +54,9 @@ public class Valuation extends AbstractValuation {
     return valuation.toString();
   }
 
-  @SuppressWarnings("unchecked")
-  public Valuation clone() {
-    Valuation result = new Valuation(valuation.size());
-    result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
+  public CompactValuation clone() {
+    CompactValuation result = new CompactValuation(valuation.length);
+    result.valuation = Arrays.copyOf(valuation, valuation.length);
     return result;
   }
 
@@ -84,7 +79,7 @@ public class Valuation extends AbstractValuation {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    Valuation other = (Valuation) obj;
+    CompactValuation other = (CompactValuation) obj;
     /* The valuation should not be null */
     if ((valuation == null || other.valuation == null)) {
       throw new Error(
@@ -94,11 +89,11 @@ public class Valuation extends AbstractValuation {
   }
 
   public void clear() {
-    valuation.clear();
+    throw new NotImplementedException();
   }
 
   @Override
   public int size() {
-    return valuation.size();
+    return valuation.length;
   }
 }

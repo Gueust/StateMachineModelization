@@ -8,7 +8,7 @@ public class True extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return true;
   }
 

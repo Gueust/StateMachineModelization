@@ -9,7 +9,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.AndFormula;
+import abstractGraph.conditions.CompactValuation;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
@@ -299,20 +301,26 @@ public class AbstractGraph_Conditions_PackageTesting {
     FormulaFactory f;
 
     f = new BooleanExpressionFactory(true);
-    formulaEvaluationTest(f);
+    formulaEvaluationTest(f, new Valuation(10));
 
     f = new BooleanExpressionFactory(false);
-    formulaEvaluationTest(f);
+    formulaEvaluationTest(f, new Valuation(10));
+
+    f = new BooleanExpressionFactory(true);
+    formulaEvaluationTest(f, new CompactValuation(10));
+
+    f = new BooleanExpressionFactory(false);
+    formulaEvaluationTest(f, new CompactValuation(10));
 
   }
 
   /**
    * We test the evaluation for a given FormulaFactory
    */
-  public void formulaEvaluationTest(FormulaFactory f) {
+  public void formulaEvaluationTest(FormulaFactory f,
+      AbstractValuation valuation) {
     String input;
     Formula formula;
-    Valuation valuation = new Valuation();
 
     /* Evaluation testing */
 

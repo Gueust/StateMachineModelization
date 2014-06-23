@@ -5,13 +5,15 @@ import java.util.HashSet;
 public class Variable extends Formula {
 
   protected String varname;
+  /* The unique identifier of the Variable throughout a model */
+  protected int identifier = -1;
 
   public Variable(String s) {
     varname = s;
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return valuation.getValue(this);
   }
 
@@ -29,4 +31,13 @@ public class Variable extends Formula {
   public String toString() {
     return getVarname();
   }
+
+  public int getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(int identifier) {
+    this.identifier = identifier;
+  }
+
 }

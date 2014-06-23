@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.Valuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
@@ -41,7 +42,8 @@ public class GraphSimulator implements
    */
   public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
 
-  protected GlobalState internal_global_state = new GlobalState();
+  protected GlobalState internal_global_state =
+      new GlobalState(new Valuation(10));
 
   /** This is the list of the different queues used in the simulator. */
   protected LinkedList<SingleEvent> internal_functional_event_queue =
@@ -316,7 +318,7 @@ public class GraphSimulator implements
    *          The list in which the generated internal events will be added.
    */
   protected void processSingleEvent(Model model,
-      AbstractGlobalState<StateMachine, State, Transition> global_state,
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
     temporary_tag.clear();
@@ -398,7 +400,7 @@ public class GraphSimulator implements
    *          The event list in which the new events will be added.
    */
   private void processAction(Iterator<SingleEvent> single_event_iterator,
-      AbstractGlobalState<StateMachine, State, Transition> global_state,
+      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
       LinkedList<SingleEvent> event_list) {
 
     while (single_event_iterator.hasNext()) {

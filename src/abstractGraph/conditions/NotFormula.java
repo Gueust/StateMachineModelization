@@ -17,7 +17,7 @@ public class NotFormula extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return !f.eval(valuation);
   }
 

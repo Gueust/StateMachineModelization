@@ -20,7 +20,7 @@ public class OrFormula extends Formula {
   }
 
   @Override
-  public boolean eval(Valuation valuation) {
+  public boolean eval(AbstractValuation valuation) {
     return p.eval(valuation) || q.eval(valuation);
   }
 

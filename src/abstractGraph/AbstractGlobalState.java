@@ -4,21 +4,22 @@ import graph.conditions.aefdParser.AEFDFormulaFactory;
 
 import java.util.HashMap;
 
-import abstractGraph.conditions.Valuation;
+import utils.javaAgent.ObjectSizeFetcher;
+import abstractGraph.conditions.AbstractValuation;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.VariableChange;
 
-public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>, V extends AbstractValuation> {
 
-  protected Valuation variables_values;
+  protected V variables_values;
   protected HashMap<M, S> state_machines_current_state =
       new HashMap<M, S>();
 
-  private boolean is_legal_state = true, is_safe_state = true;
-  private boolean isNotP7 = true;
+  protected boolean is_legal_state = true, is_safe_state = true;
+  protected boolean isNotP7 = true;
 
-  public AbstractGlobalState() {
-    variables_values = new Valuation();
+  public AbstractGlobalState(V variables_values) {
+    this.variables_values = variables_values;
   }
 
   /**
@@ -96,7 +97,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
   /**
    * @return the environment with the value of the variables.
    */
-  public Valuation getValuation() {
+  public V getValuation() {
     return variables_values;
   }
 
@@ -124,16 +125,6 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     isNotP7 = NotP7;
   }
 
-  /**
-   * Clear the AbstractGlobalState: it is as new as a new instance.
-   */
-  public void clear() {
-    variables_values.clear();
-    state_machines_current_state.clear();
-    is_legal_state = true;
-    is_safe_state = true;
-  }
-
   @Override
   public String toString() {
     String result = "";
@@ -156,7 +147,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    * {@link #copyTo(AbstractGlobalState, AbstractGlobalState)()}
    */
   @Override
-  public abstract AbstractGlobalState<M, S, T> clone();
+  public abstract AbstractGlobalState<M, S, T, V> clone();
 
   /**
    * Copy A into B.
@@ -165,11 +156,11 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    * @param B
    */
   @SuppressWarnings("unchecked")
-  protected void copyTo(AbstractGlobalState<M, S, T> A,
-      AbstractGlobalState<M, S, T> B) {
+  protected void copyTo(AbstractGlobalState<M, S, T, V> A,
+      AbstractGlobalState<M, S, T, V> B) {
     B.state_machines_current_state =
         (HashMap<M, S>) state_machines_current_state.clone();
-    B.variables_values = (Valuation) this.variables_values.clone();
+    B.variables_values = (V) this.variables_values.clone();
     B.is_legal_state = this.is_legal_state;
     B.is_safe_state = this.is_safe_state;
   }
@@ -219,5 +210,25 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     } else if (!variables_values.equals(other.variables_values))
       return false;
     return true;
+  }
+
+  /**
+   * The java agent must have been loaded for this function to work.
+   * 
+   * @returnReturn a JVM implementation dependent approximation of the size of
+   *               the object. It only takes into account the size of the actual
+   *               allocated data for this object. In particular, it does not
+   *               count the shared data.
+   */
+  public long sizeOf() {
+    long result = 0;
+
+    result += ObjectSizeFetcher.getObjectSize(variables_values);
+    result += ObjectSizeFetcher.getObjectSize(state_machines_current_state);
+    result += ObjectSizeFetcher.getObjectSize(is_legal_state);
+    result += ObjectSizeFetcher.getObjectSize(is_safe_state);
+    result += ObjectSizeFetcher.getObjectSize(isNotP7);
+
+    return result;
   }
 }
