@@ -1,6 +1,7 @@
 package abstractGraph.conditions;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -21,6 +22,15 @@ public class CompactValuation extends AbstractValuation {
   public CompactValuation(int nb_variables) {
     super(nb_variables);
     valuation = new boolean[nb_variables];
+  }
+
+  public CompactValuation(Valuation val) {
+    this(val.size());
+    for (Entry<Variable, Boolean> entry : val.valuation.entrySet()) {
+      this.valuation[entry.getKey().identifier] = entry
+          .getValue()
+          .booleanValue();
+    }
   }
 
   @Override

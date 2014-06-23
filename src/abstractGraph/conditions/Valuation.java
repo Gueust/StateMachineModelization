@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 public class Valuation extends AbstractValuation {
 
   /* Equality of variable is pointer equality ! */
-  private HashMap<Variable, Boolean> valuation;
+  protected HashMap<Variable, Boolean> valuation;
 
   /**
    * Create a new empty valuation.
