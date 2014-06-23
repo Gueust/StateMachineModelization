@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -26,7 +25,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
    * The states that are excluded from the exploration by the postulate states
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
-  private HashSet<GS> illegal_states = new HashSet<GS>();
+  // private HashSet<GS> illegal_states = new HashSet<GS>();
+  private int number_illegal_states = 0;
 
   private int i = 0;
 
@@ -65,13 +65,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
   private GS processGS(GS state) {
     assert state != null;
     /* The state is already known. */
-    if (visited_states.contains(state) || illegal_states.contains(state)) {
+    if (visited_states.contains(state)) { // || illegal_states.contains(state)){
       return null;
     }
 
     /* The state is illegal */
     if (!state.isLegal()) {
-      illegal_states.add(state);
+      number_illegal_states++;
+      // illegal_states.add(state);
       return null;
     }
 
@@ -103,7 +104,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
 
     /* We reset all the data to empty data */
     unvisited_states.clear();
-    illegal_states.clear();
+    // /illegal_states.clear();
+    number_illegal_states = 0;
     visited_states.clear();
     i = 0;
 
@@ -156,7 +158,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     System.err.println("Total number of visited states: "
         + visited_states.size());
     System.err.println("Total number of illegal states found:" +
-        illegal_states.size());
+        number_illegal_states);
     System.err.println("Total number of explored node: " + i);
     return null;
   }
@@ -169,7 +171,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T>, M extends Abs
     return unvisited_states;
   }
 
-  public HashSet<GS> getIllegal_states() {
-    return illegal_states;
-  }
+  /*
+   * public HashSet<GS> getIllegal_states() {
+   * return illegal_states;
+   * }
+   */
 }
