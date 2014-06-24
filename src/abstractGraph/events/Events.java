@@ -53,10 +53,6 @@ public class Events implements Iterable<SingleEvent> {
     }
   }
 
-  public Iterator<SingleEvent> singleEvent() {
-    return events.values().iterator();
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

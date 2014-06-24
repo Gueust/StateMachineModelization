@@ -28,8 +28,7 @@ public class ModelCheckerTesting {
     for (i = 0; i < files.length; i++) {
       model_checker = new ModelChecker<>();
       GraphSimulator simulator = generateSimulator(files[i], null);
-      model_checker.configureInitialGlobalStates(simulator
-          .getAllInitialStates());
+      simulator.generateAllInitialStates(model_checker);
       model_checker.verify(simulator);
 
       /*

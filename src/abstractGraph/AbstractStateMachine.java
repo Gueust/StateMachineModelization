@@ -3,12 +3,12 @@ package abstractGraph;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
+
 import abstractGraph.conditions.Formula;
 import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 import abstractGraph.events.SingleEvent;
-
-import javax.management.openmbean.KeyAlreadyExistsException;
 
 /**
  * 
@@ -18,7 +18,8 @@ import javax.management.openmbean.KeyAlreadyExistsException;
  *          A state class extending AbstractState
  * @param <T>
  */
-public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends AbstractTransition<S>>
+    implements Iterable<S> {
 
   protected String name;
 
@@ -35,7 +36,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    * 
    * @return An iterator over all the sates
    */
-  public abstract Iterator<S> iteratorStates();
+  public abstract Iterator<S> iterator();
 
   /**
    * The order of the elements is not specified.
@@ -46,6 +47,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
 
   /**
    * Return the transitions that have the event E in the event field.
+   * 
    * @param E
    * @return
    */

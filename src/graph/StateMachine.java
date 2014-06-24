@@ -83,7 +83,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
-  public Iterator<State> iteratorStates() {
+  public Iterator<State> iterator() {
     return states.values().iterator();
   }
 
@@ -141,7 +141,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   @Override
   public String toString() {
     String result = "# STATE MACHINE: " + getName() + " \n";
-    Iterator<State> states_iterator = iteratorStates();
+    Iterator<State> states_iterator = iterator();
     while (states_iterator.hasNext()) {
       State s = states_iterator.next();
       result += s.toString();

@@ -7,7 +7,6 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -149,40 +148,29 @@ public class GraphSimulator
   }
 
   /**
-   * 
-   * @return A linked list containing all the initial states that can be
-   *         generated using all the possible combination of CTLs.
+   * Generate all the initial states that can be generated using all the
+   * possible combination of CTLs.
    */
-  public LinkedList<GlobalState> getAllInitialStates() {
+  public void generateAllInitialStates(
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
     HashMap<String, String> CTL_list = getModel().regroupCTL();
 
-    LinkedList<GlobalState> initial_global_states =
-        new LinkedList<GlobalState>();
-
-    generateAllInitialStates(CTL_list.keySet(), new HashMap<String, Boolean>(),
-        emptyGlobalState(),
-        initial_global_states);
-
-    return initial_global_states;
+    generateAllInitialStates(CTL_list, new HashMap<String, Boolean>(),
+        model_checker);
   }
 
   /**
-   * 
-   * @return A linked list containing all the initial states that can be
-   *         generated using all the possible combination of CTL_list and fixing
-   *         the fixed_CTL_list
+   * Generate all the initial states that can be generated using all the
+   * possible combination of CTL_list and fixing the fixed_CTL_list
    */
-  public LinkedList<GlobalState>
-      getAllInitialStates(HashMap<String, String> CTL_list,
-          HashMap<String, Boolean> fixed_CTL_list) {
-    LinkedList<GlobalState> initial_global_states =
-        new LinkedList<GlobalState>();
+  public void generateAllInitialStates(
+      HashMap<String, String> CTL_list,
+      HashMap<String, Boolean> fixed_CTL_list,
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
 
     generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
         emptyGlobalState(),
-        initial_global_states);
-
-    return initial_global_states;
+        model_checker);
   }
 
   /**
@@ -197,17 +185,16 @@ public class GraphSimulator
   int i = 0;
 
   private void generateAllInitialStates(Set<String> set,
-      HashMap<String, Boolean> tmp,
+      HashMap<String, Boolean> fixed_ctls,
       GlobalState current_state,
-      Collection<GlobalState> result) {
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
 
     /* Terminal case */
     if (set.isEmpty()) {
-      GlobalState gs = init(tmp);
+      GlobalState gs = init(fixed_ctls);
       if (gs.isLegal()) {
         System.out.print(i++ + "\n");
-
-        result.add(gs);
+        model_checker.addInitialState(gs);
       }
       return;
     }
@@ -217,13 +204,15 @@ public class GraphSimulator
     String ctl_name = ctl_iterator.next();
     ctl_iterator.remove();
 
-    tmp.put(ctl_name, true);
-    generateAllInitialStates(new HashSet<String>(set), tmp, current_state,
-        result);
+    fixed_ctls.put(ctl_name, true);
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+        current_state,
+        model_checker);
 
-    tmp.put(ctl_name, false);
-    generateAllInitialStates(new HashSet<String>(set), tmp, current_state,
-        result);
+    fixed_ctls.put(ctl_name, false);
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+        current_state,
+        model_checker);
   }
 
   /**

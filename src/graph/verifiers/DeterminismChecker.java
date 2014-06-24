@@ -73,7 +73,7 @@ public class DeterminismChecker extends AbstractVerificationUnit {
       StateMachine machine = it.next();
 
       /* For all states within the given state machine */
-      Iterator<State> it_states = machine.iteratorStates();
+      Iterator<State> it_states = machine.iterator();
       while (it_states.hasNext()) {
         State state = it_states.next();
         Transition[] transitions = state.toArray();

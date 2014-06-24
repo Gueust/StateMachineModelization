@@ -7,7 +7,6 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
-import graph.templates.GeneratorFromTemplate;
 import graph.verifiers.Verifier;
 
 import java.io.BufferedReader;
@@ -42,16 +41,16 @@ public class Main {
 
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
-    // launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-    // "Proof_with_corrected_CTL.txt");
-
-    String functional_model = GeneratorFromTemplate
-        .load("fonctionnel1voie.yaml");
-    String proof_model = GeneratorFromTemplate
-        .load("preuve1voie_avecP6.yaml");
-
-    launcheModelChecking(functional_model, proof_model);
-
+    launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
+        "Proof_with_corrected_CTL.txt");
+    /*
+     * String functional_model = GeneratorFromTemplate
+     * .load("fonctionnel4voie.yaml");
+     * String proof_model = GeneratorFromTemplate
+     * .load("preuve4voie_avecP6.yaml");
+     * 
+     * launcheModelChecking(functional_model, proof_model);
+     */
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
@@ -152,10 +151,10 @@ public class Main {
           true);
     }
 
-    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
-    model_checker_without_proof
-        .configureInitialGlobalStates(simulator_without_proof
-            .getAllInitialStates());
+    simulator.generateAllInitialStates(model_checker);
+    simulator_without_proof
+        .generateAllInitialStates(model_checker_without_proof);
+
     // simulator.init(initialization_variables);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
@@ -247,7 +246,7 @@ public class Main {
     // System.exit(-1);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
 
-    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    simulator.generateAllInitialStates(model_checker);
 
     GlobalState result = model_checker.verify(simulator);
 
@@ -322,13 +321,16 @@ public class Main {
     simulator.setVerbose(false);
     System.out.print("restrained " + restrained_ctl_value_list + "\n" + "all "
         + all_ctl_value_list + "\n");
-    // LinkedList<GlobalState> global_state_list = simulator
-    // .getAllInitialStates(CTL_list, restrained_ctl_value_list);
 
-    GlobalState global_state_list = simulator.init(all_ctl_value_list);
+    // GlobalState global_state_list = simulator.init(all_ctl_value_list);
+    // GlobalState global_state_list =
+    // simulator.init(restrained_ctl_value_list);
     ModelChecker<GlobalState, StateMachine, State, Transition> model_checker = new ModelChecker<GlobalState, StateMachine, State, Transition>();
-    model_checker.configureInitialGlobalStates(global_state_list);
+    simulator.generateAllInitialStates(CTL_list, restrained_ctl_value_list,
+        model_checker);
+    model_checker.setDiskBackUpMemory();
     model_checker.verify(simulator);
+
     // System.out.print(model_checker.getVisited_states());
 
   }

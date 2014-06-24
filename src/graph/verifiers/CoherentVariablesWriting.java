@@ -77,7 +77,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
     HashMap<State, HashMap<Variable, Byte>> value_associated =
         new HashMap<State, HashMap<Variable, Byte>>();
     // Initialization of the variables written by this machines
-    Iterator<State> it_states = machine.iteratorStates();
+    Iterator<State> it_states = machine.iterator();
     while (it_states.hasNext()) {
       State state = it_states.next();
       HashMap<Variable, Byte> state_variables = new HashMap<Variable, Byte>();

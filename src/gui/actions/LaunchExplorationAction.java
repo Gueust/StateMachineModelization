@@ -76,7 +76,7 @@ public class LaunchExplorationAction implements ActionListener {
 
     long startTime = System.nanoTime();
 
-    model_checker.configureInitialGlobalStates(simulator.getAllInitialStates());
+    simulator.generateAllInitialStates(model_checker);
 
     GlobalState result = model_checker.verify(simulator);
     System.out.println("Result : " + result);

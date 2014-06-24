@@ -623,11 +623,8 @@ public class GraphFactoryAEFD {
 
   static private String concatenateEventsWithOU(Events events) {
     StringBuilder sb = new StringBuilder();
-    Iterator<SingleEvent> single_event_iterator = events.singleEvent();
     boolean first = true;
-    while (single_event_iterator.hasNext()) {
-
-      SingleEvent single_event = single_event_iterator.next();
+    for (SingleEvent single_event : events) {
       if (first) {
         sb.append(single_event.toString(customizer));
       } else {

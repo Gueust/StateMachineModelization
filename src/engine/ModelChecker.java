@@ -3,7 +3,6 @@ package engine;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.mapdb.DB;
@@ -21,9 +20,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   private Set<GS> visited_states = new LinkedHashSet<GS>();
 
   /** The states to explore */
-  private LinkedHashSet<GS> unvisited_states = new LinkedHashSet<GS>();
-
-  private LinkedList<GS> initial_states;
+  private Set<GS> unvisited_states = new LinkedHashSet<GS>();
 
   /**
    * The states that are excluded from the exploration by the postulate states
@@ -41,26 +38,24 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * 
    * @param init
    */
-  public void configureInitialGlobalStates(Collection<GS> init) {
-    initial_states = new LinkedList<GS>(init);
+  public void model_checker(Collection<GS> init) {
+    unvisited_states.clear();
+    unvisited_states.addAll(init);
   }
 
   /**
-   * Set the given `init` state as the single initial state to explore from.
+   * Add `init` in the set of initial states to visit.
    * 
    * @param init
+   *          An initial state to visit.
    */
-  public void configureInitialGlobalStates(GS init) {
-    if (initial_states == null) {
-      initial_states = new LinkedList<GS>();
-    } else {
-      initial_states.clear();
-    }
-    initial_states.add(init);
+  public void addInitialState(GS init) {
+    unvisited_states.add(init);
   }
 
   public void setDiskBackUpMemory() {
     visited_states = null;
+    unvisited_states = null;
 
     DB db = DBMaker.newMemoryDirectDB() // newMemoryDB(). // newMemoryDirectDB
         /*
@@ -74,7 +69,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         .cacheSize(100000)
         .make();
 
-    visited_states = db.getHashSet("visited_states");
+    visited_states = DBMaker.newTempHashSet();
+    unvisited_states = DBMaker.newTempHashSet();
 
   }
 
@@ -133,7 +129,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    *          - unvisited_states and visited_states have never one item in
    *          common.
    *          - all states added in visited_states must be legal. To ensure this
-   *          invariant, we verify it for the states added to unvisited_states.
+   *          invariant, we verify it for the states added to unvisited_states,
+   *          except for the initialization that is checked before beginning the
+   *          proof.
    * @param simulator
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
@@ -152,7 +150,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
      * We need to check that all the initial states are legal before adding
      * them.
      */
-    for (GS global_state : initial_states) {
+    for (GS global_state : unvisited_states) {
       GS result = processGS(global_state);
       if (result != null) {
         return result;
@@ -161,7 +159,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
     System.err.flush();
     System.out.flush();
-    System.err.println("Initial states size : " + initial_states.size());
+    System.err.println("Initial states size : " + unvisited_states.size());
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
 
@@ -206,7 +204,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return visited_states;
   }
 
-  public LinkedHashSet<GS> getUnvisited_states() {
+  public Set<GS> getUnvisited_states() {
     return unvisited_states;
   }
 
