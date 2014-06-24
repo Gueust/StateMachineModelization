@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
+
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
@@ -14,7 +18,7 @@ import abstractGraph.events.ExternalEvent;
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
-  private LinkedHashSet<GS> visited_states = new LinkedHashSet<GS>();
+  private Set<GS> visited_states = new LinkedHashSet<GS>();
 
   /** The states to explore */
   private LinkedHashSet<GS> unvisited_states = new LinkedHashSet<GS>();
@@ -55,6 +59,37 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     initial_states.add(init);
   }
 
+  public void setDiskBackUpMemory() {
+    visited_states = null;
+
+    DB db = DBMaker.newMemoryDirectDB() // newMemoryDB(). // newMemoryDirectDB
+        /*
+         * Disable transactions make writes but you may lose data if store
+         * crashes
+         */
+        .transactionDisable()
+        // .mmapFileEnable()
+        .cacheLRUEnable()
+        .cacheSoftRefEnable()
+        .cacheSize(100000)
+        .make();
+
+    visited_states = db.getHashSet("visited_states");
+
+  }
+
+  private boolean isVisited(GS state) {
+    return visited_states.contains(state);
+  }
+
+  private void addVisited(GS state) {
+    visited_states.add(state);
+  }
+
+  private void clearVisited() {
+    visited_states.clear();
+  }
+
   /**
    * Process an explored global state.
    * 
@@ -72,7 +107,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     }
 
     /* The state is already known. */
-    if (visited_states.contains(state)) { // || illegal_states.contains(state)){
+    if (isVisited(state)) { // || illegal_states.contains(state)){
       return null;
     }
 
@@ -110,7 +145,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     unvisited_states.clear();
     // /illegal_states.clear();
     number_illegal_states = 0;
-    visited_states.clear();
+    clearVisited();
     i = 0;
 
     /*
@@ -135,7 +170,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
       GS state = it.next();
       it.remove();
 
-      visited_states.add(state);
+      addVisited(state);
       System.err.println("Number of visited states: "
           + visited_states.size());
       System.err.println("Number of unvisited states "
@@ -167,7 +202,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return null;
   }
 
-  public LinkedHashSet<GS> getVisited_states() {
+  public Set<GS> getVisited_states() {
     return visited_states;
   }
 

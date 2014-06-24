@@ -228,6 +228,7 @@ public class Main {
 
     ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
         new ModelChecker<>();
+    // model_checker.setDiskBackUpMemory();
 
     /* The all CTL true initial state */
     HashMap<String, Boolean> initialization_variables =
