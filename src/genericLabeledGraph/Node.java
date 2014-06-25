@@ -1,5 +1,6 @@
 package genericLabeledGraph;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -24,6 +25,15 @@ public class Node<N, L> implements Iterable<Edge<N, L>> {
       list = new LinkedList<Edge<N, L>>();
     }
     list.add(hedge);
+  }
+
+  public Iterable<Edge<N, L>> getLabeledBy(L label) {
+    LinkedList<Edge<N, L>> result = transitions.get(label);
+    if (result == null) {
+      return Collections.emptyList();
+    } else {
+      return result;
+    }
   }
 
   @Override
