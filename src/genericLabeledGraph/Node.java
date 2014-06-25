@@ -26,6 +26,7 @@ public class Node<D, N, L> implements Iterable<Edge<N, L>> {
     LinkedList<Edge<N, L>> list = transitions.get(hedge.label);
     if (list == null) {
       list = new LinkedList<Edge<N, L>>();
+      transitions.put(hedge.label, list);
     }
     for (Edge<N, L> edge : list) {
       if (hedge.equals(edge)) {
