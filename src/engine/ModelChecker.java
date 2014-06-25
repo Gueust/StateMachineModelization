@@ -104,6 +104,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
     /* The state is already known. */
     if (isVisited(state)) { // || illegal_states.contains(state)){
+
       return null;
     }
 
@@ -124,6 +125,18 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   /**
+   * Prepare the model checker for a new verification (i.e. receive new initial
+   * state and a call to verify).
+   */
+  public void reset() {
+    /* We reset all the data to empty data */
+    unvisited_states.clear();
+    visited_states.clear();
+    number_illegal_states = 0;
+    i = 0;
+  }
+
+  /**
    * @details
    *          Properties to verify:
    *          - unvisited_states and visited_states have never one item in
@@ -139,8 +152,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
-    /* We reset all the data to empty data */
-    unvisited_states.clear();
     // /illegal_states.clear();
     number_illegal_states = 0;
     clearVisited();
