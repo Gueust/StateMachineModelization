@@ -53,7 +53,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     unvisited_states.add(init);
   }
 
-  public void setDiskBackUpMemory() {
+  protected void setDiskBackUpMemory() {
     visited_states = null;
     unvisited_states = null;
 
@@ -69,8 +69,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         .cacheSize(100000)
         .make();
 
-    visited_states = DBMaker.newTempHashSet();
-    unvisited_states = DBMaker.newTempHashSet();
+    visited_states = db.getHashSet("visited_states");
+    unvisited_states = db.getHashSet("unvisited_states");
+    // DBMaker.newTempHashSet();
 
   }
 

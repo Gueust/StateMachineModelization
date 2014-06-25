@@ -325,8 +325,8 @@ public class Main {
     // GlobalState global_state_list = simulator.init(all_ctl_value_list);
     // GlobalState global_state_list =
     // simulator.init(restrained_ctl_value_list);
-    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker = new ModelChecker<GlobalState, StateMachine, State, Transition>();
-    model_checker.setDiskBackUpMemory();
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+        new ModelChecker<GlobalState, StateMachine, State, Transition>();
     simulator.generateAllInitialStates(CTL_list, restrained_ctl_value_list,
         model_checker);
     model_checker.verify(simulator);
