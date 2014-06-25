@@ -167,14 +167,9 @@ public class SplitProof {
 
   private void addInActivationGraph(StateMachine source_state_machine,
       StateMachine destination_state_machine, SingleEvent label) {
-    LinkedHashSet<StateMachine> arc =
-        activation_graph.get(source_state_machine);
-    if (arc == null) {
-      arc = new LinkedHashSet<StateMachine>();
-    }
-    arc.add(destination_state_machine);
     MyNode node = nodes.get(source_state_machine);
     node.add(new MyEdge(node, nodes.get(destination_state_machine), label));
+    graphs.add(node);
   }
 
   class MyNode extends Node<StateMachine, MyNode, SingleEvent> {
