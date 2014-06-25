@@ -13,7 +13,8 @@ import java.util.LinkedList;
  */
 public class Node<N, L> implements Iterable<Edge<N, L>> {
 
-  public LinkedHashMap<L, LinkedList<Edge<N, L>>> transitions = new LinkedHashMap<>();
+  public final LinkedHashMap<L, LinkedList<Edge<N, L>>> transitions =
+      new LinkedHashMap<>();
 
   public Node() {
 

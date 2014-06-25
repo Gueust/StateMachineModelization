@@ -9,8 +9,8 @@ package genericLabeledGraph;
  */
 public class Edge<N, L> {
 
-  public N from, to;
-  public L label;
+  public final N from, to;
+  public final L label;
 
   public Edge(N from, N to, L label) {
     this.from = from;
