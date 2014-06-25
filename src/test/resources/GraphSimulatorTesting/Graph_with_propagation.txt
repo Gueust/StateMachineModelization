@@ -7,7 +7,7 @@ IND_1_Inactif; SYN_1; Action
 Page 2
 0
 1
-IND_1_Inactif OU CTL_1_Inactif Evenement
+IND_1_Actif Evenement
 Condition
 Action
 Page 3
@@ -15,4 +15,4 @@ Page 3
 1
 SYN_1 Evenement
 Condition
-Action
+IND_1_Actif; Action

@@ -40,4 +40,21 @@ public abstract class AbstractValuation {
   public abstract int hashCode();
 
   public abstract boolean equals(Object obj);
+
+  /**
+   * 
+   * @param variable
+   * @param value
+   * @return true if the value in the argument will change the current value of
+   *         the variable. False otherwise.
+   */
+  public abstract boolean variableValueWillChange(Variable variable,
+      boolean value);
+
+  /**
+   * 
+   * @param variable
+   * @return false if the variable isn't initialized.
+   */
+  public abstract boolean variableInitialized(Variable variable);
 }

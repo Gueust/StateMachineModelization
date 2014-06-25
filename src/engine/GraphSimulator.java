@@ -57,7 +57,7 @@ public class GraphSimulator
   protected LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
   protected LinkedList<ExternalEvent> restrained_external_event_list = null;
-
+  protected HashMap<Variable, Boolean> temporary_variable_change = new HashMap<Variable, Boolean>();
   /* Only used when executing the micro-steps */
   protected LinkedList<SingleEvent> external_proof_event_queue =
       new LinkedList<SingleEvent>();
@@ -382,6 +382,10 @@ public class GraphSimulator
       }
     }
     // Put the variables change event at the end of the event queue.
+    for (Entry<Variable, Boolean> entry : temporary_variable_change.entrySet()) {
+      global_state.setVariableValue(entry.getKey(), entry.getValue());
+    }
+    temporary_variable_change.clear();
     event_list.addAll(temporary_queue);
     temporary_queue.clear();
     if (this.verbose) {
@@ -430,13 +434,23 @@ public class GraphSimulator
       if (single_event instanceof VariableChange) {
         VariableChange variable_change = (VariableChange) single_event;
 
-        /* We set the variable to true if it is not negated and vice versa */
-        if (global_state
-            .setVariableValue(variable_change.getModifiedVariable(),
+        /*
+         * We put the variable change in a temporary queue to be processed at
+         * the end of processSingleEvent
+         */
+        if (!global_state.variableIsInitialized(variable_change
+            .getModifiedVariable())) {
+          System.err.print("**************" + variable_change + "\n");
+          temporary_variable_change.put(variable_change.getModifiedVariable(),
+              !variable_change.isNegated());
+        } else if (global_state
+            .variableValueWillChanged(
+                variable_change.getModifiedVariable(),
                 !variable_change.isNegated())) {
+          temporary_variable_change.put(variable_change.getModifiedVariable(),
+              !variable_change.isNegated());
           temporary_queue.add(variable_change);
         }
-
       } else if (single_event instanceof SynchronisationEvent) {
         event_list.add(single_event);
       } else if (single_event instanceof CommandEvent) {

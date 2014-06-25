@@ -231,7 +231,7 @@ public class GraphSimulatorTesting {
     }
 
     GraphSimulator simulator = new GraphSimulator(model);
-    simulator.setVerbose(false);
+    simulator.setVerbose(true);
     GlobalState global_state = simulator.emptyGlobalState();
 
     Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
@@ -263,7 +263,7 @@ public class GraphSimulatorTesting {
         + proof_file_name, "Testing proof model");
 
     GraphSimulator simulator = new GraphSimulator(model, proof);
-    simulator.setVerbose(false);
+    simulator.setVerbose(true);
     GlobalState global_state = simulator.emptyGlobalState();
 
     initGlobalState(model, global_state);

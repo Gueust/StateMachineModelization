@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
+import org.apache.poi.ss.formula.eval.NotImplementedException;
+
 import abstractGraph.conditions.Variable;
 
 /**
@@ -103,5 +105,16 @@ public class CompactValuation extends AbstractValuation {
     if (!Arrays.equals(valuation, other.valuation))
       return false;
     return true;
+  }
+
+  @Override
+  public boolean variableValueWillChange(Variable variable, boolean value) {
+    return valuation[variable.getIdentifier()] != value;
+  }
+
+  @Override
+  public boolean variableInitialized(Variable variable) {
+    throw new NotImplementedException(null);
+    // TODO
   }
 }

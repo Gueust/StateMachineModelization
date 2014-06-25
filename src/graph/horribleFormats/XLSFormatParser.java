@@ -50,7 +50,7 @@ public class XLSFormatParser {
         from = Integer.parseInt(from_cell.getStringCellValue());
       }
 
-      Cell to_cell = row.getCell(FROM);
+      Cell to_cell = row.getCell(TO);
       int to;
       if (to_cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
         to = (int) to_cell.getNumericCellValue();

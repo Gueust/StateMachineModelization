@@ -108,6 +108,14 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     isNotP7 = NotP7;
   }
 
+  public boolean variableValueWillChanged(Variable variable, boolean value) {
+    return variables_values.variableValueWillChange(variable, value);
+  }
+
+  public boolean variableIsInitialized(Variable variable) {
+    return variables_values.variableInitialized(variable);
+  }
+
   @Override
   public String toString() {
     String result = "";

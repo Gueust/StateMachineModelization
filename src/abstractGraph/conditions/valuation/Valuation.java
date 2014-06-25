@@ -102,5 +102,17 @@ public class Valuation extends AbstractValuation {
   @Override
   public int size() {
     return valuation.size();
+
+  }
+
+  @Override
+  public boolean variableValueWillChange(Variable variable, boolean value) {
+    return valuation.get(variable) != null && valuation.get(variable) != value;
+  }
+
+  @Override
+  public boolean variableInitialized(Variable variable) {
+    Boolean res = valuation.get(variable);
+    return res != null;
   }
 }
