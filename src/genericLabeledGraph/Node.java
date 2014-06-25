@@ -11,13 +11,15 @@ import java.util.LinkedList;
  * @param <L>
  *          The class of the label.
  */
-public class Node<N, L> implements Iterable<Edge<N, L>> {
+public class Node<D, N, L> implements Iterable<Edge<N, L>> {
+
+  public final D data;
 
   public final LinkedHashMap<L, LinkedList<Edge<N, L>>> transitions =
       new LinkedHashMap<>();
 
-  public Node() {
-
+  public Node(D data) {
+    this.data = data;
   }
 
   public void add(Edge<N, L> hedge) {
@@ -44,7 +46,7 @@ public class Node<N, L> implements Iterable<Edge<N, L>> {
       private Iterator<Edge<N, L>> current_list_it;
       private Iterator<LinkedList<Edge<N, L>>> iterator_over_lists;
 
-      public LocalIterator(Node<N, L> node) {
+      public LocalIterator(Node<D, N, L> node) {
         iterator_over_lists = node.transitions.values().iterator();
       }
 
