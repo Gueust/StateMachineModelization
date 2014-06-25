@@ -1,16 +1,20 @@
 package engine;
 
+import genericLabeledGraph.Edge;
+import genericLabeledGraph.Node;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
@@ -29,6 +33,9 @@ public class SplitProof {
    */
   private LinkedHashMap<StateMachine, LinkedHashSet<StateMachine>> activation_graph =
       new LinkedHashMap<StateMachine, LinkedHashSet<StateMachine>>();
+  private HashSet<MyNode> graphs =
+      new HashSet<MyNode>();
+  private HashMap<StateMachine, MyNode> nodes = new HashMap<StateMachine, MyNode>();
 
   public SplitProof(Model model, Model proof) {
     this.model = model;
@@ -40,10 +47,19 @@ public class SplitProof {
    * modifies some variables or generate SYN's that are eaten by graph B.
    */
   public void createGraphOfGraphs() {
-    // TODO: build the writing state machine for both the proof and functional
     // model
     HashMap<Variable, LinkedList<StateMachine>> writing_state_machine =
         model.getWritingStateMachines();
+    @SuppressWarnings("unchecked")
+    HashMap<Variable, LinkedList<StateMachine>> writing_state_machine_proof =
+        (HashMap<Variable, LinkedList<StateMachine>>) proof
+            .getWritingStateMachines()
+            .clone();
+    /*
+     * The graphs of the proof model need to know the graphs that write on the
+     * variable
+     */
+    writing_state_machine_proof.putAll(writing_state_machine);
 
     /*
      * Store for every SynchronisationEvent (i.e. its name) the set of state
@@ -59,7 +75,8 @@ public class SplitProof {
     /* We then build the Activation Graph */
     buildOutgoingLinksFromModel(writing_state_machine, syn_event_in_graphs,
         this.model);
-    buildOutgoingLinksFromModel(writing_state_machine, syn_event_in_graphs,
+    buildOutgoingLinksFromModel(writing_state_machine_proof,
+        syn_event_in_graphs,
         this.proof);
   }
 
@@ -75,28 +92,44 @@ public class SplitProof {
       LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs,
       Model current_model) {
     for (StateMachine state_machine : current_model) {
+
       for (State state : state_machine) {
         for (Transition transition : state) {
           for (SingleEvent event : transition.getEvents()) {
             if (event instanceof VariableChange) {
-              if (writing_state_machine.get(event).size() > 1) {
-                throw new IllegalArgumentException("The variable " + event
-                    + " is written by more than one graph.");
-              }
-              addInGraphOfGraph(writing_state_machine.get(event).getFirst(),
-                  state_machine);
+              addWritingStateMachineInGraph(writing_state_machine,
+                  state_machine, (VariableChange) event);
             } else if (event instanceof SynchronisationEvent) {
               for (StateMachine writer : syn_event_in_graphs.get(event
                   .getName())) {
-                addInGraphOfGraph(writer, state_machine);
+                addInActivationGraph(writer, state_machine, event);
+
               }
             }
           }
-          // TODO: also look into the Condition field.
+          HashSet<Variable> list_variable = new HashSet<Variable>();
+          transition.getCondition().allVariables(list_variable);
+          for (Variable variable : list_variable) {
+            addWritingStateMachineInGraph(writing_state_machine, state_machine,
+                new VariableChange(new Literal(variable)));
+          }
         }
       }
     }
 
+  }
+
+  private void addWritingStateMachineInGraph(
+      HashMap<Variable, LinkedList<StateMachine>> writing_state_machine,
+      StateMachine state_machine,
+      VariableChange variable_change) {
+    if (writing_state_machine.get(variable_change.getModifiedVariable()).size() > 1) {
+      throw new IllegalArgumentException("The variable " + variable_change
+          + " is written by more than one graph.");
+    }
+    addInActivationGraph(writing_state_machine.get(
+        variable_change.getModifiedVariable()).getFirst(),
+        state_machine, variable_change);
   }
 
   /**
@@ -113,6 +146,7 @@ public class SplitProof {
       LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs,
       Model current_model) {
     for (StateMachine state_machine : current_model) {
+      nodes.put(state_machine, new MyNode(state_machine));
       for (State state : state_machine) {
         for (Transition transition : state) {
           for (SingleEvent action : transition.getActions()) {
@@ -131,13 +165,28 @@ public class SplitProof {
     }
   }
 
-  private void addInGraphOfGraph(StateMachine source_state_machine,
-      StateMachine destination_state_machine) {
+  private void addInActivationGraph(StateMachine source_state_machine,
+      StateMachine destination_state_machine, SingleEvent label) {
     LinkedHashSet<StateMachine> arc =
         activation_graph.get(source_state_machine);
     if (arc == null) {
       arc = new LinkedHashSet<StateMachine>();
     }
     arc.add(destination_state_machine);
+    MyNode node = nodes.get(source_state_machine);
+    node.add(new MyEdge(node, nodes.get(destination_state_machine), label));
   }
+
+  class MyNode extends Node<StateMachine, MyNode, SingleEvent> {
+    public MyNode(StateMachine data) {
+      super(data);
+    }
+  }
+
+  class MyEdge extends Edge<MyNode, SingleEvent> {
+    public MyEdge(MyNode from, MyNode to, SingleEvent label) {
+      super(from, to, label);
+    }
+  }
+
 }
