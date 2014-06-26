@@ -1,5 +1,11 @@
 package engine;
 
+import engine.SplitProof.MyEdge;
+import engine.SplitProof.MyNode;
+import genericLabeledGraph.Edge;
+import graph.Model;
+import graph.StateMachine;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -13,6 +19,7 @@ import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.SingleEvent;
 
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
@@ -209,6 +216,37 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("Total number of illegal states found:" +
         number_illegal_states);
     System.err.println("Total number of explored node: " + i);
+    return null;
+  }
+
+  public GS verifyUsingSplitting(GraphSimulator simulator) {
+    Model model = simulator.getModel();
+    Model proof = simulator.proof;
+    if (proof == null) {
+      throw new IllegalArgumentException("The proof model must be not null");
+    }
+
+    SplitProof splitter = new SplitProof(model, proof);
+
+    for (StateMachine state_machine_to_prove : proof) {
+      Set<StateMachine> frontier = new LinkedHashSet<>();
+      frontier.add(state_machine_to_prove);
+      Set<StateMachine> visited = new LinkedHashSet<>();
+
+      while (frontier.size() != 0) {
+        StateMachine state_machine = frontier.iterator().next();
+        visited.add(state_machine);
+
+        for (Edge<MyNode, SingleEvent> edge : splitter.nodes.get(state_machine)) {
+
+          StateMachine new_to_visit = edge.to.data;
+
+          if (visited.contains(new_to_visit)) {
+            frontier.add(new_to_visit);
+          }
+        }
+      }
+    }
     return null;
   }
 

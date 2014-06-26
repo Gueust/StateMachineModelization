@@ -216,7 +216,7 @@ public class Main {
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
-    // model.build();
+    model.build();
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 

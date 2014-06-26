@@ -29,7 +29,7 @@ public class SplitProof {
   private Model model;
   private Model proof;
 
-  private HashMap<StateMachine, MyNode> nodes = new HashMap<StateMachine, MyNode>();
+  public HashMap<StateMachine, MyNode> nodes = new HashMap<StateMachine, MyNode>();
 
   public SplitProof(Model model, Model proof) {
     this.model = model;
