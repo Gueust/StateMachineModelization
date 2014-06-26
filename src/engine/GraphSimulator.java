@@ -440,7 +440,6 @@ public class GraphSimulator
          */
         if (!global_state.variableIsInitialized(variable_change
             .getModifiedVariable())) {
-          System.err.print("**************" + variable_change + "\n");
           temporary_variable_change.put(variable_change.getModifiedVariable(),
               !variable_change.isNegated());
         } else if (global_state

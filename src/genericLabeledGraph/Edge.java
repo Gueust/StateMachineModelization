@@ -17,4 +17,13 @@ public class Edge<N, L> {
     this.to = to;
     this.label = label;
   }
+
+  public boolean equals(Edge<N, L> hedge) {
+    if (hedge.from.equals(from) && hedge.to.equals(to)
+        && hedge.label.equals(label)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -313,24 +313,25 @@ public class Main {
           restrained_ctl_value_list.put(ctl_name, false);
           all_ctl_value_list.put(ctl_name, false);
         }
+      } else {
+        all_ctl_value_list.put(ctl_name, true);
       }
-      all_ctl_value_list.put(ctl_name, true);
     }
     GraphSimulator simulator = new GraphSimulator(model, proof);
-    // simulator.setRestrainedExternalEventList(external_event_list);
-    simulator.setVerbose(false);
+    simulator.setRestrainedExternalEventList(external_event_list);
+    simulator.setVerbose(true);
     System.out.print("restrained " + restrained_ctl_value_list + "\n" + "all "
         + all_ctl_value_list + "\n");
 
-    // GlobalState global_state_list = simulator.init(all_ctl_value_list);
+    GlobalState global_state_list = simulator.init(all_ctl_value_list);
     // GlobalState global_state_list =
     // simulator.init(restrained_ctl_value_list);
-    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
-        new ModelChecker<GlobalState, StateMachine, State, Transition>();
-    simulator.generateAllInitialStates(CTL_list, restrained_ctl_value_list,
-        model_checker);
-    model_checker.verify(simulator);
 
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker = new ModelChecker<GlobalState, StateMachine, State, Transition>();
+    // simulator.generateAllInitialStates(CTL_list, restrained_ctl_value_list,
+    // model_checker);
+    model_checker.addInitialState(global_state_list);
+    model_checker.verify(simulator);
     // System.out.print(model_checker.getVisited_states());
 
   }

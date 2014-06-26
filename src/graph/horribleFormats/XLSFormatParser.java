@@ -94,6 +94,8 @@ public class XLSFormatParser {
         .replaceAll("_non_Libere", "_en_Action");
     string_to_write = string_to_write
         .replaceAll("_non_en_Action", "_Libere");
+    string_to_write = string_to_write
+        .replaceAll("_Non_", "_non_");
     out.write(string_to_write);
     out.close();
     CTLReplacer ctl_replacer = new CTLReplacer(output_file_name,

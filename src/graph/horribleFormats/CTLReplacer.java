@@ -1,16 +1,21 @@
 package graph.horribleFormats;
 
 import graph.GraphFactoryAEFD;
+import graph.Model;
+import graph.StateMachine;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import parserAEFDFormat.Fichier6lignes;
+import abstractGraph.conditions.Variable;
 
 /**
  * Replace all the ctl found in a condition field of a transition that doesn't
@@ -33,6 +38,11 @@ public class CTLReplacer {
    */
   public CTLReplacer(String file_name, String target_name, boolean isProof)
       throws IOException {
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    Model model = graph_factory.buildModel(file_name, file_name);
+    model.build();
+    HashMap<Variable, LinkedList<StateMachine>> writing_state_machine = model
+        .getWritingStateMachines();
     Boolean beginning = true;
     BufferedWriter writer = new BufferedWriter(new FileWriter(
         target_name));
@@ -80,6 +90,12 @@ public class CTLReplacer {
           }
           String new_ctl_name = ctl_name.replaceAll(
               "CTL_", "IND_");
+
+          if (writing_state_machine.containsKey(new Variable(new_ctl_name))) {
+            pairs_of_ctl.remove(ctl_name);
+            pairs_of_ctl.remove(GenerateFormulaAEFD
+                .getOppositeName(ctl_name));
+          }
           condition = condition.replaceAll(ctl_name,
               new_ctl_name);
           index_CTL = condition.indexOf("CTL_", index_CTL);
@@ -97,10 +113,13 @@ public class CTLReplacer {
           .iterator();
       while (entry_iterator.hasNext()) {
         Entry<String, String> entry = entry_iterator.next();
-        writer.write(GraphFactoryAEFD.generateAutomateForCTL(entry.getKey(),
-            entry.getValue()));
-        if (entry_iterator.hasNext()) {
-          writer.write("\n");
+        if (!writing_state_machine.containsKey(model
+            .getVariable(entry.getKey()))) {
+          writer.write(GraphFactoryAEFD.generateAutomateForCTL(entry.getKey(),
+              entry.getValue()));
+          if (entry_iterator.hasNext()) {
+            writer.write("\n");
+          }
         }
       }
     }

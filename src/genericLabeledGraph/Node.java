@@ -27,6 +27,11 @@ public class Node<D, N, L> implements Iterable<Edge<N, L>> {
     if (list == null) {
       list = new LinkedList<Edge<N, L>>();
     }
+    for (Edge<N, L> edge : list) {
+      if (hedge.equals(edge)) {
+        return;
+      }
+    }
     list.add(hedge);
   }
 
@@ -76,5 +81,13 @@ public class Node<D, N, L> implements Iterable<Edge<N, L>> {
     }
 
     return new LocalIterator(this);
+  }
+
+  public boolean equals(Node other_node) {
+    if (other_node.data.equals(data)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
