@@ -180,7 +180,8 @@ public class SplitProof {
       String state_machine_name = node.data.getName();
       for (Edge<MyNode, SingleEvent> edge : node) {
         String target_name = edge.to.data.getName();
-        gv.addln(state_machine_name + " -> " + target_name + ";");
+        gv.addln(state_machine_name + " -> " + target_name + " [label=\""
+            + edge.label + "\"];");
       }
     }
 

@@ -111,10 +111,11 @@ public class CTLReplacer {
       Iterator<Entry<String, String>> entry_iterator = pairs_of_ctl
           .entrySet()
           .iterator();
+
       while (entry_iterator.hasNext()) {
         Entry<String, String> entry = entry_iterator.next();
         if (!writing_state_machine.containsKey(model
-            .getVariable(entry.getKey()))) {
+            .getVariable(entry.getKey().replaceAll("CTL_", "IND_")))) {
           writer.write(GraphFactoryAEFD.generateAutomateForCTL(entry.getKey(),
               entry.getValue()));
           if (entry_iterator.hasNext()) {
