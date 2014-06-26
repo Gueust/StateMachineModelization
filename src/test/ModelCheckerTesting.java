@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import engine.GraphSimulator;
 import engine.ModelChecker;
+import engine.SplitProof;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -93,7 +94,23 @@ public class ModelCheckerTesting {
     }
     simulator.setVerbose(false);
     return simulator;
-
   }
 
+  @Test
+  public void splitProofTesting() throws IOException {
+    String functional_model = GeneratorFromTemplate
+        .load("fonctionnel4voie.yaml");
+    String proof_model = GeneratorFromTemplate
+        .load("preuve4voie.yaml");
+
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+
+    Model model = graph_factory.buildModel(functional_model, functional_model);
+    model.build();
+    Model proof = graph_factory.buildModel(proof_model, proof_model);
+    proof.build();
+
+    SplitProof splitter = new SplitProof(model, proof);
+    splitter.printToImage("./activation_graph.");
+  }
 }
