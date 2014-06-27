@@ -3,6 +3,9 @@ package graph;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.verifiers.AbstractVerificationUnit;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -133,6 +136,41 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       var.setIdentifier(id);
       id++;
     }
+  }
+
+  /**
+   * 
+   * @return
+   */
+  private boolean isBuild() {
+    return external_events != null;
+  }
+
+  public LinkedList<ExternalEvent> loadScenario(String file_name)
+      throws IOException {
+    if (!isBuild()) {
+      build();
+    }
+
+    BufferedReader buff = new BufferedReader(new FileReader(file_name));
+
+    LinkedList<ExternalEvent> result = new LinkedList<>();
+
+    String line;
+    do {
+      line = buff.readLine();
+
+      ExternalEvent event = external_events.get(line.trim());
+      if (event == null) {
+        buff.close();
+        throw new Error("The event " + line + " does not exist in the model");
+      }
+      result.add(event);
+    } while (line != null);
+
+    buff.close();
+
+    return result;
   }
 
   /**
