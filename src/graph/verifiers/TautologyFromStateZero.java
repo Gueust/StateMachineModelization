@@ -1,6 +1,6 @@
 package graph.verifiers;
 
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
@@ -80,9 +80,9 @@ public class TautologyFromStateZero extends AbstractVerificationUnit {
       for (Transition transition : state) {
         /* We check that the transition is labeled with ACT_INIT */
         Events events = transition.getEvents();
-        if (!events.containsEvent(GraphSimulator.ACT_INIT)) {
+        if (!events.containsEvent(SequentialGraphSimulator.ACT_INIT)) {
           throw new Error("The following transition is not labeled with "
-              + GraphSimulator.ACT_INIT + ":\n" + transition);
+              + SequentialGraphSimulator.ACT_INIT + ":\n" + transition);
         }
         /* We enlarge the union */
         union = new OrFormula(union, transition.getCondition());

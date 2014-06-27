@@ -167,8 +167,7 @@ public class GenerateFormulaAEFD extends
   @Override
   public Formula visitNotExpr(
       @NotNull AEFDBooleanExpressionParser.NotExprContext ctx) {
-    NotFormula temp_formula = new NotFormula(visit(ctx.booleanExpression()));
-    return temp_formula;
+    return new NotFormula(visit(ctx.booleanExpression()));
   }
 
   /**
@@ -176,8 +175,9 @@ public class GenerateFormulaAEFD extends
    * 
    * @return
    */
+  @Override
   public Formula visitTrueExpr(
-      @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
+      @NotNull AEFDBooleanExpressionParser.TrueExprContext ctx) {
     Formula temp_formula = Formula.TRUE;
     return temp_formula;
   }
@@ -188,8 +188,9 @@ public class GenerateFormulaAEFD extends
    * @return
    */
 
+  @Override
   public Formula visitFalseExpr(
-      @NotNull AEFDBooleanExpressionParser.IdpositifExprContext ctx) {
+      @NotNull AEFDBooleanExpressionParser.FalseExprContext ctx) {
     Formula temp_formula = Formula.FALSE;
     return temp_formula;
   }
@@ -204,8 +205,7 @@ public class GenerateFormulaAEFD extends
       @NotNull AEFDBooleanExpressionParser.AndExprContext ctx) {
     Formula left = visit(ctx.booleanExpression(0));
     Formula right = visit(ctx.booleanExpression(1));
-    AndFormula temp_formula = new AndFormula(left, right);
-    return temp_formula;
+    return new AndFormula(left, right);
   }
 
   /**
@@ -218,8 +218,8 @@ public class GenerateFormulaAEFD extends
       @NotNull AEFDBooleanExpressionParser.OrExprContext ctx) {
     Formula left = visit(ctx.booleanExpression(0));
     Formula right = visit(ctx.booleanExpression(1));
-    OrFormula temp_formula = new OrFormula(left, right);
-    return temp_formula;
+    assert (left != null && right != null);
+    return new OrFormula(left, right);
   }
 
   /**
@@ -231,7 +231,9 @@ public class GenerateFormulaAEFD extends
   @Override
   public Formula visitBracketExpr(
       @NotNull AEFDBooleanExpressionParser.BracketExprContext ctx) {
-    return visit(ctx.booleanExpression());
+    Formula temp_formula = visit(ctx.booleanExpression());
+    assert (temp_formula != null);
+    return temp_formula;
   }
 
   /**
@@ -279,7 +281,9 @@ public class GenerateFormulaAEFD extends
           "suffix in the variable " + indicateur);
     }
 
-    return factory.getVariable(indicateur);
+    Formula temp_formula = factory.getVariable(indicateur);
+    assert (temp_formula != null);
+    return temp_formula;
   }
 
   /**

@@ -36,7 +36,7 @@ import org.jdesktop.swingx.JXTable;
 
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.GlobalState;
 import graph.Model;
 import graph.State;
@@ -58,7 +58,7 @@ public class MainWindow extends JFrame {
   private JList<String> variables_list;
   private JXTable table;
   private JScrollPane table_scroll_pane;
-  private GraphSimulator simulator;
+  private SequentialGraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
   private HashMap<String, Boolean> initial_CTLs;
   private GlobalState global_state = new GlobalState();
@@ -66,7 +66,7 @@ public class MainWindow extends JFrame {
   JButton btnSimulate;
   JButton btnEatExternalEvents;
 
-  public MainWindow(final GraphSimulator simulator)
+  public MainWindow(final SequentialGraphSimulator simulator)
       throws HeadlessException {
     this.simulator = simulator;
 
@@ -753,7 +753,7 @@ public class MainWindow extends JFrame {
 
   public static void main(String[] args) {
     Model model = new Model("test");
-    GraphSimulator simulator = new GraphSimulator(model);
+    SequentialGraphSimulator simulator = new SequentialGraphSimulator(model);
     MainWindow main_window = new MainWindow(simulator);
     main_window.pack();
     main_window.setLocationRelativeTo(null);

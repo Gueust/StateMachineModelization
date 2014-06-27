@@ -1,6 +1,6 @@
 package gui.actions;
 
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.GraphFactoryAEFD;
 import graph.Model;
 import gui.MainWindow;
@@ -29,7 +29,7 @@ public class LaunchSimulationAction implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     Model functional_model = null;
     Model proof_model = null;
-    GraphSimulator simulator;
+    SequentialGraphSimulator simulator;
     if (functional_file_chooser.getSelectedFile() != null) {
       GraphFactoryAEFD factory = new GraphFactoryAEFD();
       try {
@@ -49,9 +49,9 @@ public class LaunchSimulationAction implements ActionListener {
           return;
         }
         // TODO add the initialization of a global state to add to the file
-        simulator = new GraphSimulator(functional_model, proof_model);
+        simulator = new SequentialGraphSimulator(functional_model, proof_model);
       } else {
-        simulator = new GraphSimulator(functional_model);
+        simulator = new SequentialGraphSimulator(functional_model);
       }
       frame.dispose();
       MainWindow main_window = new MainWindow(simulator);

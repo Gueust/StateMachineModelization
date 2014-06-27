@@ -10,6 +10,12 @@ import abstractGraph.events.ExternalEvent;
 
 public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
+  /**
+   * The initial event given to the machine to force its
+   * initialization
+   */
+  public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
+
   public GraphSimulatorInterface<GS, M, S, T> clone();
 
   /**

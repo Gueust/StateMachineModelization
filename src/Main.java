@@ -1,5 +1,5 @@
-import engine.GraphSimulator;
 import engine.ModelChecker;
+import engine.SequentialGraphSimulator;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -128,9 +128,10 @@ public class Main {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    final GraphSimulator simulator = new GraphSimulator(model, proof);
-    final GraphSimulator simulator_without_proof = new GraphSimulator(model,
-        proof);
+    final SequentialGraphSimulator simulator =
+        new SequentialGraphSimulator(model, proof);
+    final SequentialGraphSimulator simulator_without_proof =
+        new SequentialGraphSimulator(model, proof);
 
     simulator.setVerbose(false);
     simulator_without_proof.setVerbose(false);
@@ -220,7 +221,8 @@ public class Main {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    GraphSimulator simulator = new GraphSimulator(model, proof);
+    SequentialGraphSimulator simulator =
+        new SequentialGraphSimulator(model, proof);
     simulator.setVerbose(false);
     verifyModel(model);
     verifyModel(proof);
@@ -317,9 +319,10 @@ public class Main {
         all_ctl_value_list.put(ctl_name, true);
       }
     }
-    GraphSimulator simulator = new GraphSimulator(model, proof);
+    SequentialGraphSimulator simulator =
+        new SequentialGraphSimulator(model, proof);
     simulator.setRestrainedExternalEventList(external_event_list);
-    simulator.setVerbose(true);
+    simulator.setVerbose(false);
     System.out.print("restrained " + restrained_ctl_value_list + "\n" + "all "
         + all_ctl_value_list + "\n");
 

@@ -10,8 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import utils.Monitoring;
-import engine.GraphSimulator;
 import engine.ModelChecker;
+import engine.SequentialGraphSimulator;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -26,7 +26,7 @@ public class LaunchExplorationAction implements ActionListener {
   private JFrame frame;
   private ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
       new ModelChecker<GlobalState, StateMachine, State, Transition>();
-  private GraphSimulator simulator;
+  private SequentialGraphSimulator simulator;
   private JCheckBox verbose_box;
 
   public LaunchExplorationAction(JFileChooser functional_file_chooser,
@@ -71,7 +71,7 @@ public class LaunchExplorationAction implements ActionListener {
       return;
     }
     // TODO add the initialization of a global state to add to the file
-    simulator = new GraphSimulator(functional_model, proof_model);
+    simulator = new SequentialGraphSimulator(functional_model, proof_model);
     simulator.setVerbose(verbose_box.isSelected());
 
     long startTime = System.nanoTime();

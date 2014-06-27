@@ -1,5 +1,16 @@
 package gui;
 
+import engine.SequentialGraphSimulator;
+import graph.verifiers.CoherentVariablesWriting;
+import graph.verifiers.DeterminismChecker;
+import graph.verifiers.InitializationProperties;
+import graph.verifiers.NoUselessVariables;
+import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.TautologyFromStateZero;
+import graph.verifiers.WrittenAtLeastOnceChecker;
+import gui.actions.LaunchExplorationAction;
+import gui.actions.LaunchSimulationAction;
+
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,17 +29,6 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import engine.GraphSimulator;
-import graph.verifiers.CoherentVariablesWriting;
-import graph.verifiers.DeterminismChecker;
-import graph.verifiers.InitializationProperties;
-import graph.verifiers.NoUselessVariables;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.TautologyFromStateZero;
-import graph.verifiers.WrittenAtLeastOnceChecker;
-import gui.actions.LaunchExplorationAction;
-import gui.actions.LaunchSimulationAction;
 
 @SuppressWarnings("serial")
 public class HomePage extends JFrame {
@@ -153,7 +153,8 @@ public class HomePage extends JFrame {
     JCheckBox chckbxGoodInitialization = new JCheckBox("Good initialization");
     chckbxGoodInitialization
         .setToolTipText("Verify that every graph contains a state 0. That "
-            + "those state have just only event \"" + GraphSimulator.ACT_INIT
+            + "those state have just only event \""
+            + SequentialGraphSimulator.ACT_INIT
             + " \". And that for those transition, the only variable in the "
             + "conditions are CTL.");
     chckbxGoodInitialization.setSelected(true);

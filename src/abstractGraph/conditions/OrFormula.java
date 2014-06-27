@@ -17,6 +17,7 @@ public class OrFormula extends Formula {
    *          The right formula.
    */
   public OrFormula(Formula p, Formula q) {
+    assert (p != null && q != null);
     this.p = p;
     this.q = q;
   }

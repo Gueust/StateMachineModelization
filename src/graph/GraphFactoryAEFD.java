@@ -1,6 +1,6 @@
 package graph;
 
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
@@ -697,6 +697,7 @@ public class GraphFactoryAEFD {
     String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
 
     StateMachine machine = new StateMachine("GRAPH_" + IND_actif_name);
+    assert ("GRAPH_CTL_RPD_3422b_Excite" != "GRAPH_" + IND_actif_name);
 
     State init_state = machine.addState("0");
     State positive_state = machine.addState("1");
@@ -709,7 +710,7 @@ public class GraphFactoryAEFD {
 
     /* Transition from 0 to 1 */
     events = new Events();
-    events.addEvent(GraphSimulator.ACT_INIT);
+    events.addEvent(SequentialGraphSimulator.ACT_INIT);
     condition = factory.parse(CTL_pos);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable)));
@@ -718,7 +719,7 @@ public class GraphFactoryAEFD {
 
     /* Transition from 0 to 2 */
     events = new Events();
-    events.addEvent(GraphSimulator.ACT_INIT);
+    events.addEvent(SequentialGraphSimulator.ACT_INIT);
     condition = factory.parse(CTL_neg);
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable, true)));

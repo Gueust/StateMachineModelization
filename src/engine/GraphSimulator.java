@@ -33,15 +33,9 @@ import abstractGraph.events.VariableChange;
  * 
  * @details This class is NOT thread safe.
  */
-public class GraphSimulator
+class GraphSimulator
     implements
     GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
-
-  /**
-   * The initial event given to the machine to force its
-   * initialization
-   */
-  public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
 
   /** This is the list of the different queues used in the simulator. */
   protected LinkedList<SingleEvent> internal_functional_event_queue =

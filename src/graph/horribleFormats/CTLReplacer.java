@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -57,13 +58,26 @@ public class CTLReplacer {
       }
       writer.write(parser.getGraphName() + "\n"
           + parser.getSourceState() + "\n"
-          + parser.getDestinationState() + "\n"
-          + parser.getEvent() + " Evenement\n"
-          );
+          + parser.getDestinationState() + "\n");
+
+      String event = parser.getEvent();
+      event = event.replaceAll("[a-zA-Z0-9_]*_non_Bloque OU", "");
+      event = event.replaceAll("[a-zA-Z0-9_]*_Bloque OU", "");
+
+      writer.write(event + " Evenement\n");
+
       String condition = "";
       condition = parser.getCondition();
       if (!parser.getSourceState().equals("0")) {
         condition = parser.getCondition();
+
+        /*
+         * These variables are not used during exploration, just during tests.
+         */
+        condition = condition.replaceAll("[a-zA-Z0-9_]*_non_Bloque",
+            "true");
+        condition = condition.replaceAll("[a-zA-Z0-9_]*_Bloque",
+            "false");
         int index_CTL;
         index_CTL = condition.indexOf("CTL_");
         while (index_CTL >= 0) {
@@ -108,19 +122,53 @@ public class CTLReplacer {
       if (pairs_of_ctl.size() != 0) {
         writer.write("\n");
       }
+      writer.flush();
+      model = graph_factory.buildModel(target_name, file_name);
+      model.build();
+
       Iterator<Entry<String, String>> entry_iterator = pairs_of_ctl
           .entrySet()
           .iterator();
 
+      HashSet<String> variable_already_written = new HashSet<String>();
+      boolean first = true;
       while (entry_iterator.hasNext()) {
         Entry<String, String> entry = entry_iterator.next();
         if (!writing_state_machine.containsKey(model
             .getVariable(entry.getKey().replaceAll("CTL_", "IND_")))) {
-          writer.write(GraphFactoryAEFD.generateAutomateForCTL(entry.getKey(),
-              entry.getValue()));
-          if (entry_iterator.hasNext()) {
+          variable_already_written.add(entry.getKey());
+          if (first) {
+            first = false;
+          } else {
             writer.write("\n");
           }
+
+          String result = GraphFactoryAEFD.generateAutomateForCTL(entry
+              .getKey(),
+              entry.getValue());
+          writer.write(result);
+
+        }
+      }
+
+      Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+      while (variable_iterator.hasNext()) {
+        Variable variable = variable_iterator.next();
+        if (!writing_state_machine.containsKey(variable)
+            && !variable_already_written.contains(variable.getVarname())
+            && !variable.getVarname().startsWith("CTL_")) {
+          if (first) {
+            first = false;
+          } else {
+            writer.write("\n");
+          }
+          writer.write(
+              GraphFactoryAEFD
+                  .generateAutomateForCTL(
+                      variable.getVarname().replaceAll("IND_", "CTL_"),
+                      GenerateFormulaAEFD
+                          .getOppositeName(variable.getVarname())
+                          .replaceAll("IND_", "CTL_")));
         }
       }
     }

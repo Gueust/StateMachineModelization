@@ -96,6 +96,11 @@ public class XLSFormatParser {
         .replaceAll("_non_en_Action", "_Libere");
     string_to_write = string_to_write
         .replaceAll("_Non_", "_non_");
+    string_to_write = string_to_write
+        .replaceAll("VER_[a-zA-Z0-9_]* ", "true ");
+    string_to_write = string_to_write
+        .replaceAll("VER_[a-zA-Z0-9_]*\\)", "true)");
+
     out.write(string_to_write);
     out.close();
     CTLReplacer ctl_replacer = new CTLReplacer(output_file_name,

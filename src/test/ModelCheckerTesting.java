@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import engine.GraphSimulator;
 import engine.ModelChecker;
+import engine.SequentialGraphSimulator;
 import engine.SplitProof;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
@@ -28,7 +28,7 @@ public class ModelCheckerTesting {
     ModelChecker<GlobalState, StateMachine, State, Transition> model_checker;
     for (i = 0; i < files.length; i++) {
       model_checker = new ModelChecker<>();
-      GraphSimulator simulator = generateSimulator(files[i], null);
+      SequentialGraphSimulator simulator = generateSimulator(files[i], null);
       simulator.generateAllInitialStates(model_checker);
       System.out.println("Number of generated states: "
           + model_checker.getUnvisited_states().size());
@@ -70,14 +70,15 @@ public class ModelCheckerTesting {
     generalTest(files, results);
   }
 
-  public GraphSimulator generateSimulator(String model_file, String proof_file)
+  public SequentialGraphSimulator generateSimulator(String model_file,
+      String proof_file)
       throws IOException {
     String functional_model = GeneratorFromTemplate
         .load("src/test/resources/" + this.getClass().getSimpleName() + "/"
             + model_file);
     String proof_model;
     Model model;
-    GraphSimulator simulator;
+    SequentialGraphSimulator simulator;
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
     model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -88,9 +89,9 @@ public class ModelCheckerTesting {
               + proof_file);
       Model proof = graph_factory.buildModel(proof_model, proof_model);
       proof.build();
-      simulator = new GraphSimulator(model, proof);
+      simulator = new SequentialGraphSimulator(model, proof);
     } else {
-      simulator = new GraphSimulator(model);
+      simulator = new SequentialGraphSimulator(model);
     }
     simulator.setVerbose(false);
     return simulator;

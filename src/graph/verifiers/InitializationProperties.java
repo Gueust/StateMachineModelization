@@ -1,6 +1,6 @@
 package graph.verifiers;
 
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
@@ -79,9 +79,9 @@ public class InitializationProperties extends AbstractVerificationUnit {
   private boolean checkTransition(StateMachine state_machine,
       Transition transition, boolean stop_at_first_error) {
     transition.getEvents()
-        .containsEvent(GraphSimulator.ACT_INIT);
+        .containsEvent(SequentialGraphSimulator.ACT_INIT);
     for (SingleEvent event : transition.getEvents()) {
-      if (!event.getName().equals(GraphSimulator.ACT_INIT.getName())) {
+      if (!event.getName().equals(SequentialGraphSimulator.ACT_INIT.getName())) {
         state_machine_with_act_init_error.add(state_machine);
         if (stop_at_first_error) {
           return false;
@@ -127,7 +127,8 @@ public class InitializationProperties extends AbstractVerificationUnit {
     }
     if (!state_machine_with_act_init_error.isEmpty()) {
       error.append("[FAILURE]These state machines have an event different"
-          + " than " + GraphSimulator.ACT_INIT + " in their transition: \n"
+          + " than " + SequentialGraphSimulator.ACT_INIT
+          + " in their transition: \n"
           + extractStateMachineName(state_machine_with_act_init_error)
           + "\n");
     }

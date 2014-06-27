@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
-import engine.GraphSimulator;
+import engine.SequentialGraphSimulator;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -20,9 +20,9 @@ import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
 
-public class GraphSimulatorTesting {
+public class SequentialGraphSimulatorTesting {
 
-  private static final String class_name = GraphSimulatorTesting.class
+  private static final String class_name = SequentialGraphSimulatorTesting.class
       .getSimpleName();
 
   /**
@@ -30,7 +30,7 @@ public class GraphSimulatorTesting {
    * 
    * @param name
    *          the name of the file located in
-   *          src/test/resources/GraphSimulatorTesting
+   *          src/test/resources/SequentialGraphSimulatorTesting
    * @return a model built from the file.
    * @throws IOException
    */
@@ -84,9 +84,9 @@ public class GraphSimulatorTesting {
 
     /* Test the file "Graph_with_no_external_events.txt" */
     file_name = "Graph_with_no_external_events.txt";
-    Pair<GlobalState, GraphSimulator> pair = loadSimulator(file_name);
+    Pair<GlobalState, SequentialGraphSimulator> pair = loadSimulator(file_name);
     GlobalState global_state = pair.getFirst();
-    GraphSimulator simulator = pair.getSecond();
+    SequentialGraphSimulator simulator = pair.getSecond();
 
     events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1" });
     global_state = simulator.executeAll(global_state, events);
@@ -220,7 +220,7 @@ public class GraphSimulatorTesting {
   /**
    * Create a simulator from a file
    */
-  private Pair<GlobalState, GraphSimulator> loadSimulator(
+  private Pair<GlobalState, SequentialGraphSimulator> loadSimulator(
       String file_name) {
     Model model;
     try {
@@ -230,7 +230,7 @@ public class GraphSimulatorTesting {
       throw new Error();
     }
 
-    GraphSimulator simulator = new GraphSimulator(model);
+    SequentialGraphSimulator simulator = new SequentialGraphSimulator(model);
     simulator.setVerbose(true);
     GlobalState global_state = simulator.emptyGlobalState();
 
@@ -251,7 +251,7 @@ public class GraphSimulatorTesting {
    * 
    * @throws IOException
    */
-  private Pair<GlobalState, GraphSimulator> loadSimulator(
+  private Pair<GlobalState, SequentialGraphSimulator> loadSimulator(
       String model_file_name,
       String proof_file_name) throws IOException {
 
@@ -262,7 +262,8 @@ public class GraphSimulatorTesting {
     Model proof = factory.buildModel("src/test/resources/" + class_name + "/"
         + proof_file_name, "Testing proof model");
 
-    GraphSimulator simulator = new GraphSimulator(model, proof);
+    SequentialGraphSimulator simulator = new SequentialGraphSimulator(model,
+        proof);
     simulator.setVerbose(true);
     GlobalState global_state = simulator.emptyGlobalState();
 
