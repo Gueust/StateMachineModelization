@@ -503,7 +503,8 @@ public class GraphFactoryAEFD {
       if (!(result instanceof CommandEvent) &&
           !(result instanceof SynchronisationEvent) &&
           !(result instanceof VariableChange) &&
-          !(result instanceof ModelCheckerEvent)) {
+          !(result instanceof ModelCheckerEvent) &&
+          !(result instanceof ComputerCommandFunction)) {
         throw new Error("Impossible scenario. The event " + result.getName()
             + " is a " + result.getClass());
       }

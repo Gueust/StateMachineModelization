@@ -634,7 +634,7 @@ public class MainWindow extends JFrame {
               MainWindow.this.simulator.execute(global_state, null);
           ExternalEvent event = external_events.poll();
           MainWindow.this.global_state =
-              MainWindow.this.simulator.execute(global_state, event);
+              MainWindow.this.simulator.executeSimulator(global_state, event);
         } else if (rdbtnOneInternalEvent.isSelected()) {
           MainWindow.this.simulator.processSmallestStep(global_state,
               external_events);
@@ -697,6 +697,11 @@ public class MainWindow extends JFrame {
   private void updateLists() {
     fillInList(proof_external_event_FIFO,
         simulator.getExternalProofEventQueue());
+    LinkedList<ExternalEvent> tmp_list = (LinkedList<ExternalEvent>) simulator
+        .getACTFCIList();
+    while (!tmp_list.isEmpty()) {
+      external_events.addFirst(tmp_list.removeLast());
+    }
     fillInList(functionnal_external_event_FIFO, external_events);
     fillInList(functionnal_internal_event_FIFO,
         simulator.getInternalFunctionalEventQueue());

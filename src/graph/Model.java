@@ -89,12 +89,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       variable_modification_events = new HashMap<String, VariableChange>();
       existingVariables = new HashMap<String, Variable>();
       writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
+      FCI_generate_ACT = new HashMap<CommandEvent, LinkedList<ExternalEvent>>();
     } else {
       external_events.clear();
       commands_events.clear();
       synchronisation_events.clear();
       variable_modification_events.clear();
       writing_state_machines.clear();
+      FCI_generate_ACT.clear();
     }
 
     for (StateMachine machine : state_machines.values()) {
@@ -235,7 +237,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   public LinkedList<ExternalEvent> getACTFCI(CommandEvent fci) {
-    return FCI_generate_ACT.get(fci);
+    LinkedList<ExternalEvent> result = FCI_generate_ACT.get(fci);
+    return result;
   }
 
   @Override
