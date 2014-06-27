@@ -798,7 +798,9 @@ class GraphSimulator
             assert (!single_event.getName().startsWith("IND_"));
             if (restrained_external_event_list == null
                 || restrained_external_event_list.contains(single_event)) {
-              list_events.add((ExternalEvent) single_event);
+              if (!single_event.getName().startsWith("ACT_")) {
+                list_events.add((ExternalEvent) single_event);
+              }
             }
           }
         }
@@ -820,7 +822,9 @@ class GraphSimulator
                       .containsSynchronousEvents(single_event.getName())) {
                 if (restrained_external_event_list == null
                     || restrained_external_event_list.contains(single_event)) {
-                  list_events.add((ExternalEvent) single_event);
+                  if (!single_event.getName().startsWith("ACT_")) {
+                    list_events.add((ExternalEvent) single_event);
+                  }
                 }
               }
             }
