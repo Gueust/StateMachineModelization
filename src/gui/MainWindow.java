@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,11 +19,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -262,8 +265,9 @@ public class MainWindow extends JFrame {
     btnSimulate.setMaximumSize(new Dimension(101, 23));
 
     JButton btnUploadExternalEvent = new JButton("Upload External Event");
-    btnUploadExternalEvent.setToolTipText("Not implemented yet");
-    btnUploadExternalEvent.setEnabled(false);
+
+    btnUploadExternalEvent
+        .setToolTipText("Allow the user to uplaod a list of external event from a chosen file. The file must contain each external event on a line. ");
     btnUploadExternalEvent.setPreferredSize(new Dimension(101, 23));
     btnUploadExternalEvent.setMinimumSize(new Dimension(101, 23));
     btnUploadExternalEvent.setMaximumSize(new Dimension(101, 23));
@@ -575,6 +579,36 @@ public class MainWindow extends JFrame {
     fifo_panel.setLayout(gl_fifo_panel);
     getContentPane().setLayout(groupLayout);
     // TODO Auto-generated constructor stub
+
+    btnUploadExternalEvent.addActionListener(new ActionListener() {
+      private JFileChooser external_event_file_chooser = new JFileChooser();
+
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        int returnVal = external_event_file_chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          String file_name = external_event_file_chooser
+              .getSelectedFile()
+              .getAbsolutePath();
+          external_event_file_chooser
+              .setCurrentDirectory(external_event_file_chooser
+                  .getSelectedFile());
+          try {
+            LinkedList<ExternalEvent> list_external_event = simulator
+                .getModel()
+                .loadScenario(file_name);
+            external_events.addAll(list_external_event);
+            updateLists();
+
+          } catch (IOException e) {
+            JOptionPane.showMessageDialog(MainWindow.this,
+                "Error with the selected File",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      }
+    });
 
     /* fill the lists of variables and current_state */
     fillInCurrentStates(state_machines_current_state, simulator.getModel(),

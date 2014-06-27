@@ -26,6 +26,7 @@ import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
+import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
@@ -524,8 +525,10 @@ public class GraphFactoryAEFD {
     case "DTP":
     case "ATP":
     case "CMD":
-    case "FCI":
       new_event = new CommandEvent(event_name);
+      break;
+    case "FCI":
+      new_event = new ComputerCommandFunction(event_name);
       break;
     case "P":
       new_event = new ModelCheckerEvent(event_name);

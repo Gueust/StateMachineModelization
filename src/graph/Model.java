@@ -177,8 +177,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     LinkedList<ExternalEvent> result = new LinkedList<>();
 
     String line;
-    do {
-      line = buff.readLine();
+    while ((line = buff.readLine()) != null) {
 
       ExternalEvent event = external_events.get(line.trim());
       if (event == null) {
@@ -186,7 +185,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         throw new Error("The event " + line + " does not exist in the model");
       }
       result.add(event);
-    } while (line != null);
+    }
+    ;
 
     buff.close();
 
@@ -232,6 +232,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     }
     sb.append("\n");
     return sb.toString();
+  }
+
+  public LinkedList<ExternalEvent> getACTFCI(CommandEvent fci) {
+    return FCI_generate_ACT.get(fci);
   }
 
   @Override
