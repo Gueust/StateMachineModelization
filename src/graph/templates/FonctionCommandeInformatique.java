@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -44,14 +43,11 @@ public class FonctionCommandeInformatique {
 
     Constructor constructor = new Constructor(
         FonctionCommandeInformatique.class);
-    // TypeDescription model_descr = new TypeDescription(TemplatedModel.class);
-    // model_descr.putListPropertyType("content", Instanciation.class);
-    // constructor.addTypeDescription(model_descr);
 
     Yaml yaml = new Yaml(constructor);
 
-    FonctionCommandeInformatique result = (FonctionCommandeInformatique) yaml
-        .load(input_stream);
+    FonctionCommandeInformatique result =
+        (FonctionCommandeInformatique) yaml.load(input_stream);
     return result;
   }
 

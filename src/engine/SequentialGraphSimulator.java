@@ -27,8 +27,8 @@ public class SequentialGraphSimulator extends GraphSimulator {
 
   @Override
   public SequentialGraphSimulator clone() {
-    SequentialGraphSimulator result = new SequentialGraphSimulator(this.model,
-        this.proof);
+    SequentialGraphSimulator result =
+        new SequentialGraphSimulator(this.model, this.proof);
     result.setVerbose(this.verbose);
     return result;
   }

@@ -1,6 +1,5 @@
 package engine;
 
-import engine.SplitProof.MyEdge;
 import engine.SplitProof.MyNode;
 import genericLabeledGraph.Edge;
 import graph.Model;

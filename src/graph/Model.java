@@ -1,6 +1,7 @@
 package graph;
 
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
+import graph.templates.FonctionCommandeInformatique;
 import graph.verifiers.AbstractVerificationUnit;
 
 import java.io.BufferedReader;
@@ -52,6 +53,12 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
   /** Store for every VariableChange the state machines that modifies it. */
   private HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
+
+  /**
+   * Some commands are set to generate external events that will be executed
+   * atomically.
+   */
+  private HashMap<CommandEvent, LinkedList<ExternalEvent>> FCI_generate_ACT;
 
   /**
    * Create a new empty model named `name`.
@@ -138,19 +145,32 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     }
   }
 
+  private void setNotBuild() {
+    external_events = null;
+    commands_events = null;
+    synchronisation_events = null;
+    variable_modification_events = null;
+    existingVariables = null;
+    writing_state_machines = null;
+
+  }
+
   /**
-   * 
    * @return
    */
   private boolean isBuild() {
     return external_events != null;
   }
 
-  public LinkedList<ExternalEvent> loadScenario(String file_name)
-      throws IOException {
+  private void buildIfNecessary() {
     if (!isBuild()) {
       build();
     }
+  }
+
+  public LinkedList<ExternalEvent> loadScenario(String file_name)
+      throws IOException {
+    buildIfNecessary();
 
     BufferedReader buff = new BufferedReader(new FileReader(file_name));
 
@@ -194,6 +214,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
   @Override
   public void addStateMachine(StateMachine state_machine) {
+    setNotBuild();
     state_machines.put(state_machine.getName(), (StateMachine) state_machine);
   }
 
@@ -345,6 +366,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return A HashMap of the pair (positive_CTL, negative_CTL).
    */
   public HashMap<String, String> regroupCTL() {
+    buildIfNecessary();
+
     boolean has_error = false;
     LinkedList<String> list_of_ctl_without_opposite = new LinkedList<String>();
     HashMap<String, String> pairs_of_ctl = new HashMap<String, String>();
@@ -420,5 +443,42 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       addStateMachine(machine);
     }
     return true;
+  }
+
+  /**
+   * Some commands (called FCI) generate external event on execution.
+   * The list of the generated external events produced by every FCI command can
+   * be loaded from a file.
+   * 
+   * @param file_name
+   *          The YAML file from which to load the data.
+   * @throws IOException
+   */
+  public void loadFCI(String file_name) throws IOException {
+    buildIfNecessary();
+
+    FonctionCommandeInformatique loaded_list =
+        FonctionCommandeInformatique.load(file_name);
+
+    for (Entry<String, LinkedList<String>> entry : loaded_list
+        .getFCI_list()
+        .entrySet()) {
+      String command_name = entry.getKey();
+      CommandEvent command = commands_events.get(command_name);
+      if (command == null) {
+        throw new Error("The command " + command_name + " loaded from the file"
+            + file_name + " does not exist in the model");
+      }
+      LinkedList<ExternalEvent> associated_events = new LinkedList<>();
+      for (String event_name : entry.getValue()) {
+        ExternalEvent event = external_events.get(event_name);
+        if (event == null) {
+          throw new Error("The event " + event_name + " loaded from the file"
+              + file_name + " does not exist in the model");
+        }
+        associated_events.add(event);
+      }
+      FCI_generate_ACT.put(command, associated_events);
+    }
   }
 }
