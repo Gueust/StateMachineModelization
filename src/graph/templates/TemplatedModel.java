@@ -1,6 +1,9 @@
 package graph.templates;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class TemplatedModel {
 
@@ -27,6 +30,9 @@ public class TemplatedModel {
   }
 
   public LinkedList<Instanciation> getContent() {
+    if (content == null) {
+      return new LinkedList<>();
+    }
     return content;
   }
 

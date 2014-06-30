@@ -32,7 +32,8 @@ public class GeneratorFromTemplate {
    * @return The name of the file where the model has be generated.
    * @throws IOException
    */
-  public static String load(File file) throws IOException {
+  public static String load(File file, boolean verify_instanciation)
+      throws IOException {
 
     String default_path = file.getParent();
     if (default_path == null) {
@@ -102,7 +103,8 @@ public class GeneratorFromTemplate {
         template = template.replaceAll("<" + key + ">", value);
       }
 
-      if (template.indexOf('<') != -1) {
+      /* We verify that the result is not a template */
+      if (verify_instanciation && template.indexOf('<') != -1) {
         out.close();
         System.err.println(template);
         throw new Error("The instanciation is not correct since there still "
@@ -122,8 +124,12 @@ public class GeneratorFromTemplate {
 
   }
 
+  public static String load(File file) throws IOException {
+    return load(file, true);
+  }
+
   public static void main(String[] args) throws IOException {
-    GeneratorFromTemplate.load("test.yaml");
-    GeneratorFromTemplate.load("preuve.yaml");
+    GeneratorFromTemplate.load("fonctionnel1voie.yaml");
+    GeneratorFromTemplate.load("PN/PN_JB_1_voie.yaml");
   }
 }
