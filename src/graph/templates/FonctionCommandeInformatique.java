@@ -1,6 +1,5 @@
 package graph.templates;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -10,18 +9,20 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 public class FonctionCommandeInformatique {
 
-  private HashMap<String, LinkedList<String>> FCI_list;
+  private HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> FCI_list;
 
-  public HashMap<String, LinkedList<String>> getFCI_list() {
+  public HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> getFCI_list() {
     return FCI_list;
   }
 
-  public void setFCI_list(HashMap<String, LinkedList<String>> fCI_list) {
+  public void setFCI_list(
+      HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> fCI_list) {
     FCI_list = fCI_list;
   }
 
@@ -55,7 +56,8 @@ public class FonctionCommandeInformatique {
   public void loadTest() throws IOException {
     String file_name = "src/test/resources/Miscellaneous/FCI_ACT.yaml";
     System.out.println(load(file_name).FCI_list);
-    assertEquals(load(file_name).FCI_list.toString(),
-        "{FCI_1=[A, B, C, D], FCI_2=[A, H, F, G]}");
+    assertEquals(
+        load(file_name).FCI_list.toString(),
+        "{FCI_1=[{true=[A, B, C]}, {false=B}, {IND_A_Actif=C}, {true=D}], FCI_2=[{false=E}, {true=F}, {true=H}, {IND_B_Inactif=G}]}");
   }
 }

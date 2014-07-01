@@ -17,7 +17,9 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import utils.Pair;
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
@@ -456,8 +458,14 @@ class GraphSimulator
       } else if (single_event instanceof ComputerCommandFunction) {
         commands_queue.add(single_event);
         if (!(model.getACTFCI((ComputerCommandFunction) single_event) == null)) {
-          ACT_FCI_queue.addAll(model
-              .getACTFCI((ComputerCommandFunction) single_event));
+
+          LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> list = model
+              .getACTFCI((ComputerCommandFunction) single_event);
+          for (Pair<Formula, LinkedList<ExternalEvent>> condition_with_act : list) {
+            if (condition_with_act.getFirst().eval(global_state.getValuation())) {
+              ACT_FCI_queue.addAll(condition_with_act.getSecond());
+            }
+          }
         }
         if (proof != null) {
           temporary_commands_queue.add(single_event);

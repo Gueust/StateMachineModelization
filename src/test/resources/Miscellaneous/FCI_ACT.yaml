@@ -1,11 +1,14 @@
-FCI_list:
+FCI_list : 
   FCI_1:
-    - A
-    - B
-    - C
-    - D
+    - true : 
+        - A
+        - B
+        - C
+    - false : B
+    - IND_A_Actif : C
+    - true : D
   FCI_2:
-    - A
-    - H
-    - F
-    - G
+    - false : E
+    - true : F
+    - true : H
+    - IND_B_Inactif : G   

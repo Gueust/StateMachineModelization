@@ -1,5 +1,6 @@
 package graph;
 
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.FonctionCommandeInformatique;
 import graph.verifiers.AbstractVerificationUnit;
@@ -15,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import utils.Pair;
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
@@ -58,7 +60,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * Some commands are set to generate external events that will be executed
    * atomically.
    */
-  private HashMap<CommandEvent, LinkedList<ExternalEvent>> FCI_generate_ACT;
+  private HashMap<CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>> FCI_generate_ACT;
 
   /**
    * Create a new empty model named `name`.
@@ -89,7 +91,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       variable_modification_events = new HashMap<String, VariableChange>();
       existingVariables = new HashMap<String, Variable>();
       writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
-      FCI_generate_ACT = new HashMap<CommandEvent, LinkedList<ExternalEvent>>();
+      FCI_generate_ACT = new HashMap<CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>>();
     } else {
       external_events.clear();
       commands_events.clear();
@@ -236,8 +238,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return sb.toString();
   }
 
-  public LinkedList<ExternalEvent> getACTFCI(CommandEvent fci) {
-    LinkedList<ExternalEvent> result = FCI_generate_ACT.get(fci);
+  public LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> getACTFCI(
+      CommandEvent fci) {
+    LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> result = FCI_generate_ACT
+        .get(fci);
     return result;
   }
 
@@ -461,13 +465,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *          The YAML file from which to load the data.
    * @throws IOException
    */
-  public void loadFCI(String file_name) throws IOException {
+  private void loadFCI(String file_name) throws IOException {
     buildIfNecessary();
 
     FonctionCommandeInformatique loaded_list =
         FonctionCommandeInformatique.load(file_name);
-
-    for (Entry<String, LinkedList<String>> entry : loaded_list
+    // CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>
+    for (Entry<String, LinkedList<HashMap<String, LinkedList<String>>>> entry : loaded_list
         .getFCI_list()
         .entrySet()) {
       String command_name = entry.getKey();
@@ -476,16 +480,31 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         throw new Error("The command " + command_name + " loaded from the file"
             + file_name + " does not exist in the model");
       }
-      LinkedList<ExternalEvent> associated_events = new LinkedList<>();
-      for (String event_name : entry.getValue()) {
-        ExternalEvent event = external_events.get(event_name);
-        if (event == null) {
-          throw new Error("The event " + event_name + " loaded from the file"
-              + file_name + " does not exist in the model");
+      LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> associated_events = new LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>();
+      for (HashMap<String, LinkedList<String>> condition_and_external_event : entry
+          .getValue()) {
+        for (Entry<String, LinkedList<String>> pair_condition_external_event : condition_and_external_event
+            .entrySet()) {
+          FormulaFactory factory = new AEFDFormulaFactory(true);
+          Formula condition = factory.parse(pair_condition_external_event
+              .getKey());
+          LinkedList<ExternalEvent> ACT_list = new LinkedList<ExternalEvent>();
+          for (String act_event : pair_condition_external_event.getValue()) {
+            ExternalEvent event = external_events.get(act_event);
+            if (event == null) {
+              throw new Error("The event " + act_event
+                  + " loaded from the file"
+                  + file_name + " does not exist in the model");
+            }
+            ACT_list.add(event);
+          }
+          associated_events.add(new Pair<Formula, LinkedList<ExternalEvent>>(
+              condition, ACT_list));
         }
-        associated_events.add(event);
+
       }
       FCI_generate_ACT.put(command, associated_events);
     }
   }
+
 }
