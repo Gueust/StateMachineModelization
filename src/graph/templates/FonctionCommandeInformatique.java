@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
@@ -15,14 +15,14 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 public class FonctionCommandeInformatique {
 
-  private HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> FCI_list;
+  private HashMap<String, List<HashMap<String, List<String>>>> FCI_list;
 
-  public HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> getFCI_list() {
+  public HashMap<String, List<HashMap<String, List<String>>>> getFCI_list() {
     return FCI_list;
   }
 
   public void setFCI_list(
-      HashMap<String, LinkedList<HashMap<String, LinkedList<String>>>> fCI_list) {
+      HashMap<String, List<HashMap<String, List<String>>>> fCI_list) {
     FCI_list = fCI_list;
   }
 

@@ -456,11 +456,13 @@ class GraphSimulator
       } else if (single_event instanceof SynchronisationEvent) {
         event_list.add(single_event);
       } else if (single_event instanceof ComputerCommandFunction) {
+
         commands_queue.add(single_event);
         if (!(model.getACTFCI((ComputerCommandFunction) single_event) == null)) {
 
           LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> list = model
               .getACTFCI((ComputerCommandFunction) single_event);
+
           for (Pair<Formula, LinkedList<ExternalEvent>> condition_with_act : list) {
             if (condition_with_act.getFirst().eval(global_state.getValuation())) {
               ACT_FCI_queue.addAll(condition_with_act.getSecond());
@@ -567,12 +569,9 @@ class GraphSimulator
    * functional model to be ready for the next external event.
    */
   @Override
-  public GlobalState execute(GlobalState starting_state,
-      ExternalEvent event) {
-
+  public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
     GlobalState copied_starting_state = executeSimulator(starting_state, event);
-    executeACTFCIwithProof(copied_starting_state);
-    return copied_starting_state;
+    return executeACTFCIwithProof(copied_starting_state);
   }
 
   /**
@@ -626,9 +625,10 @@ class GraphSimulator
    * 
    * @param global_state
    */
-  public void executeACTFCIwithProof(GlobalState global_state) {
-    executeAll(global_state, ACT_FCI_queue);
+  public GlobalState executeACTFCIwithProof(GlobalState global_state) {
+    GlobalState result = executeAll(global_state, ACT_FCI_queue);
     ACT_FCI_queue.clear();
+    return result;
   }
 
   /**

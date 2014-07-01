@@ -16,4 +16,10 @@ public class Pair<E, F> {
   public F getSecond() {
     return second;
   }
+
+  @Override
+  public String toString() {
+    return "Pair [first=" + first + ", second=" + second + "]";
+  }
+
 }

@@ -151,6 +151,10 @@ public class CTLReplacer {
         }
       }
 
+      writer.flush();
+      model = graph_factory.buildModel(target_name, file_name);
+      model.build();
+
       Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
       while (variable_iterator.hasNext()) {
         Variable variable = variable_iterator.next();

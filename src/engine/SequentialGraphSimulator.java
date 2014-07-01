@@ -149,7 +149,7 @@ public class SequentialGraphSimulator extends GraphSimulator {
    * proof models to be ready for the next external event.
    */
   @Override
-  public GlobalState execute(GlobalState starting_state,
+  public GlobalState executeSimulator(GlobalState starting_state,
       ExternalEvent event) {
 
     functionnal_transitions_pull_list.clear();

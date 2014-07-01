@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import utils.Pair;
@@ -22,6 +23,7 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.Variable;
 import abstractGraph.events.CommandEvent;
+import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
@@ -60,7 +62,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * Some commands are set to generate external events that will be executed
    * atomically.
    */
-  private HashMap<CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>> FCI_generate_ACT;
+  private HashMap<ComputerCommandFunction, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>> FCI_generate_ACT;
 
   /**
    * Create a new empty model named `name`.
@@ -91,7 +93,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       variable_modification_events = new HashMap<String, VariableChange>();
       existingVariables = new HashMap<String, Variable>();
       writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
-      FCI_generate_ACT = new HashMap<CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>>();
+      FCI_generate_ACT = new HashMap<>();
     } else {
       external_events.clear();
       commands_events.clear();
@@ -465,25 +467,22 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *          The YAML file from which to load the data.
    * @throws IOException
    */
-  private void loadFCI(String file_name) throws IOException {
+  public void loadFCI(String file_name) throws IOException {
     buildIfNecessary();
 
     FonctionCommandeInformatique loaded_list =
         FonctionCommandeInformatique.load(file_name);
     // CommandEvent, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>
-    for (Entry<String, LinkedList<HashMap<String, LinkedList<String>>>> entry : loaded_list
+    for (Entry<String, List<HashMap<String, List<String>>>> entry : loaded_list
         .getFCI_list()
         .entrySet()) {
       String command_name = entry.getKey();
-      CommandEvent command = commands_events.get(command_name);
-      if (command == null) {
-        throw new Error("The command " + command_name + " loaded from the file"
-            + file_name + " does not exist in the model");
-      }
+      ComputerCommandFunction command = new ComputerCommandFunction(
+          command_name);
       LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> associated_events = new LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>();
-      for (HashMap<String, LinkedList<String>> condition_and_external_event : entry
+      for (HashMap<String, List<String>> condition_and_external_event : entry
           .getValue()) {
-        for (Entry<String, LinkedList<String>> pair_condition_external_event : condition_and_external_event
+        for (Entry<String, List<String>> pair_condition_external_event : condition_and_external_event
             .entrySet()) {
           FormulaFactory factory = new AEFDFormulaFactory(true);
           Formula condition = factory.parse(pair_condition_external_event

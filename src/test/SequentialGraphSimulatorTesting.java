@@ -146,6 +146,20 @@ public class SequentialGraphSimulatorTesting {
     assertTrue("Error on " + file_name, global_state
         .getVariableValue(model_tmp.getVariable("IND_C_Actif")) == true);
 
+    /* Test the file with FCI */
+    file_name = "Graph_with_FCI.txt";
+    pair = loadSimulator(file_name);
+    global_state = pair.getFirst();
+    simulator = pair.getSecond();
+    simulator.getModel().loadFCI("src/test/resources/" + class_name + "/"
+        + "liste_fci.yaml");
+    events = convertToExternalEvent(new String[] { "CTL_1_Actif" });
+    global_state = simulator.executeAll(global_state, events);
+    System.out.println("Global Sate under test " + global_state);
+    assertInState("Error on " + file_name, global_state, "Page 1", "1");
+    assertInState("Error on " + file_name, global_state, "Page 2", "1");
+    assertInState("Error on " + file_name, global_state, "Page 3", "1");
+
     /* Test the file "Graph_P5.txt" */
     file_name = "Graph_P5.txt";
     pair = loadSimulator(file_name);
@@ -202,6 +216,7 @@ public class SequentialGraphSimulatorTesting {
       String sm_name, String targeted_state) {
     assertTrue(error_message, getState(global_state, sm_name).equals(
         targeted_state));
+
   }
 
   private String getState(AbstractGlobalState<?, ?, ?, ?> global_state,
