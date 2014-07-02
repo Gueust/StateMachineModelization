@@ -464,9 +464,12 @@ class GraphSimulator
               .getACTFCI((ComputerCommandFunction) single_event);
 
           for (Pair<Formula, LinkedList<ExternalEvent>> condition_with_act : list) {
-            if (condition_with_act.getFirst().eval(global_state.getValuation())) {
+
+            if (condition_with_act.getFirst().eval(
+                global_state.getValuation())) {
               ACT_FCI_queue.addAll(condition_with_act.getSecond());
             }
+
           }
         }
         if (proof != null) {

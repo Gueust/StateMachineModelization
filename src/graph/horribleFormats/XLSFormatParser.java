@@ -107,6 +107,8 @@ public class XLSFormatParser {
         "Graph_with_corrected_CTL.txt", false);
     ctl_replacer = new CTLReplacer("Nurieux/NurieuxTestJLPreuv_Auto.txt",
         "Proof_with_corrected_CTL.txt", true);
+    ctl_replacer = new CTLReplacer("Nurieux/Preuv_Auto_3411_3421.txt",
+        "Proof_with_corrected_CTL_3411_3421.txt", true);
 
   }
 

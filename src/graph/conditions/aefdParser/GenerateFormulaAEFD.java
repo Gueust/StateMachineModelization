@@ -335,6 +335,7 @@ public class GenerateFormulaAEFD extends
    * @return
    */
   Literal getLiteral(String s) {
+
     /* We MUST call the negative suffix */
     String variable_name = removeNegativeSuffix(s);
     if (variable_name != null) {

@@ -18,7 +18,6 @@ public class AEFDFormulaFactory extends FormulaFactory {
    */
   public AEFDFormulaFactory(boolean united_model_mode) {
     super(united_model_mode);
-
     generator_of_formula = new GenerateFormulaAEFD(this);
   }
 

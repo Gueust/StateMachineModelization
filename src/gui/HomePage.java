@@ -1,16 +1,5 @@
 package gui;
 
-import engine.SequentialGraphSimulator;
-import graph.verifiers.CoherentVariablesWriting;
-import graph.verifiers.DeterminismChecker;
-import graph.verifiers.InitializationProperties;
-import graph.verifiers.NoUselessVariables;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.TautologyFromStateZero;
-import graph.verifiers.WrittenAtLeastOnceChecker;
-import gui.actions.LaunchExplorationAction;
-import gui.actions.LaunchSimulationAction;
-
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +18,17 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import engine.SequentialGraphSimulator;
+import graph.verifiers.CoherentVariablesWriting;
+import graph.verifiers.DeterminismChecker;
+import graph.verifiers.InitializationProperties;
+import graph.verifiers.NoUselessVariables;
+import graph.verifiers.SingleWritingChecker;
+import graph.verifiers.TautologyFromStateZero;
+import graph.verifiers.WrittenAtLeastOnceChecker;
+import gui.actions.LaunchExplorationAction;
+import gui.actions.LaunchSimulationAction;
 
 @SuppressWarnings("serial")
 public class HomePage extends JFrame {
@@ -280,64 +280,83 @@ public class HomePage extends JFrame {
     chckbxVerboseExploration
         .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
     chckbxVerboseExploration.setSelected(true);
+
+    JTextArea txtrFciFile = new JTextArea();
+    txtrFciFile.setWrapStyleWord(true);
+    txtrFciFile.setText("FCI file");
+    txtrFciFile.setEditable(false);
+
+    JButton btnLoadFciFile = new JButton("Load FCI file");
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
-    gl_file_upload_panel.setHorizontalGroup(gl_file_upload_panel
-        .createParallelGroup(Alignment.TRAILING)
-        .addGroup(Alignment.LEADING,
-            gl_file_upload_panel
-                .createSequentialGroup()
-                .addContainerGap()
-                .addGroup(gl_file_upload_panel
-                    .createParallelGroup(Alignment.LEADING)
-                    .addComponent(btnSimulation,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnLoadProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(txtrFunctionalModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(txtrProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnLoadFunctionalModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnRemoveProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnExploration,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(chckbxVerboseExploration,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE))
-                .addContainerGap())
+    gl_file_upload_panel.setHorizontalGroup(
+        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        gl_file_upload_panel.createParallelGroup(
+                            Alignment.LEADING)
+                            .addComponent(btnSimulation,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnLoadProofModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrProofModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnLoadFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnRemoveProofModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(chckbxVerboseExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrFciFile,
+                                GroupLayout.PREFERRED_SIZE, 184,
+                                GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLoadFciFile,
+                                GroupLayout.PREFERRED_SIZE, 184,
+                                GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap())
         );
-    gl_file_upload_panel.setVerticalGroup(gl_file_upload_panel
-        .createParallelGroup(Alignment.LEADING)
-        .addGroup(gl_file_upload_panel
-            .createSequentialGroup()
-            .addContainerGap()
-            .addComponent(txtrFunctionalModel,
-                GroupLayout.PREFERRED_SIZE, 41,
-                GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnLoadFunctionalModel,
-                GroupLayout.PREFERRED_SIZE, 42,
-                GroupLayout.PREFERRED_SIZE)
-            .addGap(11)
-            .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
-                42, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnLoadProofModel,
-                GroupLayout.PREFERRED_SIZE, 42,
-                GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnRemoveProofModel,
-                GroupLayout.PREFERRED_SIZE, 41,
-                GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED, 34,
-                Short.MAX_VALUE)
-            .addComponent(chckbxVerboseExploration)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnExploration)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(btnSimulation)
-            .addContainerGap())
+    gl_file_upload_panel.setVerticalGroup(
+        gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
+            .addGroup(
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(txtrFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(11)
+                    .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
+                        42, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadProofModel,
+                        GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnRemoveProofModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(txtrFciFile, GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadFciFile, GroupLayout.PREFERRED_SIZE,
+                        41, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED, 12,
+                        Short.MAX_VALUE)
+                    .addComponent(chckbxVerboseExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnSimulation)
+                    .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
     // TODO Auto-generated constructor stub
@@ -375,8 +394,15 @@ public class HomePage extends JFrame {
     FileNameExtensionFilter filter =
         new FileNameExtensionFilter("txt files", "txt");
 
+    FileNameExtensionFilter filter_yaml =
+        new FileNameExtensionFilter("yaml files", "yaml");
+
     JFileChooser functional_file_chooser = new JFileChooser();
     functional_file_chooser.setFileFilter(filter);
+
+    JFileChooser FCI_file_chooser = new JFileChooser();
+    FCI_file_chooser.setSelectedFile(null);
+    FCI_file_chooser.setFileFilter(filter_yaml);
 
     JFileChooser proof_file_chooser = new JFileChooser();
     proof_file_chooser.setSelectedFile(null);
@@ -399,15 +425,18 @@ public class HomePage extends JFrame {
     btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
         log_file_chooser, txtrVerificationLog, functional_file_chooser));
 
+    btnLoadFciFile.addActionListener(new LinkFileChoserToTextArea(
+        FCI_file_chooser, txtrFciFile, FCI_file_chooser));
+
     btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
         property_hashmap, chckbxCheckAll, log_file_chooser,
         functional_file_chooser, proof_file_chooser, this));
     btnSimulation.addActionListener(new LaunchSimulationAction(
-        functional_file_chooser, proof_file_chooser, this));
+        functional_file_chooser, proof_file_chooser, FCI_file_chooser, this));
     btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
         txtrProofModel));
     btnExploration.addActionListener(new LaunchExplorationAction(
-        functional_file_chooser, proof_file_chooser, this,
+        functional_file_chooser, proof_file_chooser, FCI_file_chooser, this,
         chckbxVerboseExploration));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);

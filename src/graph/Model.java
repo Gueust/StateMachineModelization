@@ -1,6 +1,5 @@
 package graph;
 
-import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.FonctionCommandeInformatique;
 import graph.verifiers.AbstractVerificationUnit;
@@ -484,9 +483,9 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
           .getValue()) {
         for (Entry<String, List<String>> pair_condition_external_event : condition_and_external_event
             .entrySet()) {
-          FormulaFactory factory = new AEFDFormulaFactory(true);
-          Formula condition = factory.parse(pair_condition_external_event
-              .getKey());
+
+          Formula condition = formulaFactory
+              .parse(pair_condition_external_event.getKey());
           LinkedList<ExternalEvent> ACT_list = new LinkedList<ExternalEvent>();
           for (String act_event : pair_condition_external_event.getValue()) {
             ExternalEvent event = external_events.get(act_event);

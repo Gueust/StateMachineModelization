@@ -23,6 +23,7 @@ public class LaunchExplorationAction implements ActionListener {
 
   private JFileChooser functional_file_chooser;
   private JFileChooser proof_file_chooser;
+  private JFileChooser FCI_file_chooser;
   private JFrame frame;
   private ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
       new ModelChecker<GlobalState, StateMachine, State, Transition>();
@@ -30,11 +31,13 @@ public class LaunchExplorationAction implements ActionListener {
   private JCheckBox verbose_box;
 
   public LaunchExplorationAction(JFileChooser functional_file_chooser,
-      JFileChooser proof_file_chooser, JFrame frame, JCheckBox verbose_box) {
+      JFileChooser proof_file_chooser, JFileChooser FCI_file_chooser,
+      JFrame frame, JCheckBox verbose_box) {
     this.functional_file_chooser = functional_file_chooser;
     this.proof_file_chooser = proof_file_chooser;
     this.frame = frame;
     this.verbose_box = verbose_box;
+    this.FCI_file_chooser = FCI_file_chooser;
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -58,6 +61,12 @@ public class LaunchExplorationAction implements ActionListener {
     try {
       functional_model = loadFile(factory, functional_file_chooser,
           "functional model");
+      functional_model.build();
+      if (FCI_file_chooser.getSelectedFile() != null) {
+        functional_model.loadFCI(FCI_file_chooser
+            .getSelectedFile()
+            .getAbsolutePath());
+      }
     } catch (IOException e1) {
       e1.printStackTrace();
       return;
@@ -65,6 +74,7 @@ public class LaunchExplorationAction implements ActionListener {
     try {
       proof_model = loadFile(factory, proof_file_chooser,
           "proof model");
+      proof_model.build();
 
     } catch (IOException e1) {
       e1.printStackTrace();

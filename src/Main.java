@@ -42,7 +42,7 @@ public class Main {
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
     launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-        "Proof_with_corrected_CTL.txt");
+        "Proof_with_corrected_CTL_3411_3421.txt");
     /*
      * String functional_model = GeneratorFromTemplate
      * .load("fonctionnel4voie.yaml");
@@ -267,6 +267,7 @@ public class Main {
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
     model.build();
+    model.loadFCI("Nurieux/liste_FCI.yaml");
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 

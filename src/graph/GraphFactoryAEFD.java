@@ -686,6 +686,10 @@ public class GraphFactoryAEFD {
 
   public static String generateAutomateForCTL(String CTL_pos, String CTL_neg) {
 
+    /*
+     * New fresh variables are created, but since it is only written as a
+     * string, it does not change anything
+     */
     FormulaFactory factory = new AEFDFormulaFactory(true);
 
     String variable_name =

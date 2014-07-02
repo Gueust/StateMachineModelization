@@ -16,12 +16,15 @@ import javax.swing.JOptionPane;
 public class LaunchSimulationAction implements ActionListener {
   private JFileChooser functional_file_chooser;
   private JFileChooser proof_file_chooser;
+  private JFileChooser FCI_file_chooser;
   private JFrame frame;
 
   public LaunchSimulationAction(JFileChooser functional_file_chooser,
-      JFileChooser proof_file_chooser, JFrame frame) {
+      JFileChooser proof_file_chooser, JFileChooser FCI_file_chooser,
+      JFrame frame) {
     this.functional_file_chooser = functional_file_chooser;
     this.proof_file_chooser = proof_file_chooser;
+    this.FCI_file_chooser = FCI_file_chooser;
     this.frame = frame;
   }
 
@@ -35,6 +38,12 @@ public class LaunchSimulationAction implements ActionListener {
       try {
         functional_model = loadFile(factory, functional_file_chooser,
             "functional model");
+        functional_model.build();
+        if (FCI_file_chooser.getSelectedFile() != null) {
+          functional_model.loadFCI(FCI_file_chooser
+              .getSelectedFile()
+              .getAbsolutePath());
+        }
       } catch (IOException e1) {
         e1.printStackTrace();
         return;
@@ -43,7 +52,7 @@ public class LaunchSimulationAction implements ActionListener {
         try {
           proof_model = loadFile(factory, proof_file_chooser,
               "proof model");
-
+          proof_model.build();
         } catch (IOException e1) {
           e1.printStackTrace();
           return;
