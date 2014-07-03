@@ -75,7 +75,11 @@ public class CustomToString {
   }
 
   public String toString(NotFormula formula) {
-    return "(" + Formula.NOT + " " + this.toString(formula.getF()) + ")";
+    if (formula.getF() instanceof Variable) {
+      return "(" + Formula.NOT + " " + this.toString(formula.getF()) + ")";
+    } else {
+      return "(" + Formula.NOT + " (" + this.toString(formula.getF()) + ") )";
+    }
   }
 
   public String toString(Variable formula) {
