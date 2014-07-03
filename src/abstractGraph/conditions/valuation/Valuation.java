@@ -1,8 +1,11 @@
 package abstractGraph.conditions.valuation;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
+import utils.Monitoring;
 import abstractGraph.conditions.Variable;
 
 /**
@@ -55,9 +58,28 @@ public class Valuation extends AbstractValuation {
     valuation.remove(var);
   }
 
+  private static final boolean DEBUG = true;
+
   @Override
   public String toString() {
-    return valuation.toString();
+    if (DEBUG) {
+      StringBuffer string_buffer = new StringBuffer();
+      boolean first = true;
+      for (Entry<Variable, Boolean> entry : valuation.entrySet()) {
+        Variable variable = entry.getKey();
+        if (first) {
+          first = false;
+        } else {
+          string_buffer.append(", ");
+        }
+        string_buffer.append(variable.getVarname() +
+            "(" + Monitoring.getAdress(variable) + ")"
+            + " = " + entry.getValue());
+      }
+      return string_buffer.toString();
+    } else {
+      return valuation.toString();
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -115,4 +137,12 @@ public class Valuation extends AbstractValuation {
     Boolean res = valuation.get(variable);
     return res != null;
   }
+
+  /**
+   * @return A set of the Pair of defined variables.
+   */
+  public Set<Entry<Variable, Boolean>> getSetVariables() {
+    return valuation.entrySet();
+  }
+
 }
