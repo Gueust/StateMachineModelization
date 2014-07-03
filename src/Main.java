@@ -42,7 +42,7 @@ public class Main {
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
     launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-        "Nurieux/Preuve_3423_3431_without_CTL.txt",
+        "Preuve_3423_3431_without_CTL.txt",
         // "Nurieux/Liste_evenement_externe.txt",
         "Nurieux/Liste_evenement_externe3423_3431.txt",
         "Nurieux/liste_FCI.yaml");
