@@ -1,4 +1,4 @@
-package graph.horribleFormats;
+package graph.xlsParser;
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;

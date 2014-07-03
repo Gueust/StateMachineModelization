@@ -65,6 +65,7 @@ public class MainWindow extends JFrame {
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
   private HashMap<String, Boolean> initial_CTLs;
   private GlobalState global_state = new GlobalState();
+  private JMenuItem mntmRestartSimulation;
 
   JButton btnSimulate;
   JButton btnEatExternalEvents;
@@ -100,7 +101,7 @@ public class MainWindow extends JFrame {
       }
     });
 
-    JMenuItem mntmRestartSimulation = new JMenuItem("Restart Simulation");
+    mntmRestartSimulation = new JMenuItem("Restart Simulation");
     mntmRestartSimulation.setEnabled(false);
     mntmRestartSimulation
         .setToolTipText("Restart the simulation with the initialization chosen in the beginning. It's enabled after the initialization is done.");
@@ -111,10 +112,14 @@ public class MainWindow extends JFrame {
       public void actionPerformed(ActionEvent e) {
         global_state = simulator.init(initial_CTLs);
         MainWindow main_window = new MainWindow(simulator);
+        main_window.global_state = global_state;
         main_window.pack();
         main_window.setLocationRelativeTo(null);
         main_window.setVisible(true);
         main_window.enableExecutionButton();
+        main_window.updateLists();
+        main_window.enableRestart();
+
         MainWindow.this.dispose();
 
       }
@@ -195,9 +200,8 @@ public class MainWindow extends JFrame {
         null));
 
     /* Panel for the variables */
-    variables_list = new JList<String>(new DefaultListModel<String>());
-    state_machines_current_state = new JList<String>(
-        new DefaultListModel<String>());
+    variables_list = new JList<String>(new SortedListModel());
+    state_machines_current_state = new JList<String>(new SortedListModel());
 
     GroupLayout groupLayout = new GroupLayout(getContentPane());
     groupLayout
@@ -375,7 +379,7 @@ public class MainWindow extends JFrame {
 
     final JList<String> entry_list = new JList<String>(new SortedListModel());
     scrollPane.setViewportView(entry_list);
-    entry_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    entry_list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     SortedListModel listModel = (SortedListModel) entry_list.getModel();
     user_option_panel.setLayout(gl_user_option_panel);
     Iterator<ExternalEvent> data =
@@ -647,7 +651,9 @@ public class MainWindow extends JFrame {
 
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        external_events.add(new ExternalEvent(entry_list.getSelectedValue()));
+        for (String event_name : entry_list.getSelectedValuesList()) {
+          external_events.add(new ExternalEvent(event_name));
+        }
         fillInList(functionnal_external_event_FIFO, external_events);
       }
     });
@@ -737,8 +743,8 @@ public class MainWindow extends JFrame {
   private void fillInCurrentStates(JList<String> list, Model model,
       GlobalState global_state) {
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    DefaultListModel<String> listModel =
-        (DefaultListModel<String>) list.getModel();
+    SortedListModel listModel =
+        (SortedListModel) list.getModel();
 
     for (StateMachine state_machine : model) {
       State state = global_state.getState(state_machine);
@@ -749,8 +755,8 @@ public class MainWindow extends JFrame {
 
   private void fillInVariables(JList<String> list, Model model,
       GlobalState global_state) {
-    DefaultListModel<String> listModel =
-        (DefaultListModel<String>) list.getModel();
+    SortedListModel listModel =
+        (SortedListModel) list.getModel();
     Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
       Variable variable = variable_iterator.next();
@@ -785,7 +791,7 @@ public class MainWindow extends JFrame {
   }
 
   private void removeAllEllement(JList<String> list) {
-    DefaultListModel<String> listModel = (DefaultListModel<String>) list
+    SortedListModel listModel = (SortedListModel) list
         .getModel();
     listModel.removeAllElements();
   }
@@ -802,5 +808,9 @@ public class MainWindow extends JFrame {
   public void enableExecutionButton() {
     btnEatExternalEvents.setEnabled(true);
     btnSimulate.setEnabled(true);
+  }
+
+  private void enableRestart() {
+    mntmRestartSimulation.setEnabled(true);
   }
 }

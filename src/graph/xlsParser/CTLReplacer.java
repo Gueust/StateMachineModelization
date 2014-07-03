@@ -1,4 +1,4 @@
-package graph.horribleFormats;
+package graph.xlsParser;
 
 import graph.GraphFactoryAEFD;
 import graph.Model;

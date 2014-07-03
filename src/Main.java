@@ -42,7 +42,11 @@ public class Main {
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
 
     launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-        "Proof_with_corrected_CTL_3411_3421.txt");
+        "Nurieux/Preuve_3423_3431_without_CTL.txt",
+        // "Nurieux/Liste_evenement_externe.txt",
+        "Nurieux/Liste_evenement_externe3423_3431.txt",
+        "Nurieux/liste_FCI.yaml");
+
     /*
      * String functional_model = GeneratorFromTemplate
      * .load("fonctionnel4voie.yaml");
@@ -261,18 +265,20 @@ public class Main {
 
   private static void launchNurieuxWithRestrainedEventList(
       String functional_model,
-      String proof_model) throws IOException {
+      String proof_model,
+      String restrained_event_file,
+      String FCI_file) throws IOException {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
     model.build();
-    model.loadFCI("Nurieux/liste_FCI.yaml");
+    model.loadFCI(FCI_file);
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
     BufferedReader reader = new BufferedReader(new FileReader(
-        "Nurieux/Liste_evenement_externe.txt"));
+        restrained_event_file));
     LinkedList<String> external_event_list_string = new LinkedList<String>();
     HashMap<String, String> CTL_list = new HashMap<String, String>();
     String event_read = reader.readLine();
@@ -307,26 +313,19 @@ public class Main {
       }
     }
     for (String ctl_name : all_CTL_list.keySet()) {
-      if (!CTL_list.containsKey(ctl_name) && !CTL_list.containsValue(ctl_name)) {
-        if (ctl_name.contains("KTS") || ctl_name.contains("Zone")
-            || ctl_name.contains("KLMG")) {
-          restrained_ctl_value_list.put(ctl_name, true);
-          all_ctl_value_list.put(ctl_name, true);
-        } else {
-          restrained_ctl_value_list.put(ctl_name, false);
-          all_ctl_value_list.put(ctl_name, false);
-        }
-      } else {
+      if (ctl_name.contains("KTS") || ctl_name.contains("Zone")
+          || ctl_name.contains("KLMG")) {
+        restrained_ctl_value_list.put(ctl_name, true);
         all_ctl_value_list.put(ctl_name, true);
+      } else {
+        restrained_ctl_value_list.put(ctl_name, false);
+        all_ctl_value_list.put(ctl_name, false);
       }
     }
     SequentialGraphSimulator simulator =
         new SequentialGraphSimulator(model, proof);
     simulator.setRestrainedExternalEventList(external_event_list);
     simulator.setVerbose(false);
-    System.out.print("restrained " + restrained_ctl_value_list + "\n" + "all "
-        + all_ctl_value_list + "\n");
-
     GlobalState global_state_list = simulator.init(all_ctl_value_list);
     // GlobalState global_state_list =
     // simulator.init(restrained_ctl_value_list);
