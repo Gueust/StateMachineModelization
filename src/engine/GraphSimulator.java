@@ -75,7 +75,9 @@ class GraphSimulator
     this.model = model;
     all_variables = new HashSet<Variable>(model.getExistingVariables().values());
     this.proof = proof;
-    all_variables.addAll(proof.getExistingVariables().values());
+    if (proof != null) {
+      all_variables.addAll(proof.getExistingVariables().values());
+    }
     checkCompatibility();
   }
 
