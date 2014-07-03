@@ -22,8 +22,13 @@ import org.yaml.snakeyaml.constructor.Constructor;
 public class GeneratorFromTemplate {
 
   public static String load(String file_name) throws IOException {
+    return load(file_name, true);
+  }
+
+  public static String load(String file_name, boolean verify_instanciation)
+      throws IOException {
     File file = new File(file_name);
-    return load(file);
+    return load(file, verify_instanciation);
   }
 
   /**
@@ -116,10 +121,12 @@ public class GeneratorFromTemplate {
 
     out.close();
 
-    GraphFactoryAEFD factory = new GraphFactoryAEFD();
-    Model result = factory.buildModel(output_path,
-        "Merge instanciated model");
-    result.build();
+    if (verify_instanciation) {
+      GraphFactoryAEFD factory = new GraphFactoryAEFD();
+      Model result = factory.buildModel(output_path,
+          "Merge instanciated model");
+      result.build();
+    }
     return output_path;
 
   }
@@ -131,5 +138,7 @@ public class GeneratorFromTemplate {
   public static void main(String[] args) throws IOException {
     GeneratorFromTemplate.load("fonctionnel1voie.yaml");
     GeneratorFromTemplate.load("PN/PN_JB_1_voie.yaml");
+    GeneratorFromTemplate.load("PN/PN_P6_Template_JB.yaml", false);
+    GeneratorFromTemplate.load("PN/PN_JB_1_voie_preuve.yaml");
   }
 }
