@@ -7,8 +7,8 @@ import abstractGraph.conditions.valuation.AbstractValuation;
 public class Variable extends Formula {
 
   protected String varname;
+
   /* The unique identifier of the Variable throughout a model */
-  protected int identifier = -1;
 
   public Variable(String s) {
     varname = s;
@@ -33,13 +33,4 @@ public class Variable extends Formula {
   public String toString() {
     return getVarname();
   }
-
-  public int getIdentifier() {
-    return identifier;
-  }
-
-  public void setIdentifier(int identifier) {
-    this.identifier = identifier;
-  }
-
 }

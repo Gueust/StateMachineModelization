@@ -141,13 +141,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         }
       }
     }
-
-    /* We set the unique identifier to all the variables */
-    int id = 0;
-    for (Variable var : existingVariables.values()) {
-      var.setIdentifier(id);
-      id++;
-    }
   }
 
   private void setNotBuild() {

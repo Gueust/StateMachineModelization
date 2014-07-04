@@ -18,7 +18,6 @@ import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
 import abstractGraph.conditions.valuation.AbstractValuation;
-import abstractGraph.conditions.valuation.CompactValuation;
 import abstractGraph.conditions.valuation.Valuation;
 
 /**
@@ -306,11 +305,11 @@ public class AbstractGraph_Conditions_PackageTesting {
     f = new BooleanExpressionFactory(false);
     formulaEvaluationTest(f, new Valuation(10));
 
-    f = new BooleanExpressionFactory(true);
-    formulaEvaluationTest(f, new CompactValuation(10));
+    // f = new BooleanExpressionFactory(true);
+    // formulaEvaluationTest(f, new DSLValuation(10));
 
-    f = new BooleanExpressionFactory(false);
-    formulaEvaluationTest(f, new CompactValuation(10));
+    // f = new BooleanExpressionFactory(false);
+    // formulaEvaluationTest(f, new DSLValuation(10));
 
   }
 

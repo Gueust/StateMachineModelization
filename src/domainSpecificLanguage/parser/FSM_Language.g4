@@ -65,12 +65,13 @@ action : ID #ActionEvent
 /* Putting AND before the OR operator enforces the priority of AND versus OR */
 formula :
   '(' formula ')' #bracketExpr
-  | NOT formula #notExpr
+  | ID ('is' | 'is not') ID #EnumerationEqualityExpr
+  | NOT formula #notExpr 
   | formula AND formula #andExpr
   | formula OR formula #orExpr
   | ID EQUAL ID #andExpr
   | ID NOT_EQUAL ID #andExpr
-  | TRUE #trueExpr
+  | TRUE #trueExpr 
   | FALSE #falseExpr
   | ID #idExpr
 ;
@@ -81,7 +82,7 @@ AND : 'and';
 OR : 'or';
 TRUE :'true';
 FALSE :'false';
-EQUAL :'==';
+EQUAL :'=';
 NOT_EQUAL : '!=';
 
 ID :

@@ -24,6 +24,7 @@ import abstractGraph.events.SingleEvent;
 import domainSpecificLanguage.Assignment;
 import domainSpecificLanguage.DSLModel;
 import domainSpecificLanguage.DSLValuation.Enumeration;
+import domainSpecificLanguage.DSLValuation.EnumerationEqualityFormula;
 import domainSpecificLanguage.graph.DSLTransition;
 import domainSpecificLanguage.graph.DSLVariableEvent;
 import domainSpecificLanguage.graph.DSLVariable;
@@ -36,6 +37,7 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.BoolDeclarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.BracketExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Commands_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Domain_declarationContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.EnumerationEqualityExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.External_eventsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.FalseExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.IdExprContext;
@@ -59,7 +61,7 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.Variables_declarationCon
 public class FSM_builder extends AbstractParseTreeVisitor<Object>
     implements FSM_LanguageVisitor<Object> {
 
-  Map<String, DSLVariable> DSLVariables = new HashMap<>();
+  Map<String, DSLVariable> variables = new HashMap<>();
   Map<DSLVariable, Byte> initial_values = new HashMap<>();
   Map<String, ExternalEvent> external_events = new HashMap<>();
   Map<String, InternalEvent> internal_events = new HashMap<>();
@@ -71,7 +73,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   Set<DSLTransition> transitions = new HashSet<>();
 
   private void clear() {
-    DSLVariables.clear();
+    variables.clear();
     initial_values.clear();
     external_events.clear();
     internal_events.clear();
@@ -88,6 +90,12 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     System.exit(-1);
   }
 
+  /**
+   * 
+   * @param name
+   * @param token
+   * @return A not null DSLVariable.
+   */
   private DSLVariable getDSLVariable(String name, Token token) {
     if (external_events.containsKey(name)) {
       raiseError("The DSLVariable defined at " + getDetails(token)
@@ -100,7 +108,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + " has already been defined as a command.");
     }
 
-    DSLVariable var = DSLVariables.get(name);
+    DSLVariable var = variables.get(name);
     if (var == null) {
       raiseError("The variable used at " + getDetails(token)
           + " has not been defined previously.");
@@ -110,12 +118,13 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   private DSLVariable createDSLVariable(String name, Token token,
       Enumeration enumeration) {
-    if (DSLVariables.containsKey(name)) {
+    if (variables.containsKey(name)) {
       throw new Error("The variable declared at  " + getDetails(token)
           + " already exists.");
     }
-    DSLVariable variable = new DSLVariable(name, enumeration);
-    DSLVariables.put(name, variable);
+    DSLVariable variable = new DSLVariable(name, variables.size(),
+        enumeration);
+    variables.put(name, variable);
     single_events.put(name, new DSLVariableEvent(variable));
 
     return variable;
@@ -130,16 +139,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitTemplate(TemplateContext ctx) {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  /**
-   * @return The associated AndFormula.
-   */
-  @Override
-  public Object visitAndExpr(AndExprContext ctx) {
-    Formula left = (Formula) visit(ctx.formula(0));
-    Formula right = (Formula) visit(ctx.formula(1));
-    return new AndFormula(left, right);
   }
 
   /**
@@ -174,7 +173,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     visitChildren(ctx);
 
     /* Then we use them to fill in the model */
-    for (DSLVariable DSLVariable : DSLVariables.values()) {
+    for (DSLVariable DSLVariable : variables.values()) {
       Byte initial_value = initial_values
           .get(DSLVariable);
       assert (initial_value != null);
@@ -193,20 +192,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   }
 
   @Override
-  public Object visitBracketExpr(BracketExprContext ctx) {
-    return visit(ctx.formula());
-  }
-
-  @Override
   public Object visitPair(PairContext ctx) {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public Object visitIdExpr(IdExprContext ctx) {
-    String DSLVariable_name = ctx.ID().getText().trim();
-    return getDSLVariable(DSLVariable_name, ctx.start);
   }
 
   @Override
@@ -222,16 +210,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
     enumerations.put(enumeration_name, enumeration);
     return enumeration;
-  }
-
-  /**
-   * @return The associated OrFormula.
-   */
-  @Override
-  public Object visitOrExpr(OrExprContext ctx) {
-    Formula left = (Formula) visit(ctx.formula(0));
-    Formula right = (Formula) visit(ctx.formula(1));
-    return new OrFormula(left, right);
   }
 
   /**
@@ -257,6 +235,45 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return null;
   }
 
+  @Override
+  public Object visitBracketExpr(BracketExprContext ctx) {
+    return visit(ctx.formula());
+  }
+
+  @Override
+  public Object visitIdExpr(IdExprContext ctx) {
+    String DSLVariable_name = ctx.ID().getText().trim();
+    return getDSLVariable(DSLVariable_name, ctx.start);
+  }
+
+  /**
+   * @return The associated AndFormula.
+   */
+  @Override
+  public Object visitAndExpr(AndExprContext ctx) {
+    Formula left = (Formula) visit(ctx.formula(0));
+    Formula right = (Formula) visit(ctx.formula(1));
+    return new AndFormula(left, right);
+  }
+
+  /**
+   * @return The associated OrFormula.
+   */
+  @Override
+  public Object visitOrExpr(OrExprContext ctx) {
+    Formula left = (Formula) visit(ctx.formula(0));
+    Formula right = (Formula) visit(ctx.formula(1));
+    return new OrFormula(left, right);
+  }
+
+  /**
+   * @return The corresponding NotFormula.
+   */
+  @Override
+  public Object visitNotExpr(NotExprContext ctx) {
+    return new NotFormula((Formula) visit(ctx.formula()));
+  }
+
   /**
    * @return A TRUE formula.
    */
@@ -271,6 +288,30 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   @Override
   public Object visitFalseExpr(FalseExprContext ctx) {
     return Formula.FALSE;
+  }
+
+  @Override
+  public Object visitEnumerationEqualityExpr(EnumerationEqualityExprContext ctx) {
+    /**
+     * @return The associated EnumerationEqualityFormula.
+     */
+    String variable_name = ctx.ID(0).getText();
+    String variable_value = ctx.ID(1).getText();
+
+    boolean is_not;
+    switch (ctx.getChild(1).getText()) {
+    case "is":
+      is_not = false;
+      break;
+    case "is not":
+      is_not = true;
+      break;
+    default:
+      throw new Error("Impossible case.");
+    }
+    DSLVariable variable = getDSLVariable(variable_name, ctx.ID(0).getSymbol());
+    byte value = variable.getEnumeration().getByte(variable_value);
+    return new EnumerationEqualityFormula(variable, value, is_not);
   }
 
   /**
@@ -358,14 +399,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   }
 
   /**
-   * @return The corresponding NotFormula.
-   */
-  @Override
-  public Object visitNotExpr(NotExprContext ctx) {
-    return new NotFormula((Formula) visit(ctx.formula()));
-  }
-
-  /**
    * Store the events in the private set `external_events`.
    * 
    * @return null
@@ -390,7 +423,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         } else if (external_events.containsKey(event_name)) {
           raiseError("The external event defined at " + getDetails(token)
               + " has already been defined.");
-        } else if (DSLVariables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name)) {
           raiseError("The external event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -427,7 +460,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         } else if (external_events.containsKey(event_name)) {
           raiseError("The internal event defined at " + getDetails(token)
               + " has already been defined as an external event.");
-        } else if (DSLVariables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name)) {
           raiseError("The internal event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -465,7 +498,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         } else if (external_events.containsKey(event_name)) {
           raiseError("The command event defined at " + getDetails(token)
               + " has already been defined as an external event.");
-        } else if (DSLVariables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name)) {
           raiseError("The command event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -588,7 +621,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     String DSLVariable_name = ctx.ID(0).getText();
     String DSLVariable_value = ctx.ID(1).getText();
 
-    DSLVariable DSLVariable = DSLVariables.get(DSLVariable_name);
+    DSLVariable DSLVariable = variables.get(DSLVariable_name);
     if (DSLVariable == null) {
       raiseError("The DSLVariable " + DSLVariable + " defined at "
           + getDetails(ctx.ID(0).getSymbol())
@@ -614,4 +647,5 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     }
     return new Assignment(DSLVariable, value);
   }
+
 }

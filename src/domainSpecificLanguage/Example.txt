@@ -26,9 +26,9 @@ template
         on * when zone_1_libre and zone_2_libre do ;
 end
 
-
 transitions
-  on aiguille_contrôlée_droite when true do position := droite;
-  on aiguille_contrôlée_gauche when true do position := gauche;
+  on aiguille_contrôlée_droite when position is not droite do position := droite;
+  on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
 end
+
 

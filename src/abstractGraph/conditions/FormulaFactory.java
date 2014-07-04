@@ -45,8 +45,6 @@ public abstract class FormulaFactory {
 
   private boolean united_model;
   private HashMap<String, Variable> existing_variables;
-  /* Set the unique id for all variables */
-  private int variable_id = 0;
 
   /**
    * Initialize the FormulaFactory in the single formula mode.
@@ -90,15 +88,12 @@ public abstract class FormulaFactory {
    * @param variable_name
    * @return The associated variable
    */
-  private boolean seen = false;
 
   public final Variable getVariable(String variable_name) {
     Variable temp_variable = existing_variables.get(variable_name);
 
     if (temp_variable == null) {
-     temp_variable = new Variable(variable_name);
-      temp_variable.setIdentifier(variable_id);
-      variable_id++;
+      temp_variable = new Variable(variable_name);
       existing_variables.put(variable_name, temp_variable);
     }
 
@@ -166,12 +161,10 @@ public abstract class FormulaFactory {
    *          A debug value. True should display the parsed tree.
    *          Using ANTLR, one should put this code before returning:
    * 
-   *          <pre>
-   * {@code if (view_tree)
+   *          <pre> {@code if (view_tree)
    *          TreeViewer viewer = new TreeViewer(null, tree);
    *          viewer.open();
-   *          }
-   * </pre>
+   *          } </pre>
    * @return A valid formula if the expression contains a valid expression.
    *         null can be returned if the formula is empty.
    */

@@ -20,7 +20,6 @@ public class Valuation extends AbstractValuation {
    * Create a new empty valuation.
    */
   public Valuation() {
-    super(0);
     valuation = new HashMap<Variable, Boolean>();
   }
 
@@ -28,7 +27,6 @@ public class Valuation extends AbstractValuation {
    * Create a new empty valuation.
    */
   public Valuation(int nb_variables) {
-    super(nb_variables);
     valuation = new HashMap<Variable, Boolean>(nb_variables);
   }
 

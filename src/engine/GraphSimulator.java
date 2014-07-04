@@ -1,6 +1,5 @@
 package engine;
 
-import graph.CompactGlobalState;
 import graph.GlobalState;
 import graph.Model;
 import graph.State;

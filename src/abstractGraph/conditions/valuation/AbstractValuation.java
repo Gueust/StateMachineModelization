@@ -4,10 +4,6 @@ import abstractGraph.conditions.Variable;
 
 public abstract class AbstractValuation {
 
-  public AbstractValuation(int nb_variables) {
-
-  }
-
   /**
    * 
    * @return The number of internal variables that are managed.
@@ -57,4 +53,5 @@ public abstract class AbstractValuation {
    * @return false if the variable isn't initialized.
    */
   public abstract boolean variableInitialized(Variable variable);
+
 }

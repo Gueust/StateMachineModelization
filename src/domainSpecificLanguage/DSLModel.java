@@ -58,7 +58,7 @@ public class DSLModel {
   /**
    * 
    * @param identation
-   *          Identatation
+   *          Indentation
    * @return
    */
   private String variablesToString(String identation) {
