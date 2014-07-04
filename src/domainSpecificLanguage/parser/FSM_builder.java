@@ -11,29 +11,38 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import utils.GenericToString;
+import utils.Pair;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.Variable;
+import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
-import domainSpecificLanguage.Enumeration;
+import abstractGraph.events.InternalEvent;
+import abstractGraph.events.SingleEvent;
+import domainSpecificLanguage.Assignment;
+import domainSpecificLanguage.DSLModel;
+import domainSpecificLanguage.DSLValuation.Enumeration;
 import domainSpecificLanguage.graph.DSLTransition;
+import domainSpecificLanguage.graph.DSLVariableEvent;
+import domainSpecificLanguage.graph.DSLVariable;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionAssignmentContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.ActionContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionEventContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.AndExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.BoolDeclarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.BracketExprContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.Commands_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Domain_declarationContext;
-import domainSpecificLanguage.parser.FSM_LanguageParser.EventsContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.External_eventsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.FalseExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.IdExprContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.Internal_eventsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.List_of_IDContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ModelContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Model_alternativesContext;
-import domainSpecificLanguage.parser.FSM_LanguageParser.NodeContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.NotExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.One_bool_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.One_other_declarationContext;
@@ -42,29 +51,74 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.OtherDeclarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.PairContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.SubContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TemplateContext;
-import domainSpecificLanguage.parser.FSM_LanguageParser.TransContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TransitionContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.TransitionsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TrueExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Variables_declarationContext;
 
 public class FSM_builder extends AbstractParseTreeVisitor<Object>
     implements FSM_LanguageVisitor<Object> {
 
-  Map<String, Variable> variables = new HashMap<>();
-  Map<Variable, Byte> initial_values = new HashMap<>();
+  Map<String, DSLVariable> DSLVariables = new HashMap<>();
+  Map<DSLVariable, Byte> initial_values = new HashMap<>();
   Map<String, ExternalEvent> external_events = new HashMap<>();
+  Map<String, InternalEvent> internal_events = new HashMap<>();
+  Map<String, CommandEvent> commands_event = new HashMap<>();
+  Map<String, SingleEvent> single_events = new HashMap<>();
   Map<String, Enumeration> enumerations = new HashMap<>();
-  Map<Variable, Enumeration> enumerated_variable = new HashMap<>();
+  Map<DSLVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
 
   Set<DSLTransition> transitions = new HashSet<>();
 
-  private Variable getVariable(String name) {
-    Variable var = variables.get(name);
+  private void clear() {
+    DSLVariables.clear();
+    initial_values.clear();
+    external_events.clear();
+    internal_events.clear();
+    commands_event.clear();
+    single_events.clear();
+    enumerations.clear();
+    enumerated_DSLVariable.clear();
+    transitions.clear();
+  }
+
+  private void raiseError(String error) {
+    System.err.println(error);
+    System.err.println("Aborting.");
+    System.exit(-1);
+  }
+
+  private DSLVariable getDSLVariable(String name, Token token) {
+    if (external_events.containsKey(name)) {
+      raiseError("The DSLVariable defined at " + getDetails(token)
+          + " has already been defined as an external event.");
+    } else if (internal_events.containsKey(name)) {
+      raiseError("The DSLVariable defined at " + getDetails(token)
+          + " has already been defined as an internal event.");
+    } else if (commands_event.containsKey(name)) {
+      raiseError("The external event defined at " + getDetails(token)
+          + " has already been defined as a command.");
+    }
+
+    DSLVariable var = DSLVariables.get(name);
     if (var == null) {
-      var = new Variable(name);
-      variables.put(name, var);
+      raiseError("The variable used at " + getDetails(token)
+          + " has not been defined previously.");
     }
     return var;
+  }
+
+  private DSLVariable createDSLVariable(String name, Token token,
+      Enumeration enumeration) {
+    if (DSLVariables.containsKey(name)) {
+      throw new Error("The variable declared at  " + getDetails(token)
+          + " already exists.");
+    }
+    DSLVariable variable = new DSLVariable(name, enumeration);
+    DSLVariables.put(name, variable);
+    single_events.put(name, new DSLVariableEvent(variable));
+
+    return variable;
   }
 
   private String getDetails(Token token) {
@@ -78,6 +132,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return null;
   }
 
+  /**
+   * @return The associated AndFormula.
+   */
   @Override
   public Object visitAndExpr(AndExprContext ctx) {
     Formula left = (Formula) visit(ctx.formula(0));
@@ -98,7 +155,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     for (TerminalNode terminal_node : ctx.ID()) {
       String item = terminal_node.getText();
       if (result.contains(item)) {
-        throw new Error("The identifier " + item + " is present twice at "
+        raiseError("The identifier " + item + " is present twice at "
             + getDetails(ctx.getStart()));
       }
       result.add(item);
@@ -109,16 +166,30 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   @Override
   public Object visitModel(ModelContext ctx) {
     // TODO Auto-generated method stub
-    /* We first load the enumerations */
+    clear();
+
+    DSLModel dsl_model = new DSLModel();
+
+    /* The parsing does fill in the internal values of the current instance */
     visitChildren(ctx);
-    System.out.println("External events: "
-        + GenericToString.printCollection(external_events.keySet()));
 
-    System.out.println("Enumerations:" + enumerations);
-    System.out.println("Variables: " + variables.keySet());
-    System.out.println("Initial values: " + initial_values);
+    /* Then we use them to fill in the model */
+    for (DSLVariable DSLVariable : DSLVariables.values()) {
+      Byte initial_value = initial_values
+          .get(DSLVariable);
+      assert (initial_value != null);
+      dsl_model.variables
+          .add(new Pair<DSLVariable, Byte>(DSLVariable, initial_value));
+    }
 
-    return null;
+    dsl_model.external_events.addAll(external_events.values());
+    dsl_model.internal_events.addAll(internal_events.values());
+    dsl_model.command_events.addAll(commands_event.values());
+    dsl_model.enumerations.addAll(enumerations.values());
+    dsl_model.enumerated_variable.putAll(enumerated_DSLVariable);
+    dsl_model.transitions.addAll(transitions);
+
+    return dsl_model;
   }
 
   @Override
@@ -134,30 +205,28 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   @Override
   public Object visitIdExpr(IdExprContext ctx) {
-    String variable_name = ctx.ID().getText().trim();
-    return getVariable(variable_name);
-  }
-
-  @Override
-  public Object visitActionAssignment(ActionAssignmentContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
+    String DSLVariable_name = ctx.ID().getText().trim();
+    return getDSLVariable(DSLVariable_name, ctx.start);
   }
 
   @Override
   public Object visitDomain_declaration(Domain_declarationContext ctx) {
 
-    Enumeration enumeration = new Enumeration();
+    String enumeration_name = ctx.ID().getText();
+
+    Enumeration enumeration = new Enumeration(enumeration_name);
     for (TerminalNode terminal_node : ctx.list_of_ID().ID()) {
       String item = terminal_node.getText();
       enumeration.add(item);
     }
 
-    String enumeration_name = ctx.ID().getText();
     enumerations.put(enumeration_name, enumeration);
     return enumeration;
   }
 
+  /**
+   * @return The associated OrFormula.
+   */
   @Override
   public Object visitOrExpr(OrExprContext ctx) {
     Formula left = (Formula) visit(ctx.formula(0));
@@ -165,36 +234,18 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return new OrFormula(left, right);
   }
 
-  @Override
-  public Object visitActionEvent(ActionEventContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   /**
    * @return A LinkedList of DSLTransition.
    */
   @Override
-  public Object visitTrans(TransContext ctx) {
+  public Object visitTransitions(TransitionsContext ctx) {
     LinkedList<DSLTransition> transitions = new LinkedList<>();
     for (TransitionContext trans_context : ctx.transition()) {
       DSLTransition transition = (DSLTransition) visitTransition(trans_context);
+      assert (transition != null);
       transitions.add(transition);
     }
     return transitions;
-  }
-
-  private boolean one_node_visited = false;
-
-  @Override
-  public Object visitNode(NodeContext ctx) {
-    if (one_node_visited) {
-      throw new Error("Only one node is permitted. You have a second"
-          + " declaration at " + getDetails(ctx.start));
-    }
-    one_node_visited = true;
-    visitChildren(ctx);
-    return null;
   }
 
   /**
@@ -228,8 +279,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    * @return null
    */
   @Override
-  public Object visitVariables_declaration(Variables_declarationContext ctx) {
-    /* We let the children declare their own variables */
+  public Object visitVariables_declaration(
+      Variables_declarationContext ctx) {
+    /* We let the children declare their own DSLVariables */
     visitChildren(ctx);
     return null;
   }
@@ -241,14 +293,14 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    */
   @Override
   public Object visitBoolDeclaration(BoolDeclarationContext ctx) {
-    /* We let the children declare their own variables */
+    /* We let the children declare their own DSLVariables */
     visitChildren(ctx);
     return null;
   }
 
   @Override
   public Object visitOtherDeclaration(OtherDeclarationContext ctx) {
-    /* We let the children declare their own variables */
+    /* We let the children declare their own DSLVariables */
     String domain_type = ctx.ID().getText();
 
     Enumeration enumeration = enumerations.get(domain_type);
@@ -257,7 +309,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         visitEnumerationDeclaration(domain_type, enumeration, one_decl);
       }
     } else {
-      throw new Error("The type " + domain_type + " has not been defined at "
+      raiseError("The type " + domain_type + " has not been defined at "
           + getDetails(ctx.getStart()));
     }
 
@@ -271,17 +323,18 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     String var_name = ctx.ID(0).getText();
     String enumeration_type = ctx.ID(1).getText();
 
-    Variable var = getVariable(var_name);
-    Byte value = enumeration.get(enumeration_type);
+    DSLVariable var = createDSLVariable(var_name, ctx.start, enumeration);
+
+    Byte value = enumeration.getByte(enumeration_type);
     if (value == null) {
-      throw new Error("The enumeration type " + enumeration_type
+      raiseError("The enumeration type " + enumeration_type
           + " is not a type of the enumeration " + enumeration_name + " at "
           + getDetails(ctx.ID(1).getSymbol()));
     }
-    /* We set the initial value of the variable */
+    /* We set the initial value of the DSLVariable */
     initial_values.put(var, value);
-    /* We register this is an enumerated variable */
-    enumerated_variable.put(var, enumeration);
+    /* We register this is an enumerated DSLVariable */
+    enumerated_DSLVariable.put(var, enumeration);
   }
 
   @Override
@@ -293,7 +346,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitOne_bool_declaration(One_bool_declarationContext ctx) {
     String var_name = ctx.ID().getText();
     boolean is_true = ctx.TRUE() != null;
-    Variable var = getVariable(var_name);
+    DSLVariable var = createDSLVariable(var_name, ctx.start, null);
     Byte value;
     if (is_true) {
       value = 1;
@@ -318,14 +371,113 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    * @return null
    */
   @Override
-  public Object visitEvents(EventsContext ctx) {
-    for (TerminalNode a : ctx.list_of_ID().ID()) {
-      String event_name = a.getText();
-      if (external_events.containsKey(event_name)) {
-        throw new Error("Declaring an already existing event at "
-            + getDetails(a.getSymbol()));
+  public Object visitExternal_events(External_eventsContext ctx) {
+    if (ctx.list_of_ID() == null) {
+      return null;
+    }
+    for (List_of_IDContext internal_list : ctx.list_of_ID()) {
+      for (TerminalNode terminal_node : internal_list.ID()) {
+        String event_name = terminal_node.getText();
+        if (external_events.containsKey(event_name)) {
+          raiseError("Declaring an already existing event at "
+              + getDetails(terminal_node.getSymbol()));
+        }
+
+        Token token = terminal_node.getSymbol();
+        if (internal_events.containsKey(event_name)) {
+          raiseError("The external event defined at " + getDetails(token)
+              + " has already been defined as an internal event.");
+        } else if (external_events.containsKey(event_name)) {
+          raiseError("The external event defined at " + getDetails(token)
+              + " has already been defined.");
+        } else if (DSLVariables.containsKey(event_name)) {
+          raiseError("The external event defined at " + getDetails(token)
+              + " has already been defined as a DSLVariable.");
+        } else if (commands_event.containsKey(event_name)) {
+          raiseError("The external event defined at " + getDetails(token)
+              + " has already been defined as a command.");
+        }
+
+        ExternalEvent event = new ExternalEvent(event_name);
+        external_events.put(event_name, event);
+        single_events.put(event_name, event);
       }
-      external_events.put(event_name, new ExternalEvent(event_name));
+    }
+    return null;
+  }
+
+  @Override
+  public Object visitInternal_events(Internal_eventsContext ctx) {
+    if (ctx.list_of_ID() == null) {
+      return null;
+    }
+    for (List_of_IDContext internal_list : ctx.list_of_ID()) {
+      for (TerminalNode terminal_node : internal_list.ID()) {
+        String event_name = terminal_node.getText();
+        if (internal_events.containsKey(event_name)) {
+          raiseError("Declaring an already existing event at "
+              + getDetails(terminal_node.getSymbol()));
+        }
+
+        Token token = terminal_node.getSymbol();
+
+        if (internal_events.containsKey(event_name)) {
+          raiseError("The internal event defined at " + getDetails(token)
+              + " has already been defined as an internal event.");
+        } else if (external_events.containsKey(event_name)) {
+          raiseError("The internal event defined at " + getDetails(token)
+              + " has already been defined as an external event.");
+        } else if (DSLVariables.containsKey(event_name)) {
+          raiseError("The internal event defined at " + getDetails(token)
+              + " has already been defined as a DSLVariable.");
+        } else if (commands_event.containsKey(event_name)) {
+          raiseError("The external event defined at " + getDetails(token)
+              + " has already been defined as a command.");
+        }
+
+        InternalEvent event = new InternalEvent(event_name);
+        internal_events.put(event_name, event);
+        single_events.put(event_name, event);
+
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Object visitCommands_declaration(Commands_declarationContext ctx) {
+    if (ctx.list_of_ID() == null) {
+      return null;
+    }
+    for (List_of_IDContext internal_list : ctx.list_of_ID()) {
+      for (TerminalNode terminal_node : internal_list.ID()) {
+        String event_name = terminal_node.getText();
+        if (commands_event.containsKey(event_name)) {
+          raiseError("Declaring an already existing event at "
+              + getDetails(terminal_node.getSymbol()));
+        }
+
+        Token token = terminal_node.getSymbol();
+
+        if (internal_events.containsKey(event_name)) {
+          raiseError("The command event defined at " + getDetails(token)
+              + " has already been defined as an internal event.");
+        } else if (external_events.containsKey(event_name)) {
+          raiseError("The command event defined at " + getDetails(token)
+              + " has already been defined as an external event.");
+        } else if (DSLVariables.containsKey(event_name)) {
+          raiseError("The command event defined at " + getDetails(token)
+              + " has already been defined as a DSLVariable.");
+        } else if (commands_event.containsKey(event_name)) {
+          raiseError("The command event defined at " + getDetails(token)
+              + " has already been defined.");
+        }
+
+        CommandEvent event = new CommandEvent(event_name);
+        commands_event.put(event_name, event);
+        single_events.put(event_name, event);
+
+      }
     }
     return null;
   }
@@ -346,7 +498,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitTransition(TransitionContext ctx) {
 
     DSLTransition transition = new DSLTransition();
-    // TODO Auto-generated method stub
 
     boolean automatic_filling = false;
     /* We first look if the event field is only a ALL_EVENTS_IN_CONDITION */
@@ -358,11 +509,11 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         String event_name = node.getText();
         ExternalEvent external_event = external_events.get(event_name);
         if (external_event == null) {
-          throw new Error("The external event " + event_name + " at "
+          raiseError("The external event " + event_name + " at "
               + getDetails(node.getSymbol())
               + " has not been defined previously.");
         }
-        transition.addExternalEvent(external_event);
+        transition.addSingleEvent(external_event);
       }
     }
 
@@ -371,15 +522,96 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     transition.setCondition(formula);
 
     if (automatic_filling) {
-
+      HashSet<Variable> all_DSLVariables = new HashSet<>();
+      formula.allVariables(all_DSLVariables);
+      for (Variable var : all_DSLVariables) {
+        DSLVariable variable = (DSLVariable) var;
+        transition.addSingleEvent(single_events.get(variable.getVarname()));
+        ;
+      }
     }
-    System.out.println("Creating the transition:\n" + transition);
+
+    /* Then we do the actions */
+    ActionsContext parsed_actions = ctx.actions();
+
+    for (ActionContext child : parsed_actions.action()) {
+      if (child instanceof ActionEventContext) {
+        SingleEvent action =
+            (SingleEvent) visitActionEvent((ActionEventContext) child);
+        transition.addAction(action);
+      } else if (child instanceof ActionAssignmentContext) {
+        Assignment action =
+            (Assignment) visitActionAssignment((ActionAssignmentContext) child);
+        transition.addAction(action);
+      } else {
+        throw new Error("Unknown error during parsing.");
+      }
+    }
+
+    transitions.add(transition);
+
+    return transition;
+  }
+
+  /**
+   * Does nothing. Should not be used.
+   */
+  @Override
+  public Object visitActions(ActionsContext ctx) {
     return null;
   }
 
+  /**
+   * @return A {@link SingleEvent}.
+   */
   @Override
-  public Object visitActions(ActionsContext ctx) {
-    // TODO Auto-generated method stub
-    return null;
+  public Object visitActionEvent(ActionEventContext ctx) {
+    String event_name = ctx.getText();
+    SingleEvent event = single_events.get(event_name);
+    if (event == null) {
+      raiseError("The event declared in the action field at "
+          + getDetails(ctx.start) + " is not definedd");
+    }
+    if (event instanceof ExternalEvent) {
+      raiseError("The event declared in the action field at "
+          + getDetails(ctx.start)
+          + " is an internal event and so cannot be used as an action.");
+    }
+    return event;
+  }
+
+  /**
+   * @return A {@link Assignment}.
+   */
+  @Override
+  public Object visitActionAssignment(ActionAssignmentContext ctx) {
+    String DSLVariable_name = ctx.ID(0).getText();
+    String DSLVariable_value = ctx.ID(1).getText();
+
+    DSLVariable DSLVariable = DSLVariables.get(DSLVariable_name);
+    if (DSLVariable == null) {
+      raiseError("The DSLVariable " + DSLVariable + " defined at "
+          + getDetails(ctx.ID(0).getSymbol())
+          + " has not been previously defined.");
+    }
+
+    Enumeration enumeration = enumerated_DSLVariable.get(DSLVariable);
+    Byte value;
+    if (enumeration == null) {
+      /* This is a boolean value */
+      value = Enumeration.getByteFromBool(DSLVariable_value);
+    } else {
+      /* This is an enumeration value */
+      value = enumeration.getByte(DSLVariable_value);
+      if (value == null) {
+        throw new Error("[" + getDetails(ctx.ID(1).getSymbol()) + "]"
+            + "The option " + DSLVariable_value
+            + " has not been found in the enumeration " + enumeration);
+      }
+    }
+    if (value == null) {
+      throw new Error("Null value");
+    }
+    return new Assignment(DSLVariable, value);
   }
 }

@@ -10,7 +10,7 @@ public class Actions implements Iterable<SingleEvent> {
   /** A unique instance of an empty Actions */
   public static final Actions NONE = new Actions();
 
-  private LinkedList<SingleEvent> events;
+  protected LinkedList<SingleEvent> events;
 
   public Actions() {
     events = new LinkedList<SingleEvent>();

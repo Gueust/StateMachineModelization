@@ -5,15 +5,14 @@ import java.util.HashSet;
 import utils.GenericToString;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.valuation.Valuation;
-import abstractGraph.events.Actions;
-import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.SingleEvent;
 
 public class DSLTransition {
 
-  protected HashSet<ExternalEvent> events = new HashSet<>();
+  protected HashSet<SingleEvent> events = new HashSet<>();
   protected Formula condition;
 
-  protected Actions actions = new Actions();
+  protected DSLActions actions = new DSLActions();
 
   /*
    * public DSLTransition(Events events,
@@ -27,12 +26,20 @@ public class DSLTransition {
   public DSLTransition() {
   }
 
-  public void addExternalEvent(ExternalEvent e) {
+  public void addSingleEvent(SingleEvent e) {
     if (e == null) {
       throw new IllegalArgumentException(
           "You cannot add a null event for a transition.");
     }
     events.add(e);
+  }
+
+  public void addAction(SingleEvent e) {
+    if (e == null) {
+      throw new IllegalArgumentException(
+          "You cannot add a null action for a transition.");
+    }
+    actions.add(e);
   }
 
   public void setCondition(Formula condition) {
@@ -51,11 +58,10 @@ public class DSLTransition {
   public String toString() {
 
     return "on "
-        + GenericToString.printCollection(events) + "\n" +
+        + GenericToString.printCollection(events) +
         " when "
-        + ((condition != null) ? condition.toString() : " true") + "\n" +
-        "              ACTIONS: " + actions.toString();
+        + ((condition != null) ? condition.toString() : " true") +
+        " do" + actions + ";";
 
   }
-
 }

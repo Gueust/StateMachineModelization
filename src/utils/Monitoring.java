@@ -7,6 +7,11 @@ import java.util.List;
 
 public class Monitoring {
 
+  public static String getAdress(Object object) {
+    return // object.getClass().getName() +
+    '@' + Integer.toHexString(System.identityHashCode(object));
+  }
+
   /**
    * Print the total peak memory usage.
    */

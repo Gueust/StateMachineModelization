@@ -13,8 +13,16 @@ model: (model_alternatives)* EOF ;
 model_alternatives : 
       domain_declaration 
     | variables_declaration
-    | node  
+    | commands_declaration
+    | external_events
+    | internal_events
+    | 'transitions' transitions 'end'
+    | 'sub' sub 'end' 
     | template;
+
+
+domain_declaration : 'enumeration' ID '=' '{' list_of_ID '}' ';';
+list_of_ID : ID (',' ID)*;
 
 /* Variables declaration */
 variables_declaration : 'variables'
@@ -27,31 +35,26 @@ var_decl : ('bool' one_bool_declaration (',' one_bool_declaration)* ';')  #BoolD
 one_bool_declaration : ID '(' (TRUE | FALSE) ')';
 one_other_declaration : ID '(' ID ')';
 
-domain_declaration : 'enumeration' ID '=' '{' list_of_ID '}' ';';
-list_of_ID : ID (',' ID)*;
 
+external_events : 'external_events' (list_of_ID ';')* 'end';
+internal_events : 'internal_events' (list_of_ID ';')* 'end';
 
-node : 'node' ID
-  events
-  sub
-  trans
-  'end';
-
+commands_declaration : 'commands' (list_of_ID ';')* 'end';
 
 template : 'template'
   ('templating' list_of_ID ';')?
   sub
-  trans
+  'trans' transitions
   'end';
   
-events : ('events' (list_of_ID)? ';')?;
+
 
 /* Sub node declaration */
 pair : ID ':' ID;
 sub : ('sub' (ID 'instantiate' ID 'with' '{' pair (',' pair)* '}' ';' ))?;
 
 /* Transitions declaration */
-trans : ('trans' (transition ';')*)?; 
+transitions : (transition ';')*; 
 transition : 'on' list_of_ID 'when' formula 'do' (actions)?;
 
 actions : action (',' action)*;
