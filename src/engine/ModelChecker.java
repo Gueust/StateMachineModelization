@@ -2,6 +2,7 @@ package engine;
 
 import engine.SplitProof.MyNode;
 import genericLabeledGraph.Edge;
+import graph.GlobalState;
 import graph.Model;
 import graph.StateMachine;
 
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -17,6 +19,7 @@ import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
+import abstractGraph.conditions.Variable;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
@@ -86,7 +89,12 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   private void addVisited(GS state) {
-    visited_states.add(state);
+    if (state.isLegal()) {
+      visited_states.add(state);
+    } else {
+      System.err.println("You have added an ilegal initial state to the" +
+          " model checker");
+    }
   }
 
   private void clearVisited() {
@@ -159,7 +167,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
-    // /illegal_states.clear();
     number_illegal_states = 0;
     clearVisited();
     i = 0;
@@ -191,6 +198,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           + visited_states.size());
       System.err.println("Number of unvisited states "
           + unvisited_states.size());
+      System.err.println("Total number of illegal states found:" +
+          number_illegal_states);
 
       LinkedHashSet<ExternalEvent> possible_external_events =
           simulator.getPossibleEvent(state);
@@ -199,6 +208,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
+
         i++;
         System.err.flush();
         System.out.flush();
@@ -215,10 +225,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("Total number of illegal states found:" +
         number_illegal_states);
     System.err.println("Total number of explored node: " + i);
+
+    System.err.flush();
+    System.out.flush();
+
     return null;
   }
 
-  public GS verifyUsingSplitting(GraphSimulator simulator) {
+  public GS verifyUsingSplitting(SequentialGraphSimulator simulator) {
     Model model = simulator.getModel();
     Model proof = simulator.proof;
     if (proof == null) {
@@ -257,9 +271,85 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return unvisited_states;
   }
 
-  /*
-   * public HashSet<GS> getIllegal_states() {
-   * return illegal_states;
-   * }
+  public void printOtherVisitedStatesWithSameFunctional(
+      SequentialGraphSimulator simulator) {
+
+    for (GS state : visited_states) {
+      boolean found = false;
+
+      for (GS visited_state : visited_states) {
+        if (isIdenticalFunctionalDifferentProof((GlobalState) state,
+            (GlobalState) visited_state, simulator)) {
+          if (!found) {
+            System.out.println("The given state is : \n" + state);
+          }
+          found = true;
+          System.out
+              .println("Other states with the same functional found. Differences are:\n");
+          visited_state.compare(state);
+          System.out.println("** First state: " + visited_state);
+          System.out.println("** Second state: " + state);
+        }
+      }
+      if (found) {
+        return;
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param s1
+   * @param s2
+   * @param simulator
+   * @return true iif the functional valuation is identical and the proof
+   *         valuation is different
    */
+  private boolean isIdenticalFunctionalDifferentProof(GlobalState s1,
+      GlobalState s2,
+      SequentialGraphSimulator simulator) {
+    Model func = simulator.model;
+    Collection<Variable> existing_variables = func
+        .getExistingVariables()
+        .values();
+
+    /* We first check that all the states of the functional are equals */
+    for (StateMachine machine : func) {
+      if (s1.getState(machine) != s2.getState(machine)) {
+        return false;
+      }
+    }
+
+    /* Then, we check if one state of the proof is different */
+    for (StateMachine machine : simulator.proof) {
+      if (s1.getState(machine) != s2.getState(machine)) {
+        System.out.println("Different state for " + machine.getName() + " : "
+            + s1.getState(machine).getId()
+            + " versus " + s2.getState(machine).getId());
+        return true;
+      }
+    }
+
+    /* Then we compare the variables */
+    for (Entry<Variable, Boolean> pair : s1.getValuation().getSetVariables()) {
+      Variable var = pair.getKey();
+      boolean identical_in_both_model =
+          s1.getVariableValue(var) == s2.getVariableValue(var);
+      // System.out.println("Variable " + var + " is "
+      // + (s1.getVariableValue(var)) +
+      // " and " + (s2.getVariableValue(var)) + " : "
+      // + identical_in_both_model);
+      if (identical_in_both_model) {
+        continue;
+      }
+      if (existing_variables.contains(var)) {
+        /* Both functional valuation are different */
+        return false;
+      } else {
+        System.out.println("RETURNED TRUE 2");
+        return true;
+      }
+    }
+    return false;
+  }
 }
