@@ -41,6 +41,10 @@ public class NotFormula extends Formula {
 
   @Override
   public String toString() {
-    return "(" + Formula.NOT + "( " + f.toString() + ") )";
+    if (f instanceof Variable) {
+      return "(" + Formula.NOT + " " + f.toString() + ")";
+    } else {
+      return "(" + Formula.NOT + " (" + f.toString() + "))";
+    }
   }
 }
