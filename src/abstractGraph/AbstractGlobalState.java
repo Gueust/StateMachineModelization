@@ -1,10 +1,12 @@
 package abstractGraph;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.conditions.Variable;
 import abstractGraph.conditions.valuation.AbstractValuation;
+import abstractGraph.conditions.valuation.Valuation;
 
 public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>, V extends AbstractValuation> {
 
@@ -222,5 +224,63 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     result += ObjectSizeFetcher.getObjectSize(isNotP7);
 
     return result;
+  }
+
+  /**
+   * Prints the differences between the current_state and the other_state.
+   * It supposes that both global states contains the SAME variables set.
+   */
+  public void compare(AbstractGlobalState<M, S, T, ?> other_state) {
+
+    System.out.println("** Beginning of the comparison");
+
+    if (is_legal_state != other_state.is_legal_state) {
+      System.out.println("Is legal:" + is_legal_state + " versus "
+          + other_state.is_legal_state);
+    }
+    if (is_safe_state != other_state.is_safe_state) {
+      System.out.println("Is safe:" + is_safe_state + " versus "
+          + other_state.is_safe_state);
+    }
+    if (isNotP7 != other_state.isNotP7) {
+      System.out.println("isNotP7:" + isNotP7 + " versus "
+          + other_state.isNotP7);
+    }
+
+    /* Comparison of the states of the machines. */
+    for (Entry<M, S> entry : state_machines_current_state.entrySet()) {
+      M machine = entry.getKey();
+      S state = entry.getValue();
+      S state2 = other_state.state_machines_current_state.get(machine);
+      if (state2 == null) {
+        System.out.println("The machine " + machine.getName()
+            + " does not exist in the second model.");
+      } else if (!state.id.equals(state2.id)) {
+        System.out.println("In " + machine.getName() + ": " + state.id
+            + " versus "
+            + state2.id);
+      }
+    }
+
+    for (Entry<M, S> entry : other_state.state_machines_current_state
+        .entrySet()) {
+      if (state_machines_current_state.get(entry.getKey()) == null) {
+        System.out.println("The machine " + entry.getKey()
+            + " does not exist in the first model.");
+      }
+    }
+
+    /* Comparison of the variables. */
+    for (Entry<Variable, Boolean> entry : ((Valuation) variables_values)
+        .getSetVariables()) {
+      Variable var = entry.getKey();
+      Boolean value = entry.getValue();
+      boolean other_value = other_state.getVariableValue(var);
+      if (other_value != value) {
+        System.out.println(var + ": " + value + " versus " + other_value);
+      }
+    }
+
+    System.out.println("** End of the comparison");
   }
 }
