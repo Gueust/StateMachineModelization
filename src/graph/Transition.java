@@ -14,6 +14,7 @@ public class Transition extends AbstractTransition<State> {
   public Transition(State from, State to, Events event,
       Formula condition, Actions actions) {
     super(from, to, event, condition, actions);
+    from.addTransition(this);
   }
 
   // TODO verify that it works and add the tests.

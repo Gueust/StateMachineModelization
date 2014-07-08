@@ -103,7 +103,6 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
     }
 
     Transition t = new Transition(from, to, events, guard, actions);
-    s1.addTransition(t);
     return t;
   }
 
