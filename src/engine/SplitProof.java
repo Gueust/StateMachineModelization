@@ -15,7 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
@@ -42,11 +43,11 @@ public class SplitProof {
    * modifies some variables or generate SYN's that are eaten by graph B.
    */
   private void createGraphOfGraphs() {
-    HashMap<Variable, LinkedList<StateMachine>> writing_state_machine =
+    HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine =
         model.getWritingStateMachines();
     @SuppressWarnings("unchecked")
-    HashMap<Variable, LinkedList<StateMachine>> writing_state_machine_proof =
-        (HashMap<Variable, LinkedList<StateMachine>>) proof
+    HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine_proof =
+        (HashMap<BooleanVariable, LinkedList<StateMachine>>) proof
             .getWritingStateMachines()
             .clone();
     /*
@@ -82,7 +83,7 @@ public class SplitProof {
    * @param current_model
    */
   private void buildOutgoingLinksFromModel(
-      HashMap<Variable, LinkedList<StateMachine>> writing_state_machine,
+      HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine,
       LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs,
       Model current_model) {
     for (StateMachine state_machine : current_model) {
@@ -101,11 +102,11 @@ public class SplitProof {
               }
             }
           }
-          HashSet<Variable> list_variable = new HashSet<Variable>();
+          HashSet<EnumeratedVariable> list_variable = new HashSet<>();
           transition.getCondition().allVariables(list_variable);
-          for (Variable variable : list_variable) {
+          for (EnumeratedVariable variable : list_variable) {
             addWritingStateMachineInGraph(writing_state_machine, state_machine,
-                new VariableChange(new Literal(variable)));
+                new VariableChange(new Literal((BooleanVariable) variable)));
           }
         }
       }
@@ -114,7 +115,7 @@ public class SplitProof {
   }
 
   private void addWritingStateMachineInGraph(
-      HashMap<Variable, LinkedList<StateMachine>> writing_state_machine,
+      HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine,
       StateMachine state_machine,
       VariableChange variable_change) {
     LinkedList<StateMachine> writers =

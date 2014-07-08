@@ -46,7 +46,8 @@ public class OrFormula extends Formula {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     p.allVariables(vars);
     q.allVariables(vars);
     return vars;

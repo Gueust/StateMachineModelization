@@ -18,7 +18,8 @@ model_alternatives :
     | internal_events
     | 'transitions' transitions 'end'
     | 'sub' sub 'end' 
-    | template;
+    | template
+    | proof_variables_declaration;
 
 
 domain_declaration : 'enumeration' ID '=' '{' list_of_ID '}' ';';
@@ -30,12 +31,20 @@ variables_declaration : 'variables'
   'end';
 
 var_decl : ('bool' one_bool_declaration (',' one_bool_declaration)* ';')  #BoolDeclaration
-  | (ID one_other_declaration (',' one_other_declaration)* ';') #OtherDeclaration
-  ;
+  | (ID one_other_declaration (',' one_other_declaration)* ';') #OtherDeclaration;
+  
 one_bool_declaration : ID '(' (TRUE | FALSE) ')';
 one_other_declaration : ID '(' ID ')';
 
+/* Proof variables declarations */
+proof_variables_declaration : 'proof variables'
+  (proof_var_decl)*
+  'end';
 
+proof_var_decl : ('bool' one_bool_declaration (',' one_bool_declaration)* ';') #ProofBoolDeclaration
+  | (ID one_other_declaration (',' one_other_declaration)* ';') #ProofOtherDeclaration
+  ;
+  
 external_events : 'external_events' (list_of_ID ';')* 'end';
 internal_events : 'internal_events' (list_of_ID ';')* 'end';
 

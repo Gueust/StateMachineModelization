@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import parserAEFDFormat.Fichier6lignes;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 
 /**
  * Replace all the ctl found in a condition field of a transition that doesn't
@@ -42,7 +42,7 @@ public class CTLReplacer {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
     Model model = graph_factory.buildModel(file_name, file_name);
     model.build();
-    HashMap<Variable, LinkedList<StateMachine>> writing_state_machine = model
+    HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine = model
         .getWritingStateMachines();
     Boolean beginning = true;
     BufferedWriter writer = new BufferedWriter(new FileWriter(
@@ -105,7 +105,8 @@ public class CTLReplacer {
           String new_ctl_name = ctl_name.replaceAll(
               "CTL_", "IND_");
 
-          if (writing_state_machine.containsKey(new Variable(new_ctl_name))) {
+          if (writing_state_machine.containsKey(new BooleanVariable(
+              new_ctl_name, -2))) {
             pairs_of_ctl.remove(ctl_name);
             pairs_of_ctl.remove(GenerateFormulaAEFD
                 .getOppositeName(ctl_name));
@@ -155,9 +156,10 @@ public class CTLReplacer {
       model = graph_factory.buildModel(target_name, file_name);
       model.build();
 
-      Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+      Iterator<BooleanVariable> variable_iterator = model
+          .iteratorExistingVariables();
       while (variable_iterator.hasNext()) {
-        Variable variable = variable_iterator.next();
+        BooleanVariable variable = variable_iterator.next();
         if (!writing_state_machine.containsKey(variable)
             && !variable_already_written.contains(variable.getVarname())
             && !variable.getVarname().startsWith("CTL_")) {

@@ -4,35 +4,35 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
-import domainSpecificLanguage.graph.DSLVariable;
 
 /**
  * Mapping of the variables to {true, false}. Not defined variable are
  * considered
  * false.
  */
-public class DSLValuation extends AbstractValuation {
+public class CompactValuation extends AbstractValuation {
 
   private byte[] valuation;
 
   /**
    * Create a new empty valuation.
    */
-  public DSLValuation(int nb_variables) {
+  public CompactValuation(int nb_variables) {
     valuation = new byte[nb_variables];
   }
 
-  private DSLValuation(DSLValuation dsl_valuation) {
+  private CompactValuation(CompactValuation dsl_valuation) {
     this.valuation = dsl_valuation.valuation.clone();
   }
 
-  public DSLValuation clone() {
-    return new DSLValuation(this);
+  public CompactValuation clone() {
+    return new CompactValuation(this);
   }
 
-  public byte getValue(DSLVariable v) {
+  public byte getValue(EnumeratedVariable v) {
     Byte res = valuation[v.getUniqueIdentifier()];
     if (res == null) {
       throw new NoSuchElementException("The value for " + v
@@ -42,7 +42,7 @@ public class DSLValuation extends AbstractValuation {
     return res.byteValue();
   }
 
-  public boolean setValue(DSLVariable var, byte value) {
+  public boolean setValue(EnumeratedVariable var, byte value) {
     byte old_value = valuation[var.getUniqueIdentifier()];
     valuation[var.getUniqueIdentifier()] = value;
 
@@ -54,10 +54,10 @@ public class DSLValuation extends AbstractValuation {
     return Arrays.toString(valuation);
   }
 
-  public String toString(Iterable<DSLVariable> variables) {
+  public String toString(Iterable<EnumeratedVariable> variables) {
     StringBuffer string_buffer = new StringBuffer();
     boolean first = true;
-    for (DSLVariable var : variables) {
+    for (EnumeratedVariable var : variables) {
       if (!first) {
         string_buffer.append(", ");
       }
@@ -87,7 +87,7 @@ public class DSLValuation extends AbstractValuation {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    DSLValuation other = (DSLValuation) obj;
+    CompactValuation other = (CompactValuation) obj;
     if (!Arrays.equals(valuation, other.valuation))
       return false;
     return true;
@@ -99,22 +99,26 @@ public class DSLValuation extends AbstractValuation {
   }
 
   @Override
-  public boolean getValue(Variable v) {
+  public boolean getValue(BooleanVariable v) {
+    return BooleanVariable
+        .getBooleanFromByte(valuation[v.getUniqueIdentifier()]);
+  }
+
+  @Override
+  public boolean setValue(BooleanVariable var, boolean value) {
+    byte old_value = valuation[var.getUniqueIdentifier()];
+    byte new_value = BooleanVariable.getByteFromBool(value);
+    valuation[var.getUniqueIdentifier()] = new_value;
+    return new_value != old_value;
+  }
+
+  @Override
+  public boolean variableValueWillChange(BooleanVariable variable, boolean value) {
     throw new NotImplementedException();
   }
 
   @Override
-  public boolean setValue(Variable var, boolean value) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public boolean variableValueWillChange(Variable variable, boolean value) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public boolean variableInitialized(Variable variable) {
+  public boolean variableInitialized(BooleanVariable variable) {
     throw new NotImplementedException();
   }
 

@@ -8,12 +8,13 @@ import java.util.Vector;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.conditions.AndFormula;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.False;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.True;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
@@ -31,7 +32,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
     this.clauses = new Vector<Clause>(clauses);
   }
 
-  public CNFFormula(Variable f) {
+  public CNFFormula(BooleanVariable f) {
     clauses = new Vector<Clause>(1);
     clauses.add(new Clause(f));
   }
@@ -47,7 +48,8 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     for (Clause c : clauses) {
       c.allVariables(vars);
     }
@@ -55,7 +57,7 @@ public class CNFFormula extends Formula implements Collection<Clause> {
   }
 
   private static final Literal true_literal =
-      new Literal(new Variable("true_var"));
+      new Literal(new BooleanVariable("true_var", -1));
   private static final Literal not_true_literal =
       new Literal(true_literal.getVariable(), true);
 
@@ -67,8 +69,8 @@ public class CNFFormula extends Formula implements Collection<Clause> {
    * @return An hashmap such that .get(var) is the unique int representing the
    *         Variable var
    */
-  public HashMap<Variable, Integer> associativeMap() {
-    HashMap<Variable, Integer> result = new HashMap<Variable, Integer>();
+  public HashMap<BooleanVariable, Integer> associativeMap() {
+    HashMap<BooleanVariable, Integer> result = new HashMap<BooleanVariable, Integer>();
     for (Clause c : clauses) {
       c.associatveMap(result);
     }
@@ -99,9 +101,9 @@ public class CNFFormula extends Formula implements Collection<Clause> {
       result.add(new Clause(true_literal));
       result.add(new Clause(not_true_literal));
       return result;
-    } else if (f instanceof Variable) {
+    } else if (f instanceof BooleanVariable) {
       // this is a CNF formula consisting of 1 clause that contains 1 literal
-      return new CNFFormula((Variable) f);
+      return new CNFFormula((BooleanVariable) f);
     } else if (f instanceof NotFormula) {
       /* The formula is of the form Not A */
       Formula A = ((NotFormula) f).getF();
@@ -114,10 +116,10 @@ public class CNFFormula extends Formula implements Collection<Clause> {
         result.add(new Clause(true_literal));
         result.add(new Clause(not_true_literal));
         return result;
-      } else if (A instanceof Variable) {
+      } else if (A instanceof BooleanVariable) {
         /* If f has the form ~A for some variable A, then return f. */
         CNFFormula result = new CNFFormula();
-        result.add(new Clause(new Literal((Variable) A, true)));
+        result.add(new Clause(new Literal((BooleanVariable) A, true)));
         return result;
       } else if (A instanceof NotFormula) {
         /* If f has the form ~(~P), then return CONVERT(P). (double negation) */

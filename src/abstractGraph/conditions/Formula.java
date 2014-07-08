@@ -59,7 +59,8 @@ public abstract class Formula {
    * 
    * @return A set that contains (not exclusively) the variables of the formula.
    */
-  public abstract HashSet<Variable> allVariables(HashSet<Variable> vars);
+  public abstract HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars);
 
   /**
    * Evaluate the formula within an environment.
@@ -72,19 +73,21 @@ public abstract class Formula {
 
   @Override
   final public boolean equals(Object o) {
-    return equals(this, (Formula) o);
+    return equalsBooleanFormula(this, (Formula) o);
   }
 
-  private static final boolean equals(Formula f1, Formula f2) {
-    HashSet<Variable> s1 = f1.allVariables(new HashSet<Variable>());
-    HashSet<Variable> s2 = f2.allVariables(new HashSet<Variable>());
+  private static final boolean equalsBooleanFormula(Formula f1, Formula f2) {
+    HashSet<EnumeratedVariable> s1 = f1
+        .allVariables(new HashSet<EnumeratedVariable>());
+    HashSet<EnumeratedVariable> s2 = f2
+        .allVariables(new HashSet<EnumeratedVariable>());
 
     /* We use the greater set of variables */
-    HashSet<Variable> all_variables = new HashSet<Variable>(s1);
+    HashSet<EnumeratedVariable> all_variables = new HashSet<>(s1);
     all_variables.addAll(s2);
 
     Valuation valuation = new Valuation(all_variables.size());
-    return partialEquals(all_variables, valuation, f1, f2);
+    return partialEqualsBooleanFormula(all_variables, valuation, f1, f2);
   }
 
   /**
@@ -93,7 +96,8 @@ public abstract class Formula {
    * 
    * @return
    */
-  private static final boolean partialEquals(HashSet<Variable> vars,
+  private static final boolean partialEqualsBooleanFormula(
+      HashSet<EnumeratedVariable> vars,
       Valuation valuation, Formula f1, Formula f2) {
 
     /* Terminal case */
@@ -102,17 +106,19 @@ public abstract class Formula {
     }
 
     /* Recursion */
-    Iterator<Variable> it = vars.iterator();
-    Variable v = it.next();
+    Iterator<EnumeratedVariable> it = vars.iterator();
+    BooleanVariable v = (BooleanVariable) it.next();
     it.remove();
 
     valuation.setValue(v, true);
-    if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+    if (!partialEqualsBooleanFormula(new HashSet<EnumeratedVariable>(vars),
+        valuation, f1, f2)) {
       return false;
     }
 
     valuation.setValue(v, false);
-    if (!partialEquals(new HashSet<Variable>(vars), valuation, f1, f2)) {
+    if (!partialEqualsBooleanFormula(new HashSet<EnumeratedVariable>(vars),
+        valuation, f1, f2)) {
       return false;
     }
 

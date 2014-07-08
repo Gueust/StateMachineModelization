@@ -1,29 +1,23 @@
 package domainSpecificLanguage.graph;
 
-import java.util.HashSet;
-
+import graph.State;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.GenericToString;
+import abstractGraph.AbstractGlobalState;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.valuation.Valuation;
+import abstractGraph.events.Actions;
+import abstractGraph.events.Events;
 import abstractGraph.events.SingleEvent;
 
-public class DSLTransition {
+public class DSLTransition extends AbstractTransition<State> {
 
-  protected HashSet<SingleEvent> events = new HashSet<>();
-  protected Formula condition;
-
-  protected DSLActions actions = new DSLActions();
-
-  /*
-   * public DSLTransition(Events events,
-   * Formula condition, Actions actions) {
-   * this.events = events;
-   * this.condition = condition;
-   * this.actions = actions;
-   * }
-   */
+  static final State identical_state = new State("0");
 
   public DSLTransition() {
+    super(identical_state, identical_state, new Events(), null,
+        new DSLActions());
   }
 
   public void addSingleEvent(SingleEvent e) {
@@ -31,7 +25,7 @@ public class DSLTransition {
       throw new IllegalArgumentException(
           "You cannot add a null event for a transition.");
     }
-    events.add(e);
+    events.addEvent(e);
   }
 
   public void addAction(SingleEvent e) {
@@ -56,12 +50,21 @@ public class DSLTransition {
 
   @Override
   public String toString() {
-
     return "on "
-        + GenericToString.printCollection(events) +
+        + GenericToString.printCollection(events.getEvents()) +
         " when "
         + ((condition != null) ? condition.toString() : " true") +
         " do" + actions + ";";
+  }
 
+  @Override
+  public Actions getActions() {
+    return actions;
+  }
+
+  @Override
+  public boolean evalCondition(AbstractGlobalState<?, State, ?, ?> env) {
+    // TODO Auto-generated method stub
+    throw new NotImplementedException();
   }
 }

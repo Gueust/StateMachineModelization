@@ -5,8 +5,10 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Monitoring;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 
 /**
  * Mapping of the variables to {true, false}.
@@ -14,24 +16,24 @@ import abstractGraph.conditions.Variable;
 public class Valuation extends AbstractValuation {
 
   /* Equality of variable is pointer equality ! */
-  protected HashMap<Variable, Boolean> valuation;
+  protected HashMap<BooleanVariable, Boolean> valuation;
 
   /**
    * Create a new empty valuation.
    */
   public Valuation() {
-    valuation = new HashMap<Variable, Boolean>();
+    valuation = new HashMap<BooleanVariable, Boolean>();
   }
 
   /**
    * Create a new empty valuation.
    */
   public Valuation(int nb_variables) {
-    valuation = new HashMap<Variable, Boolean>(nb_variables);
+    valuation = new HashMap<BooleanVariable, Boolean>(nb_variables);
   }
 
   @Override
-  public boolean getValue(Variable v) {
+  public boolean getValue(BooleanVariable v) {
     Boolean res = valuation.get(v);
     if (res == null) {
       throw new NoSuchElementException("The value for " + v
@@ -42,7 +44,7 @@ public class Valuation extends AbstractValuation {
   }
 
   @Override
-  public boolean setValue(Variable var, boolean value) {
+  public boolean setValue(BooleanVariable var, boolean value) {
     Boolean old_value = valuation.get(var);
     valuation.put(var, value);
 
@@ -52,19 +54,19 @@ public class Valuation extends AbstractValuation {
   /**
    * Remove the given variable from the valuation.
    */
-  public void remove(Variable var) {
+  public void remove(BooleanVariable var) {
     valuation.remove(var);
   }
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   @Override
   public String toString() {
     if (DEBUG) {
       StringBuffer string_buffer = new StringBuffer();
       boolean first = true;
-      for (Entry<Variable, Boolean> entry : valuation.entrySet()) {
-        Variable variable = entry.getKey();
+      for (Entry<BooleanVariable, Boolean> entry : valuation.entrySet()) {
+        BooleanVariable variable = entry.getKey();
         if (first) {
           first = false;
         } else {
@@ -83,7 +85,7 @@ public class Valuation extends AbstractValuation {
   @SuppressWarnings("unchecked")
   public Valuation clone() {
     Valuation result = new Valuation(valuation.size());
-    result.valuation = (HashMap<Variable, Boolean>) valuation.clone();
+    result.valuation = (HashMap<BooleanVariable, Boolean>) valuation.clone();
     return result;
   }
 
@@ -126,12 +128,12 @@ public class Valuation extends AbstractValuation {
   }
 
   @Override
-  public boolean variableValueWillChange(Variable variable, boolean value) {
+  public boolean variableValueWillChange(BooleanVariable variable, boolean value) {
     return valuation.get(variable) != null && valuation.get(variable) != value;
   }
 
   @Override
-  public boolean variableInitialized(Variable variable) {
+  public boolean variableInitialized(BooleanVariable variable) {
     Boolean res = valuation.get(variable);
     return res != null;
   }
@@ -139,8 +141,18 @@ public class Valuation extends AbstractValuation {
   /**
    * @return A set of the Pair of defined variables.
    */
-  public Set<Entry<Variable, Boolean>> getSetVariables() {
+  public Set<Entry<BooleanVariable, Boolean>> getSetVariables() {
     return valuation.entrySet();
+  }
+
+  @Override
+  public byte getValue(EnumeratedVariable v) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean setValue(EnumeratedVariable var, byte value) {
+    throw new NotImplementedException();
   }
 
 }

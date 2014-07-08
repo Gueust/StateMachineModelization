@@ -19,8 +19,8 @@ public class CustomToString {
       return toString((OrFormula) formula);
     } else if (formula instanceof NotFormula) {
       return toString((NotFormula) formula);
-    } else if (formula instanceof Variable) {
-      return toString((Variable) formula);
+    } else if (formula instanceof EnumeratedVariable) {
+      return toString((EnumeratedVariable) formula);
     } else if (formula instanceof True) {
       return toString((True) formula);
     } else if (formula instanceof False) {
@@ -75,14 +75,14 @@ public class CustomToString {
   }
 
   public String toString(NotFormula formula) {
-    if (formula.getF() instanceof Variable) {
+    if (formula.getF() instanceof BooleanVariable) {
       return "(" + Formula.NOT + " " + this.toString(formula.getF()) + ")";
     } else {
       return "(" + Formula.NOT + " (" + this.toString(formula.getF()) + ") )";
     }
   }
 
-  public String toString(Variable formula) {
+  public String toString(EnumeratedVariable formula) {
     return formula.getVarname();
   }
 

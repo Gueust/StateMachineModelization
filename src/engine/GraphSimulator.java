@@ -19,7 +19,7 @@ import java.util.Set;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.Events;
@@ -55,7 +55,7 @@ class GraphSimulator
   protected LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
       new LinkedHashMap<StateMachine, State>();
   protected LinkedList<ExternalEvent> restrained_external_event_list = null;
-  protected HashMap<Variable, Boolean> temporary_variable_change = new HashMap<Variable, Boolean>();
+  protected HashMap<BooleanVariable, Boolean> temporary_variable_change = new HashMap<BooleanVariable, Boolean>();
   /* Only used when executing the micro-steps */
   protected LinkedList<SingleEvent> external_proof_event_queue =
       new LinkedList<SingleEvent>();
@@ -68,11 +68,11 @@ class GraphSimulator
 
   protected boolean verbose = true;
 
-  protected HashSet<Variable> all_variables;
+  protected HashSet<BooleanVariable> all_variables;
 
   public GraphSimulator(Model model, Model proof) {
     this.model = model;
-    all_variables = new HashSet<Variable>(model.getExistingVariables().values());
+    all_variables = new HashSet<BooleanVariable>(model.getExistingVariables().values());
     this.proof = proof;
     if (proof != null) {
       all_variables.addAll(proof.getExistingVariables().values());
@@ -82,7 +82,7 @@ class GraphSimulator
 
   public GraphSimulator(Model model) {
     this.model = model;
-    all_variables = new HashSet<Variable>(model.getExistingVariables().values());
+    all_variables = new HashSet<BooleanVariable>(model.getExistingVariables().values());
     checkCompatibility();
   }
 
@@ -138,7 +138,7 @@ class GraphSimulator
    * @return All the variables present both in the functionnal and the proof
    *         model.
    */
-  public HashSet<Variable> getAll_variables() {
+  public HashSet<BooleanVariable> getAll_variables() {
     return all_variables;
   }
 
@@ -386,7 +386,7 @@ class GraphSimulator
       }
     }
     // Put the variables change event at the end of the event queue.
-    for (Entry<Variable, Boolean> entry : temporary_variable_change.entrySet()) {
+    for (Entry<BooleanVariable, Boolean> entry : temporary_variable_change.entrySet()) {
       global_state.setVariableValue(entry.getKey(), entry.getValue());
     }
     temporary_variable_change.clear();
@@ -719,7 +719,7 @@ class GraphSimulator
         for (SingleEvent event : transition.getActions()) {
           if (event instanceof VariableChange) {
             /* Verification of 1) */
-            Variable var = ((VariableChange) event).getModifiedVariable();
+            BooleanVariable var = ((VariableChange) event).getModifiedVariable();
             if (model.containsVariable(var)) {
               System.err.println(
                   "The proof model does write the variable " + var +
@@ -779,9 +779,9 @@ class GraphSimulator
     }
 
     /* We set the CTLs to true */
-    LinkedList<Variable> to_delete_from_valuation = new LinkedList<Variable>();
+    LinkedList<BooleanVariable> to_delete_from_valuation = new LinkedList<BooleanVariable>();
     for (Entry<String, Boolean> assignation : external_values.entrySet()) {
-      Variable var = model.getVariable(assignation.getKey());
+      BooleanVariable var = model.getVariable(assignation.getKey());
       to_delete_from_valuation.add(var);
       global_state.setVariableValue(var, assignation.getValue());
     }
@@ -790,7 +790,7 @@ class GraphSimulator
     global_state = execute(global_state, ACT_INIT);
 
     /* We delete the CTLs from the valuation */
-    for (Variable variable : to_delete_from_valuation) {
+    for (BooleanVariable variable : to_delete_from_valuation) {
       global_state.getValuation().remove(variable);
     }
 

@@ -13,21 +13,21 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Pair;
 import abstractGraph.conditions.AndFormula;
+import abstractGraph.conditions.EnumeratedVariable;
+import abstractGraph.conditions.Enumeration;
+import abstractGraph.conditions.EnumerationEqualityFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.events.Assignment;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
 import abstractGraph.events.SingleEvent;
-import domainSpecificLanguage.Assignment;
-import domainSpecificLanguage.DSLModel;
-import domainSpecificLanguage.DSLValuation.Enumeration;
-import domainSpecificLanguage.DSLValuation.EnumerationEqualityFormula;
+import domainSpecificLanguage.engine.DSLModel;
 import domainSpecificLanguage.graph.DSLTransition;
 import domainSpecificLanguage.graph.DSLVariableEvent;
-import domainSpecificLanguage.graph.DSLVariable;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionAssignmentContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionEventContext;
@@ -51,6 +51,9 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.One_other_declarationCon
 import domainSpecificLanguage.parser.FSM_LanguageParser.OrExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.OtherDeclarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.PairContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.ProofBoolDeclarationContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.ProofOtherDeclarationContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.Proof_variables_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.SubContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TemplateContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TransitionContext;
@@ -61,14 +64,15 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.Variables_declarationCon
 public class FSM_builder extends AbstractParseTreeVisitor<Object>
     implements FSM_LanguageVisitor<Object> {
 
-  Map<String, DSLVariable> variables = new HashMap<>();
-  Map<DSLVariable, Byte> initial_values = new HashMap<>();
+  Map<String, EnumeratedVariable> variables = new HashMap<>();
+  Map<String, EnumeratedVariable> proof_variables = new HashMap<>();
+  Map<EnumeratedVariable, Byte> initial_values = new HashMap<>();
   Map<String, ExternalEvent> external_events = new HashMap<>();
   Map<String, InternalEvent> internal_events = new HashMap<>();
   Map<String, CommandEvent> commands_event = new HashMap<>();
   Map<String, SingleEvent> single_events = new HashMap<>();
   Map<String, Enumeration> enumerations = new HashMap<>();
-  Map<DSLVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
+  Map<EnumeratedVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
 
   Set<DSLTransition> transitions = new HashSet<>();
 
@@ -96,7 +100,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    * @param token
    * @return A not null DSLVariable.
    */
-  private DSLVariable getDSLVariable(String name, Token token) {
+  private EnumeratedVariable getDSLVariable(String name, Token token) {
     if (external_events.containsKey(name)) {
       raiseError("The DSLVariable defined at " + getDetails(token)
           + " has already been defined as an external event.");
@@ -108,7 +112,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + " has already been defined as a command.");
     }
 
-    DSLVariable var = variables.get(name);
+    EnumeratedVariable var = variables.get(name);
     if (var == null) {
       raiseError("The variable used at " + getDetails(token)
           + " has not been defined previously.");
@@ -116,15 +120,44 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return var;
   }
 
-  private DSLVariable createDSLVariable(String name, Token token,
+  private EnumeratedVariable createDSLVariable(String name, Token token,
       Enumeration enumeration) {
     if (variables.containsKey(name)) {
       throw new Error("The variable declared at  " + getDetails(token)
           + " already exists.");
     }
-    DSLVariable variable = new DSLVariable(name, variables.size(),
-        enumeration);
+    if (proof_variables.containsKey(name)) {
+      throw new Error("The functional variable declared at  "
+          + getDetails(token)
+          + " already exists in the proof model.");
+    }
+    EnumeratedVariable variable;
+    int unique_id = variables.size();
+    if (enumeration == null) {
+      variable = new BooleanVariable(name, unique_id);
+    } else {
+      variable = new EnumeratedVariable(name, unique_id, enumeration);
+    }
     variables.put(name, variable);
+    single_events.put(name, new DSLVariableEvent(variable));
+
+    return variable;
+  }
+
+  private EnumeratedVariable createProofDSLVariable(String name, Token token,
+      Enumeration enumeration) {
+    if (variables.containsKey(name)) {
+      throw new Error("The proof variable declared at  " + getDetails(token)
+          + " already exists in the functional model.");
+    }
+    if (proof_variables.containsKey(name)) {
+      throw new Error("The proof variable declared at  " + getDetails(token)
+          + " already exists.");
+    }
+    EnumeratedVariable variable = new EnumeratedVariable(name,
+        variables.size(),
+        enumeration);
+    proof_variables.put(name, variable);
     single_events.put(name, new DSLVariableEvent(variable));
 
     return variable;
@@ -173,12 +206,12 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     visitChildren(ctx);
 
     /* Then we use them to fill in the model */
-    for (DSLVariable DSLVariable : variables.values()) {
+    for (EnumeratedVariable DSLVariable : variables.values()) {
       Byte initial_value = initial_values
           .get(DSLVariable);
       assert (initial_value != null);
       dsl_model.variables
-          .add(new Pair<DSLVariable, Byte>(DSLVariable, initial_value));
+          .add(new Pair<EnumeratedVariable, Byte>(DSLVariable, initial_value));
     }
 
     dsl_model.external_events.addAll(external_events.values());
@@ -309,7 +342,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     default:
       throw new Error("Impossible case.");
     }
-    DSLVariable variable = getDSLVariable(variable_name, ctx.ID(0).getSymbol());
+    EnumeratedVariable variable = getDSLVariable(variable_name, ctx
+        .ID(0)
+        .getSymbol());
     byte value = variable.getEnumeration().getByte(variable_value);
     return new EnumerationEqualityFormula(variable, value, is_not);
   }
@@ -324,6 +359,68 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       Variables_declarationContext ctx) {
     /* We let the children declare their own DSLVariables */
     visitChildren(ctx);
+    return null;
+  }
+
+  @Override
+  public Object visitProof_variables_declaration(
+      Proof_variables_declarationContext ctx) {
+
+    visitChildren(ctx);
+    return null;
+  }
+
+  @Override
+  public Object visitProofBoolDeclaration(ProofBoolDeclarationContext ctx) {
+    for (One_bool_declarationContext bool_declaration : ctx
+        .one_bool_declaration()) {
+      String var_name = bool_declaration.ID().getText();
+      boolean is_true = bool_declaration.TRUE() != null;
+      EnumeratedVariable var = createProofDSLVariable(var_name, ctx.start, null);
+      Byte value;
+      if (is_true) {
+        value = 1;
+      } else {
+        value = 0;
+      }
+      initial_values.put(var, value);
+    }
+    return null;
+  }
+
+  @Override
+  public Object visitProofOtherDeclaration(ProofOtherDeclarationContext ctx) {
+    /* We let the children declare their own DSLVariables */
+    String domain_type = ctx.ID().getText();
+
+    Enumeration enumeration = enumerations.get(domain_type);
+    if (enumeration != null) {
+      for (One_other_declarationContext one_decl : ctx.one_other_declaration()) {
+
+        String var_name = one_decl.ID(0).getText();
+        String enumeration_type = one_decl.ID(1).getText();
+
+        EnumeratedVariable var = createProofDSLVariable(var_name,
+            one_decl.start,
+            enumeration);
+
+        Byte value = enumeration.getByte(enumeration_type);
+        if (value == null) {
+          raiseError("The enumeration type " + enumeration_type
+              + " is not a type of the enumeration " + domain_type
+              + " at "
+              + getDetails(one_decl.ID(1).getSymbol()));
+        }
+        /* We set the initial value of the DSLVariable */
+        initial_values.put(var, value);
+        /* We register this is an enumerated DSLVariable */
+        enumerated_DSLVariable.put(var, enumeration);
+
+      }
+    } else {
+      raiseError("The type " + domain_type + " has not been defined at "
+          + getDetails(ctx.getStart()));
+    }
     return null;
   }
 
@@ -364,7 +461,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     String var_name = ctx.ID(0).getText();
     String enumeration_type = ctx.ID(1).getText();
 
-    DSLVariable var = createDSLVariable(var_name, ctx.start, enumeration);
+    EnumeratedVariable var = createDSLVariable(var_name, ctx.start, enumeration);
 
     Byte value = enumeration.getByte(enumeration_type);
     if (value == null) {
@@ -378,6 +475,10 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     enumerated_DSLVariable.put(var, enumeration);
   }
 
+  /*
+   * This function is not called since its parents parses the enumeration
+   * declarations
+   */
   @Override
   public Object visitOne_other_declaration(One_other_declarationContext ctx) {
     throw new NotImplementedException();
@@ -387,14 +488,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitOne_bool_declaration(One_bool_declarationContext ctx) {
     String var_name = ctx.ID().getText();
     boolean is_true = ctx.TRUE() != null;
-    DSLVariable var = createDSLVariable(var_name, ctx.start, null);
-    Byte value;
-    if (is_true) {
-      value = 1;
-    } else {
-      value = 0;
-    }
-    initial_values.put(var, value);
+    EnumeratedVariable var = createDSLVariable(var_name, ctx.start, null);
+
+    initial_values.put(var, BooleanVariable.getByteFromBool(is_true));
     return null;
   }
 
@@ -555,10 +651,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     transition.setCondition(formula);
 
     if (automatic_filling) {
-      HashSet<Variable> all_DSLVariables = new HashSet<>();
+      HashSet<EnumeratedVariable> all_DSLVariables = new HashSet<>();
       formula.allVariables(all_DSLVariables);
-      for (Variable var : all_DSLVariables) {
-        DSLVariable variable = (DSLVariable) var;
+      for (EnumeratedVariable variable : all_DSLVariables) {
         transition.addSingleEvent(single_events.get(variable.getVarname()));
         ;
       }
@@ -618,10 +713,10 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    */
   @Override
   public Object visitActionAssignment(ActionAssignmentContext ctx) {
-    String DSLVariable_name = ctx.ID(0).getText();
-    String DSLVariable_value = ctx.ID(1).getText();
+    String variable_name = ctx.ID(0).getText();
+    String variable_value = ctx.ID(1).getText();
 
-    DSLVariable DSLVariable = variables.get(DSLVariable_name);
+    EnumeratedVariable DSLVariable = variables.get(variable_name);
     if (DSLVariable == null) {
       raiseError("The DSLVariable " + DSLVariable + " defined at "
           + getDetails(ctx.ID(0).getSymbol())
@@ -632,13 +727,13 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     Byte value;
     if (enumeration == null) {
       /* This is a boolean value */
-      value = Enumeration.getByteFromBool(DSLVariable_value);
+      value = BooleanVariable.getByteFromString(variable_value);
     } else {
       /* This is an enumeration value */
-      value = enumeration.getByte(DSLVariable_value);
+      value = enumeration.getByte(variable_value);
       if (value == null) {
         throw new Error("[" + getDetails(ctx.ID(1).getSymbol()) + "]"
-            + "The option " + DSLVariable_value
+            + "The option " + variable_value
             + " has not been found in the enumeration " + enumeration);
       }
     }

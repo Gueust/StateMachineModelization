@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
@@ -41,7 +41,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
   /* These are empty iff the model verifies this verifier. */
   private LinkedList<State> counter_example_states = new LinkedList<State>();
-  private LinkedList<Variable> counter_example_variable = new LinkedList<Variable>();
+  private LinkedList<BooleanVariable> counter_example_variable = new LinkedList<BooleanVariable>();
   private LinkedList<StateMachine> counter_example_machines = new LinkedList<StateMachine>();
 
   @Override
@@ -67,22 +67,22 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
    * @return true if the state machine respects the contract.
    */
   private boolean checkOneStateMachine(StateMachine machine,
-      LinkedList<Variable> written_variables,
+      LinkedList<BooleanVariable> written_variables,
       boolean verbose) throws Error {
 
     if (written_variables == null || written_variables.isEmpty()) {
       return true;
     }
 
-    HashMap<State, HashMap<Variable, Byte>> value_associated =
-        new HashMap<State, HashMap<Variable, Byte>>();
+    HashMap<State, HashMap<BooleanVariable, Byte>> value_associated =
+        new HashMap<State, HashMap<BooleanVariable, Byte>>();
     // Initialization of the variables written by this machines
     Iterator<State> it_states = machine.iterator();
     while (it_states.hasNext()) {
       State state = it_states.next();
-      HashMap<Variable, Byte> state_variables = new HashMap<Variable, Byte>();
+      HashMap<BooleanVariable, Byte> state_variables = new HashMap<BooleanVariable, Byte>();
 
-      Iterator<Variable> it_vars = written_variables.iterator();
+      Iterator<BooleanVariable> it_vars = written_variables.iterator();
       while (it_vars.hasNext()) {
         state_variables.put(it_vars.next(), UNDEFINED);
       }
@@ -105,8 +105,8 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
      * For every variable, the initial states to propagate are the one with an
      * incoming transition writing this variable
      */
-    HashMap<Variable, HashSet<State>> states_to_propagate =
-        new HashMap<Variable, HashSet<State>>();
+    HashMap<BooleanVariable, HashSet<State>> states_to_propagate =
+        new HashMap<BooleanVariable, HashSet<State>>();
     /*
      * Setting the truth values known directly with the written of variables
      * (VariableChange)
@@ -120,7 +120,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
         SingleEvent event = it_actions.next();
         if (event instanceof VariableChange) {
           VariableChange vc_event = (VariableChange) event;
-          Variable variable = vc_event.getModifiedVariable();
+          BooleanVariable variable = vc_event.getModifiedVariable();
           State state = transition.getDestination();
 
           /*
@@ -189,9 +189,9 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
     /*
      * We do the propagation separately for every variable.
      */
-    Iterator<Variable> it_vars = written_variables.iterator();
+    Iterator<BooleanVariable> it_vars = written_variables.iterator();
     while (it_vars.hasNext()) {
-      Variable variable = it_vars.next();
+      BooleanVariable variable = it_vars.next();
 
       HashSet<State> states_to_propagate_var =
           states_to_propagate.get(variable);
@@ -279,28 +279,28 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
    * Creates the Hashmap associating to every state machine the variables it is
    * writing.
    */
-  private HashMap<StateMachine, LinkedList<Variable>> writtenVariables(
-      HashMap<Variable, LinkedList<StateMachine>> writting_state_machines) {
+  private HashMap<StateMachine, LinkedList<BooleanVariable>> writtenVariables(
+      HashMap<BooleanVariable, LinkedList<StateMachine>> writting_state_machines) {
 
-    HashMap<StateMachine, LinkedList<Variable>> written_variables =
-        new HashMap<StateMachine, LinkedList<Variable>>();
+    HashMap<StateMachine, LinkedList<BooleanVariable>> written_variables =
+        new HashMap<StateMachine, LinkedList<BooleanVariable>>();
 
-    Iterator<Entry<Variable, LinkedList<StateMachine>>> it_var_statemachine =
+    Iterator<Entry<BooleanVariable, LinkedList<StateMachine>>> it_var_statemachine =
         writting_state_machines.entrySet().iterator();
 
     while (it_var_statemachine.hasNext()) {
-      Entry<Variable, LinkedList<StateMachine>> entry =
+      Entry<BooleanVariable, LinkedList<StateMachine>> entry =
           it_var_statemachine.next();
-      Variable variable = entry.getKey();
+      BooleanVariable variable = entry.getKey();
       LinkedList<StateMachine> sm = entry.getValue();
 
       Iterator<StateMachine> sm_iterator = sm.iterator();
       while (sm_iterator.hasNext()) {
         StateMachine machine = sm_iterator.next();
 
-        LinkedList<Variable> written_vars = written_variables.get(machine);
+        LinkedList<BooleanVariable> written_vars = written_variables.get(machine);
         if (written_vars == null) {
-          written_vars = new LinkedList<Variable>();
+          written_vars = new LinkedList<BooleanVariable>();
           written_variables.put(machine, written_vars);
         }
 
@@ -319,7 +319,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
     boolean result = true;
 
-    HashMap<StateMachine, LinkedList<Variable>> written_variables =
+    HashMap<StateMachine, LinkedList<BooleanVariable>> written_variables =
         writtenVariables(m.getWritingStateMachines());
 
     Iterator<StateMachine> it_state_machines = m.iterator();

@@ -1,4 +1,4 @@
-package domainSpecificLanguage.DSLValuation;
+package abstractGraph.conditions;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,33 +68,6 @@ public class Enumeration {
     }
     buffer.append(";\n");
     return buffer.toString();
-  }
-
-  public static final byte TRUE = 1;
-  public static final byte FALSE = 0;
-
-  public static String getBool(byte value) {
-    if (value == FALSE) {
-      return "false";
-    } else if (value == TRUE) {
-      return "true";
-    } else {
-      throw new Error(
-          "Impossible case. A bool value can only be true(1) of false(0), and not "
-              + value);
-    }
-  }
-
-  public static byte getByteFromBool(String value) {
-    if (value.equals("true")) {
-      return TRUE;
-    } else if (value.equals("false")) {
-      return FALSE;
-    } else {
-      throw new Error(
-          "Impossible case. A bool string must be true or false and not "
-              + value);
-    }
   }
 
 }

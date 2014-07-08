@@ -37,7 +37,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.jdesktop.swingx.JXTable;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.ExternalEvent;
 import engine.SequentialGraphSimulator;
 import graph.GlobalState;
@@ -757,9 +757,9 @@ public class MainWindow extends JFrame {
       GlobalState global_state) {
     SortedListModel listModel =
         (SortedListModel) list.getModel();
-    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+    Iterator<BooleanVariable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
-      Variable variable = variable_iterator.next();
+      BooleanVariable variable = variable_iterator.next();
       if (variable.getVarname().startsWith("CTL_")) {
         continue;
       }

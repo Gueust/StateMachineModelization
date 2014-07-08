@@ -8,7 +8,7 @@ import graph.Transition;
 
 import java.util.HashSet;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.SingleEvent;
 
 /**
@@ -16,7 +16,8 @@ import abstractGraph.events.SingleEvent;
  * <ol>
  * <li>there is a state "0"</li>
  * <li>the event field of the transitions of that state is ACT_INIT</li>
- * <li>there are only CTLs as variables in the condition of these transitions</li>
+ * <li>there are only CTLs as variables in the condition of these
+ * transitions</li>
  */
 public class InitializationProperties extends AbstractVerificationUnit {
   private HashSet<StateMachine> state_machine_without_state_0 =
@@ -88,10 +89,11 @@ public class InitializationProperties extends AbstractVerificationUnit {
         }
       }
     }
-    HashSet<Variable> variable_list = new HashSet<Variable>();
+    HashSet<EnumeratedVariable> variable_list = new HashSet<>();
     if (transition.getCondition() != null) {
-      for (Variable variable : transition.getCondition().allVariables(
-          variable_list)) {
+      for (EnumeratedVariable variable : transition
+          .getCondition()
+          .allVariables(variable_list)) {
         if (!variable.getVarname().startsWith("CTL_")) {
           state_machine_with_ctl_error.add(state_machine);
           if (stop_at_first_error) {

@@ -10,7 +10,7 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 import abstractGraph.events.SingleEvent;
@@ -18,8 +18,8 @@ import abstractGraph.events.SingleEvent;
 public class StateMachine extends AbstractStateMachine<State, Transition> {
   protected State initial_sate;
   protected HashMap<String, State> states;
-  protected LinkedHashSet<Variable> read_variables;
-  protected LinkedHashSet<Variable> write_variables;
+  protected LinkedHashSet<BooleanVariable> read_variables;
+  protected LinkedHashSet<BooleanVariable> write_variables;
 
   public StateMachine(String name) {
     super(name);

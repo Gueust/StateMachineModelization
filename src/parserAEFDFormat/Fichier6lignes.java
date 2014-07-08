@@ -53,6 +53,8 @@ public class Fichier6lignes {
    * 
    * @throws IOException
    */
+  private int line_number = 0;
+
   public boolean get6Lines() throws IOException {
     // Read the file line by line and affect the correct value to the correct
     // variable
@@ -62,7 +64,7 @@ public class Fichier6lignes {
     event = buff.readLine();
     condition = buff.readLine();
     action = buff.readLine();
-
+    line_number += 6;
     // Test that nether of the variables are equal to null
 
     if (graph_name != null) {
@@ -82,7 +84,9 @@ public class Fichier6lignes {
 
       // Test that the event, condition and action end with the right key word.
       if (!checkSuffix(event, "Evenement")) {
-        System.out.println("Error, event expected");
+        System.out
+            .println("Error, event expected when parsing the transition line "
+                + line_number);
         System.exit(-1);
       }
       event = event.substring(0, event.length() - 9).trim();

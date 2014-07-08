@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
@@ -21,7 +22,7 @@ public class Clause extends Formula implements Collection<Literal> {
     this.literals = new Vector<Literal>();
   }
 
-  public Clause(Variable f) {
+  public Clause(BooleanVariable f) {
     this.literals = new Vector<Literal>(1);
     this.literals.add(new Literal(f));
   }
@@ -46,7 +47,8 @@ public class Clause extends Formula implements Collection<Literal> {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     for (Literal l : literals) {
       vars.add(l.getVariable());
     }
@@ -56,7 +58,7 @@ public class Clause extends Formula implements Collection<Literal> {
   /**
    * @see abstractGraph.conditions.cnf.CNFFormula#associatveMap()
    */
-  void associatveMap(HashMap<Variable, Integer> result) {
+  void associatveMap(HashMap<BooleanVariable, Integer> result) {
     for (Literal l : literals) {
       Integer i = result.get(l.getVariable());
       if (i == null) {

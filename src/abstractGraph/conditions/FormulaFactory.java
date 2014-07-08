@@ -44,7 +44,7 @@ import java.util.Iterator;
 public abstract class FormulaFactory {
 
   private boolean united_model;
-  private HashMap<String, Variable> existing_variables;
+  private HashMap<String, BooleanVariable> existing_variables;
 
   /**
    * Initialize the FormulaFactory in the single formula mode.
@@ -62,7 +62,7 @@ public abstract class FormulaFactory {
    */
   public FormulaFactory(boolean united_model_mode) {
     this.united_model = united_model_mode;
-    existing_variables = new HashMap<String, Variable>();
+    existing_variables = new HashMap<String, BooleanVariable>();
   };
 
   /**
@@ -74,7 +74,7 @@ public abstract class FormulaFactory {
    */
   public void setUnitedModelModel(boolean united_model_mode) {
     this.united_model = united_model_mode;
-    existing_variables = new HashMap<String, Variable>();
+    existing_variables = new HashMap<String, BooleanVariable>();
 
   }
 
@@ -88,12 +88,14 @@ public abstract class FormulaFactory {
    * @param variable_name
    * @return The associated variable
    */
+  private int identifier_factory = 0;
 
-  public final Variable getVariable(String variable_name) {
-    Variable temp_variable = existing_variables.get(variable_name);
+  public final BooleanVariable getVariable(String variable_name) {
+    BooleanVariable temp_variable = existing_variables.get(variable_name);
 
     if (temp_variable == null) {
-      temp_variable = new Variable(variable_name);
+      temp_variable = new BooleanVariable(variable_name, identifier_factory);
+      identifier_factory++;
       existing_variables.put(variable_name, temp_variable);
     }
 
@@ -128,7 +130,7 @@ public abstract class FormulaFactory {
    *          The variable to look for.
    * @return true if the variable exists. false otherwise.
    */
-  public boolean contains(Variable variable) {
+  public boolean contains(BooleanVariable variable) {
     return existing_variables.containsKey(variable.toString());
   }
 
@@ -148,7 +150,7 @@ public abstract class FormulaFactory {
    */
   public void reset() {
     if (!united_model) {
-      existing_variables = new HashMap<String, Variable>();
+      existing_variables = new HashMap<String, BooleanVariable>();
     }
   }
 
@@ -184,7 +186,7 @@ public abstract class FormulaFactory {
    * 
    * @return
    */
-  public Iterator<Variable> iteratorExistingVariables() {
+  public Iterator<BooleanVariable> iteratorExistingVariables() {
     return existing_variables.values().iterator();
   }
 

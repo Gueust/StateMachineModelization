@@ -8,14 +8,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 
 /**
  * Check that all the variables in the graphs are written at most once
  */
 public class SingleWritingChecker extends AbstractVerificationUnit {
-  private HashMap<Variable, LinkedList<StateMachine>> counter_example_written_more_than_once =
-      new HashMap<Variable, LinkedList<StateMachine>>();
+  private HashMap<BooleanVariable, LinkedList<StateMachine>> counter_example_written_more_than_once =
+      new HashMap<BooleanVariable, LinkedList<StateMachine>>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
@@ -24,12 +24,12 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
 
     counter_example_written_more_than_once.clear();
 
-    HashMap<Variable, LinkedList<StateMachine>> written_variables =
+    HashMap<BooleanVariable, LinkedList<StateMachine>> written_variables =
         m.getWritingStateMachines();
-    Iterator<Variable> variables = m.iteratorExistingVariables();
+    Iterator<BooleanVariable> variables = m.iteratorExistingVariables();
 
     while (variables.hasNext()) {
-      Variable variable = variables.next();
+      BooleanVariable variable = variables.next();
       LinkedList<StateMachine> writing_state_machine =
           written_variables.get(variable);
 
@@ -73,17 +73,17 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
     return "[SUCCESS] Checking that all variables are written at most once...OK";
   }
 
-  private String myPrint(HashMap<Variable, LinkedList<StateMachine>> input) {
+  private String myPrint(HashMap<BooleanVariable, LinkedList<StateMachine>> input) {
     StringBuffer result = new StringBuffer();
 
-    Iterator<Entry<Variable, LinkedList<StateMachine>>> iterator = input
+    Iterator<Entry<BooleanVariable, LinkedList<StateMachine>>> iterator = input
         .entrySet()
         .iterator();
     LinkedList<StateMachine> states_machines_list;
 
     while (iterator.hasNext()) {
-      Entry<Variable, LinkedList<StateMachine>> entry = iterator.next();
-      Variable variable = entry.getKey();
+      Entry<BooleanVariable, LinkedList<StateMachine>> entry = iterator.next();
+      BooleanVariable variable = entry.getKey();
       states_machines_list = entry.getValue();
 
       result.append(

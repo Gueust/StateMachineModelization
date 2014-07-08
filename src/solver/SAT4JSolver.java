@@ -11,7 +11,7 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.cnf.Clause;
 import abstractGraph.conditions.cnf.Literal;
@@ -31,7 +31,7 @@ public class SAT4JSolver {
    * for this formula
    */
   private int[] solution;
-  private HashMap<Integer, Variable> id_to_var;
+  private HashMap<Integer, BooleanVariable> id_to_var;
 
   /**
    * Check that a formula is satisfiable. It it is the case, one can retrieve
@@ -49,7 +49,7 @@ public class SAT4JSolver {
     solver.reset();
 
     int nb_clauses = f.size();
-    HashMap<Variable, Integer> var_to_int = f.associativeMap();
+    HashMap<BooleanVariable, Integer> var_to_int = f.associativeMap();
 
     // prepare the solver to accept MAXVAR variables. MANDATORY for MAXSAT
     // solving
@@ -107,7 +107,7 @@ public class SAT4JSolver {
             " A solution (true literals follows):\n");
     for (int i = 0; i < solution.length; i++) {
       int id = solution[i];
-      Variable v = id_to_var.get(Math.abs(solution[i]));
+      BooleanVariable v = id_to_var.get(Math.abs(solution[i]));
       if (id > 0) {
         result.append(v.toString() + "\n");
       } else {
@@ -143,7 +143,7 @@ public class SAT4JSolver {
    *          identifier.
    * @return The equivalent array representing the clause (see DIMACS format)
    */
-  private int[] toIntClause(Clause c, HashMap<Variable, Integer> var_to_int) {
+  private int[] toIntClause(Clause c, HashMap<BooleanVariable, Integer> var_to_int) {
     int[] result = new int[c.size()];
     int i = 0;
     for (Literal l : c) {
@@ -166,10 +166,10 @@ public class SAT4JSolver {
    *          An injective HashMap
    * @return The inverse HashMap
    */
-  private HashMap<Integer, Variable> invert(HashMap<Variable, Integer> map) {
-    HashMap<Integer, Variable> result =
-        new HashMap<Integer, Variable>(map.size());
-    for (Map.Entry<Variable, Integer> entry : map.entrySet()) {
+  private HashMap<Integer, BooleanVariable> invert(HashMap<BooleanVariable, Integer> map) {
+    HashMap<Integer, BooleanVariable> result =
+        new HashMap<Integer, BooleanVariable>(map.size());
+    for (Map.Entry<BooleanVariable, Integer> entry : map.entrySet()) {
       result.put(entry.getValue(), entry.getKey());
     }
     return result;

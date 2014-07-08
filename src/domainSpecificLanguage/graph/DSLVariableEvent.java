@@ -1,17 +1,18 @@
 package domainSpecificLanguage.graph;
 
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.InternalEvent;
 
 public class DSLVariableEvent extends InternalEvent {
 
-  private DSLVariable variable;
+  private EnumeratedVariable variable;
 
-  public DSLVariableEvent(DSLVariable variable) {
+  public DSLVariableEvent(EnumeratedVariable variable) {
     super(variable.getVarname());
     this.variable = variable;
   }
 
-  public DSLVariable getVariable() {
+  public EnumeratedVariable getVariable() {
     return variable;
   }
 }

@@ -19,7 +19,7 @@ import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
@@ -309,7 +309,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
       GlobalState s2,
       SequentialGraphSimulator simulator) {
     Model func = simulator.model;
-    Collection<Variable> existing_variables = func
+    Collection<BooleanVariable> existing_variables = func
         .getExistingVariables()
         .values();
 
@@ -331,8 +331,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     }
 
     /* Then we compare the variables */
-    for (Entry<Variable, Boolean> pair : s1.getValuation().getSetVariables()) {
-      Variable var = pair.getKey();
+    for (Entry<BooleanVariable, Boolean> pair : s1.getValuation().getSetVariables()) {
+      BooleanVariable var = pair.getKey();
       boolean identical_in_both_model =
           s1.getVariableValue(var) == s2.getVariableValue(var);
       // System.out.println("Variable " + var + " is "

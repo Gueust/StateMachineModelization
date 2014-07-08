@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import utils.javaAgent.ObjectSizeFetcher;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 import abstractGraph.conditions.valuation.Valuation;
 
@@ -63,7 +63,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    * @param variable
    * @return the value of the variable
    */
-  public boolean getVariableValue(Variable variable) {
+  public boolean getVariableValue(BooleanVariable variable) {
     return variables_values.getValue(variable);
   }
 
@@ -75,7 +75,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    *          the new value to assign
    * @return true if the variable changed its value, false otherwise.
    */
-  public boolean setVariableValue(Variable variable, boolean value) {
+  public boolean setVariableValue(BooleanVariable variable, boolean value) {
     return variables_values.setValue(variable, value);
   }
 
@@ -110,11 +110,11 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     isNotP7 = NotP7;
   }
 
-  public boolean variableValueWillChanged(Variable variable, boolean value) {
+  public boolean variableValueWillChanged(BooleanVariable variable, boolean value) {
     return variables_values.variableValueWillChange(variable, value);
   }
 
-  public boolean variableIsInitialized(Variable variable) {
+  public boolean variableIsInitialized(BooleanVariable variable) {
     return variables_values.variableInitialized(variable);
   }
 
@@ -271,9 +271,9 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     }
 
     /* Comparison of the variables. */
-    for (Entry<Variable, Boolean> entry : ((Valuation) variables_values)
+    for (Entry<BooleanVariable, Boolean> entry : ((Valuation) variables_values)
         .getSetVariables()) {
-      Variable var = entry.getKey();
+      BooleanVariable var = entry.getKey();
       Boolean value = entry.getValue();
       boolean other_value = other_state.getVariableValue(var);
       if (other_value != value) {

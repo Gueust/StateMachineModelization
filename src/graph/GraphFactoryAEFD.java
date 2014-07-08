@@ -22,7 +22,7 @@ import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
@@ -714,7 +714,7 @@ public class GraphFactoryAEFD {
     Events events;
     Actions actions;
     Formula condition;
-    Variable variable = factory.getVariable(IND_actif_name);
+    BooleanVariable variable = factory.getVariable(IND_actif_name);
 
     /* Transition from 0 to 1 */
     events = new Events();
@@ -776,7 +776,7 @@ class MyCustomizer extends CustomToString {
 
   @Override
   public String toString(Literal l) {
-    Variable variable = ((Literal) l).getVariable();
+    BooleanVariable variable = ((Literal) l).getVariable();
     boolean is_negated = ((Literal) l).isNegated();
     if (is_negated) {
 
@@ -789,7 +789,7 @@ class MyCustomizer extends CustomToString {
   @Override
   public String toString(NotFormula f) {
     Formula A = f.getF();
-    if (A instanceof Variable) {
+    if (A instanceof BooleanVariable) {
       return GenerateFormulaAEFD.getOppositeName(A.toString());
     }
     return super.toString(f);

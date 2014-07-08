@@ -15,7 +15,8 @@ public class False extends Formula {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     return vars;
   }
 

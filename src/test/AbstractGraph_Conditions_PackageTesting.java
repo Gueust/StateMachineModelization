@@ -14,7 +14,7 @@ import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.parser.BooleanExpressionFactory;
 import abstractGraph.conditions.valuation.AbstractValuation;
@@ -29,7 +29,7 @@ import abstractGraph.conditions.valuation.Valuation;
  * </li>
  * <li>
  * the formulas construction done using {@link Formula} and its subclasses (
- * {@link AndFormula},{@link OrFormula},{@link NotFormula},{@link Variable}).
+ * {@link AndFormula},{@link OrFormula},{@link NotFormula},{@link BooleanVariable}).
  * 
  * </li>
  * <li>
@@ -261,7 +261,7 @@ public class AbstractGraph_Conditions_PackageTesting {
   @Test
   public void FormulaFactoryModes() {
     String input;
-    Variable v1, v2, v3;
+    BooleanVariable v1, v2, v3;
     FormulaFactory f;
     /*
      * Single variable mode reset test: we check that the variables are lost

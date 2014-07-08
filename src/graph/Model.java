@@ -18,9 +18,10 @@ import java.util.Map.Entry;
 
 import utils.Pair;
 import abstractGraph.AbstractModel;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.ExternalEvent;
@@ -52,10 +53,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   private HashMap<String, CommandEvent> commands_events;
   private HashMap<String, SynchronisationEvent> synchronisation_events;
   private HashMap<String, VariableChange> variable_modification_events;
-  private HashMap<String, Variable> existingVariables;
+  private HashMap<String, BooleanVariable> existingVariables;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<Variable, LinkedList<StateMachine>> writing_state_machines;
+  private HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machines;
 
   /**
    * Some commands are set to generate external events that will be executed
@@ -90,8 +91,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       commands_events = new HashMap<String, CommandEvent>();
       synchronisation_events = new HashMap<String, SynchronisationEvent>();
       variable_modification_events = new HashMap<String, VariableChange>();
-      existingVariables = new HashMap<String, Variable>();
-      writing_state_machines = new HashMap<Variable, LinkedList<StateMachine>>();
+      existingVariables = new HashMap<String, BooleanVariable>();
+      writing_state_machines = new HashMap<BooleanVariable, LinkedList<StateMachine>>();
       FCI_generate_ACT = new HashMap<>();
     } else {
       external_events.clear();
@@ -114,18 +115,18 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         Formula formula = transition.getCondition();
 
         if (formula != null) {
-          HashSet<Variable> this_formula_variables = new HashSet<Variable>();
+          HashSet<EnumeratedVariable> this_formula_variables = new HashSet<>();
           formula.allVariables(this_formula_variables);
-          for (Variable variable : this_formula_variables) {
-
-            existingVariables.put(variable.toString(), variable);
+          for (EnumeratedVariable variable : this_formula_variables) {
+            existingVariables.put(variable.toString(),
+                (BooleanVariable) variable);
           }
         }
 
         for (SingleEvent event : transition.getActions()) {
           addEvent(event);
           if (event instanceof VariableChange) {
-            Variable modified_var =
+            BooleanVariable modified_var =
                 ((VariableChange) event).getModifiedVariable();
 
             LinkedList<StateMachine> list =
@@ -205,7 +206,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     } else if (event instanceof VariableChange) {
       variable_modification_events.put(event.getName(),
           (VariableChange) event);
-      Variable v = ((VariableChange) event).getModifiedVariable();
+      BooleanVariable v = ((VariableChange) event).getModifiedVariable();
       existingVariables.put(v.toString(), v);
     }
   }
@@ -250,7 +251,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return An iterator over the couple (VariableChange => List of state
    *         machines writing on it)
    */
-  public Iterator<Entry<Variable, LinkedList<StateMachine>>> writingRightsIterator() {
+  public Iterator<Entry<BooleanVariable, LinkedList<StateMachine>>> writingRightsIterator() {
     return writing_state_machines.entrySet().iterator();
   }
 
@@ -262,11 +263,11 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return The HashMap linking for every VariableChange, the list of the state
    *         machines that are modifying its value.
    */
-  public HashMap<Variable, LinkedList<StateMachine>> getWritingStateMachines() {
+  public HashMap<BooleanVariable, LinkedList<StateMachine>> getWritingStateMachines() {
     return writing_state_machines;
   }
 
-  public HashMap<String, Variable> getExistingVariables() {
+  public HashMap<String, BooleanVariable> getExistingVariables() {
     return existingVariables;
   }
 
@@ -279,7 +280,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *          The variable to look for.
    * @return true if the variable exists in a Condition field.
    */
-  public boolean containsVariable(Variable variable) {
+  public boolean containsVariable(BooleanVariable variable) {
     return containsVariable(variable.toString());
   }
 
@@ -301,7 +302,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return An iterator over the variables of the model (contained in a
    *         event field, condition field or written in a action field).
    */
-  public Iterator<Variable> iteratorExistingVariables() {
+  public Iterator<BooleanVariable> iteratorExistingVariables() {
     return existingVariables.values().iterator();
   }
 
@@ -348,7 +349,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return the variable associated to the variable_name.
    * @see FormulaFactory#getVariable(String)
    */
-  public Variable getVariable(String variable_name) {
+  public BooleanVariable getVariable(String variable_name) {
     return formulaFactory.getVariable(variable_name);
   }
 

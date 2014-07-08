@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.ExternalEvent;
 
 public class SequentialGraphSimulatorTesting {
@@ -249,7 +249,7 @@ public class SequentialGraphSimulatorTesting {
     simulator.setVerbose(true);
     GlobalState global_state = simulator.emptyGlobalState();
 
-    Iterator<Variable> variable_iterator = model.iteratorExistingVariables();
+    Iterator<BooleanVariable> variable_iterator = model.iteratorExistingVariables();
     while (variable_iterator.hasNext()) {
       global_state.setVariableValue(variable_iterator.next(), true);
     }
@@ -299,7 +299,7 @@ public class SequentialGraphSimulatorTesting {
    */
   private void initGlobalState(Model model,
       AbstractGlobalState<StateMachine, State, Transition, ?> global_state) {
-    for (Variable variable : model.getExistingVariables().values()) {
+    for (BooleanVariable variable : model.getExistingVariables().values()) {
       global_state.setVariableValue(variable, true);
     }
 

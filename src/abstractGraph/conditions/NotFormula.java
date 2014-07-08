@@ -34,14 +34,15 @@ public class NotFormula extends Formula {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     f.allVariables(vars);
     return vars;
   }
 
   @Override
   public String toString() {
-    if (f instanceof Variable) {
+    if (f instanceof BooleanVariable) {
       return "(" + Formula.NOT + " " + f.toString() + ")";
     } else {
       return "(" + Formula.NOT + " (" + f.toString() + "))";

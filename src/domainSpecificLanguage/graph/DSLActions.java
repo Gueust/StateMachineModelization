@@ -10,5 +10,4 @@ public class DSLActions extends Actions {
   public String toString(CustomToString customizer) {
     return GenericToString.printCollection(events);
   }
-
 }

@@ -1,6 +1,7 @@
 package abstractGraph.conditions.valuation;
 
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 
 public abstract class AbstractValuation {
 
@@ -11,13 +12,22 @@ public abstract class AbstractValuation {
   public abstract int size();
 
   /**
-   * Retrieve the value of variable `v` in the current valuation.
+   * Retrieve the value of a boolean variable `v` in the current valuation.
    * 
    * @param v
    *          The variable.
    * @return The boolean value of the variable..
    */
-  public abstract boolean getValue(Variable v);
+  public abstract boolean getValue(BooleanVariable v);
+
+  /**
+   * Retrieve the value of an enumerated variable `v` in the current valuation.
+   * 
+   * @param v
+   *          The variable.
+   * @return The byte value of the variable..
+   */
+  public abstract byte getValue(EnumeratedVariable v);
 
   /**
    * Set the value or a variable in the valuation.
@@ -29,7 +39,9 @@ public abstract class AbstractValuation {
    * @return False if the value doesn't change or its precedent value was
    *         not defined. True otherwise.
    */
-  public abstract boolean setValue(Variable var, boolean value);
+  public abstract boolean setValue(BooleanVariable var, boolean value);
+
+  public abstract boolean setValue(EnumeratedVariable var, byte value);
 
   public abstract Object clone();
 
@@ -44,7 +56,7 @@ public abstract class AbstractValuation {
    * @return true if the value in the argument will change the current value of
    *         the variable. False otherwise.
    */
-  public abstract boolean variableValueWillChange(Variable variable,
+  public abstract boolean variableValueWillChange(BooleanVariable variable,
       boolean value);
 
   /**
@@ -52,6 +64,6 @@ public abstract class AbstractValuation {
    * @param variable
    * @return false if the variable isn't initialized.
    */
-  public abstract boolean variableInitialized(Variable variable);
+  public abstract boolean variableInitialized(BooleanVariable variable);
 
 }

@@ -7,8 +7,9 @@ import graph.Transition;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
 
@@ -17,7 +18,7 @@ import abstractGraph.events.VariableChange;
  * useless if it is not used in any Event or Contion field.
  */
 public class NoUselessVariables extends AbstractVerificationUnit {
-  private HashSet<Variable> counter_example_not_used = new HashSet<Variable>();
+  private HashSet<BooleanVariable> counter_example_not_used = new HashSet<BooleanVariable>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
@@ -29,7 +30,7 @@ public class NoUselessVariables extends AbstractVerificationUnit {
      * We create the hashMap of the variables that are contained ONLY in the
      * conditions fields and in the events fields.
      */
-    HashSet<Variable> variables_in_conditions_and_events = new HashSet<Variable>();
+    HashSet<EnumeratedVariable> variables_in_conditions_and_events = new HashSet<>();
     Iterator<StateMachine> it_sm = m.iterator();
     /* For all state machines */
     while (it_sm.hasNext()) {
@@ -59,7 +60,9 @@ public class NoUselessVariables extends AbstractVerificationUnit {
         m.iteratorVariableChange();
 
     while (variable_change_iterator.hasNext()) {
-      Variable variable = variable_change_iterator.next().getModifiedVariable();
+      BooleanVariable variable = variable_change_iterator
+          .next()
+          .getModifiedVariable();
 
       /* We check that the variable is found in a Condition or event field */
       if (!variables_in_conditions_and_events.contains(variable)) {

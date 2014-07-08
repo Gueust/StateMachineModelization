@@ -1,7 +1,7 @@
 package abstractGraph.events;
 
 import abstractGraph.conditions.CustomToString;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.Literal;
 
 public class VariableChange extends InternalEvent {
@@ -20,7 +20,7 @@ public class VariableChange extends InternalEvent {
    * 
    * @return The variable that is modified by this VariableChange
    */
-  public Variable getModifiedVariable() {
+  public BooleanVariable getModifiedVariable() {
     return l.getVariable();
   }
 

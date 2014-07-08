@@ -1,7 +1,8 @@
 package abstractGraph.events;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
@@ -10,14 +11,14 @@ public class Events implements Iterable<SingleEvent> {
   /** An empty unique instance of Events */
   public static final Events NONE = new Events();
 
-  protected LinkedHashMap<String, SingleEvent> events;
+  protected Set<SingleEvent> events;
 
   public Events() {
-    events = new LinkedHashMap<String, SingleEvent>();
+    events = new LinkedHashSet<>();
   }
 
   public boolean containsEvent(SingleEvent event) {
-    return event != null && events.get(event.name) != null;
+    return event != null && events.contains(event);
   }
 
   /**
@@ -28,8 +29,8 @@ public class Events implements Iterable<SingleEvent> {
    * @return True if events_2 has a common element with `this`.
    */
   public boolean notEmptyIntersection(Events events_2) {
-    for (String event_name : events.keySet()) {
-      if (events_2.events.get(event_name) != null) {
+    for (SingleEvent event : events) {
+      if (events_2.events.contains(event)) {
         return true;
       }
     }
@@ -49,16 +50,14 @@ public class Events implements Iterable<SingleEvent> {
     if (containsEvent(event)) {
       throw new KeyAlreadyExistsException();
     } else {
-      events.put(event.name, event);
+      events.add(event);
     }
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    Iterator<SingleEvent> iterator = events.values().iterator();
-    while (iterator.hasNext()) {
-      SingleEvent single_event = iterator.next();
+    for (SingleEvent single_event : events) {
       sb.append(single_event.toString() + ";");
     }
     return sb.toString();
@@ -66,6 +65,10 @@ public class Events implements Iterable<SingleEvent> {
 
   @Override
   public Iterator<SingleEvent> iterator() {
-    return events.values().iterator();
+    return events.iterator();
+  }
+
+  public Set<SingleEvent> getEvents() {
+    return events;
   }
 }

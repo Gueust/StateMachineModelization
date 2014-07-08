@@ -1,19 +1,17 @@
-package domainSpecificLanguage.DSLValuation;
+package abstractGraph.conditions;
 
 import java.util.HashSet;
 
-import domainSpecificLanguage.graph.DSLVariable;
-import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import domainSpecificLanguage.DSLValuation.CompactValuation;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 public class EnumerationEqualityFormula extends Formula {
 
-  private DSLVariable variable;
+  private EnumeratedVariable variable;
   private byte value;
   private boolean is_not;
 
-  public EnumerationEqualityFormula(DSLVariable variable, byte value,
+  public EnumerationEqualityFormula(EnumeratedVariable variable, byte value,
       boolean is_not) {
     this.variable = variable;
     this.value = value;
@@ -21,14 +19,15 @@ public class EnumerationEqualityFormula extends Formula {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     vars.add(variable);
     return vars;
   }
 
   @Override
   public boolean eval(AbstractValuation valuation) {
-    DSLValuation dsl_valuation = (DSLValuation) valuation;
+    CompactValuation dsl_valuation = (CompactValuation) valuation;
     if (is_not) {
       return dsl_valuation.getValue(variable) != value;
     } else {

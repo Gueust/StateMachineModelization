@@ -2,15 +2,16 @@ package abstractGraph.conditions.cnf;
 
 import java.util.HashSet;
 
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.Variable;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * Literals are used in CNFFormulas.
  */
 public class Literal extends Formula {
-  private Variable variable;
+  private BooleanVariable variable;
   boolean is_negated;
 
   /**
@@ -23,7 +24,7 @@ public class Literal extends Formula {
    *          True to get the (NOT `variable`) literal.
    *          False to get the (`variable`) literal.
    */
-  public Literal(Variable variable, boolean is_negated) {
+  public Literal(BooleanVariable variable, boolean is_negated) {
     this.variable = variable;
     this.is_negated = is_negated;
   }
@@ -34,7 +35,7 @@ public class Literal extends Formula {
    * @param variable
    *          A variable.
    */
-  public Literal(Variable variable) {
+  public Literal(BooleanVariable variable) {
     this(variable, false);
   }
 
@@ -47,7 +48,7 @@ public class Literal extends Formula {
     }
   }
 
-  public Variable getVariable() {
+  public BooleanVariable getVariable() {
     return variable;
   }
 
@@ -56,7 +57,8 @@ public class Literal extends Formula {
   }
 
   @Override
-  public HashSet<Variable> allVariables(HashSet<Variable> vars) {
+  public HashSet<EnumeratedVariable> allVariables(
+      HashSet<EnumeratedVariable> vars) {
     vars.add(variable);
     return vars;
   }
