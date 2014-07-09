@@ -11,12 +11,12 @@ package domainSpecificLanguage.parser;
 model: (model_alternatives)* EOF ;
 
 model_alternatives : 
-      domain_declaration 
+      domain_declaration
     | variables_declaration
     | commands_declaration
     | external_events
     | internal_events
-    | 'transitions' transitions 'end'
+    | machine
     | 'sub' sub 'end' 
     | template
     | proof_variables_declaration;
@@ -56,7 +56,9 @@ template : 'template'
   'trans' transitions
   'end';
   
-
+machine : 'machine' ID
+  transitions
+  'end';
 
 /* Sub node declaration */
 pair : ID ':' ID;
@@ -64,7 +66,7 @@ sub : ('sub' (ID 'instantiate' ID 'with' '{' pair (',' pair)* '}' ';' ))?;
 
 /* Transitions declaration */
 transitions : (transition ';')*; 
-transition : 'on' list_of_ID 'when' formula 'do' (actions)?;
+transition : ID '->' ID ':' 'on' list_of_ID 'when' formula 'do' (actions)?;
 
 actions : action (',' action)*;
 action : ID #ActionEvent

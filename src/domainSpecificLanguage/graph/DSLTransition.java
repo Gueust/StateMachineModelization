@@ -1,6 +1,5 @@
 package domainSpecificLanguage.graph;
 
-import graph.State;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.GenericToString;
 import abstractGraph.AbstractGlobalState;
@@ -11,13 +10,11 @@ import abstractGraph.events.Actions;
 import abstractGraph.events.Events;
 import abstractGraph.events.SingleEvent;
 
-public class DSLTransition extends AbstractTransition<State> {
+public class DSLTransition extends AbstractTransition<DSLState> {
 
-  static final State identical_state = new State("0");
-
-  public DSLTransition() {
-    super(identical_state, identical_state, new Events(), null,
-        new DSLActions());
+  public DSLTransition(DSLState from, DSLState to) {
+    super(from, to, new Events(), null, new DSLActions());
+    from.addTransition(this);
   }
 
   public void addSingleEvent(SingleEvent e) {
@@ -63,7 +60,7 @@ public class DSLTransition extends AbstractTransition<State> {
   }
 
   @Override
-  public boolean evalCondition(AbstractGlobalState<?, State, ?, ?> env) {
+  public boolean evalCondition(AbstractGlobalState<?, DSLState, ?, ?> env) {
     // TODO Auto-generated method stub
     throw new NotImplementedException();
   }

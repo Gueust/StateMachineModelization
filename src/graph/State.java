@@ -14,6 +14,7 @@ public class State extends AbstractState<Transition> {
     transitions = new LinkedList<Transition>();
   }
 
+  @Override
   public void addTransition(Transition t) {
     transitions.add(t);
   }

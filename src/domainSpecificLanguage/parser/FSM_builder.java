@@ -2,6 +2,7 @@ package domainSpecificLanguage.parser;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +26,9 @@ import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
 import abstractGraph.events.SingleEvent;
-import domainSpecificLanguage.engine.DSLModel;
+import domainSpecificLanguage.graph.DSLModel;
+import domainSpecificLanguage.graph.DSLState;
+import domainSpecificLanguage.graph.DSLStateMachine;
 import domainSpecificLanguage.graph.DSLTransition;
 import domainSpecificLanguage.graph.DSLVariableEvent;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionAssignmentContext;
@@ -43,6 +46,7 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.FalseExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.IdExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Internal_eventsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.List_of_IDContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.MachineContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ModelContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Model_alternativesContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.NotExprContext;
@@ -73,6 +77,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   Map<String, SingleEvent> single_events = new HashMap<>();
   Map<String, Enumeration> enumerations = new HashMap<>();
   Map<EnumeratedVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
+
+  Map<String, DSLStateMachine> state_machines = new LinkedHashMap<>(100);
 
   Set<DSLTransition> transitions = new HashSet<>();
 
@@ -219,7 +225,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     dsl_model.command_events.addAll(commands_event.values());
     dsl_model.enumerations.addAll(enumerations.values());
     dsl_model.enumerated_variable.putAll(enumerated_DSLVariable);
-    dsl_model.transitions.addAll(transitions);
+    dsl_model.state_machines.addAll(state_machines.values());
 
     return dsl_model;
   }
@@ -245,6 +251,31 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return enumeration;
   }
 
+  private DSLStateMachine current_state_machine = null;
+
+  /**
+   * Register the current state machine to visit in `current_state_machine`.
+   * 
+   * @return null
+   */
+  @Override
+  public Object visitMachine(MachineContext ctx) {
+    String machine_name = ctx.ID().getText();
+
+    if (state_machines.containsKey(machine_name)) {
+      raiseError("The machine" + machine_name + " defined at "
+          + getDetails(ctx.ID().getSymbol()) + " has already been defined.");
+    }
+
+    DSLStateMachine machine = new DSLStateMachine(machine_name);
+    current_state_machine = machine;
+    state_machines.put(machine_name, machine);
+
+    visitTransitions(ctx.transitions());
+
+    return null;
+  }
+
   /**
    * @return A LinkedList of DSLTransition.
    */
@@ -257,6 +288,84 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       transitions.add(transition);
     }
     return transitions;
+  }
+
+  private static final String ALL_EVENTS_IN_CONDITION = "*";
+
+  /**
+   * The current state machine where we are creating the transition can be found
+   * in the private variable `current_state_machine`.
+   * 
+   * @return A {@link DSLTransition}.
+   */
+  @Override
+  public Object visitTransition(TransitionContext ctx) {
+
+    String from_name = ctx.ID(0).getText();
+    String to_name = ctx.ID(1).getText();
+
+    assert (current_state_machine != null);
+
+    DSLState from = current_state_machine.getState(from_name);
+    if (from == null) {
+      from = current_state_machine.addState(from_name);
+    }
+    DSLState to = current_state_machine.getState(to_name);
+    if (to == null) {
+      to = current_state_machine.addState(to_name);
+    }
+
+    DSLTransition transition = new DSLTransition(from, to);
+
+    boolean automatic_filling = false;
+    /* We first look if the event field is only a ALL_EVENTS_IN_CONDITION */
+    if (ctx.list_of_ID().ID().size() == 1
+        && ctx.list_of_ID().ID().get(0).equals(ALL_EVENTS_IN_CONDITION)) {
+      automatic_filling = true;
+    } else {
+      for (TerminalNode node : ctx.list_of_ID().ID()) {
+        String event_name = node.getText();
+        ExternalEvent external_event = external_events.get(event_name);
+        if (external_event == null) {
+          raiseError("The external event " + event_name + " at "
+              + getDetails(node.getSymbol())
+              + " has not been defined previously.");
+        }
+        transition.addSingleEvent(external_event);
+      }
+    }
+
+    /* We now parse the formula */
+    Formula formula = (Formula) visit(ctx.formula());
+    transition.setCondition(formula);
+
+    if (automatic_filling) {
+      HashSet<EnumeratedVariable> all_DSLVariables = new HashSet<>();
+      formula.allVariables(all_DSLVariables);
+      for (EnumeratedVariable variable : all_DSLVariables) {
+        transition.addSingleEvent(single_events.get(variable.getVarname()));
+        ;
+      }
+    }
+
+    /* Then we do the actions */
+    ActionsContext parsed_actions = ctx.actions();
+
+    for (ActionContext child : parsed_actions.action()) {
+      if (child instanceof ActionEventContext) {
+        SingleEvent action =
+            (SingleEvent) visitActionEvent((ActionEventContext) child);
+        transition.addAction(action);
+      } else if (child instanceof ActionAssignmentContext) {
+        Assignment action =
+            (Assignment) visitActionAssignment((ActionAssignmentContext) child);
+        transition.addAction(action);
+      } else {
+        throw new Error("Unknown error during parsing.");
+      }
+    }
+
+    return transition;
   }
 
   /**
@@ -616,69 +725,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     // TODO Auto-generated method stub
     /* Returns a list of transitions */
     return null;
-  }
-
-  private static final String ALL_EVENTS_IN_CONDITION = "*";
-
-  /**
-   * @return A {@link DSLTransition}.
-   */
-  @Override
-  public Object visitTransition(TransitionContext ctx) {
-
-    DSLTransition transition = new DSLTransition();
-
-    boolean automatic_filling = false;
-    /* We first look if the event field is only a ALL_EVENTS_IN_CONDITION */
-    if (ctx.list_of_ID().ID().size() == 1
-        && ctx.list_of_ID().ID().get(0).equals(ALL_EVENTS_IN_CONDITION)) {
-      automatic_filling = true;
-    } else {
-      for (TerminalNode node : ctx.list_of_ID().ID()) {
-        String event_name = node.getText();
-        ExternalEvent external_event = external_events.get(event_name);
-        if (external_event == null) {
-          raiseError("The external event " + event_name + " at "
-              + getDetails(node.getSymbol())
-              + " has not been defined previously.");
-        }
-        transition.addSingleEvent(external_event);
-      }
-    }
-
-    /* We now parse the formula */
-    Formula formula = (Formula) visit(ctx.formula());
-    transition.setCondition(formula);
-
-    if (automatic_filling) {
-      HashSet<EnumeratedVariable> all_DSLVariables = new HashSet<>();
-      formula.allVariables(all_DSLVariables);
-      for (EnumeratedVariable variable : all_DSLVariables) {
-        transition.addSingleEvent(single_events.get(variable.getVarname()));
-        ;
-      }
-    }
-
-    /* Then we do the actions */
-    ActionsContext parsed_actions = ctx.actions();
-
-    for (ActionContext child : parsed_actions.action()) {
-      if (child instanceof ActionEventContext) {
-        SingleEvent action =
-            (SingleEvent) visitActionEvent((ActionEventContext) child);
-        transition.addAction(action);
-      } else if (child instanceof ActionAssignmentContext) {
-        Assignment action =
-            (Assignment) visitActionAssignment((ActionAssignmentContext) child);
-        transition.addAction(action);
-      } else {
-        throw new Error("Unknown error during parsing.");
-      }
-    }
-
-    transitions.add(transition);
-
-    return transition;
   }
 
   /**

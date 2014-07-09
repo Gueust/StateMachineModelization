@@ -2,6 +2,7 @@ package abstractGraph;
 
 import java.util.Iterator;
 
+import domainSpecificLanguage.graph.DSLTransition;
 import abstractGraph.events.SingleEvent;
 
 public abstract class AbstractState<T extends AbstractTransition<? extends AbstractState<T>>>
@@ -29,5 +30,7 @@ public abstract class AbstractState<T extends AbstractTransition<? extends Abstr
   public abstract T[] toArray();
 
   public abstract Iterator<T> iteratorTransitions(SingleEvent E);
+
+  public abstract void addTransition(T t);
 
 }

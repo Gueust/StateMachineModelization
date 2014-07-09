@@ -78,7 +78,6 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
       }
 
     }
-    ;
     return new TransitionsIterator();
   }
 
@@ -96,7 +95,7 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
       states.put(from.getId(), from);
       s1 = from;
     }
-    State s2 = (State) states.get(to.getId());
+    State s2 = states.get(to.getId());
     if (s2 == null) {
       states.put(to.getId(), to);
       s2 = from;
@@ -109,10 +108,9 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   @Override
   public LinkedList<Transition> getTransitions(SingleEvent E) {
     LinkedList<Transition> transition = new LinkedList<Transition>();
-    Iterator<State> state_iterator = states.values().iterator();
 
-    while (state_iterator.hasNext()) {
-      State state = state_iterator.next();
+    for (State state : states.values()) {
+
       Iterator<Transition> transition_iterator = state.iteratorTransitions(E);
       while (transition_iterator.hasNext()) {
         transition.add(transition_iterator.next());
@@ -138,6 +136,14 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   }
 
   @Override
+  public void addState(State state) throws KeyAlreadyExistsException {
+    if (states.get(state.getId()) == null) {
+      throw new KeyAlreadyExistsException();
+    }
+    states.put(state.getId(), state);
+  }
+
+  @Override
   public String toString() {
     String result = "# STATE MACHINE: " + getName() + " \n";
     Iterator<State> states_iterator = iterator();
@@ -147,4 +153,5 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
     }
     return result;
   }
+
 }

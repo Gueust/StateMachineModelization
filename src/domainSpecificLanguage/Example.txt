@@ -19,16 +19,18 @@ commands
 
 end
 
-template
-    trans
-        on aiguille_contrôlée_droite when true do position_droite := true, position_gauche := false;
-        on aiguille_contrôlée_gauche when true do position_droite := false, position_gauche := true;
-        on * when zone_1_libre and zone_2_libre do ;
+machine Machine_1
+    inconnu -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    inconnu -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
+    droite -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
 end
 
-transitions
-  on aiguille_contrôlée_droite when position is not droite do position := droite;
-  on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
+machine Machine_2
+    inconnu -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    inconnu -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
+    droite -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
 end
 
 

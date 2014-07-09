@@ -77,7 +77,9 @@ public class DeterminismChecker extends AbstractVerificationUnit {
       while (it_states.hasNext()) {
         State state = it_states.next();
         Transition[] transitions = state.toArray();
-
+        if (transitions == null) {
+          continue;
+        }
         /* For all couple of different transitions */
         for (int i = 0; i < transitions.length; i++) {
           Transition t1 = transitions[i];

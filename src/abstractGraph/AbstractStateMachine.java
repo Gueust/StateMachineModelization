@@ -21,14 +21,14 @@ import abstractGraph.events.SingleEvent;
 public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends AbstractTransition<S>>
     implements Iterable<S> {
 
-  protected String name;
+  protected String state_machine_name;
 
   public AbstractStateMachine(String name) {
-    this.name = name;
+    this.state_machine_name = name;
   }
 
   public String getName() {
-    return name;
+    return state_machine_name;
   }
 
   /**
@@ -80,6 +80,16 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    * @return The new state created.
    */
   public abstract S addState(String state_name)
+      throws KeyAlreadyExistsException;
+
+  /**
+   * Add a new state to the state machine, and throws an exception if the
+   * state already exists.
+   * 
+   * @param state
+   *          The state to add
+   */
+  public abstract void addState(S state)
       throws KeyAlreadyExistsException;
 
   /**

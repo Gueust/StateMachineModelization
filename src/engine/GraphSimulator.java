@@ -72,7 +72,9 @@ class GraphSimulator
 
   public GraphSimulator(Model model, Model proof) {
     this.model = model;
-    all_variables = new HashSet<BooleanVariable>(model.getExistingVariables().values());
+    all_variables = new HashSet<BooleanVariable>(model
+        .getExistingVariables()
+        .values());
     this.proof = proof;
     if (proof != null) {
       all_variables.addAll(proof.getExistingVariables().values());
@@ -82,7 +84,9 @@ class GraphSimulator
 
   public GraphSimulator(Model model) {
     this.model = model;
-    all_variables = new HashSet<BooleanVariable>(model.getExistingVariables().values());
+    all_variables = new HashSet<BooleanVariable>(model
+        .getExistingVariables()
+        .values());
     checkCompatibility();
   }
 
@@ -386,7 +390,8 @@ class GraphSimulator
       }
     }
     // Put the variables change event at the end of the event queue.
-    for (Entry<BooleanVariable, Boolean> entry : temporary_variable_change.entrySet()) {
+    for (Entry<BooleanVariable, Boolean> entry : temporary_variable_change
+        .entrySet()) {
       global_state.setVariableValue(entry.getKey(), entry.getValue());
     }
     temporary_variable_change.clear();
@@ -719,7 +724,8 @@ class GraphSimulator
         for (SingleEvent event : transition.getActions()) {
           if (event instanceof VariableChange) {
             /* Verification of 1) */
-            BooleanVariable var = ((VariableChange) event).getModifiedVariable();
+            BooleanVariable var = ((VariableChange) event)
+                .getModifiedVariable();
             if (model.containsVariable(var)) {
               System.err.println(
                   "The proof model does write the variable " + var +

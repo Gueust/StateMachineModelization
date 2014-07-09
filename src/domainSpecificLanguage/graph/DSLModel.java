@@ -1,4 +1,8 @@
-package domainSpecificLanguage.engine;
+package domainSpecificLanguage.graph;
+
+import graph.State;
+import graph.StateMachine;
+import graph.Transition;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,8 +12,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.GenericToString;
 import utils.Pair;
+import abstractGraph.AbstractModel;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Enumeration;
@@ -22,9 +28,9 @@ import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
 import domainSpecificLanguage.Template;
 import domainSpecificLanguage.DSLValuation.CompactValuation;
-import domainSpecificLanguage.graph.DSLTransition;
 
-public class DSLModel implements DSLSimulatorInterface<CompactValuation> {
+public class DSLModel extends
+    AbstractModel<DSLStateMachine, DSLState, DSLTransition> {
 
   public Set<Enumeration> enumerations = new HashSet<>();
   public Map<EnumeratedVariable, Enumeration> enumerated_variable = new HashMap<>();
@@ -33,19 +39,24 @@ public class DSLModel implements DSLSimulatorInterface<CompactValuation> {
   public Set<InternalEvent> internal_events = new HashSet<>();
   public Set<CommandEvent> command_events = new HashSet<>();
   public Set<Template> templates = new HashSet<>();
-  public Set<DSLTransition> transitions = new HashSet<>();
-
+  public Set<DSLStateMachine> state_machines = new HashSet<>();
   public Set<DSLTransition> proof_transitions = new HashSet<>();
 
+  public DSLModel(String model_name) {
+    super(model_name);
+  }
+
   public DSLModel() {
+    this("Default Name");
   }
 
   public DSLModel(Collection<Enumeration> enumerations,
       Collection<Template> templates,
-      Collection<DSLTransition> transitions) {
+      Collection<DSLStateMachine> state_machines) {
+    this();
     this.enumerations.addAll(enumerations);
     this.templates.addAll(templates);
-    this.transitions.addAll(transitions);
+    this.state_machines.addAll(state_machines);
   }
 
   public void addEnumeration(Enumeration enumeration) {
@@ -60,10 +71,6 @@ public class DSLModel implements DSLSimulatorInterface<CompactValuation> {
 
   public void addTemplate(Template template) {
     templates.add(template);
-  }
-
-  public void addTransition(DSLTransition node) {
-    transitions.add(node);
   }
 
   /**
@@ -95,47 +102,36 @@ public class DSLModel implements DSLSimulatorInterface<CompactValuation> {
 
   @Override
   public String toString() {
-    StringBuffer string_buffer = new StringBuffer();
+    StringBuilder string_builder = new StringBuilder();
 
     if (enumerations.size() != 0) {
-      string_buffer
+      string_builder
           .append(GenericToString.printCollection(enumerations) + "\n");
     }
     if (variables.size() != 0) {
-      string_buffer.append("variables\n" + variablesToString("  ") + "end\n\n");
+      string_builder
+          .append("variables\n" + variablesToString("  ") + "end\n\n");
     }
     if (external_events.size() != 0) {
-      string_buffer.append("external_events\n  " +
+      string_builder.append("external_events\n  " +
           GenericToString.printCollection(external_events) + ";\nend\n\n");
     }
     if (command_events.size() != 0) {
-      string_buffer.append("command_events\n  " +
+      string_builder.append("command_events\n  " +
           GenericToString.printCollection(command_events) + ";\nend\n\n");
     }
     if (internal_events.size() != 0) {
-      string_buffer.append("internal_events\n  " +
+      string_builder.append("internal_events\n  " +
           GenericToString.printCollection(internal_events) + ";\nend\n\n");
     }
 
-    if (transitions.size() != 0) {
-      string_buffer.append("trans\n  " +
-          GenericToString.printCollection(transitions, "\n  ") + "\nend\n\n");
+    if (state_machines.size() != 0) {
+      for (DSLStateMachine state_machine : state_machines) {
+        string_builder.append(state_machine + "\n");
+      }
     }
-    return string_buffer.toString();
-  }
 
-  @Override
-  public CompactValuation execute(CompactValuation starting_state,
-      ExternalEvent e) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public LinkedHashSet<ExternalEvent> getPossibleEvent(
-      CompactValuation global_state) {
-    // TODO Auto-generated method stub
-    return null;
+    return string_builder.toString();
   }
 
   /**
@@ -161,18 +157,38 @@ public class DSLModel implements DSLSimulatorInterface<CompactValuation> {
   private boolean checkCompatibility() {
 
     /* Verification of 4) */
-    for (DSLTransition transition : transitions) {
-      for (SingleEvent event : transition.getActions()) {
-        /* Verification of 4) */
-        if (event instanceof ModelCheckerEvent) {
-          System.err.println(
-              "The functional model does write a variable that is reserved"
-                  + " to proof models: " + event);
-          return false;
+    for (DSLStateMachine state_machine : state_machines) {
+      for (DSLState state : state_machine) {
+        for (DSLTransition transition : state) {
+          for (SingleEvent event : transition.getActions()) {
+            /* Verification of 4) */
+            if (event instanceof ModelCheckerEvent) {
+              System.err.println(
+                  "The functional model does write a variable that is reserved"
+                      + " to proof models: " + event);
+              return false;
+            }
+          }
         }
       }
     }
-
     return true;
+  }
+
+  @Override
+  public void addStateMachine(DSLStateMachine state_machine) {
+    state_machines.add(state_machine);
+  }
+
+  @Override
+  public void build() {
+    // TODO Auto-generated method stub
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public Iterator<DSLStateMachine> iterator() {
+    // TODO Auto-generated method stub
+    throw new NotImplementedException();
   }
 }
