@@ -12,7 +12,6 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import utils.Pair;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Enumeration;
@@ -211,15 +210,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     /* The parsing does fill in the internal values of the current instance */
     visitChildren(ctx);
 
-    /* Then we use them to fill in the model */
-    for (EnumeratedVariable DSLVariable : variables.values()) {
-      Byte initial_value = initial_values
-          .get(DSLVariable);
-      assert (initial_value != null);
-      dsl_model.variables
-          .add(new Pair<EnumeratedVariable, Byte>(DSLVariable, initial_value));
-    }
-
+    dsl_model.variables.addAll(variables.values());
+    dsl_model.initial_values.putAll(initial_values);
     dsl_model.external_events.addAll(external_events.values());
     dsl_model.internal_events.addAll(internal_events.values());
     dsl_model.command_events.addAll(commands_event.values());

@@ -51,6 +51,19 @@ public class Valuation extends AbstractValuation {
     return old_value != null && !old_value.equals(value);
   }
 
+  @Override
+  public byte getValue(EnumeratedVariable v) {
+    if (v instanceof BooleanVariable) {
+      return BooleanVariable.getByteFromBool(getValue((BooleanVariable) v));
+    }
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean setValue(EnumeratedVariable var, byte value) {
+    throw new NotImplementedException();
+  }
+
   /**
    * Remove the given variable from the valuation.
    */
@@ -143,16 +156,6 @@ public class Valuation extends AbstractValuation {
    */
   public Set<Entry<BooleanVariable, Boolean>> getSetVariables() {
     return valuation.entrySet();
-  }
-
-  @Override
-  public byte getValue(EnumeratedVariable v) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public boolean setValue(EnumeratedVariable var, byte value) {
-    throw new NotImplementedException();
   }
 
 }

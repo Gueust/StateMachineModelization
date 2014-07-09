@@ -8,11 +8,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 
 public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
 
-  private HashSet<BooleanVariable> counter_example_not_writen = new HashSet<BooleanVariable>();
+  private HashSet<EnumeratedVariable> counter_example_not_writen = new HashSet<>();
 
   @Override
   public boolean checkAll(Model m, boolean verbose) {
@@ -21,12 +21,12 @@ public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
 
     counter_example_not_writen.clear();
 
-    HashMap<BooleanVariable, LinkedList<StateMachine>> written_variables =
+    HashMap<EnumeratedVariable, LinkedList<StateMachine>> written_variables =
         m.getWritingStateMachines();
-    Iterator<BooleanVariable> variables = m.iteratorExistingVariables();
+    Iterator<EnumeratedVariable> variables = m.iteratorExistingVariables();
 
     while (variables.hasNext()) {
-      BooleanVariable variable = variables.next();
+      EnumeratedVariable variable = variables.next();
       if (!variable.getVarname().startsWith("CTL")) {
         LinkedList<StateMachine> writing_state_machine =
             written_variables.get(variable);

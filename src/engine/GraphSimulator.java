@@ -1,23 +1,19 @@
 package engine;
 
-import graph.GlobalState;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.CommandEvent;
@@ -35,9 +31,9 @@ import abstractGraph.events.VariableChange;
  * 
  * @details This class is NOT thread safe.
  */
-class GraphSimulator
+class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     implements
-    GraphSimulatorInterface<GlobalState, StateMachine, State, Transition> {
+    GraphSimulatorInterface<GS, M, S, T> {
 
   /** This is the list of the different queues used in the simulator. */
   protected LinkedList<SingleEvent> internal_functional_event_queue =
@@ -50,10 +46,10 @@ class GraphSimulator
       new LinkedList<SingleEvent>();
   protected LinkedList<ExternalEvent> ACT_FCI_queue =
       new LinkedList<ExternalEvent>();
-  protected LinkedHashMap<StateMachine, State> functionnal_transitions_pull_list =
-      new LinkedHashMap<StateMachine, State>();
-  protected LinkedHashMap<StateMachine, State> proof_transitions_pull_list =
-      new LinkedHashMap<StateMachine, State>();
+  protected LinkedHashMap<M, S> functionnal_transitions_pull_list =
+      new LinkedHashMap<M, S>();
+  protected LinkedHashMap<M, S> proof_transitions_pull_list =
+      new LinkedHashMap<M, S>();
   protected LinkedList<ExternalEvent> restrained_external_event_list = null;
   protected HashMap<BooleanVariable, Boolean> temporary_variable_change = new HashMap<BooleanVariable, Boolean>();
   /* Only used when executing the micro-steps */
@@ -61,51 +57,39 @@ class GraphSimulator
       new LinkedList<SingleEvent>();
 
   /** This is the model to execute */
-  protected Model model;
+  protected AbstractModel<M, S, T> model;
 
   /** This is the model of the proof */
-  protected Model proof;
+  protected AbstractModel<M, S, T> proof;
 
   protected boolean verbose = true;
 
-  protected HashSet<BooleanVariable> all_variables;
-
-  public GraphSimulator(Model model, Model proof) {
+  public GraphSimulator(AbstractModel<M, S, T> model,
+      AbstractModel<M, S, T> proof) {
     this.model = model;
-    all_variables = new HashSet<BooleanVariable>(model
-        .getExistingVariables()
-        .values());
     this.proof = proof;
-    if (proof != null) {
-      all_variables.addAll(proof.getExistingVariables().values());
-    }
+
     checkCompatibility();
   }
 
-  public GraphSimulator(Model model) {
+  public GraphSimulator(AbstractModel<M, S, T> model) {
     this.model = model;
-    all_variables = new HashSet<BooleanVariable>(model
-        .getExistingVariables()
-        .values());
     checkCompatibility();
-  }
-
-  public GlobalState emptyGlobalState() {
-    return new GlobalState();
   }
 
   @Override
-  public GraphSimulator clone() {
-    GraphSimulator result = new GraphSimulator(this.model, this.proof);
+  public GraphSimulator<GS, M, S, T> clone() {
+    GraphSimulator<GS, M, S, T> result =
+        new GraphSimulator<GS, M, S, T>(this.model, this.proof);
     result.setVerbose(this.verbose);
     return result;
   }
 
-  public LinkedHashMap<StateMachine, State> getFunctionnalTransitionsPullList() {
+  public LinkedHashMap<M, S> getFunctionnalTransitionsPullList() {
     return functionnal_transitions_pull_list;
   }
 
-  public LinkedHashMap<StateMachine, State> getProofTransitionsPullList() {
+  public LinkedHashMap<M, S> getProofTransitionsPullList() {
     return proof_transitions_pull_list;
   }
 
@@ -129,21 +113,14 @@ class GraphSimulator
     this.verbose = value;
   }
 
-  public Model getModel() {
+  @Override
+  public AbstractModel<M, S, T> getModel() {
     return model;
   }
 
-  public Model getProof() {
+  @Override
+  public AbstractModel<M, S, T> getProof() {
     return proof;
-  }
-
-  /**
-   * 
-   * @return All the variables present both in the functionnal and the proof
-   *         model.
-   */
-  public HashSet<BooleanVariable> getAll_variables() {
-    return all_variables;
   }
 
   public LinkedList<ExternalEvent> getACTFCIList() {
@@ -153,74 +130,6 @@ class GraphSimulator
   public void setRestrainedExternalEventList(
       LinkedList<ExternalEvent> external_event_list) {
     restrained_external_event_list = external_event_list;
-  }
-
-  /**
-   * Generate all the initial states that can be generated using all the
-   * possible combination of CTLs.
-   */
-  public void generateAllInitialStates(
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
-    HashMap<String, String> CTL_list = getModel().regroupCTL();
-
-    generateAllInitialStates(CTL_list, new HashMap<String, Boolean>(),
-        model_checker);
-  }
-
-  /**
-   * Generate all the initial states that can be generated using all the
-   * possible combination of CTL_list and fixing the fixed_CTL_list
-   */
-  public void generateAllInitialStates(
-      HashMap<String, String> CTL_list,
-      HashMap<String, Boolean> fixed_CTL_list,
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
-
-    generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
-        emptyGlobalState(),
-        model_checker);
-  }
-
-  /**
-   * Generate recursively all the initial states.
-   * 
-   * @param set
-   *          The list of the positive CTL in the model without a value assigned
-   *          to them.
-   * @param tmp
-   *          An empty HashMap used internally to store the already set CTLs.
-   */
-  int i = 0;
-
-  private void generateAllInitialStates(Set<String> set,
-      HashMap<String, Boolean> fixed_ctls,
-      GlobalState current_state,
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
-
-    /* Terminal case */
-    if (set.isEmpty()) {
-      GlobalState gs = init(fixed_ctls);
-      if (gs.isLegal()) {
-        System.out.print(i++ + "\n");
-        model_checker.addInitialState(gs);
-      }
-      return;
-    }
-
-    /* Recursion */
-    Iterator<String> ctl_iterator = set.iterator();
-    String ctl_name = ctl_iterator.next();
-    ctl_iterator.remove();
-
-    fixed_ctls.put(ctl_name, true);
-    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
-        current_state,
-        model_checker);
-
-    fixed_ctls.put(ctl_name, false);
-    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
-        current_state,
-        model_checker);
   }
 
   /**
@@ -257,7 +166,7 @@ class GraphSimulator
    * 
    * @param external_events
    */
-  public void processSmallestStep(GlobalState internal_global_state,
+  public void processSmallestStep(GS internal_global_state,
       LinkedList<ExternalEvent> external_events) {
 
     if (proof != null && internal_proof_event_queue.size() != 0) {
@@ -318,8 +227,8 @@ class GraphSimulator
   }
 
   /* Used for the next function */
-  private LinkedHashMap<StateMachine, State> temporary_tag =
-      new LinkedHashMap<StateMachine, State>();
+  private LinkedHashMap<M, S> temporary_tag =
+      new LinkedHashMap<M, S>();
   private LinkedList<SingleEvent> temporary_queue =
       new LinkedList<SingleEvent>();
 
@@ -346,20 +255,20 @@ class GraphSimulator
    * @param event_list
    *          The list in which the generated internal events will be added.
    */
-  protected void processSingleEvent(Model model,
-      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
+  protected void processSingleEvent(AbstractModel<M, S, T> model,
+      AbstractGlobalState<M, S, T, ?> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
     temporary_tag.clear();
 
-    for (StateMachine state_machine : model) {
-      State current_state = global_state.getState(state_machine);
+    for (M state_machine : model) {
+      S current_state = global_state.getState(state_machine);
       assert current_state != null : "No state selected for the state machine "
           + state_machine.getName();
-      Iterator<Transition> transition_iterator =
+      Iterator<T> transition_iterator =
           current_state.iteratorTransitions(event);
       while (transition_iterator.hasNext()) {
-        Transition transition = transition_iterator.next();
+        T transition = transition_iterator.next();
 
         boolean evaluation;
 
@@ -385,7 +294,7 @@ class GraphSimulator
       } else {
         proof_transitions_pull_list.putAll(temporary_tag);
       }
-      for (Entry<StateMachine, State> entry : temporary_tag.entrySet()) {
+      for (Entry<M, S> entry : temporary_tag.entrySet()) {
         global_state.setState(entry.getKey(), entry.getValue());
       }
     }
@@ -434,7 +343,7 @@ class GraphSimulator
    *          The event list in which the new events will be added.
    */
   private void processAction(Iterator<SingleEvent> single_event_iterator,
-      AbstractGlobalState<StateMachine, State, Transition, ?> global_state,
+      AbstractGlobalState<M, S, T, ?> global_state,
       LinkedList<SingleEvent> event_list) {
 
     while (single_event_iterator.hasNext()) {
@@ -521,7 +430,7 @@ class GraphSimulator
    * @param single_event_queue
    *          The queue to use for the internal events.
    */
-  protected void execute(Model m, GlobalState starting_state,
+  protected void execute(AbstractModel<M, S, T> m, GS starting_state,
       SingleEvent e,
       LinkedList<SingleEvent> single_event_queue) {
 
@@ -543,7 +452,7 @@ class GraphSimulator
    *          an external to the simulator global state. It will be modified in
    *          place and will be the result value.
    */
-  protected void executeProofCompletely(GlobalState global_state,
+  protected void executeProofCompletely(GS global_state,
       LinkedList<SingleEvent> external_events_list) {
 
     if (proof == null) {
@@ -578,8 +487,8 @@ class GraphSimulator
    * functional model to be ready for the next external event.
    */
   @Override
-  public GlobalState execute(GlobalState starting_state, ExternalEvent event) {
-    GlobalState copied_starting_state = executeSimulator(starting_state, event);
+  public GS execute(GS starting_state, ExternalEvent event) {
+    GS copied_starting_state = executeSimulator(starting_state, event);
     return executeACTFCIwithProof(copied_starting_state);
   }
 
@@ -596,10 +505,11 @@ class GraphSimulator
    * If `event` is null, it does only finish the execution of the proof and
    * functional model to be ready for the next external event.
    */
-  public GlobalState executeSimulator(GlobalState starting_state,
+  public GS executeSimulator(GS starting_state,
       ExternalEvent event) {
 
-    GlobalState copied_starting_state = starting_state.clone();
+    @SuppressWarnings("unchecked")
+    GS copied_starting_state = (GS) starting_state.clone();
 
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();
@@ -634,8 +544,8 @@ class GraphSimulator
    * 
    * @param global_state
    */
-  public GlobalState executeACTFCIwithProof(GlobalState global_state) {
-    GlobalState result = executeAll(global_state, ACT_FCI_queue);
+  public GS executeACTFCIwithProof(GS global_state) {
+    GS result = executeAll(global_state, ACT_FCI_queue);
     ACT_FCI_queue.clear();
     return result;
   }
@@ -645,9 +555,9 @@ class GraphSimulator
    * LinkedList
    * of events
    */
-  public GlobalState executeAll(GlobalState starting_state,
+  public GS executeAll(GS starting_state,
       LinkedList<ExternalEvent> list) {
-    GlobalState result = starting_state;
+    GS result = starting_state;
     while (!list.isEmpty()) {
       ExternalEvent event = list.poll();
       result = execute(result, event);
@@ -681,10 +591,10 @@ class GraphSimulator
     }
 
     /* Verification of 4) */
-    for (StateMachine machine : model) {
-      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+    for (M machine : model) {
+      Iterator<T> transition_iterator = machine.iteratorTransitions();
       while (transition_iterator.hasNext()) {
-        Transition transition = transition_iterator.next();
+        T transition = transition_iterator.next();
 
         for (SingleEvent event : transition.getActions()) {
           /* Verification of 4) */
@@ -704,10 +614,10 @@ class GraphSimulator
       return true;
     }
 
-    for (StateMachine machine : proof) {
-      Iterator<Transition> transition_iterator = machine.iteratorTransitions();
+    for (M machine : proof) {
+      Iterator<T> transition_iterator = machine.iteratorTransitions();
       while (transition_iterator.hasNext()) {
-        Transition transition = transition_iterator.next();
+        T transition = transition_iterator.next();
 
         for (SingleEvent event : transition.getEvents()) {
           if (event instanceof ExternalEvent) {
@@ -756,60 +666,13 @@ class GraphSimulator
     return true;
   }
 
-  /**
-   * Initialize the model with the given set of CTL:
-   * <ol>
-   * <li>
-   * It does initialize all the states machines to the state "0"</li>
-   * <li>
-   * It executes ACT_INIT with the given set of CTL as true variables.</li>
-   * <li>Clear the valuation of the CTLs that had previously been added.</li>
-   * </ol>
-   * 
-   * @param external_values
-   *          The list of the couple (CTL, value for this CTL).
-   *          It must only contains CTLs and it must not contain opposite CTLs.
-   */
-  public GlobalState init(HashMap<String, Boolean> external_values) {
-
-    GlobalState global_state = new GlobalState();
-
-    /* Initialization of the states of all the state machines */
-    for (StateMachine machine : model) {
-      global_state.setState(machine, machine.getState("0"));
-    }
-    if (proof != null) {
-      for (StateMachine machine : proof) {
-        global_state.setState(machine, machine.getState("0"));
-      }
-    }
-
-    /* We set the CTLs to true */
-    LinkedList<BooleanVariable> to_delete_from_valuation = new LinkedList<BooleanVariable>();
-    for (Entry<String, Boolean> assignation : external_values.entrySet()) {
-      BooleanVariable var = model.getVariable(assignation.getKey());
-      to_delete_from_valuation.add(var);
-      global_state.setVariableValue(var, assignation.getValue());
-    }
-
-    /* We execute ACT_INIT */
-    global_state = execute(global_state, ACT_INIT);
-
-    /* We delete the CTLs from the valuation */
-    for (BooleanVariable variable : to_delete_from_valuation) {
-      global_state.getValuation().remove(variable);
-    }
-
-    return global_state;
-  }
-
   @Override
-  public LinkedHashSet<ExternalEvent> getPossibleEvent(GlobalState global_state) {
+  public LinkedHashSet<ExternalEvent> getPossibleEvent(GS global_state) {
     LinkedHashSet<ExternalEvent> list_events =
         new LinkedHashSet<ExternalEvent>();
-    for (StateMachine state_machine : getModel()) {
-      State current_state = global_state.getState(state_machine);
-      for (Transition transition : current_state) {
+    for (M state_machine : getModel()) {
+      S current_state = global_state.getState(state_machine);
+      for (T transition : current_state) {
         Events events = transition.getEvents();
         for (SingleEvent single_event : events) {
           if (single_event instanceof ExternalEvent) {
@@ -829,15 +692,16 @@ class GraphSimulator
      * events of the functional
      */
     if (proof != null) {
-      for (StateMachine state_machine : getProof()) {
-        State current_state = global_state.getState(state_machine);
-        for (Transition transition : current_state) {
+      for (M state_machine : getProof()) {
+        S current_state = global_state.getState(state_machine);
+        for (T transition : current_state) {
           Events events = transition.getEvents();
           for (SingleEvent single_event : events) {
+
+            /* If it is an external event of the functional model */
             if (single_event instanceof ExternalEvent) {
-              if (!getModel().containsVariable(single_event.getName())
-                  && !getModel()
-                      .containsSynchronousEvents(single_event.getName())) {
+              ExternalEvent external_event = (ExternalEvent) single_event;
+              if (getModel().containsExternalEvent(external_event)) {
                 if (restrained_external_event_list == null
                     || restrained_external_event_list.contains(single_event)) {
                   if (!single_event.getName().startsWith("ACT_")) {

@@ -2,9 +2,18 @@ package engine;
 
 import graph.GlobalState;
 import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import graph.Transition;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
@@ -15,7 +24,8 @@ import abstractGraph.events.SingleEvent;
  * 
  * @details This class is NOT thread safe.
  */
-public class SequentialGraphSimulator extends GraphSimulator {
+public class SequentialGraphSimulator extends
+    GraphSimulator<GlobalState, StateMachine, State, Transition> {
 
   public SequentialGraphSimulator(Model model, Model proof) {
     super(model, proof);
@@ -26,9 +36,19 @@ public class SequentialGraphSimulator extends GraphSimulator {
   }
 
   @Override
+  public Model getModel() {
+    return (Model) model;
+  }
+
+  @Override
+  public Model getProof() {
+    return (Model) proof;
+  }
+
+  @Override
   public SequentialGraphSimulator clone() {
     SequentialGraphSimulator result =
-        new SequentialGraphSimulator(this.model, this.proof);
+        new SequentialGraphSimulator((Model) this.model, (Model) this.proof);
     result.setVerbose(this.verbose);
     return result;
   }
@@ -180,5 +200,125 @@ public class SequentialGraphSimulator extends GraphSimulator {
       executeProofCompletely(copied_starting_state, external_proof_event_queue);
     }
     return copied_starting_state;
+  }
+
+  public GlobalState emptyGlobalState() {
+    return new GlobalState();
+  }
+
+  /**
+   * Generate all the initial states that can be generated using all the
+   * possible combination of CTLs.
+   */
+  public void generateAllInitialStates(
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+    HashMap<String, String> CTL_list = getModel().regroupCTL();
+
+    generateAllInitialStates(CTL_list, new HashMap<String, Boolean>(),
+        model_checker);
+  }
+
+  /**
+   * Initialize the model with the given set of CTL:
+   * <ol>
+   * <li>
+   * It does initialize all the states machines to the state "0"</li>
+   * <li>
+   * It executes ACT_INIT with the given set of CTL as true variables.</li>
+   * <li>Clear the valuation of the CTLs that had previously been added.</li>
+   * </ol>
+   * 
+   * @param external_values
+   *          The list of the couple (CTL, value for this CTL).
+   *          It must only contains CTLs and it must not contain opposite CTLs.
+   */
+  public GlobalState init(HashMap<String, Boolean> external_values) {
+
+    GlobalState global_state = new GlobalState();
+
+    /* Initialization of the states of all the state machines */
+    for (StateMachine machine : model) {
+      global_state.setState(machine, machine.getState("0"));
+    }
+    if (proof != null) {
+      for (StateMachine machine : proof) {
+        global_state.setState(machine, machine.getState("0"));
+      }
+    }
+
+    /* We set the CTLs to true */
+    LinkedList<BooleanVariable> to_delete_from_valuation = new LinkedList<BooleanVariable>();
+    for (Entry<String, Boolean> assignation : external_values.entrySet()) {
+      BooleanVariable var = (BooleanVariable) model.getVariable(assignation
+          .getKey());
+      to_delete_from_valuation.add(var);
+      global_state.setVariableValue(var, assignation.getValue());
+    }
+
+    /* We execute ACT_INIT */
+    global_state = execute(global_state, ACT_INIT);
+
+    /* We delete the CTLs from the valuation */
+    for (BooleanVariable variable : to_delete_from_valuation) {
+      global_state.getValuation().remove(variable);
+    }
+
+    return global_state;
+  }
+
+  /**
+   * Generate recursively all the initial states.
+   * 
+   * @param set
+   *          The list of the positive CTL in the model without a value assigned
+   *          to them.
+   * @param tmp
+   *          An empty HashMap used internally to store the already set CTLs.
+   */
+  int i = 0;
+
+  private void generateAllInitialStates(Set<String> set,
+      HashMap<String, Boolean> fixed_ctls,
+      GlobalState current_state,
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+
+    /* Terminal case */
+    if (set.isEmpty()) {
+      GlobalState gs = init(fixed_ctls);
+      if (gs.isLegal()) {
+        System.out.print(i++ + "\n");
+        model_checker.addInitialState(gs);
+      }
+      return;
+    }
+
+    /* Recursion */
+    Iterator<String> ctl_iterator = set.iterator();
+    String ctl_name = ctl_iterator.next();
+    ctl_iterator.remove();
+
+    fixed_ctls.put(ctl_name, true);
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+        current_state,
+        model_checker);
+
+    fixed_ctls.put(ctl_name, false);
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+        current_state,
+        model_checker);
+  }
+
+  /**
+   * Generate all the initial states that can be generated using all the
+   * possible combination of CTL_list and fixing the fixed_CTL_list
+   */
+  public void generateAllInitialStates(
+      HashMap<String, String> CTL_list,
+      HashMap<String, Boolean> fixed_CTL_list,
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+
+    generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
+        emptyGlobalState(),
+        model_checker);
   }
 }

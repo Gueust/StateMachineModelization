@@ -1,20 +1,15 @@
 package domainSpecificLanguage.graph;
 
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.GenericToString;
-import utils.Pair;
 import abstractGraph.AbstractModel;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
@@ -25,16 +20,16 @@ import abstractGraph.events.InternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
-import abstractGraph.events.VariableChange;
 import domainSpecificLanguage.Template;
-import domainSpecificLanguage.DSLValuation.CompactValuation;
 
 public class DSLModel extends
     AbstractModel<DSLStateMachine, DSLState, DSLTransition> {
 
   public Set<Enumeration> enumerations = new HashSet<>();
   public Map<EnumeratedVariable, Enumeration> enumerated_variable = new HashMap<>();
-  public Set<Pair<EnumeratedVariable, Byte>> variables = new HashSet<>();
+  public Set<EnumeratedVariable> variables = new HashSet<>();
+  public Map<EnumeratedVariable, Byte> initial_values = new HashMap<>();
+
   public Set<ExternalEvent> external_events = new HashSet<>();
   public Set<InternalEvent> internal_events = new HashSet<>();
   public Set<CommandEvent> command_events = new HashSet<>();
@@ -81,9 +76,8 @@ public class DSLModel extends
    */
   private String variablesToString(String identation) {
     StringBuffer string_buffer = new StringBuffer();
-    for (Pair<EnumeratedVariable, Byte> pair : variables) {
-      EnumeratedVariable variable = pair.first;
-      byte initial_value = pair.second;
+    for (EnumeratedVariable variable : variables) {
+      byte initial_value = initial_values.get(variable);
       Enumeration enumeration = enumerated_variable.get(variable);
 
       string_buffer.append(identation);
@@ -190,5 +184,41 @@ public class DSLModel extends
   public Iterator<DSLStateMachine> iterator() {
     // TODO Auto-generated method stub
     throw new NotImplementedException();
+  }
+
+  @Override
+  public EnumeratedVariable getVariable(String variable_name) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public Collection<EnumeratedVariable> getExistingVariables() {
+    return variables;
+  }
+
+  @Override
+  public boolean containsSynchronisationEvent(SynchronisationEvent event) {
+    return internal_events.contains(event);
+  }
+
+  @Override
+  public boolean containsSynchronousEvent(String synchronous_event) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean containsVariable(EnumeratedVariable variable) {
+    return variables.contains(variable);
+  }
+
+  @Override
+  public boolean containsExternalEvent(ExternalEvent external_event) {
+    return external_events.contains(external_event);
+  }
+
+  @Override
+  public HashMap<EnumeratedVariable, LinkedList<DSLStateMachine>> getWritingStateMachines() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

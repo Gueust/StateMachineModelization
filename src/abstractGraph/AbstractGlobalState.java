@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 import abstractGraph.conditions.valuation.Valuation;
 
@@ -67,6 +68,18 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     return variables_values.getValue(variable);
   }
 
+  public byte getVariableValue(EnumeratedVariable variable) {
+    return variables_values.getValue(variable);
+  }
+
+  public String getStringValue(EnumeratedVariable variable) {
+    if (variable instanceof BooleanVariable) {
+      return Boolean.toString(getVariableValue((BooleanVariable) variable));
+    } else {
+      return variable.getOptionFromByte(getVariableValue(variable));
+    }
+  }
+
   /**
    * Change the value of the variable.
    * 
@@ -110,7 +123,8 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     isNotP7 = NotP7;
   }
 
-  public boolean variableValueWillChanged(BooleanVariable variable, boolean value) {
+  public boolean variableValueWillChanged(BooleanVariable variable,
+      boolean value) {
     return variables_values.variableValueWillChange(variable, value);
   }
 

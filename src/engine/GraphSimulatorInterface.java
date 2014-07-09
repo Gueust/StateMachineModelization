@@ -3,6 +3,7 @@ package engine;
 import java.util.LinkedHashSet;
 
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
@@ -12,6 +13,10 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T,
 
   /** The initial event given to the machine to force its initialization */
   public static final ExternalEvent ACT_INIT = new ExternalEvent("ACT_Init");
+
+  public AbstractModel<M, S, T> getModel();
+
+  public AbstractModel<M, S, T> getProof();
 
   public GraphSimulatorInterface<GS, M, S, T> clone();
 

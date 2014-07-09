@@ -1,10 +1,6 @@
 package engine;
 
-import engine.SplitProof.MyNode;
 import genericLabeledGraph.Edge;
-import graph.GlobalState;
-import graph.Model;
-import graph.StateMachine;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,10 +12,13 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
+import abstractGraph.conditions.valuation.Valuation;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
@@ -232,27 +231,28 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return null;
   }
 
-  public GS verifyUsingSplitting(SequentialGraphSimulator simulator) {
-    Model model = simulator.getModel();
-    Model proof = simulator.proof;
+  private GS verifyUsingSplitting(GraphSimulatorInterface<GS, M, S, T> simulator) {
+    AbstractModel<M, S, T> model = simulator.getModel();
+    AbstractModel<M, S, T> proof = simulator.getProof();
     if (proof == null) {
       throw new IllegalArgumentException("The proof model must be not null");
     }
 
-    SplitProof splitter = new SplitProof(model, proof);
+    SplitProof<M, S, T> splitter = new SplitProof<M, S, T>(model, proof);
 
-    for (StateMachine state_machine_to_prove : proof) {
-      Set<StateMachine> frontier = new LinkedHashSet<>();
+    for (M state_machine_to_prove : proof) {
+      Set<M> frontier = new LinkedHashSet<>();
       frontier.add(state_machine_to_prove);
-      Set<StateMachine> visited = new LinkedHashSet<>();
+      Set<M> visited = new LinkedHashSet<>();
 
       while (frontier.size() != 0) {
-        StateMachine state_machine = frontier.iterator().next();
+        M state_machine = frontier.iterator().next();
         visited.add(state_machine);
 
-        for (Edge<MyNode, SingleEvent> edge : splitter.nodes.get(state_machine)) {
+        for (Edge<SplitProof<M, S, T>.MyNode, SingleEvent> edge : splitter.nodes
+            .get(state_machine)) {
 
-          StateMachine new_to_visit = edge.to.data;
+          M new_to_visit = edge.to.data;
 
           if (visited.contains(new_to_visit)) {
             frontier.add(new_to_visit);
@@ -272,14 +272,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   public void printOtherVisitedStatesWithSameFunctional(
-      SequentialGraphSimulator simulator) {
+      GraphSimulatorInterface<GS, M, S, T> simulator) {
 
     for (GS state : visited_states) {
       boolean found = false;
 
       for (GS visited_state : visited_states) {
-        if (isIdenticalFunctionalDifferentProof((GlobalState) state,
-            (GlobalState) visited_state, simulator)) {
+        if (isIdenticalFunctionalDifferentProof(state, visited_state, simulator)) {
           if (!found) {
             System.out.println("The given state is : \n" + state);
           }
@@ -298,6 +297,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   /**
+   * Works ONLY with GlobalState using a Valuation object.
    * 
    * @param s1
    * @param s2
@@ -305,23 +305,22 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * @return true iif the functional valuation is identical and the proof
    *         valuation is different
    */
-  private boolean isIdenticalFunctionalDifferentProof(GlobalState s1,
-      GlobalState s2,
-      SequentialGraphSimulator simulator) {
-    Model func = simulator.model;
-    Collection<BooleanVariable> existing_variables = func
-        .getExistingVariables()
-        .values();
+  private boolean isIdenticalFunctionalDifferentProof(GS s1,
+      GS s2,
+      GraphSimulatorInterface<GS, M, S, T> simulator) {
+    AbstractModel<M, S, T> func = simulator.getModel();
+    Collection<EnumeratedVariable> existing_variables = func
+        .getExistingVariables();
 
     /* We first check that all the states of the functional are equals */
-    for (StateMachine machine : func) {
+    for (M machine : func) {
       if (s1.getState(machine) != s2.getState(machine)) {
         return false;
       }
     }
 
     /* Then, we check if one state of the proof is different */
-    for (StateMachine machine : simulator.proof) {
+    for (M machine : simulator.getProof()) {
       if (s1.getState(machine) != s2.getState(machine)) {
         System.out.println("Different state for " + machine.getName() + " : "
             + s1.getState(machine).getId()
@@ -331,7 +330,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     }
 
     /* Then we compare the variables */
-    for (Entry<BooleanVariable, Boolean> pair : s1.getValuation().getSetVariables()) {
+    Valuation valuation = (Valuation) s1.getValuation();
+
+    for (Entry<BooleanVariable, Boolean> pair : valuation.getSetVariables()) {
       BooleanVariable var = pair.getKey();
       boolean identical_in_both_model =
           s1.getVariableValue(var) == s2.getVariableValue(var);

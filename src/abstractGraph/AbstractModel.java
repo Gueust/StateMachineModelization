@@ -1,6 +1,19 @@
 package abstractGraph;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+
+import utils.Pair;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
+import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.FormulaFactory;
+import abstractGraph.events.CommandEvent;
+import abstractGraph.events.ComputerCommandFunction;
+import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.SynchronisationEvent;
 
 public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     implements Iterable<M> {
@@ -29,11 +42,20 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
   public abstract void addStateMachine(M state_machine);
 
   /**
+   * Search a variable by its name. It creates it if it does not exist.
+   */
+  public abstract EnumeratedVariable getVariable(String variable_name);
+
+  public abstract Collection<EnumeratedVariable> getExistingVariables();
+
+  /**
    * This function must be called after having added and filled all the state
    * machines.
    * The internal effects are internal implementation specific.
    */
-  public abstract void build();
+  public void build() {
+    FCI_generate_ACT.clear();
+  }
 
   /**
    * The order of the elements is not specified.
@@ -41,4 +63,34 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
    * @return An iterator over all the state machines.
    */
   public abstract Iterator<M> iterator();
+
+  /**
+   * Require to have previously called {@link #build()}.
+   * 
+   * @return True if the model writes on or listens to the argument event.
+   */
+  public abstract boolean containsSynchronisationEvent(
+      SynchronisationEvent event);
+
+  public abstract boolean containsSynchronousEvent(String synchronous_event);
+
+  public abstract boolean containsVariable(EnumeratedVariable variable);
+
+  public abstract boolean containsExternalEvent(ExternalEvent external_event);
+
+  public abstract HashMap<EnumeratedVariable, LinkedList<M>> getWritingStateMachines();
+
+  /**
+   * Some commands are set to generate external events that will be executed
+   * atomically.
+   */
+  protected HashMap<ComputerCommandFunction, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>> FCI_generate_ACT = new HashMap<>();
+
+  public LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> getACTFCI(
+      CommandEvent fci) {
+    LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> result =
+        FCI_generate_ACT.get(fci);
+    return result;
+  }
+
 }

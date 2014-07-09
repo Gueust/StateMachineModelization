@@ -2,10 +2,6 @@ package engine;
 
 import genericLabeledGraph.Edge;
 import genericLabeledGraph.Node;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 import graphVizBinding.GraphViz;
 
 import java.io.File;
@@ -15,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.cnf.Literal;
@@ -26,13 +26,13 @@ import abstractGraph.events.VariableChange;
  * A class that allows the split of the graphs in small groups to optimize the
  * proof.
  */
-public class SplitProof {
-  private Model model;
-  private Model proof;
+public class SplitProof<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+  private AbstractModel<M, S, T> model;
+  private AbstractModel<M, S, T> proof;
 
-  public HashMap<StateMachine, MyNode> nodes = new HashMap<StateMachine, MyNode>();
+  public HashMap<M, MyNode> nodes = new HashMap<>();
 
-  public SplitProof(Model model, Model proof) {
+  public SplitProof(AbstractModel<M, S, T> model, AbstractModel<M, S, T> proof) {
     this.model = model;
     this.proof = proof;
     createGraphOfGraphs();
@@ -43,11 +43,11 @@ public class SplitProof {
    * modifies some variables or generate SYN's that are eaten by graph B.
    */
   private void createGraphOfGraphs() {
-    HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine =
+    HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine =
         model.getWritingStateMachines();
     @SuppressWarnings("unchecked")
-    HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine_proof =
-        (HashMap<BooleanVariable, LinkedList<StateMachine>>) proof
+    HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine_proof =
+        (HashMap<EnumeratedVariable, LinkedList<M>>) proof
             .getWritingStateMachines()
             .clone();
     /*
@@ -60,8 +60,8 @@ public class SplitProof {
      * Store for every SynchronisationEvent (i.e. its name) the set of state
      * machine that have this event in an action field.
      */
-    LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs =
-        new LinkedHashMap<String, LinkedHashSet<StateMachine>>();
+    LinkedHashMap<String, LinkedHashSet<M>> syn_event_in_graphs =
+        new LinkedHashMap<String, LinkedHashSet<M>>();
 
     /* We first discover which state machine write which SynchronizationEvents. */
     searchForSynchronizationEventWriting(syn_event_in_graphs, this.model);
@@ -83,19 +83,19 @@ public class SplitProof {
    * @param current_model
    */
   private void buildOutgoingLinksFromModel(
-      HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine,
-      LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs,
-      Model current_model) {
-    for (StateMachine state_machine : current_model) {
+      HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine,
+      LinkedHashMap<String, LinkedHashSet<M>> syn_event_in_graphs,
+      AbstractModel<M, S, T> current_model) {
+    for (M state_machine : current_model) {
 
-      for (State state : state_machine) {
-        for (Transition transition : state) {
+      for (S state : state_machine) {
+        for (T transition : state) {
           for (SingleEvent event : transition.getEvents()) {
             if (event instanceof VariableChange) {
               addWritingStateMachineInGraph(writing_state_machine,
                   state_machine, (VariableChange) event);
             } else if (event instanceof SynchronisationEvent) {
-              for (StateMachine writer : syn_event_in_graphs.get(event
+              for (M writer : syn_event_in_graphs.get(event
                   .getName())) {
                 addInActivationGraph(writer, state_machine, event);
 
@@ -115,10 +115,10 @@ public class SplitProof {
   }
 
   private void addWritingStateMachineInGraph(
-      HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machine,
-      StateMachine state_machine,
+      HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine,
+      M state_machine,
       VariableChange variable_change) {
-    LinkedList<StateMachine> writers =
+    LinkedList<M> writers =
         writing_state_machine.get(variable_change.getModifiedVariable());
     if (writers == null) {
       return;
@@ -143,18 +143,18 @@ public class SplitProof {
    *          The model to process.
    */
   private void searchForSynchronizationEventWriting(
-      LinkedHashMap<String, LinkedHashSet<StateMachine>> syn_event_in_graphs,
-      Model current_model) {
-    for (StateMachine state_machine : current_model) {
+      LinkedHashMap<String, LinkedHashSet<M>> syn_event_in_graphs,
+      AbstractModel<M, S, T> current_model) {
+    for (M state_machine : current_model) {
       nodes.put(state_machine, new MyNode(state_machine));
-      for (State state : state_machine) {
-        for (Transition transition : state) {
+      for (S state : state_machine) {
+        for (T transition : state) {
           for (SingleEvent action : transition.getActions()) {
             if (action instanceof SynchronisationEvent) {
-              LinkedHashSet<StateMachine> liste_state_machine =
+              LinkedHashSet<M> liste_state_machine =
                   syn_event_in_graphs.get(action.getName());
               if (liste_state_machine == null) {
-                liste_state_machine = new LinkedHashSet<StateMachine>();
+                liste_state_machine = new LinkedHashSet<M>();
                 syn_event_in_graphs.put(action.getName(), liste_state_machine);
               }
               liste_state_machine.add(state_machine);
@@ -165,8 +165,8 @@ public class SplitProof {
     }
   }
 
-  private void addInActivationGraph(StateMachine source_state_machine,
-      StateMachine destination_state_machine, SingleEvent label) {
+  private void addInActivationGraph(M source_state_machine,
+      M destination_state_machine, SingleEvent label) {
 
     MyNode node = nodes.get(source_state_machine);
     assert (node != null);
@@ -193,8 +193,8 @@ public class SplitProof {
     gv.writeGraphToFile(gv.getGraph(type), out);
   }
 
-  class MyNode extends Node<StateMachine, MyNode, SingleEvent> {
-    public MyNode(StateMachine data) {
+  class MyNode extends Node<M, MyNode, SingleEvent> {
+    public MyNode(M data) {
       super(data);
     }
   }

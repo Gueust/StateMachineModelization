@@ -53,16 +53,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   private HashMap<String, CommandEvent> commands_events;
   private HashMap<String, SynchronisationEvent> synchronisation_events;
   private HashMap<String, VariableChange> variable_modification_events;
-  private HashMap<String, BooleanVariable> existingVariables;
+  private HashMap<String, EnumeratedVariable> existingVariables;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<BooleanVariable, LinkedList<StateMachine>> writing_state_machines;
-
-  /**
-   * Some commands are set to generate external events that will be executed
-   * atomically.
-   */
-  private HashMap<ComputerCommandFunction, LinkedList<Pair<Formula, LinkedList<ExternalEvent>>>> FCI_generate_ACT;
+  private HashMap<EnumeratedVariable, LinkedList<StateMachine>> writing_state_machines;
 
   /**
    * Create a new empty model named `name`.
@@ -85,22 +79,22 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    */
   @Override
   public void build() {
+    super.build();
     /* Internal data should all be null or initialized together */
     if (external_events == null) {
-      external_events = new HashMap<String, ExternalEvent>();
-      commands_events = new HashMap<String, CommandEvent>();
-      synchronisation_events = new HashMap<String, SynchronisationEvent>();
-      variable_modification_events = new HashMap<String, VariableChange>();
-      existingVariables = new HashMap<String, BooleanVariable>();
-      writing_state_machines = new HashMap<BooleanVariable, LinkedList<StateMachine>>();
-      FCI_generate_ACT = new HashMap<>();
+      external_events = new HashMap<>();
+      commands_events = new HashMap<>();
+      synchronisation_events = new HashMap<>();
+      variable_modification_events = new HashMap<>();
+      existingVariables = new HashMap<>();
+      writing_state_machines = new HashMap<EnumeratedVariable, LinkedList<StateMachine>>();
     } else {
       external_events.clear();
       commands_events.clear();
       synchronisation_events.clear();
       variable_modification_events.clear();
       writing_state_machines.clear();
-      FCI_generate_ACT.clear();
+
     }
 
     for (StateMachine machine : state_machines.values()) {
@@ -233,13 +227,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return sb.toString();
   }
 
-  public LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> getACTFCI(
-      CommandEvent fci) {
-    LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> result = FCI_generate_ACT
-        .get(fci);
-    return result;
-  }
-
   @Override
   public Iterator<StateMachine> iterator() {
     return state_machines.values().iterator();
@@ -251,7 +238,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return An iterator over the couple (VariableChange => List of state
    *         machines writing on it)
    */
-  public Iterator<Entry<BooleanVariable, LinkedList<StateMachine>>> writingRightsIterator() {
+  public Iterator<Entry<EnumeratedVariable, LinkedList<StateMachine>>> writingRightsIterator() {
     return writing_state_machines.entrySet().iterator();
   }
 
@@ -263,12 +250,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return The HashMap linking for every VariableChange, the list of the state
    *         machines that are modifying its value.
    */
-  public HashMap<BooleanVariable, LinkedList<StateMachine>> getWritingStateMachines() {
+  @Override
+  public HashMap<EnumeratedVariable, LinkedList<StateMachine>> getWritingStateMachines() {
     return writing_state_machines;
   }
 
-  public HashMap<String, BooleanVariable> getExistingVariables() {
-    return existingVariables;
+  @Override
+  public Collection<EnumeratedVariable> getExistingVariables() {
+    return existingVariables.values();
   }
 
   /**
@@ -280,7 +269,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    *          The variable to look for.
    * @return true if the variable exists in a Condition field.
    */
-  public boolean containsVariable(BooleanVariable variable) {
+  @Override
+  public boolean containsVariable(EnumeratedVariable variable) {
     return containsVariable(variable.toString());
   }
 
@@ -292,8 +282,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return existingVariables.containsKey(variable_name);
   }
 
-  public boolean containsSynchronousEvents(String synchronous_event) {
-    return synchronous_event.contains(synchronous_event);
+  @Override
+  public boolean containsSynchronousEvent(String synchronous_event) {
+    return synchronisation_events.containsKey(synchronous_event);
+  }
+
+  @Override
+  public boolean containsExternalEvent(ExternalEvent external_event) {
+    return external_events.containsKey(external_event.getName());
   }
 
   /**
@@ -302,7 +298,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return An iterator over the variables of the model (contained in a
    *         event field, condition field or written in a action field).
    */
-  public Iterator<BooleanVariable> iteratorExistingVariables() {
+  public Iterator<EnumeratedVariable> iteratorExistingVariables() {
     return existingVariables.values().iterator();
   }
 
@@ -343,12 +339,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   /**
-   * Search a variable by its name. It creates it if it Do not exist.
+   * Search a variable by its name. It creates it if it does not exist.
    * 
    * @param variable_name
    * @return the variable associated to the variable_name.
    * @see FormulaFactory#getVariable(String)
    */
+  @Override
   public BooleanVariable getVariable(String variable_name) {
     return formulaFactory.getVariable(variable_name);
   }
@@ -358,6 +355,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * 
    * @return True if the model writes on or listens to the argument event.
    */
+  @Override
   public boolean containsSynchronisationEvent(SynchronisationEvent event) {
     return synchronisation_events.containsKey(event.getName());
   }
