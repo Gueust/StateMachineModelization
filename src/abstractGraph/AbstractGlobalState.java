@@ -8,6 +8,7 @@ import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.valuation.AbstractValuation;
 import abstractGraph.conditions.valuation.Valuation;
+import abstractGraph.events.ExternalEvent;
 
 public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>, V extends AbstractValuation> {
 
@@ -17,6 +18,9 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
 
   protected boolean is_legal_state = true, is_safe_state = true;
   protected boolean isNotP7 = true;
+
+  public ExternalEvent last_processed_external_event = null;
+  public AbstractGlobalState<M, S, T, ?> previous_global_state = null;
 
   public AbstractGlobalState(V variables_values) {
     this.variables_values = variables_values;

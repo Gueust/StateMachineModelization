@@ -202,11 +202,15 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
       LinkedHashSet<ExternalEvent> possible_external_events =
           simulator.getPossibleEvent(state);
+
       System.err.println("Eploring N° " + i + ".\nCreating "
           + possible_external_events.size());
 
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
+
+        next_state.last_processed_external_event = e;
+        next_state.previous_global_state = state;
 
         i++;
         System.err.flush();
@@ -215,6 +219,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         if (processGS(next_state) != null) {
           System.out.print("FAILURE from state \n" + state + "\n Event : " + e
               + "\n" + next_state);
+          System.out.println("***********************************");
+          System.out.println("A FULL trace of external event is: ");
+          System.out.println("***********************************");
+          System.out.println(printFullTrace(next_state));
           return next_state;
         }
       }
@@ -229,6 +237,23 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.out.flush();
 
     return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public String printFullTrace(GS state) {
+    StringBuilder string_builder = new StringBuilder();
+
+    GS current = state;
+    do {
+      if (current.last_processed_external_event != null) {
+        string_builder.insert(0, current.last_processed_external_event + "\n");
+      } else {
+        string_builder.insert(0, "\nFrom initial state:\n" + current + "\n");
+      }
+      current = (GS) current.previous_global_state;
+    } while (current != null);
+
+    return string_builder.toString();
   }
 
   private GS verifyUsingSplitting(GraphSimulatorInterface<GS, M, S, T> simulator) {
