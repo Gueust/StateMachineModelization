@@ -6,11 +6,11 @@ variables
   bool zone_1_libre(true), zone_2_libre(true);
 end
 
-external_events 
+external events 
   aiguille_contrôlée_droite, aiguille_contrôlée_gauche;
 end
 
-internal_events 
+internal events 
   toto1, toto2;
   toto3;
 end
@@ -26,11 +26,26 @@ machine Machine_1
     droite -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
 end
 
-machine Machine_2
-    inconnu -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
-    gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
-    inconnu -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
-    droite -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
+proof variables
+  POSITION_AIGUILLE proof_1(gauche);
+  bool proof_2(true), proof_3(false);
 end
 
+machine Machine_2
+    inconnu -> droite : on toto1 when position is not droite do position := droite;
+    gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    inconnu -> gauche : on position when position is droite or position is inconnu do position := gauche;
+    droite -> gauche : on toto3 when position is droite or position is inconnu do position := gauche;
+end
+
+
+proof internal events
+  proof_event1, proof_event_2;
+end
+
+proof Machine_proof_1
+  0 -> 1 : on proof_1 when proof_1 is gauche do ;
+  0 -> 2 : on toto2 when true do ;
+  0 -> 1 : on proof_event1 when true do proof_event_2;
+end
 

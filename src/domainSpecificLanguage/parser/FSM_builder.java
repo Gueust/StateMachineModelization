@@ -54,8 +54,7 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.One_other_declarationCon
 import domainSpecificLanguage.parser.FSM_LanguageParser.OrExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.OtherDeclarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.PairContext;
-import domainSpecificLanguage.parser.FSM_LanguageParser.ProofBoolDeclarationContext;
-import domainSpecificLanguage.parser.FSM_LanguageParser.ProofOtherDeclarationContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.Proof_machineContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Proof_variables_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.SubContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.TemplateContext;
@@ -72,14 +71,26 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   Map<EnumeratedVariable, Byte> initial_values = new HashMap<>();
   Map<String, ExternalEvent> external_events = new HashMap<>();
   Map<String, InternalEvent> internal_events = new HashMap<>();
+  Map<String, InternalEvent> proof_internal_events = new HashMap<>();
   Map<String, CommandEvent> commands_event = new HashMap<>();
-  Map<String, SingleEvent> single_events = new HashMap<>();
+  Map<String, SingleEvent> all_single_events = new HashMap<>();
   Map<String, Enumeration> enumerations = new HashMap<>();
   Map<EnumeratedVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
 
-  Map<String, DSLStateMachine> state_machines = new LinkedHashMap<>(100);
+  Map<String, DSLStateMachine> functional_state_machines =
+      new LinkedHashMap<>(100);
+  Map<String, DSLStateMachine> proof_state_machines = new LinkedHashMap<>(100);
 
-  Set<DSLTransition> transitions = new HashSet<>();
+  DSLModel functionnal_model;
+  DSLModel proof_model;
+
+  public DSLModel getModel() {
+    return functionnal_model;
+  }
+
+  public DSLModel getProof() {
+    return proof_model;
+  }
 
   private void clear() {
     variables.clear();
@@ -87,10 +98,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     external_events.clear();
     internal_events.clear();
     commands_event.clear();
-    single_events.clear();
+    all_single_events.clear();
     enumerations.clear();
     enumerated_DSLVariable.clear();
-    transitions.clear();
   }
 
   private void raiseError(String error) {
@@ -118,6 +128,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     }
 
     EnumeratedVariable var = variables.get(name);
+    if (var == null && visiting_proof_state_machine) {
+      var = proof_variables.get(name);
+    }
     if (var == null) {
       raiseError("The variable used at " + getDetails(token)
           + " has not been defined previously.");
@@ -144,7 +157,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       variable = new EnumeratedVariable(name, unique_id, enumeration);
     }
     variables.put(name, variable);
-    single_events.put(name, new DSLVariableEvent(variable));
+    all_single_events.put(name, new DSLVariableEvent(variable));
 
     return variable;
   }
@@ -159,11 +172,16 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       throw new Error("The proof variable declared at  " + getDetails(token)
           + " already exists.");
     }
-    EnumeratedVariable variable = new EnumeratedVariable(name,
-        variables.size(),
-        enumeration);
+    EnumeratedVariable variable;
+    int unique_id = variables.size();
+    if (enumeration == null) {
+      variable = new BooleanVariable(name, unique_id);
+    } else {
+      variable = new EnumeratedVariable(name, unique_id, enumeration);
+    }
+
     proof_variables.put(name, variable);
-    single_events.put(name, new DSLVariableEvent(variable));
+    all_single_events.put(name, new DSLVariableEvent(variable));
 
     return variable;
   }
@@ -205,21 +223,29 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     // TODO Auto-generated method stub
     clear();
 
-    DSLModel dsl_model = new DSLModel();
-
     /* The parsing does fill in the internal values of the current instance */
     visitChildren(ctx);
 
-    dsl_model.variables.addAll(variables.values());
-    dsl_model.initial_values.putAll(initial_values);
-    dsl_model.external_events.addAll(external_events.values());
-    dsl_model.internal_events.addAll(internal_events.values());
-    dsl_model.command_events.addAll(commands_event.values());
-    dsl_model.enumerations.addAll(enumerations.values());
-    dsl_model.enumerated_variable.putAll(enumerated_DSLVariable);
-    dsl_model.state_machines.addAll(state_machines.values());
+    functionnal_model = new DSLModel();
 
-    return dsl_model;
+    functionnal_model.variables.addAll(variables.values());
+    functionnal_model.initial_values.putAll(initial_values);
+    functionnal_model.external_events.addAll(external_events.values());
+    functionnal_model.internal_events.addAll(internal_events.values());
+    functionnal_model.command_events.addAll(commands_event.values());
+    functionnal_model.enumerations.addAll(enumerations.values());
+    // functionnal_model.enumerated_variable.putAll(enumerated_DSLVariable);
+    functionnal_model.state_machines.addAll(functional_state_machines.values());
+
+    proof_model = new DSLModel();
+    proof_model.variables.addAll(proof_variables.values());
+    proof_model.initial_values.putAll(initial_values);
+    proof_model.internal_events.addAll(proof_internal_events.values());
+    proof_model.state_machines.addAll(proof_state_machines.values());
+    // proof_model.enumerations.addAll(enumerations.values());
+    // proof_model.enumerated_variable.putAll(enumerated_DSLVariable);
+
+    return null;
   }
 
   @Override
@@ -245,6 +271,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   private DSLStateMachine current_state_machine = null;
 
+  private boolean visiting_proof_state_machine;
+
   /**
    * Register the current state machine to visit in `current_state_machine`.
    * 
@@ -254,17 +282,38 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitMachine(MachineContext ctx) {
     String machine_name = ctx.ID().getText();
 
-    if (state_machines.containsKey(machine_name)) {
+    if (functional_state_machines.containsKey(machine_name)) {
       raiseError("The machine" + machine_name + " defined at "
           + getDetails(ctx.ID().getSymbol()) + " has already been defined.");
     }
 
     DSLStateMachine machine = new DSLStateMachine(machine_name);
     current_state_machine = machine;
-    state_machines.put(machine_name, machine);
+    functional_state_machines.put(machine_name, machine);
+
+    visiting_proof_state_machine = false;
 
     visitTransitions(ctx.transitions());
 
+    return null;
+  }
+
+  @Override
+  public Object visitProof_machine(Proof_machineContext ctx) {
+    String machine_name = ctx.ID().getText();
+
+    if (functional_state_machines.containsKey(machine_name)) {
+      raiseError("The machine" + machine_name + " defined at "
+          + getDetails(ctx.ID().getSymbol()) + " has already been defined.");
+    }
+
+    DSLStateMachine machine = new DSLStateMachine(machine_name);
+    current_state_machine = machine;
+    proof_state_machines.put(machine_name, machine);
+
+    visiting_proof_state_machine = true;
+
+    visitTransitions(ctx.transitions());
     return null;
   }
 
@@ -312,12 +361,47 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     boolean automatic_filling = false;
     /* We first look if the event field is only a ALL_EVENTS_IN_CONDITION */
     if (ctx.list_of_ID().ID().size() == 1
-        && ctx.list_of_ID().ID().get(0).equals(ALL_EVENTS_IN_CONDITION)) {
+        && ctx.list_of_ID().ID().get(0).getText().equals(
+            ALL_EVENTS_IN_CONDITION)) {
       automatic_filling = true;
     } else {
       for (TerminalNode node : ctx.list_of_ID().ID()) {
         String event_name = node.getText();
-        ExternalEvent external_event = external_events.get(event_name);
+        SingleEvent external_event = external_events.get(event_name);
+
+        if (visiting_proof_state_machine) {
+          /** Proof state machines can also use any events */
+          if (external_event == null) {
+            external_event = all_single_events.get(event_name);
+          }
+        }
+
+        if (external_event == null) {
+          /* Variable name can also be an event */
+          external_event = all_single_events.get(event_name);
+          if (!(external_event instanceof DSLVariableEvent) &&
+              !(external_event instanceof InternalEvent)) {
+            raiseError("The event "
+                + event_name
+                + " at"
+                + getDetails(node.getSymbol())
+                + " is not defined as an external event, internal event, or variable in the functional.");
+          }
+          /* The event must be a functional event */
+          if (proof_variables.containsKey(event_name)) {
+            raiseError("The event " + event_name + " at"
+                + getDetails(node.getSymbol())
+                + " is a proof variable and thus cannot be used in the"
+                + " functional model");
+          }
+          if (proof_internal_events.containsKey(event_name)) {
+            raiseError("The event " + event_name + " at"
+                + getDetails(node.getSymbol())
+                + " is a proof internal event and thus cannot be used in the"
+                + " functional model");
+          }
+        }
+
         if (external_event == null) {
           raiseError("The external event " + event_name + " at "
               + getDetails(node.getSymbol())
@@ -335,7 +419,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       HashSet<EnumeratedVariable> all_DSLVariables = new HashSet<>();
       formula.allVariables(all_DSLVariables);
       for (EnumeratedVariable variable : all_DSLVariables) {
-        transition.addSingleEvent(single_events.get(variable.getVarname()));
+        transition.addSingleEvent(all_single_events.get(variable.getVarname()));
         ;
       }
     }
@@ -343,17 +427,19 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     /* Then we do the actions */
     ActionsContext parsed_actions = ctx.actions();
 
-    for (ActionContext child : parsed_actions.action()) {
-      if (child instanceof ActionEventContext) {
-        SingleEvent action =
-            (SingleEvent) visitActionEvent((ActionEventContext) child);
-        transition.addAction(action);
-      } else if (child instanceof ActionAssignmentContext) {
-        Assignment action =
-            (Assignment) visitActionAssignment((ActionAssignmentContext) child);
-        transition.addAction(action);
-      } else {
-        throw new Error("Unknown error during parsing.");
+    if (parsed_actions != null) {
+      for (ActionContext child : parsed_actions.action()) {
+        if (child instanceof ActionEventContext) {
+          SingleEvent action =
+              (SingleEvent) visitActionEvent((ActionEventContext) child);
+          transition.addAction(action);
+        } else if (child instanceof ActionAssignmentContext) {
+          Assignment action =
+              (Assignment) visitActionAssignment((ActionAssignmentContext) child);
+          transition.addAction(action);
+        } else {
+          throw new Error("Unknown error during parsing.");
+        }
       }
     }
 
@@ -450,6 +536,12 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return new EnumerationEqualityFormula(variable, value, is_not);
   }
 
+  /*
+   * When parsing a declaration, this variable allows to know if it is a proof
+   * or a functional declaration
+   */
+  private boolean proof_variable_declaration;
+
   /**
    * Parses the declarations.
    * 
@@ -459,6 +551,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   public Object visitVariables_declaration(
       Variables_declarationContext ctx) {
     /* We let the children declare their own DSLVariables */
+    proof_variable_declaration = false;
     visitChildren(ctx);
     return null;
   }
@@ -466,18 +559,36 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   @Override
   public Object visitProof_variables_declaration(
       Proof_variables_declarationContext ctx) {
-
+    proof_variable_declaration = true;
     visitChildren(ctx);
     return null;
   }
 
+  /**
+   * Parses the declarations.
+   * 
+   * @return null
+   */
   @Override
-  public Object visitProofBoolDeclaration(ProofBoolDeclarationContext ctx) {
+  public Object visitBoolDeclaration(BoolDeclarationContext ctx) {
     for (One_bool_declarationContext bool_declaration : ctx
         .one_bool_declaration()) {
+
       String var_name = bool_declaration.ID().getText();
       boolean is_true = bool_declaration.TRUE() != null;
-      EnumeratedVariable var = createProofDSLVariable(var_name, ctx.start, null);
+
+      if (bool_declaration.TRUE() == null
+          && bool_declaration.FALSE() == null) {
+        raiseError("Initialization value forgotten at "
+            + getDetails(bool_declaration.ID().getSymbol()));
+      }
+      EnumeratedVariable var;
+      if (proof_variable_declaration) {
+        var = createProofDSLVariable(var_name, ctx.start, null);
+      } else {
+        var = createDSLVariable(var_name, ctx.start, null);
+      }
+
       Byte value;
       if (is_true) {
         value = 1;
@@ -490,8 +601,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   }
 
   @Override
-  public Object visitProofOtherDeclaration(ProofOtherDeclarationContext ctx) {
-    /* We let the children declare their own DSLVariables */
+  public Object visitOtherDeclaration(OtherDeclarationContext ctx) {
     String domain_type = ctx.ID().getText();
 
     Enumeration enumeration = enumerations.get(domain_type);
@@ -501,9 +611,14 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         String var_name = one_decl.ID(0).getText();
         String enumeration_type = one_decl.ID(1).getText();
 
-        EnumeratedVariable var = createProofDSLVariable(var_name,
-            one_decl.start,
-            enumeration);
+        EnumeratedVariable var;
+        if (proof_variable_declaration) {
+          var = createProofDSLVariable(var_name,
+              one_decl.start,
+              enumeration);
+        } else {
+          var = createDSLVariable(var_name, ctx.start, enumeration);
+        }
 
         Byte value = enumeration.getByte(enumeration_type);
         if (value == null) {
@@ -526,57 +641,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   }
 
   /**
-   * Parses the declarations.
-   * 
-   * @return null
-   */
-  @Override
-  public Object visitBoolDeclaration(BoolDeclarationContext ctx) {
-    /* We let the children declare their own DSLVariables */
-    visitChildren(ctx);
-    return null;
-  }
-
-  @Override
-  public Object visitOtherDeclaration(OtherDeclarationContext ctx) {
-    /* We let the children declare their own DSLVariables */
-    String domain_type = ctx.ID().getText();
-
-    Enumeration enumeration = enumerations.get(domain_type);
-    if (enumeration != null) {
-      for (One_other_declarationContext one_decl : ctx.one_other_declaration()) {
-        visitEnumerationDeclaration(domain_type, enumeration, one_decl);
-      }
-    } else {
-      raiseError("The type " + domain_type + " has not been defined at "
-          + getDetails(ctx.getStart()));
-    }
-
-    return null;
-  }
-
-  private void visitEnumerationDeclaration(
-      String enumeration_name,
-      Enumeration enumeration,
-      One_other_declarationContext ctx) {
-    String var_name = ctx.ID(0).getText();
-    String enumeration_type = ctx.ID(1).getText();
-
-    EnumeratedVariable var = createDSLVariable(var_name, ctx.start, enumeration);
-
-    Byte value = enumeration.getByte(enumeration_type);
-    if (value == null) {
-      raiseError("The enumeration type " + enumeration_type
-          + " is not a type of the enumeration " + enumeration_name + " at "
-          + getDetails(ctx.ID(1).getSymbol()));
-    }
-    /* We set the initial value of the DSLVariable */
-    initial_values.put(var, value);
-    /* We register this is an enumerated DSLVariable */
-    enumerated_DSLVariable.put(var, enumeration);
-  }
-
-  /*
    * This function is not called since its parents parses the enumeration
    * declarations
    */
@@ -585,14 +649,13 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     throw new NotImplementedException();
   }
 
+  /**
+   * This function is not called since its parents parses the boolean
+   * declarations
+   */
   @Override
   public Object visitOne_bool_declaration(One_bool_declarationContext ctx) {
-    String var_name = ctx.ID().getText();
-    boolean is_true = ctx.TRUE() != null;
-    EnumeratedVariable var = createDSLVariable(var_name, ctx.start, null);
-
-    initial_values.put(var, BooleanVariable.getByteFromBool(is_true));
-    return null;
+    throw new NotImplementedException();
   }
 
   /**
@@ -608,19 +671,17 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     for (List_of_IDContext internal_list : ctx.list_of_ID()) {
       for (TerminalNode terminal_node : internal_list.ID()) {
         String event_name = terminal_node.getText();
-        if (external_events.containsKey(event_name)) {
-          raiseError("Declaring an already existing event at "
-              + getDetails(terminal_node.getSymbol()));
-        }
 
         Token token = terminal_node.getSymbol();
-        if (internal_events.containsKey(event_name)) {
+        if (proof_internal_events.containsKey(event_name) ||
+            internal_events.containsKey(event_name)) {
           raiseError("The external event defined at " + getDetails(token)
               + " has already been defined as an internal event.");
         } else if (external_events.containsKey(event_name)) {
           raiseError("The external event defined at " + getDetails(token)
               + " has already been defined.");
-        } else if (variables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name) ||
+            proof_variables.containsKey(event_name)) {
           raiseError("The external event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -630,7 +691,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
         ExternalEvent event = new ExternalEvent(event_name);
         external_events.put(event_name, event);
-        single_events.put(event_name, event);
+        all_single_events.put(event_name, event);
       }
     }
     return null;
@@ -638,26 +699,27 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   @Override
   public Object visitInternal_events(Internal_eventsContext ctx) {
+    boolean visiting_proof_internal_event =
+        ctx.getChild(0).getText().equals("proof internal events");
+
     if (ctx.list_of_ID() == null) {
       return null;
     }
     for (List_of_IDContext internal_list : ctx.list_of_ID()) {
       for (TerminalNode terminal_node : internal_list.ID()) {
         String event_name = terminal_node.getText();
-        if (internal_events.containsKey(event_name)) {
-          raiseError("Declaring an already existing event at "
-              + getDetails(terminal_node.getSymbol()));
-        }
 
         Token token = terminal_node.getSymbol();
 
-        if (internal_events.containsKey(event_name)) {
+        if (proof_internal_events.containsKey(event_name) ||
+            internal_events.containsKey(event_name)) {
           raiseError("The internal event defined at " + getDetails(token)
               + " has already been defined as an internal event.");
         } else if (external_events.containsKey(event_name)) {
           raiseError("The internal event defined at " + getDetails(token)
               + " has already been defined as an external event.");
-        } else if (variables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name) ||
+            proof_variables.containsKey(event_name)) {
           raiseError("The internal event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -666,8 +728,12 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         }
 
         InternalEvent event = new InternalEvent(event_name);
-        internal_events.put(event_name, event);
-        single_events.put(event_name, event);
+        if (visiting_proof_internal_event) {
+          proof_internal_events.put(event_name, event);
+        } else {
+          internal_events.put(event_name, event);
+        }
+        all_single_events.put(event_name, event);
 
       }
     }
@@ -689,13 +755,15 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
         Token token = terminal_node.getSymbol();
 
-        if (internal_events.containsKey(event_name)) {
+        if (proof_internal_events.containsKey(event_name) ||
+            internal_events.containsKey(event_name)) {
           raiseError("The command event defined at " + getDetails(token)
               + " has already been defined as an internal event.");
         } else if (external_events.containsKey(event_name)) {
           raiseError("The command event defined at " + getDetails(token)
               + " has already been defined as an external event.");
-        } else if (variables.containsKey(event_name)) {
+        } else if (variables.containsKey(event_name) ||
+            proof_variables.containsKey(event_name)) {
           raiseError("The command event defined at " + getDetails(token)
               + " has already been defined as a DSLVariable.");
         } else if (commands_event.containsKey(event_name)) {
@@ -705,7 +773,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
         CommandEvent event = new CommandEvent(event_name);
         commands_event.put(event_name, event);
-        single_events.put(event_name, event);
+        all_single_events.put(event_name, event);
 
       }
     }
@@ -733,7 +801,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   @Override
   public Object visitActionEvent(ActionEventContext ctx) {
     String event_name = ctx.getText();
-    SingleEvent event = single_events.get(event_name);
+    SingleEvent event = all_single_events.get(event_name);
     if (event == null) {
       raiseError("The event declared in the action field at "
           + getDetails(ctx.start) + " is not definedd");

@@ -26,7 +26,8 @@ public class DSLModel extends
     AbstractModel<DSLStateMachine, DSLState, DSLTransition> {
 
   public Set<Enumeration> enumerations = new HashSet<>();
-  public Map<EnumeratedVariable, Enumeration> enumerated_variable = new HashMap<>();
+  // public Map<EnumeratedVariable, Enumeration> enumerated_variable = new
+  // HashMap<>();
   public Set<EnumeratedVariable> variables = new HashSet<>();
   public Map<EnumeratedVariable, Byte> initial_values = new HashMap<>();
 
@@ -78,13 +79,15 @@ public class DSLModel extends
     StringBuffer string_buffer = new StringBuffer();
     for (EnumeratedVariable variable : variables) {
       byte initial_value = initial_values.get(variable);
-      Enumeration enumeration = enumerated_variable.get(variable);
 
       string_buffer.append(identation);
       if (variable instanceof BooleanVariable) {
         string_buffer.append("bool " + variable + "("
             + BooleanVariable.getStringFromByte(initial_value) + ");\n");
       } else if (variable instanceof EnumeratedVariable) {
+
+        Enumeration enumeration = variable.getEnumeration();
+        assert (enumeration != null);
         string_buffer.append(enumeration.getName() + " " + variable +
             "(" + enumeration.getOption(initial_value) + ");\n");
       } else {
@@ -96,6 +99,10 @@ public class DSLModel extends
 
   @Override
   public String toString() {
+    return toString(false);
+  }
+
+  public String toString(boolean is_proof) {
     StringBuilder string_builder = new StringBuilder();
 
     if (enumerations.size() != 0) {
@@ -103,8 +110,14 @@ public class DSLModel extends
           .append(GenericToString.printCollection(enumerations) + "\n");
     }
     if (variables.size() != 0) {
+      String beginning;
+      if (is_proof) {
+        beginning = "proof variables";
+      } else {
+        beginning = "variables";
+      }
       string_builder
-          .append("variables\n" + variablesToString("  ") + "end\n\n");
+          .append(beginning + "\n" + variablesToString("  ") + "end\n\n");
     }
     if (external_events.size() != 0) {
       string_builder.append("external_events\n  " +
@@ -115,7 +128,13 @@ public class DSLModel extends
           GenericToString.printCollection(command_events) + ";\nend\n\n");
     }
     if (internal_events.size() != 0) {
-      string_builder.append("internal_events\n  " +
+      String beginning;
+      if (is_proof) {
+        beginning = "proof internal_events";
+      } else {
+        beginning = "internal_events";
+      }
+      string_builder.append(beginning + "\n  " +
           GenericToString.printCollection(internal_events) + ";\nend\n\n");
     }
 
@@ -123,6 +142,7 @@ public class DSLModel extends
       for (DSLStateMachine state_machine : state_machines) {
         string_builder.append(state_machine + "\n");
       }
+      string_builder.append("\n");
     }
 
     return string_builder.toString();

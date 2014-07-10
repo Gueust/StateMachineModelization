@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
+import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.parser.FSM_LanguageLexer;
 import domainSpecificLanguage.parser.FSM_LanguageParser;
 import domainSpecificLanguage.parser.FSM_builder;
@@ -45,7 +46,11 @@ public class DSLParserTest {
     viewer.open();
 
     FSM_builder builder = new FSM_builder();
-    Object obj = builder.visit(tree);
-    System.out.println(obj);
+    builder.visit(tree);
+    DSLModel functionnal_model = builder.getModel();
+    DSLModel proof_model = builder.getProof();
+    System.out.println(functionnal_model);
+    System.out.println(proof_model.toString(true));
+
   }
 }

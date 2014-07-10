@@ -13,13 +13,14 @@ model: (model_alternatives)* EOF ;
 model_alternatives : 
       domain_declaration
     | variables_declaration
+    | proof_variables_declaration
     | commands_declaration
     | external_events
     | internal_events
     | machine
+    | proof_machine
     | 'sub' sub 'end' 
-    | template
-    | proof_variables_declaration;
+    | template;
 
 
 domain_declaration : 'enumeration' ID '=' '{' list_of_ID '}' ';';
@@ -38,15 +39,13 @@ one_other_declaration : ID '(' ID ')';
 
 /* Proof variables declarations */
 proof_variables_declaration : 'proof variables'
-  (proof_var_decl)*
+  (var_decl)*
   'end';
 
-proof_var_decl : ('bool' one_bool_declaration (',' one_bool_declaration)* ';') #ProofBoolDeclaration
-  | (ID one_other_declaration (',' one_other_declaration)* ';') #ProofOtherDeclaration
-  ;
-  
-external_events : 'external_events' (list_of_ID ';')* 'end';
-internal_events : 'internal_events' (list_of_ID ';')* 'end';
+external_events : 'external events' (list_of_ID ';')* 'end';
+internal_events : ('internal events' | 'proof internal events') 
+            (list_of_ID ';')* 'end';
+
 
 commands_declaration : 'commands' (list_of_ID ';')* 'end';
 
@@ -57,6 +56,10 @@ template : 'template'
   'end';
   
 machine : 'machine' ID
+  transitions
+  'end';
+  
+proof_machine : 'proof' ID
   transitions
   'end';
 
