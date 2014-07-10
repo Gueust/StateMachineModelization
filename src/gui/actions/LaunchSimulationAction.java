@@ -3,7 +3,7 @@ package gui.actions;
 import engine.SequentialGraphSimulator;
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import gui.MainWindow;
+import gui.SimulationWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,7 +63,7 @@ public class LaunchSimulationAction implements ActionListener {
         simulator = new SequentialGraphSimulator(functional_model);
       }
       frame.dispose();
-      MainWindow main_window = new MainWindow(simulator);
+      SimulationWindow main_window = new SimulationWindow(simulator);
       main_window.setLocationRelativeTo(frame);
       main_window.setVisible(true);
     } else {

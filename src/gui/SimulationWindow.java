@@ -37,7 +37,6 @@ import javax.swing.table.TableColumnModel;
 
 import org.jdesktop.swingx.JXTable;
 
-import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.ExternalEvent;
 import engine.SequentialGraphSimulator;
@@ -50,7 +49,7 @@ import gui.variousModels.TextAreaRenderer;
 import gui.variousModels.TransitionModel;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame {
+public class SimulationWindow extends JFrame {
   private JList<String> proof_internal_event_FIFO;
   private JList<String> functionnal_internal_event_FIFO;
   private JList<String> proof_external_event_FIFO;
@@ -71,7 +70,7 @@ public class MainWindow extends JFrame {
   JButton btnSimulate;
   JButton btnEatExternalEvents;
 
-  public MainWindow(final SequentialGraphSimulator simulator)
+  public SimulationWindow(final SequentialGraphSimulator simulator)
       throws HeadlessException {
     this.simulator = simulator;
 
@@ -97,7 +96,7 @@ public class MainWindow extends JFrame {
         home_page.pack();
         home_page.setLocationRelativeTo(null);
         home_page.setVisible(true);
-        MainWindow.this.dispose();
+        SimulationWindow.this.dispose();
 
       }
     });
@@ -112,7 +111,7 @@ public class MainWindow extends JFrame {
       @Override
       public void actionPerformed(ActionEvent e) {
         global_state = simulator.init(initial_CTLs);
-        MainWindow main_window = new MainWindow(simulator);
+        SimulationWindow main_window = new SimulationWindow(simulator);
         main_window.global_state = global_state;
         main_window.pack();
         main_window.setLocationRelativeTo(null);
@@ -121,7 +120,7 @@ public class MainWindow extends JFrame {
         main_window.updateLists();
         main_window.enableRestart();
 
-        MainWindow.this.dispose();
+        SimulationWindow.this.dispose();
 
       }
     });
@@ -606,7 +605,7 @@ public class MainWindow extends JFrame {
             updateLists();
 
           } catch (IOException e) {
-            JOptionPane.showMessageDialog(MainWindow.this,
+            JOptionPane.showMessageDialog(SimulationWindow.this,
                 "Error with the selected File",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
@@ -630,18 +629,19 @@ public class MainWindow extends JFrame {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         if (rdbtnCompleteSimulation.isSelected()) {
-          MainWindow.this.global_state =
-              MainWindow.this.simulator.executeAll(global_state,
+          SimulationWindow.this.global_state =
+              SimulationWindow.this.simulator.executeAll(global_state,
                   external_events);
         } else if (rdbtnOneExternalEvent.isSelected()) {
           /* Finish to execute the functional and proof models */
-          MainWindow.this.global_state =
-              MainWindow.this.simulator.execute(global_state, null);
+          SimulationWindow.this.global_state =
+              SimulationWindow.this.simulator.execute(global_state, null);
           ExternalEvent event = external_events.poll();
-          MainWindow.this.global_state =
-              MainWindow.this.simulator.executeSimulator(global_state, event);
+          SimulationWindow.this.global_state =
+              SimulationWindow.this.simulator.executeSimulator(global_state,
+                  event);
         } else if (rdbtnOneInternalEvent.isSelected()) {
-          MainWindow.this.simulator.processSmallestStep(global_state,
+          SimulationWindow.this.simulator.processSmallestStep(global_state,
               external_events);
         }
         updateLists();
@@ -685,7 +685,7 @@ public class MainWindow extends JFrame {
     @Override
     public void actionPerformed(ActionEvent e) {
       InitializationSelector window =
-          new InitializationSelector(MainWindow.this,
+          new InitializationSelector(SimulationWindow.this,
               simulator.getModel().regroupCTL());
 
       HashMap<String, Boolean> CTLs = window.showDialog();
@@ -774,6 +774,11 @@ public class MainWindow extends JFrame {
 
     }
 
+    /* We also set the P5, P6 and P7 values */
+    listModel.addElement("is_safe(P5)" + " = " + global_state.isSafe());
+    listModel.addElement("is_legal(P6)" + " = " + global_state.isLegal());
+    listModel.addElement("is_functional(P7)" + " = " + global_state.isNotP7());
+
   }
 
   private void fillInTransitionPull(JList<String> list,
@@ -801,7 +806,7 @@ public class MainWindow extends JFrame {
   public static void main(String[] args) {
     Model model = new Model("test");
     SequentialGraphSimulator simulator = new SequentialGraphSimulator(model);
-    MainWindow main_window = new MainWindow(simulator);
+    SimulationWindow main_window = new SimulationWindow(simulator);
     main_window.pack();
     main_window.setLocationRelativeTo(null);
     main_window.setVisible(true);
