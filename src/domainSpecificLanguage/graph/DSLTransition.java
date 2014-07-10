@@ -51,7 +51,7 @@ public class DSLTransition extends AbstractTransition<DSLState> {
         + GenericToString.printCollection(events.getEvents()) +
         " when "
         + ((condition != null) ? condition.toString() : " true") +
-        " do" + actions + ";";
+        " do " + actions + ";";
   }
 
   @Override
