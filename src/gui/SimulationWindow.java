@@ -289,6 +289,7 @@ public class SimulationWindow extends JFrame {
 
     final JRadioButton rdbtnOneInternalEvent =
         new JRadioButton("One Internal Event Step");
+    rdbtnOneInternalEvent.setEnabled(false);
 
     button_group.add(rdbtnCompleteSimulation);
     button_group.add(rdbtnOneExternalEvent);
