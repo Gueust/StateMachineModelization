@@ -37,4 +37,9 @@ public class DSLState extends AbstractState<DSLTransition> {
     return transitions.toArray(t);
   }
 
+  @Override
+  public String toString() {
+    return getId();
+  }
+
 }

@@ -25,7 +25,7 @@ public class Assignment extends SingleEvent {
   @Override
   public String toString() {
     if (variable instanceof BooleanVariable) {
-      return variable + " : = " + BooleanVariable.getStringFromByte(value);
+      return variable + " := " + BooleanVariable.getStringFromByte(value);
     } else if (variable instanceof EnumeratedVariable) {
       return variable + " := " + variable.getEnumeration().getOption(value);
     }

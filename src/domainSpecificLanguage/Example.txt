@@ -1,3 +1,6 @@
+/* This file is an example for the DSL syntax. 
+ */
+// Comments are allowed using the block or inl ine C style comments.
 enumeration POSITION_AIGUILLE = { gauche, droite, inconnu};
 
 variables
@@ -44,8 +47,8 @@ proof internal events
 end
 
 proof Machine_proof_1
-  0 -> 1 : on proof_1 when proof_1 is gauche do ;
-  0 -> 2 : on toto2 when true do ;
+  0 -> 1 : on proof_1 when proof_1 is gauche do  proof_2 := true;
+  0 -> 2 : on toto2 when true do proof_1 := gauche;
   0 -> 1 : on proof_event1 when true do proof_event_2;
 end
 

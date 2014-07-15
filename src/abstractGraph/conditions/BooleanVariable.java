@@ -57,7 +57,7 @@ public class BooleanVariable extends EnumeratedVariable {
     } else if (value.equals("false")) {
       return FALSE;
     } else {
-      throw new Error(
+      throw new IllegalArgumentException(
           "Impossible case. A bool string must be true or false and not "
               + value);
     }

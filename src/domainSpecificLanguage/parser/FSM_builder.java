@@ -138,6 +138,14 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return var;
   }
 
+  /**
+   * @return The next unique integer id for the variables (needed by the compact
+   *         valuation which stores the values of the variables in an array).
+   */
+  private int getNextVariableId() {
+    return variables.size() + proof_variables.size();
+  }
+
   private EnumeratedVariable createDSLVariable(String name, Token token,
       Enumeration enumeration) {
     if (variables.containsKey(name)) {
@@ -150,7 +158,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + " already exists in the proof model.");
     }
     EnumeratedVariable variable;
-    int unique_id = variables.size();
+    int unique_id = getNextVariableId();
     if (enumeration == null) {
       variable = new BooleanVariable(name, unique_id);
     } else {
@@ -173,7 +181,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + " already exists.");
     }
     EnumeratedVariable variable;
-    int unique_id = variables.size();
+    int unique_id = getNextVariableId();
     if (enumeration == null) {
       variable = new BooleanVariable(name, unique_id);
     } else {
@@ -462,8 +470,17 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   @Override
   public Object visitIdExpr(IdExprContext ctx) {
-    String DSLVariable_name = ctx.ID().getText().trim();
-    return getDSLVariable(DSLVariable_name, ctx.start);
+    String variable_name = ctx.ID().getText().trim();
+
+    /* The action is just an ID. It must be a boolean variable */
+    EnumeratedVariable variable = getDSLVariable(variable_name, ctx.start);
+    if (!(variable instanceof BooleanVariable)) {
+      raiseError("The variable " + variable_name + " at " +
+          getDetails(ctx.ID().getSymbol()) + " is not a boolean variable."
+          + "Thus, it cannot be used without an equality test.");
+    }
+
+    return variable;
   }
 
   /**
@@ -529,9 +546,14 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     default:
       throw new Error("Impossible case.");
     }
-    EnumeratedVariable variable = getDSLVariable(variable_name, ctx
-        .ID(0)
-        .getSymbol());
+
+    Token token = ctx.ID(0).getSymbol();
+    EnumeratedVariable variable = getDSLVariable(variable_name, token);
+    if (variable.getEnumeration() == null) {
+      raiseError("The variable " + variable_name + " at " + getDetails(token)
+          + " is being used as an enumerated variable while it is a "
+          + "boolean variable.");
+    }
     byte value = variable.getEnumeration().getByte(variable_value);
     return new EnumerationEqualityFormula(variable, value, is_not);
   }
@@ -803,13 +825,22 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     String event_name = ctx.getText();
     SingleEvent event = all_single_events.get(event_name);
     if (event == null) {
-      raiseError("The event declared in the action field at "
+      raiseError("The event " + event_name
+          + " declared in the action field at "
           + getDetails(ctx.start) + " is not definedd");
     }
     if (event instanceof ExternalEvent) {
-      raiseError("The event declared in the action field at "
+      raiseError("The event " + event_name
+          + " declared in the action field at "
           + getDetails(ctx.start)
           + " is an internal event and so cannot be used as an action.");
+    }
+    if ((event instanceof DSLVariableEvent)
+        && !((DSLVariableEvent) event).getVariable().isBool()) {
+      raiseError("The event " + event_name
+          + " declared in the action field at "
+          + getDetails(ctx.start)
+          + " is not a boolean expression and cannot be used as an action.");
     }
     return event;
   }
@@ -820,20 +851,36 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   @Override
   public Object visitActionAssignment(ActionAssignmentContext ctx) {
     String variable_name = ctx.ID(0).getText();
-    String variable_value = ctx.ID(1).getText();
+    /*
+     * We have a formula of the form varialbe_name := variable_value.
+     * However, the variable value can be either an ID or TRUE, FALSE
+     */
+    String variable_value = ctx.children.get(2).getText();
 
     EnumeratedVariable DSLVariable = variables.get(variable_name);
+    Token token = ctx.ID(0).getSymbol();
+
+    if (DSLVariable == null && visiting_proof_state_machine) {
+      DSLVariable = proof_variables.get(variable_name);
+    }
     if (DSLVariable == null) {
-      raiseError("The DSLVariable " + DSLVariable + " defined at "
-          + getDetails(ctx.ID(0).getSymbol())
+      raiseError("The DSLVariable " + variable_name + " defined at "
+          + getDetails(token)
           + " has not been previously defined.");
     }
 
     Enumeration enumeration = enumerated_DSLVariable.get(DSLVariable);
-    Byte value;
+    Byte value = null;
     if (enumeration == null) {
       /* This is a boolean value */
-      value = BooleanVariable.getByteFromString(variable_value);
+      try {
+        value = BooleanVariable.getByteFromString(variable_value);
+      } catch (IllegalArgumentException e) {
+        raiseError("The variable " + variable_name + " at " +
+            getDetails(token) + " is being assigned the not boolean "
+            + "(i.e. true or false) value \""
+            + variable_value + "\" .");
+      }
     } else {
       /* This is an enumeration value */
       value = enumeration.getByte(variable_value);
@@ -848,5 +895,4 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     }
     return new Assignment(DSLVariable, value);
   }
-
 }

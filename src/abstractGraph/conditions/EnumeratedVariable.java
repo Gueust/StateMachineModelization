@@ -6,6 +6,9 @@ import abstractGraph.conditions.valuation.AbstractValuation;
 
 public class EnumeratedVariable extends Formula {
 
+  /* Can be used to print the identifier of the variable */
+  public static final boolean DEBUG_TO_STRING = false;
+
   protected String varname;
   /* The unique identifier of the Variable throughout a model */
   protected int identifier;
@@ -41,6 +44,10 @@ public class EnumeratedVariable extends Formula {
     return varname;
   }
 
+  public boolean isBool() {
+    return (this instanceof BooleanVariable);
+  }
+
   @Override
   public HashSet<EnumeratedVariable> allVariables(
       HashSet<EnumeratedVariable> vars) {
@@ -55,6 +62,10 @@ public class EnumeratedVariable extends Formula {
 
   @Override
   public String toString() {
-    return getVarname();
+    if (DEBUG_TO_STRING) {
+      return getVarname() + "(" + getUniqueIdentifier() + ")";
+    } else {
+      return getVarname();
+    }
   }
 }

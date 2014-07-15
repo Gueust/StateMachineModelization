@@ -36,7 +36,6 @@ public class DSLModel extends
   public Set<CommandEvent> command_events = new HashSet<>();
   public Set<Template> templates = new HashSet<>();
   public Set<DSLStateMachine> state_machines = new HashSet<>();
-  public Set<DSLTransition> proof_transitions = new HashSet<>();
 
   public DSLModel(String model_name) {
     super(model_name);
