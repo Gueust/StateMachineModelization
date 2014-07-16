@@ -64,7 +64,8 @@ public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
     StringBuffer result = new StringBuffer();
     result.append(
         "[WARNING] The variables that follow are never written :\n"
-            + counter_example_not_writen.toString() + "\n");
+            + counter_example_not_writen.toString() + "\n" + "their number is "
+            + counter_example_not_writen.size() + "\n");
 
     return result.toString();
   }

@@ -31,7 +31,12 @@ public class Fichier6lignes {
    * @return True if the condition is verified
    */
   private boolean checkSuffix(String input, String tested_string) {
-    String temp = input.substring(input.length() - tested_string.length());
+    String temp = "";
+    try {
+      temp = input.substring(input.length() - tested_string.length());
+    } catch (Exception e) {
+    }
+
     return temp.equals(tested_string);
   }
 

@@ -18,11 +18,11 @@ import java.util.LinkedHashMap;
 
 import parserAEFDFormat.Fichier6lignes;
 import utils.Pair;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
-import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
@@ -748,6 +748,106 @@ public class GraphFactoryAEFD {
     actions = new Actions();
     actions.add(new VariableChange(new Literal(variable)));
     machine.addTransition(negative_state, positive_state,
+        events, null, actions);
+
+    StringBuffer buffer = new StringBuffer();
+
+    boolean first = true;
+    Iterator<Transition> trans_it = machine.iteratorTransitions();
+    while (trans_it.hasNext()) {
+      if (first) {
+        first = false;
+      } else {
+        buffer.append("\r\n");
+      }
+      buffer.append(GraphFactoryAEFD.writeTransition(machine, trans_it
+          .next()));
+    }
+
+    return buffer.toString();
+  }
+
+  /**
+   * Create graphs for the CTL that will give the action P_6 if the CTL is read
+   * twice
+   * without reading the opposite.
+   * 
+   * @param CTL_pos
+   * @param CTL_neg
+   * @return
+   */
+  public static String generateAutomateP6ForCTL(String CTL_pos, String CTL_neg) {
+
+    FormulaFactory factory = new AEFDFormulaFactory(true);
+
+    String variable_name =
+        CTL_pos.substring(CTL_pos.indexOf('_') + 1, CTL_pos.length());
+    variable_name = variable_name.substring(0, variable_name.lastIndexOf('_'));
+
+    String positive_suffix =
+        CTL_pos.substring(CTL_pos.lastIndexOf('_') + 1, CTL_pos.length());
+    String negative_suffix =
+        CTL_neg.substring(CTL_neg.lastIndexOf('_') + 1, CTL_neg.length());
+
+    String IND_actif_name = "IND_" + variable_name + "_" + positive_suffix;
+    String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
+
+    StateMachine machine = new StateMachine("GRAPH_P6_" + IND_actif_name);
+
+    State init_state = machine.addState("0");
+    State positive_state = machine.addState("1");
+    State negative_state = machine.addState("2");
+    State illegal_state = machine.addState("3");
+
+    Events events;
+    Actions actions;
+    Formula condition;
+    BooleanVariable variable = factory.getVariable(IND_actif_name);
+
+    /* Transition from 0 to 1 */
+    events = new Events();
+    events.addEvent(SequentialGraphSimulator.ACT_INIT);
+    condition = factory.parse(CTL_pos);
+    actions = new Actions();
+    machine.addTransition(init_state, positive_state,
+        events, condition, actions);
+
+    /* Transition from 0 to 2 */
+    events = new Events();
+    events.addEvent(SequentialGraphSimulator.ACT_INIT);
+    condition = factory.parse(CTL_neg);
+    actions = new Actions();
+    machine.addTransition(init_state, negative_state,
+        events, condition, actions);
+
+    /* Transition from 1 to 2 */
+    events = new Events();
+    events.addEvent(new ExternalEvent(CTL_neg));
+    actions = new Actions();
+    machine.addTransition(positive_state, negative_state,
+        events, null, actions);
+
+    /* Transition from 2 to 1 */
+    events = new Events();
+    events.addEvent(new ExternalEvent(CTL_pos));
+    actions = new Actions();
+    machine.addTransition(negative_state, positive_state,
+        events, null, actions);
+
+    /* Transition from 2 to 3 */
+    events = new Events();
+    events.addEvent(new ExternalEvent(CTL_neg));
+    actions = new Actions();
+    actions.add(new ModelCheckerEvent("P_6"));
+    machine.addTransition(negative_state, illegal_state,
+        events, null, actions);
+
+    /* Transition from 1 to 3 */
+    events = new Events();
+    events.addEvent(new ExternalEvent(CTL_pos));
+    actions = new Actions();
+    actions.add(new ModelCheckerEvent("P_6"));
+    machine.addTransition(positive_state, illegal_state,
         events, null, actions);
 
     StringBuffer buffer = new StringBuffer();

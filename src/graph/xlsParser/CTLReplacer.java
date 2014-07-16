@@ -75,6 +75,8 @@ public class CTLReplacer {
         /*
          * These variables are not used during exploration, just during tests.
          */
+        condition = condition.replaceAll("CMD_",
+            "IND_");
         condition = condition.replaceAll("[a-zA-Z0-9_]*_non_Bloque",
             "true");
         condition = condition.replaceAll("[a-zA-Z0-9_]*_Bloque",

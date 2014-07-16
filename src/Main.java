@@ -8,6 +8,7 @@ import graph.StateMachine;
 import graph.Transition;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.verifiers.Verifier;
+import graph.xlsParser.CTLReplacer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,13 +41,24 @@ public class Main {
     long startTime = System.nanoTime();
 
     GraphFactoryAEFD factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
 
-    launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-        "Preuve_3423_3431_without_CTL.txt",
-        // "Nurieux/Liste_evenement_externe.txt",
-        "Nurieux/Liste_evenement_externe3423_3431.txt",
-        "Nurieux/liste_FCI.yaml");
+    CTLReplacer ctl_replacer = new CTLReplacer("Noisy/Noisy_init.txt",
+        "Noisy/Noisy_corrected.txt", false);
 
+    Model model = graph_factory
+        .buildModel("Noisy/Noisy_corrected.txt", "Noisy/Noisy_corrected.txt");
+    model.build();
+    System.out.print("*** nombre de CTL " + model.regroupCTL().size() +
+        "\n ");
+
+    /*
+     * launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
+     * "Preuve_3423_3431_without_CTL.txt",
+     * // "Nurieux/Liste_evenement_externe.txt",
+     * "Nurieux/Liste_evenement_externe3423_3431.txt",
+     * "Nurieux/liste_FCI.yaml");
+     */
     /*
      * String functional_model = GeneratorFromTemplate
      * .load("fonctionnel4voie.yaml");
