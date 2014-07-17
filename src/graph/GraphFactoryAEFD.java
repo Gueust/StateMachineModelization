@@ -41,8 +41,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -865,33 +865,5 @@ public class GraphFactoryAEFD {
     }
 
     return buffer.toString();
-  }
-}
-
-class MyCustomizer extends CustomToString {
-  @Override
-  public String toString(Formula f) {
-    return super.toString(f);
-  }
-
-  @Override
-  public String toString(Literal l) {
-    BooleanVariable variable = ((Literal) l).getVariable();
-    boolean is_negated = ((Literal) l).isNegated();
-    if (is_negated) {
-
-      return GenerateFormulaAEFD.getOppositeName(variable.toString());
-    } else {
-      return variable.toString();
-    }
-  }
-
-  @Override
-  public String toString(NotFormula f) {
-    Formula A = f.getF();
-    if (A instanceof BooleanVariable) {
-      return GenerateFormulaAEFD.getOppositeName(A.toString());
-    }
-    return super.toString(f);
   }
 }
