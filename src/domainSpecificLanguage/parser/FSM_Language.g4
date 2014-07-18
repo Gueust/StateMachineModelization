@@ -55,11 +55,11 @@ template : 'template'
   'trans' transitions
   'end';
   
-machine : 'machine' ID
+machine : 'machine' ID '(' ID ')'
   transitions
   'end';
   
-proof_machine : 'proof' ID
+proof_machine : 'proof' ID '(' ID ')'
   transitions
   'end';
 

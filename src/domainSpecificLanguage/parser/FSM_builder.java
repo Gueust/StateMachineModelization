@@ -288,11 +288,13 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
    */
   @Override
   public Object visitMachine(MachineContext ctx) {
-    String machine_name = ctx.ID().getText();
+    String machine_name = ctx.ID(0).getText();
+    String initial_state_name = ctx.ID(1).getText();
+    Token token = ctx.ID(0).getSymbol();
 
     if (functional_state_machines.containsKey(machine_name)) {
-      raiseError("The machine" + machine_name + " defined at "
-          + getDetails(ctx.ID().getSymbol()) + " has already been defined.");
+      raiseError("The machine " + machine_name + " defined at "
+          + getDetails(token) + " has already been defined.");
     }
 
     DSLStateMachine machine = new DSLStateMachine(machine_name);
@@ -303,16 +305,28 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
     visitTransitions(ctx.transitions());
 
+    /* After having added the transitions, we add the initial state */
+    DSLState initial_state = machine.getState(initial_state_name);
+    if (initial_state == null) {
+      raiseError("The machine " + machine_name + " defined at "
+          + getDetails(token) + " is said to have the initial state "
+          + initial_state_name + " but this state is never used in the "
+          + "machine.");
+    }
+    machine.setInitial_state(initial_state);
     return null;
   }
 
   @Override
   public Object visitProof_machine(Proof_machineContext ctx) {
-    String machine_name = ctx.ID().getText();
+    String machine_name = ctx.ID(0).getText();
+    String initial_state_name = ctx.ID(1).getText();
+
+    Token token = ctx.ID(0).getSymbol();
 
     if (functional_state_machines.containsKey(machine_name)) {
-      raiseError("The machine" + machine_name + " defined at "
-          + getDetails(ctx.ID().getSymbol()) + " has already been defined.");
+      raiseError("The machine " + machine_name + " defined at "
+          + getDetails(token) + " has already been defined.");
     }
 
     DSLStateMachine machine = new DSLStateMachine(machine_name);
@@ -322,6 +336,15 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     visiting_proof_state_machine = true;
 
     visitTransitions(ctx.transitions());
+    /* After having added the transitions, we add the initial state */
+    DSLState initial_state = machine.getState(initial_state_name);
+    if (initial_state == null) {
+      raiseError("The machine " + machine_name + " defined at "
+          + getDetails(token) + " is said to have the initial state "
+          + initial_state_name + " but this state is never used in the "
+          + "machine.");
+    }
+    machine.setInitial_state(initial_state);
     return null;
   }
 

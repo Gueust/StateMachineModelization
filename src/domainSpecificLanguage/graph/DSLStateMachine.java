@@ -21,9 +21,18 @@ public class DSLStateMachine extends
   protected HashMap<String, DSLState> states = new HashMap<>();
   protected LinkedHashSet<EnumeratedVariable> read_variables;
   protected LinkedHashSet<EnumeratedVariable> write_variables;
+  protected DSLState initial_state;
 
   public DSLStateMachine(String name) {
     super(name);
+  }
+
+  public DSLState getInitial_state() {
+    return initial_state;
+  }
+
+  public void setInitial_state(DSLState initial_state) {
+    this.initial_state = initial_state;
   }
 
   @Override
@@ -89,7 +98,8 @@ public class DSLStateMachine extends
   @Override
   public String toString() {
     StringBuilder string_builder = new StringBuilder();
-    string_builder.append("machine " + getName() + "\n");
+    string_builder.append("machine " + getName() +
+        "(" + initial_state.getId() + ")\n");
     for (DSLState state : states.values()) {
       for (DSLTransition transition : state) {
         string_builder.append("  " + transition.toString() + "\n");
