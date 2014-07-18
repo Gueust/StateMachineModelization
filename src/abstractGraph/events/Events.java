@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
+import abstractGraph.conditions.CustomToString;
+
 public class Events implements Iterable<SingleEvent> {
 
   /** An empty unique instance of Events */
@@ -56,9 +58,19 @@ public class Events implements Iterable<SingleEvent> {
 
   @Override
   public String toString() {
+    return toString(null);
+  }
+
+  public String toString(CustomToString customizer) {
     StringBuilder sb = new StringBuilder();
+    boolean is_first = true;
     for (SingleEvent single_event : events) {
-      sb.append(single_event.toString() + ";");
+      if (is_first) {
+        is_first = false;
+      } else {
+        sb.append(" + ");
+      }
+      sb.append(single_event.toString(customizer));
     }
     return sb.toString();
   }

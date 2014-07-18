@@ -14,8 +14,8 @@ import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
-import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.Formula;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.Events;
@@ -360,6 +360,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
             .getModifiedVariable())) {
           temporary_variable_change.put(variable_change.getModifiedVariable(),
               !variable_change.isNegated());
+          temporary_queue.add(variable_change);
         } else if (global_state
             .variableValueWillChanged(
                 variable_change.getModifiedVariable(),
@@ -716,5 +717,4 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     }
     return list_events;
   }
-
 }

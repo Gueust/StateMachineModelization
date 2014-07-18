@@ -5,8 +5,8 @@ import genericLabeledGraph.Edge;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -239,6 +239,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           + possible_external_events.size());
 
       for (ExternalEvent e : possible_external_events) {
+        System.out.print("*** The event to eat : " + e + "\n");
         GS next_state = simulator.execute(state, e);
 
         next_state.last_processed_external_event = e;

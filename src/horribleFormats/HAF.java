@@ -1,19 +1,19 @@
 package horribleFormats;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Iterator;
-
-import utils.GenericToString;
-import abstractGraph.conditions.Formula;
-import abstractGraph.events.SingleEvent;
 import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.MyCustomizer;
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
+
+import abstractGraph.conditions.Formula;
+import abstractGraph.events.SingleEvent;
 
 /* Horrible ACIFER Format*/
 public class HAF {
@@ -92,9 +92,7 @@ public class HAF {
           }
 
           String events =
-              GenericToString.printCollection(
-                  transition.getEvents().getEvents(),
-                  " OU ");
+              transition.getEvents().toString(customizer).replace(";", "");
 
           StringBuilder action_builder = new StringBuilder();
           boolean is_first_event = true;
