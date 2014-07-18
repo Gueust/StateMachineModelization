@@ -461,12 +461,4 @@ public class HomePage extends JFrame {
 
   }
 
-  public static void main(String[] args) {
-
-    HomePage home_page = new HomePage();
-    home_page.pack();
-    home_page.setLocationRelativeTo(null);
-    home_page.setVisible(true);
-
-  }
 }

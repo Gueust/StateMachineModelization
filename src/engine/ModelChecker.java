@@ -22,6 +22,31 @@ import abstractGraph.conditions.valuation.Valuation;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 
+/**
+ * 
+ * The model checker works on a simulator implementing the
+ * GraphSimulatorInterface.
+ * 
+ * The actual implementation executed models extending the AbstractModel class.
+ * Thus, the model checker is parameterized with the classes used in this actual
+ * model.
+ * 
+ * A single model checker instance can be used several times if the
+ * {@link #reset()} function is called within different verifications.
+ * 
+ * @details
+ * 
+ * @param <GS>
+ *          The global states used by the graph simulator that will
+ *          be given to {@link #verify(GraphSimulatorInterface)}.
+ * @param <M>
+ *          The Machines used in the model used by the graph simulator that will
+ *          be given to {@link #verify(GraphSimulatorInterface)}.
+ * @param <S>
+ *          The states used in the model.
+ * @param <T>
+ *          The transitions used in the model.
+ */
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   /** The already explored states */
@@ -44,6 +69,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * It does not take the given collection but creates and underlying HashMap
    * containing the elements of `init`.
    * 
+   * All previously added initial states are removed.
+   * 
    * @param init
    */
   public void model_checker(Collection<GS> init) {
@@ -53,6 +80,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
   /**
    * Add `init` in the set of initial states to visit.
+   * If the given state is not safe, the verification will necessarily fail when
+   * visiting it.
+   * If the given state is not physical, it will not modify the behavior of the
+   * verification.
    * 
    * @param init
    *          An initial state to visit.
@@ -113,6 +144,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     /* The state is illegal */
     if (!state.isLegal()) {
       number_illegal_states++;
+      // illegal_states.add(state);
       return null;
     }
 
@@ -140,7 +172,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
   /**
    * Prepare the model checker for a new verification (i.e. receive new initial
-   * state and a call to verify).
+   * states and a new call to verify).
    */
   public void reset() {
     /* We reset all the data to empty data */
@@ -217,8 +249,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         System.out.flush();
 
         if (processGS(next_state) != null) {
-          System.out.print("FAILURE from state \n" + state + "\n Event : " + e
-              + "\n" + next_state);
+          System.out.println("The model checker detected a dangerous state !");
           System.out.println("***********************************");
           System.out.println("A FULL trace of external event is: ");
           System.out.println("***********************************");
@@ -227,9 +258,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         }
       }
     }
-    System.err.println("Total number of visited states: "
+    System.err.println("Total number of distinct visited states: "
         + visited_states.size());
-    System.err.println("Total number of illegal states found:" +
+    System.err.println("Total number of illegal nodes found:" +
         number_illegal_states);
     System.err.println("Total number of explored node: " + i);
 
@@ -244,11 +275,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     StringBuilder string_builder = new StringBuilder();
 
     GS current = state;
+    string_builder.insert(0, "\nTo the final state:\n\n" + current + "\n");
     do {
       if (current.last_processed_external_event != null) {
         string_builder.insert(0, current.last_processed_external_event + "\n");
       } else {
-        string_builder.insert(0, "\nFrom initial state:\n" + current + "\n");
+        string_builder
+            .insert(0, "\nFrom the initial state:\n" + current + "\n");
       }
       current = (GS) current.previous_global_state;
     } while (current != null);

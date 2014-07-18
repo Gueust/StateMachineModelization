@@ -133,6 +133,7 @@ public class InitializationSelector extends JDialog {
     return result;
   }
 
+  /* Used as a minimanistic test */
   public static void main(String[] args) {
     HashMap<String, String> CTLs = new HashMap<String, String>();
     CTLs.put("A1", "A2");

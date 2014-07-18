@@ -111,7 +111,8 @@ public class ModelCheckerTesting {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    SplitProof splitter = new SplitProof(model, proof);
+    SplitProof<StateMachine, State, Transition> splitter =
+        new SplitProof<>(model, proof);
     splitter.printToImage("./activation_graph.");
   }
 }

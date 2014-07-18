@@ -84,11 +84,4 @@ public class Node<D, N, L> implements Iterable<Edge<N, L>> {
     return new LocalIterator(this);
   }
 
-  public boolean equals(Node other_node) {
-    if (other_node.data.equals(data)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }

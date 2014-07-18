@@ -1,7 +1,5 @@
 package horribleFormats;
 
-import graph.GraphFactoryAEFD;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +10,7 @@ public class CTLReplacerInProof {
 
   public CTLReplacerInProof(String file_name, String target_name)
       throws IOException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+
     BufferedWriter writer = new BufferedWriter(new FileWriter(
         target_name));
     boolean beginning = true;

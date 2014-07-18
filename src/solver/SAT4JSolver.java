@@ -18,8 +18,7 @@ import abstractGraph.conditions.cnf.Literal;
 
 /**
  * Binding with SAT4J solver to solve Sat problems.
- * 
- * 
+ * It is recommended to use one instance to solve all the SAT problems.
  */
 public class SAT4JSolver {
 
@@ -143,7 +142,8 @@ public class SAT4JSolver {
    *          identifier.
    * @return The equivalent array representing the clause (see DIMACS format)
    */
-  private int[] toIntClause(Clause c, HashMap<BooleanVariable, Integer> var_to_int) {
+  private int[] toIntClause(Clause c,
+      HashMap<BooleanVariable, Integer> var_to_int) {
     int[] result = new int[c.size()];
     int i = 0;
     for (Literal l : c) {
@@ -166,7 +166,8 @@ public class SAT4JSolver {
    *          An injective HashMap
    * @return The inverse HashMap
    */
-  private HashMap<Integer, BooleanVariable> invert(HashMap<BooleanVariable, Integer> map) {
+  private HashMap<Integer, BooleanVariable> invert(
+      HashMap<BooleanVariable, Integer> map) {
     HashMap<Integer, BooleanVariable> result =
         new HashMap<Integer, BooleanVariable>(map.size());
     for (Map.Entry<BooleanVariable, Integer> entry : map.entrySet()) {

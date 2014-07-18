@@ -19,6 +19,8 @@ import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
  * A conjunction of clauses (i.e. AND of clauses).
+ * Use the {@link CNFFormula#ConvertToCNF(Formula)} function to create the CNF
+ * of an already existing formula.
  */
 public class CNFFormula extends Formula implements Collection<Clause> {
 

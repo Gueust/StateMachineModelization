@@ -1,5 +1,6 @@
 package abstractGraph.events;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -18,6 +19,10 @@ public class Actions implements Iterable<SingleEvent> {
 
   public void add(SingleEvent e) {
     events.add(e);
+  }
+
+  public Collection<SingleEvent> getCollection() {
+    return events;
   }
 
   public String toString(CustomToString customizer) {

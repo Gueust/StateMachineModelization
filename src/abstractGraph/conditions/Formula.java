@@ -15,10 +15,26 @@ import abstractGraph.conditions.valuation.Valuation;
  *          
  *          To evaluate a formula, you first need to create a {@link Valuation}
  *          for the formula. In particular, to set the value for a variable,
- *          one need to retrieve de variable from the FormulaFactory.
+ *          one need to retrieve the variables from the FormulaFactory.
  */
 /**
- * Boolean expression formula
+ * Boolean expression formula.
+ * It includes the following operands: And, or, not. In particular it does not
+ * have => or <=>.
+ * 
+ * The formulas can be:
+ * <ol>
+ * <li> the constant true, or false formula. </li>
+ * <li>The and of a formula, the conjunction (and) or disjunction (or) of 2
+ * formulas.</li>
+ * <li>The equality between a enumerated variable (i.e. a variable having its
+ * value in a finite set) and a term of this set.</li>
+ * </ol>
+ * 
+ * An other group of formulas (which cannot be mixed with the already defined
+ * formulas except for true and false formulas) is contained in the cnf package.
+ * The Conjunctive Normal Form is only required as the input of a SAT solver.
+ * A CNF is the conjunction of clauses. A clause is a disjunction of literals.
  */
 public abstract class Formula {
 

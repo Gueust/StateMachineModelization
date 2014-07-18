@@ -51,7 +51,8 @@ public class HAF {
         nb_transitions++;
       }
       int nb_states = 0;
-      for (State s : machine) {
+      for (@SuppressWarnings("unused")
+      State s : machine) {
         nb_states++;
       }
 
@@ -134,7 +135,4 @@ public class HAF {
     out.close();
   }
 
-  public static void main(String[] args) throws IOException {
-    toHAF("PN/PN a SAL cas2.txt", "formatMoche.txt");
-  }
 }

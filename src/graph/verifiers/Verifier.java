@@ -120,4 +120,46 @@ public class Verifier {
   private void printHeader(Model m) {
     System.out.println("Checking of the " + m.getModelName() + " model.");
   }
+
+  /**
+   * Execute default set of verifications on the given model.
+   * 
+   * @param model
+   * @param verbose
+   */
+  public static void verifyModel(Model model, boolean verbose) {
+
+    if (model == null) {
+      return;
+    }
+    Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
+
+    boolean is_ok = !default_verifier.checkAll(model, verbose);
+    System.out.println();
+    if (is_ok) {
+      System.out
+          .println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
+    } else {
+      System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
+    }
+    System.out.println();
+
+    Verifier warning_verifier = Verifier.WARNING_VERIFIER;
+    if (!warning_verifier.check(model, verbose)) {
+      System.out
+          .println("*** Some additionnal properties are not verified ***");
+    } else {
+      System.out.println("*** All other properties verifier ***");
+    }
+    System.out.println();
+  }
+
+  /**
+   * @see Verifier#verifyModel(Model, boolean)
+   * @param model
+   *          The model on which to run the structural verifications.
+   */
+  public static void verifyModel(Model model) {
+    verifyModel(model, true);
+  }
 }

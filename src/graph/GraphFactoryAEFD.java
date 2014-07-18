@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import parserAEFDFormat.Fichier6lignes;
 import utils.Pair;
 import abstractGraph.conditions.BooleanVariable;
-import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;

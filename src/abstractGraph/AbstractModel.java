@@ -6,10 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import utils.Pair;
-import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.ExternalEvent;

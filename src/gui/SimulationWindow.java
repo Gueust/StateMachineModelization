@@ -804,15 +804,6 @@ public class SimulationWindow extends JFrame {
     listModel.removeAllElements();
   }
 
-  public static void main(String[] args) {
-    Model model = new Model("test");
-    SequentialGraphSimulator simulator = new SequentialGraphSimulator(model);
-    SimulationWindow main_window = new SimulationWindow(simulator);
-    main_window.pack();
-    main_window.setLocationRelativeTo(null);
-    main_window.setVisible(true);
-  }
-
   public void enableExecutionButton() {
     btnEatExternalEvents.setEnabled(true);
     btnSimulate.setEnabled(true);

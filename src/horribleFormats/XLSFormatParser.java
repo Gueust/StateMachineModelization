@@ -103,6 +103,8 @@ public class XLSFormatParser {
 
     out.write(string_to_write);
     out.close();
+
+    @SuppressWarnings("unused")
     CTLReplacer ctl_replacer = new CTLReplacer(output_file_name,
         "Graph_with_corrected_CTL.txt", false);
     ctl_replacer = new CTLReplacer("Nurieux/NurieuxTestJLPreuv_Auto.txt",
@@ -112,9 +114,4 @@ public class XLSFormatParser {
 
   }
 
-  public static void main(String[] args) throws IOException {
-    ParseXLSFormat("Nurieux/Nurieux_Donnees.xls",
-        "Nurieux/generated_nurieux.txt");
-    System.out.println("Finished");
-  }
 }

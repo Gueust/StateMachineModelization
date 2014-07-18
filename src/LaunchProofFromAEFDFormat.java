@@ -7,15 +7,12 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
+
 import graph.verifiers.Verifier;
-import graph.xlsParser.CTLReplacer;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,16 +20,24 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import utils.Logging;
 import utils.Monitoring;
-import utils.TeeOutputStream;
 import abstractGraph.events.ExternalEvent;
 
-public class Main {
+/*
+ * Ce fichier permet de lancer l'exploration sur un fonctionnel + preuve à
+ * partir des fichiers 6 lignes correspondant.
+ * Les résultats sont écrit à la fois dans le fichier :
+ * verification_tools_logfile.txt
+ * mais aussi directement sur la console.
+ *
+ */
+public class LaunchProofFromAEFDFormat {
 
   public static void main(String[] args) throws Exception {
 
     /* Launching logging */
-    launchLogging("verification_tools_logfile.txt");
+    Logging.launchLogging("verification_tools_logfile.txt");
 
     DateFormat date_format = DateFormat.getTimeInstance();
     System.out.println("Execution launched at " +
@@ -40,97 +45,18 @@ public class Main {
 
     long startTime = System.nanoTime();
 
-    GraphFactoryAEFD factory = new GraphFactoryAEFD();
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
-
-    CTLReplacer ctl_replacer = new CTLReplacer("Noisy/Noisy_init.txt",
-        "Noisy/Noisy_corrected.txt", false);
-
-    Model model = graph_factory
-        .buildModel("Noisy/Noisy_corrected.txt", "Noisy/Noisy_corrected.txt");
-    model.build();
-    System.out.print("*** nombre de CTL " + model.regroupCTL().size() +
-        "\n ");
-
     /*
-     * launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-     * "Preuve_3423_3431_without_CTL.txt",
-     * // "Nurieux/Liste_evenement_externe.txt",
-     * "Nurieux/Liste_evenement_externe3423_3431.txt",
-     * "Nurieux/liste_FCI.yaml");
+     * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
+     * souhaité
      */
-    /*
-     * String functional_model = GeneratorFromTemplate
-     * .load("fonctionnel4voie.yaml");
-     * String proof_model = GeneratorFromTemplate
-     * .load("preuve4voie_avecP6.yaml");
-     * 
-     * launcheModelChecking(functional_model, proof_model);
-     */
+    // launcheModelChecking("PN/PN à SAL.txt","PN/PN à SAL Preuve.txt");
+    launcheModelChecking("PN/PN a SAL Cas2.txt", "PN/PN a SAL Cas2 Preuve.txt");
+    // launcheModelChecking("PN/PN a SAL Cas3.txt",
+    // "PN/PN a SAL Cas3 Preuve.txt");
+
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
-
-  }
-
-  private static void verifyModel(Model model) {
-    verifyModel(model, true);
-  }
-
-  private static void verifyModel(Model model, boolean verbose) {
-
-    Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
-
-    boolean is_ok = !default_verifier.checkAll(model, verbose);
-    System.out.println();
-    if (is_ok) {
-      System.out
-          .println("*** FAILURE WHEN TESTING IMPERATIVE PROPERTIES ***\n");
-    } else {
-      System.out.println("*** IMPERATIVE PROPERTIES VERIFIED ***");
-    }
-    System.out.println();
-
-    Verifier warning_verifier = Verifier.WARNING_VERIFIER;
-    if (!warning_verifier.check(model, verbose)) {
-      System.out
-          .println("*** Some additionnal properties are not verified ***");
-    } else {
-      System.out.println("*** All other properties verifier ***");
-    }
-    System.out.println();
-  }
-
-  /**
-   * Duplicate the standard output into the given file. If its size is greater
-   * than 10Mo, it will empty the file. It will write at the end of the file
-   * otherwise.
-   * 
-   * @param logfile_name
-   */
-  private static void launchLogging(String logfile_name) {
-    File file = new File(logfile_name);
-    try {
-      /* We make sure than we have no more than 10Mo */
-      FileOutputStream fos;
-      if (file.length() > 10000000) {
-        fos = new FileOutputStream(file);
-      } else {
-        fos = new FileOutputStream(file, true);
-      }
-
-      /* We want to print in the standard "System.out" and in "file" */
-      TeeOutputStream myOut = new TeeOutputStream(System.out, fos);
-      PrintStream ps = new PrintStream(myOut);
-      System.setOut(ps);
-
-      /* Same for System.err */
-      TeeOutputStream myErr = new TeeOutputStream(System.err, fos);
-      PrintStream ps_err = new PrintStream(myErr);
-      System.setErr(ps_err);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 
   public static void launcheModelCheckingWithProofTesting(
@@ -151,8 +77,8 @@ public class Main {
 
     simulator.setVerbose(false);
     simulator_without_proof.setVerbose(false);
-    verifyModel(model);
-    verifyModel(proof);
+    Verifier.verifyModel(model);
+    Verifier.verifyModel(proof);
 
     final ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
         new ModelChecker<>();
@@ -234,14 +160,21 @@ public class Main {
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
     model.build();
-    Model proof = graph_factory.buildModel(proof_model, proof_model);
-    proof.build();
+
+    Model proof;
+    if (proof_model != null) {
+      proof = graph_factory.buildModel(proof_model, proof_model);
+      proof.build();
+    }
+    else {
+      proof = null;
+    }
 
     SequentialGraphSimulator simulator =
         new SequentialGraphSimulator(model, proof);
     simulator.setVerbose(false);
-    verifyModel(model);
-    verifyModel(proof);
+    Verifier.verifyModel(model);
+    Verifier.verifyModel(proof);
 
     ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
         new ModelChecker<>();
@@ -252,19 +185,26 @@ public class Main {
         new HashMap<String, Boolean>();
     HashMap<String, String> pairs_of_ctl = model.regroupCTL();
     for (Entry<String, String> pair : pairs_of_ctl.entrySet()) {
-      initialization_variables.put(new ExternalEvent(pair.getKey()).getName(),
-          true);
+      String name = pair.getKey();
+      boolean value = true;
+      if (name.equals("CTL_Pd_Entree_voie_AP_Actif") ||
+          name.equals("CTL_Pd_Entree_voie_AI_Actif") ||
+          name.startsWith("CTL_PdAn")) {
+        value = false;
+      }
+      initialization_variables.put(
+          name,
+          value);
     }
 
-    // simulator.init(initialization_variables);
-    // GlobalState global_state = simulator.getGlobalState();
-    // System.out.println(global_state);
+    GlobalState global_state = simulator.init(initialization_variables);
+    System.out.println(global_state);
     // System.out.println("Size of a GS: " + (global_state == null)
     // + ObjectSizeFetcher.deepSizeOf(global_state));
     // System.exit(-1);
-    // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
+    model_checker.addInitialState(global_state);
 
-    simulator.generateAllInitialStates(model_checker);
+    // simulator.generateAllInitialStates(model_checker);
 
     GlobalState result = model_checker.verify(simulator);
 
