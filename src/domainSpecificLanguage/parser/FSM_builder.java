@@ -22,6 +22,7 @@ import abstractGraph.conditions.OrFormula;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.Assignment;
 import abstractGraph.events.CommandEvent;
+import abstractGraph.events.EnumeratedVariableChange;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
 import abstractGraph.events.SingleEvent;
@@ -29,7 +30,6 @@ import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
 import domainSpecificLanguage.graph.DSLTransition;
-import domainSpecificLanguage.graph.DSLVariableEvent;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionAssignmentContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.ActionEventContext;
@@ -165,7 +165,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       variable = new EnumeratedVariable(name, unique_id, enumeration);
     }
     variables.put(name, variable);
-    all_single_events.put(name, new DSLVariableEvent(variable));
+    all_single_events.put(name, new EnumeratedVariableChange(variable));
 
     return variable;
   }
@@ -189,7 +189,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     }
 
     proof_variables.put(name, variable);
-    all_single_events.put(name, new DSLVariableEvent(variable));
+    all_single_events.put(name, new EnumeratedVariableChange(variable));
 
     return variable;
   }
@@ -410,7 +410,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         if (external_event == null) {
           /* Variable name can also be an event */
           external_event = all_single_events.get(event_name);
-          if (!(external_event instanceof DSLVariableEvent) &&
+          if (!(external_event instanceof EnumeratedVariableChange) &&
               !(external_event instanceof InternalEvent)) {
             raiseError("The event "
                 + event_name
@@ -858,8 +858,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + getDetails(ctx.start)
           + " is an internal event and so cannot be used as an action.");
     }
-    if ((event instanceof DSLVariableEvent)
-        && !((DSLVariableEvent) event).getVariable().isBool()) {
+    if ((event instanceof EnumeratedVariableChange)
+        && !((EnumeratedVariableChange) event).getVariable().isBool()) {
       raiseError("The event " + event_name
           + " declared in the action field at "
           + getDetails(ctx.start)

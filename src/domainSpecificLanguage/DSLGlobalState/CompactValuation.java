@@ -1,4 +1,4 @@
-package domainSpecificLanguage.DSLValuation;
+package domainSpecificLanguage.DSLGlobalState;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -95,7 +95,7 @@ public class CompactValuation extends AbstractValuation {
 
   @Override
   public int size() {
-    throw new NotImplementedException();
+    return valuation.length;
   }
 
   @Override

@@ -1,9 +1,14 @@
 package abstractGraph.events;
 
+import engine.SequentialGraphSimulator;
 import abstractGraph.conditions.CustomToString;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.cnf.Literal;
 
+/**
+ * Used in the ACTION field of AEFD Graphs and within the execution of
+ * {@link GraphSimulator} and {@link SequentialGraphSimulator}.
+ */
 public class VariableChange extends InternalEvent {
 
   /**

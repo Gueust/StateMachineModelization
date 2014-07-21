@@ -9,10 +9,7 @@ import graph.Transition;
 import graph.templates.GeneratorFromTemplate;
 import graph.verifiers.Verifier;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +17,6 @@ import java.util.Map.Entry;
 
 import utils.Logging;
 import utils.Monitoring;
-import utils.TeeOutputStream;
 import abstractGraph.events.ExternalEvent;
 
 /**

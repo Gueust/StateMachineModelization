@@ -179,7 +179,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       }
       result.add(event);
     }
-    ;
 
     buff.close();
 

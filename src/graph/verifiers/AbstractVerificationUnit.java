@@ -1,7 +1,8 @@
 package graph.verifiers;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import graph.Model;
+import abstractGraph.AbstractModel;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Allows to confront the model to a self-consistent verification.
@@ -71,7 +72,8 @@ public abstract class AbstractVerificationUnit {
   abstract public boolean checkAll(Model m, boolean verbose)
       throws NotImplementedException;
 
-  public boolean checkAll(Model m) throws NotImplementedException {
+  public boolean checkAll(Model m)
+      throws NotImplementedException {
     return checkAll(m, false);
   }
 

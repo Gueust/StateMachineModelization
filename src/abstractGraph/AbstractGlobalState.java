@@ -97,6 +97,18 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
   }
 
   /**
+   * Change the value of the variable.
+   * 
+   * @param variable
+   * @param value
+   *          The new byte value to assign.
+   * @return true if the variable changed its value, false otherwise.
+   */
+  public boolean setVariableValue(EnumeratedVariable variable, Byte value) {
+    return variables_values.setValue(variable, value);
+  }
+
+  /**
    * @return the environment with the value of the variables.
    */
   public V getValuation() {

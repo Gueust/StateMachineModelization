@@ -1,5 +1,8 @@
 package domainSpecificLanguage.graph;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +24,7 @@ import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import domainSpecificLanguage.Template;
+import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
 
 public class DSLModel extends
     AbstractModel<DSLStateMachine, DSLState, DSLTransition> {
@@ -201,8 +205,7 @@ public class DSLModel extends
 
   @Override
   public Iterator<DSLStateMachine> iterator() {
-    // TODO Auto-generated method stub
-    throw new NotImplementedException();
+    return state_machines.iterator();
   }
 
   @Override
@@ -240,4 +243,39 @@ public class DSLModel extends
     // TODO Auto-generated method stub
     return null;
   }
+
+  /**
+   * Used in the Graphical Simulator to load a list of external events from a
+   * file.
+   * 
+   * @param file_name
+   * @return
+   */
+  public LinkedList<ExternalEvent> loadScenario(String file_name)
+      throws IOException {
+
+    BufferedReader buff = new BufferedReader(new FileReader(file_name));
+    LinkedList<ExternalEvent> result = new LinkedList<>();
+
+    String line;
+    while ((line = buff.readLine()) != null) {
+      ExternalEvent read_event = null;
+      for (ExternalEvent event : external_events) {
+        if (event.toString().equals(line.trim())) {
+          read_event = event;
+          break;
+        }
+      }
+
+      if (read_event == null) {
+        buff.close();
+        throw new Error("The event " + line + " does not exist in the model");
+      }
+      result.add(read_event);
+    }
+
+    buff.close();
+    return result;
+  }
+
 }

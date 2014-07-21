@@ -2,7 +2,7 @@ package abstractGraph.conditions;
 
 import java.util.HashSet;
 
-import domainSpecificLanguage.DSLValuation.CompactValuation;
+import domainSpecificLanguage.DSLGlobalState.CompactValuation;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 public class EnumerationEqualityFormula extends Formula {

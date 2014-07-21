@@ -3,7 +3,6 @@ package domainSpecificLanguage.graph;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractState;
 import abstractGraph.events.SingleEvent;
 
@@ -21,9 +20,15 @@ public class DSLState extends AbstractState<DSLTransition> {
   }
 
   @Override
-  public Iterator<DSLTransition> iteratorTransitions(SingleEvent E) {
-    // TODO Auto-generated method stub
-    throw new NotImplementedException();
+  public Iterator<DSLTransition> iteratorTransitions(SingleEvent event) {
+    // TODO Improve the memory efficiency of the method
+    LinkedList<DSLTransition> list = new LinkedList<>();
+    for (DSLTransition transition : transitions) {
+      if (transition.getEvents().containsEvent(event)) {
+        list.add(transition);
+      }
+    }
+    return list.iterator();
   }
 
   @Override

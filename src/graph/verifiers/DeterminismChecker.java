@@ -1,9 +1,6 @@
 package graph.verifiers;
 
 import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,6 +8,10 @@ import java.util.LinkedList;
 import org.sat4j.specs.TimeoutException;
 
 import solver.SAT4JSolver;
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.cnf.CNFFormula;
@@ -38,19 +39,21 @@ public class DeterminismChecker extends AbstractVerificationUnit {
    * Then the machines where the counter example if found.
    * Because we use a single solver, we need to save the solution.
    */
-  private LinkedList<Transition>
-      list_counter_example_t1 = new LinkedList<Transition>(),
-      list_counter_example_t2 = new LinkedList<Transition>();
-  private LinkedList<StateMachine> list_counter_example_machine =
-      new LinkedList<StateMachine>();
+  private LinkedList<AbstractTransition<?>>
+      list_counter_example_t1 = new LinkedList<>(),
+      list_counter_example_t2 = new LinkedList<>();
+  private LinkedList<AbstractStateMachine<?, ?>> list_counter_example_machine =
+      new LinkedList<>();
   private LinkedList<String> solution_details =
-      new LinkedList<String>();
+      new LinkedList<>();
 
-  private boolean identicalActionFields(Transition t1, Transition t2) {
+  private boolean identicalActionFields(AbstractTransition<?> t1,
+      AbstractTransition<?> t2) {
     return t1.getActions().equals(t2.getActions());
   }
 
-  private boolean identicalTarget(Transition t1, Transition t2) {
+  private boolean identicalTarget(AbstractTransition<?> t1,
+      AbstractTransition<?> t2) {
     return t1.getDestination().equals(t2.getDestination());
   }
 
@@ -58,7 +61,8 @@ public class DeterminismChecker extends AbstractVerificationUnit {
    * Serves for both the {@link #check(Model, boolean)} and
    * {@link #checkAll(Model, boolean)} functions.
    */
-  private boolean checkFunction(Model m, boolean verbose, boolean check_all) {
+  private boolean checkFunction(AbstractModel<?, ?, ?> m, boolean verbose,
+      boolean check_all) {
 
     boolean result = true;
 
@@ -68,26 +72,30 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     solution_details.clear();
 
     /* For all StateMachines */
-    Iterator<StateMachine> it = m.iterator();
+    @SuppressWarnings("unchecked")
+    Iterator<AbstractStateMachine<?, ?>> it =
+        (Iterator<AbstractStateMachine<?, ?>>) m.iterator();
     while (it.hasNext()) {
-      StateMachine machine = it.next();
+      AbstractStateMachine<?, ?> machine = it.next();
 
       /* For all states within the given state machine */
-      Iterator<State> it_states = machine.iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<AbstractState<?>> it_states =
+          (Iterator<AbstractState<?>>) machine.iterator();
       while (it_states.hasNext()) {
-        State state = it_states.next();
-        Transition[] transitions = state.toArray();
+        AbstractState<?> state = it_states.next();
+        AbstractTransition<?>[] transitions = state.toArray();
         if (transitions == null) {
           continue;
         }
         /* For all couple of different transitions */
         for (int i = 0; i < transitions.length; i++) {
-          Transition t1 = transitions[i];
+          AbstractTransition<?> t1 = transitions[i];
           Formula t1_formula = t1.getCondition();
           Events t1_events = t1.getEvents();
 
           for (int j = i + 1; j < transitions.length; j++) {
-            Transition t2 = transitions[j];
+            AbstractTransition<?> t2 = transitions[j];
             Formula t2_formula = t2.getCondition();
             Events t2_events = t2.getEvents();
 
@@ -148,8 +156,10 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     return checkFunction(m, verbose, true);
   }
 
-  private String errorMessage(StateMachine counter_example_machine,
-      Transition counter_example_t1, Transition counter_example_t2,
+  private String errorMessage(
+      AbstractStateMachine<?, ?> counter_example_machine,
+      AbstractTransition<?> counter_example_t1,
+      AbstractTransition<?> counter_example_t2,
       String solution_details) {
     return "In the state machine "
         + counter_example_machine.getName() +

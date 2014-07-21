@@ -1,9 +1,11 @@
-package gui;
+package domainSpecificLanguage.gui;
 
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import javax.swing.GroupLayout;
@@ -12,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -19,7 +22,19 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import engine.SequentialGraphSimulator;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.gui.TreeViewer;
+
+import utils.IOUtils;
+import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
+import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.graph.DSLModel;
+import domainSpecificLanguage.parser.FSM_LanguageLexer;
+import domainSpecificLanguage.parser.FSM_LanguageParser;
+import domainSpecificLanguage.parser.FSM_builder;
+import engine.GraphSimulatorInterface;
 import graph.verifiers.CoherentVariablesWriting;
 import graph.verifiers.DeterminismChecker;
 import graph.verifiers.InitializationProperties;
@@ -28,13 +43,12 @@ import graph.verifiers.SingleWritingChecker;
 import graph.verifiers.TautologyFromStateZero;
 import graph.verifiers.WrittenAtLeastOnceChecker;
 import gui.actions.LaunchExplorationAction;
-import gui.actions.LaunchSimulationAction;
 import gui.actions.LinkFileChoserToTextArea;
 
 @SuppressWarnings("serial")
-public class HomePage extends JFrame {
+public class DSLHomePage extends JFrame {
 
-  public HomePage() throws HeadlessException {
+  public DSLHomePage() throws HeadlessException {
     ToolTipManager.sharedInstance().setInitialDelay(100);
     ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 
@@ -152,7 +166,7 @@ public class HomePage extends JFrame {
     chckbxGoodInitialization
         .setToolTipText("Verify that every graph contains a state 0. That "
             + "those state have just only event \""
-            + SequentialGraphSimulator.ACT_INIT
+            + GraphSimulatorInterface.ACT_INIT
             + " \". And that for those transition, the only variable in the "
             + "conditions are CTL.");
     chckbxGoodInitialization.setSelected(true);
@@ -261,13 +275,6 @@ public class HomePage extends JFrame {
 
     JButton btnLoadFunctionalModel = new JButton("Load functional model");
 
-    JTextArea txtrProofModel = new JTextArea();
-    txtrProofModel.setWrapStyleWord(true);
-    txtrProofModel.setEditable(false);
-    txtrProofModel.setText("Proof model");
-
-    JButton btnLoadProofModel = new JButton("Load proof model");
-
     JButton btnSimulation = new JButton("Simulation");
 
     JButton btnRemoveProofModel = new JButton("Remove proof model");
@@ -288,73 +295,62 @@ public class HomePage extends JFrame {
     GroupLayout gl_file_upload_panel = new GroupLayout(file_upload_panel);
     gl_file_upload_panel.setHorizontalGroup(
         gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(gl_file_upload_panel
-                .createSequentialGroup()
-                .addContainerGap()
-                .addGroup(gl_file_upload_panel
-                    .createParallelGroup(
-                        Alignment.LEADING)
-                    .addComponent(btnSimulation,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnLoadProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(txtrFunctionalModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(txtrProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnLoadFunctionalModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnRemoveProofModel,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(btnExploration,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(chckbxVerboseExploration,
-                        GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                    .addComponent(txtrFciFile,
-                        GroupLayout.PREFERRED_SIZE, 184,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLoadFciFile,
-                        GroupLayout.PREFERRED_SIZE, 184,
-                        GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+            .addGroup(
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        gl_file_upload_panel.createParallelGroup(
+                            Alignment.LEADING)
+                            .addComponent(btnSimulation,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnLoadFunctionalModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnRemoveProofModel,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(btnExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(chckbxVerboseExploration,
+                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtrFciFile,
+                                GroupLayout.PREFERRED_SIZE, 184,
+                                GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLoadFciFile,
+                                GroupLayout.PREFERRED_SIZE, 184,
+                                GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap())
         );
     gl_file_upload_panel.setVerticalGroup(
         gl_file_upload_panel.createParallelGroup(Alignment.LEADING)
-            .addGroup(gl_file_upload_panel
-                .createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtrFunctionalModel,
-                    GroupLayout.PREFERRED_SIZE, 41,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnLoadFunctionalModel,
-                    GroupLayout.PREFERRED_SIZE, 42,
-                    GroupLayout.PREFERRED_SIZE)
-                .addGap(11)
-                .addComponent(txtrProofModel, GroupLayout.PREFERRED_SIZE,
-                    42, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnLoadProofModel,
-                    GroupLayout.PREFERRED_SIZE, 42,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnRemoveProofModel,
-                    GroupLayout.PREFERRED_SIZE, 41,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(txtrFciFile, GroupLayout.PREFERRED_SIZE, 42,
-                    GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnLoadFciFile, GroupLayout.PREFERRED_SIZE,
-                    41, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED, 12,
-                    Short.MAX_VALUE)
-                .addComponent(chckbxVerboseExploration)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnExploration)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(btnSimulation)
-                .addContainerGap())
+            .addGroup(
+                gl_file_upload_panel.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(txtrFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadFunctionalModel,
+                        GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addGap(107)
+                    .addComponent(btnRemoveProofModel,
+                        GroupLayout.PREFERRED_SIZE, 41,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(txtrFciFile, GroupLayout.PREFERRED_SIZE, 42,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnLoadFciFile, GroupLayout.PREFERRED_SIZE,
+                        41, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED,
+                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(chckbxVerboseExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnExploration)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(btnSimulation)
+                    .addContainerGap())
         );
     file_upload_panel.setLayout(gl_file_upload_panel);
     // TODO Auto-generated constructor stub
@@ -416,23 +412,17 @@ public class HomePage extends JFrame {
     btnLoadFunctionalModel.addActionListener(new LinkFileChoserToTextArea(
         functional_file_chooser, txtrFunctionalModel, proof_file_chooser));
 
-    btnLoadProofModel.addActionListener(
-        new LinkFileChoserToTextArea(proof_file_chooser, txtrProofModel,
-            functional_file_chooser));
-
     btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
         log_file_chooser, txtrVerificationLog, functional_file_chooser));
 
     btnLoadFciFile.addActionListener(new LinkFileChoserToTextArea(
         FCI_file_chooser, txtrFciFile, FCI_file_chooser));
 
-    btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
-        property_hashmap, chckbxCheckAll, log_file_chooser,
-        functional_file_chooser, proof_file_chooser, this));
+    // btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
+    // property_hashmap, chckbxCheckAll, log_file_chooser,
+    // functional_file_chooser, proof_file_chooser, this));
     btnSimulation.addActionListener(new LaunchSimulationAction(
         functional_file_chooser, proof_file_chooser, FCI_file_chooser, this));
-    btnRemoveProofModel.addActionListener(new RemoveProof(proof_file_chooser,
-        txtrProofModel));
     btnExploration.addActionListener(new LaunchExplorationAction(
         functional_file_chooser, proof_file_chooser, FCI_file_chooser, this,
         chckbxVerboseExploration));
@@ -455,6 +445,77 @@ public class HomePage extends JFrame {
       text_area.setText("Proof model");
       text_area.setToolTipText("");
 
+    }
+
+  }
+
+}
+
+class LaunchSimulationAction implements ActionListener {
+  private JFileChooser functional_file_chooser;
+  private JFrame frame;
+
+  public LaunchSimulationAction(JFileChooser functional_file_chooser,
+      JFileChooser proof_file_chooser, JFileChooser FCI_file_chooser,
+      JFrame frame) {
+    this.functional_file_chooser = functional_file_chooser;
+    this.frame = frame;
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    DSLModel functional_model = null;
+    DSLModel proof_model = null;
+    DSLGraphSimulator<DSLGlobalState> simulator;
+    if (functional_file_chooser.getSelectedFile() != null) {
+      String content = null;
+      try {
+        content = IOUtils.readFile(
+            functional_file_chooser
+                .getSelectedFile()
+                .getAbsolutePath()
+                .toString(),
+            StandardCharsets.UTF_8);
+      } catch (IOException e1) {
+        e1.printStackTrace();
+        System.exit(-1);
+      }
+
+      ANTLRInputStream input = new ANTLRInputStream(content);
+
+      /* Create a lexer that feeds off of input CharStream */
+      FSM_LanguageLexer lexer = new FSM_LanguageLexer(input);
+
+      /* Create a buffer of tokens pulled from the lexer */
+      CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+      /* Create a parser that feeds off the tokens buffer */
+      FSM_LanguageParser parser = new FSM_LanguageParser(tokens);
+      /* begin parsing at booleanExpression rule */
+      ParseTree tree = parser.model();
+
+      /* If view_tree is true, we print the debug tree window */
+      TreeViewer viewer = new TreeViewer(null, tree);
+      viewer.open();
+
+      FSM_builder builder = new FSM_builder();
+      builder.visit(tree);
+      functional_model = builder.getModel();
+      proof_model = builder.getProof();
+
+      simulator =
+          new DSLGraphSimulator<DSLGlobalState>(functional_model, proof_model);
+
+      frame.dispose();
+      DSLSimulationWindow main_window = new DSLSimulationWindow(simulator);
+      main_window.setLocationRelativeTo(frame);
+      main_window.setVisible(true);
+
+    } else {
+      JOptionPane.showMessageDialog(frame,
+          "There is no functional model loaded",
+          "Error",
+          JOptionPane.ERROR_MESSAGE);
     }
 
   }

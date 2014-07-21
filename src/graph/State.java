@@ -25,13 +25,11 @@ public class State extends AbstractState<Transition> {
   }
 
   @Override
-  public Iterator<Transition> iteratorTransitions(SingleEvent E) {
+  public Iterator<Transition> iteratorTransitions(SingleEvent event) {
     LinkedList<Transition> transition_event = new LinkedList<>();
-    Iterator<Transition> transition_iterator = transitions.iterator();
+    for (Transition transition : transitions) {
 
-    while (transition_iterator.hasNext()) {
-      Transition transition = transition_iterator.next();
-      if (transition.getEvents().containsEvent(E)) {
+      if (transition.getEvents().containsEvent(event)) {
         transition_event.add(transition);
       }
     }

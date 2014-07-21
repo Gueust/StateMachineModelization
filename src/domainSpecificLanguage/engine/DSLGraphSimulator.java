@@ -1,4 +1,4 @@
-package engine;
+package domainSpecificLanguage.engine;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,18 +8,24 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
+import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
+import domainSpecificLanguage.graph.DSLModel;
+import domainSpecificLanguage.graph.DSLState;
+import domainSpecificLanguage.graph.DSLStateMachine;
+import domainSpecificLanguage.graph.DSLTransition;
+import engine.GraphSimulatorInterface;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
-import abstractGraph.AbstractModel;
-import abstractGraph.AbstractState;
-import abstractGraph.AbstractStateMachine;
-import abstractGraph.AbstractTransition;
-import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
+import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.events.Assignment;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
+import abstractGraph.events.EnumeratedVariableChange;
 import abstractGraph.events.Events;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.events.InternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
@@ -31,65 +37,70 @@ import abstractGraph.events.VariableChange;
  * 
  * @details This class is NOT thread safe.
  */
-class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, DSLState, DSLTransition, ?>>
     implements
-    GraphSimulatorInterface<GS, M, S, T> {
+    GraphSimulatorInterface<GS, DSLStateMachine, DSLState, DSLTransition> {
 
   /** This is the list of the different queues used in the simulator. */
   protected LinkedList<SingleEvent> internal_functional_event_queue =
-      new LinkedList<SingleEvent>();
+      new LinkedList<>();
   protected LinkedList<SingleEvent> internal_proof_event_queue =
-      new LinkedList<SingleEvent>();
+      new LinkedList<>();
   protected LinkedList<SingleEvent> commands_queue =
-      new LinkedList<SingleEvent>();
+      new LinkedList<>();
   protected LinkedList<SingleEvent> temporary_commands_queue =
-      new LinkedList<SingleEvent>();
+      new LinkedList<>();
   protected LinkedList<ExternalEvent> ACT_FCI_queue =
-      new LinkedList<ExternalEvent>();
-  protected LinkedHashMap<M, S> functionnal_transitions_pull_list =
-      new LinkedHashMap<M, S>();
-  protected LinkedHashMap<M, S> proof_transitions_pull_list =
-      new LinkedHashMap<M, S>();
+      new LinkedList<>();
+  protected LinkedHashMap<DSLStateMachine, DSLState> functionnal_transitions_pull_list =
+      new LinkedHashMap<>();
+  protected LinkedHashMap<DSLStateMachine, DSLState> proof_transitions_pull_list =
+      new LinkedHashMap<>();
   protected LinkedList<ExternalEvent> restrained_external_event_list = null;
-  protected HashMap<BooleanVariable, Boolean> temporary_variable_change = new HashMap<BooleanVariable, Boolean>();
+  protected HashMap<EnumeratedVariable, Byte> temporary_variable_change =
+      new HashMap<>();
+
   /* Only used when executing the micro-steps */
   protected LinkedList<SingleEvent> external_proof_event_queue =
       new LinkedList<SingleEvent>();
 
   /** This is the model to execute */
-  protected AbstractModel<M, S, T> model;
+  protected DSLModel model;
 
   /** This is the model of the proof */
-  protected AbstractModel<M, S, T> proof;
+  protected DSLModel proof;
 
   protected boolean verbose = true;
 
-  public GraphSimulator(AbstractModel<M, S, T> model,
-      AbstractModel<M, S, T> proof) {
+  public DSLGraphSimulator(DSLModel model, DSLModel proof) {
     this.model = model;
     this.proof = proof;
 
     checkCompatibility();
   }
 
-  public GraphSimulator(AbstractModel<M, S, T> model) {
+  public DSLGraphSimulator(DSLModel model) {
     this.model = model;
     checkCompatibility();
   }
 
+  public int getNumberVariables() {
+    return model.variables.size() + proof.variables.size();
+  }
+
   @Override
-  public GraphSimulator<GS, M, S, T> clone() {
-    GraphSimulator<GS, M, S, T> result =
-        new GraphSimulator<GS, M, S, T>(this.model, this.proof);
+  public DSLGraphSimulator<GS> clone() {
+    DSLGraphSimulator<GS> result =
+        new DSLGraphSimulator<>(this.model, this.proof);
     result.setVerbose(this.verbose);
     return result;
   }
 
-  public LinkedHashMap<M, S> getFunctionnalTransitionsPullList() {
+  public LinkedHashMap<DSLStateMachine, DSLState> getFunctionnalTransitionsPullList() {
     return functionnal_transitions_pull_list;
   }
 
-  public LinkedHashMap<M, S> getProofTransitionsPullList() {
+  public LinkedHashMap<DSLStateMachine, DSLState> getProofTransitionsPullList() {
     return proof_transitions_pull_list;
   }
 
@@ -114,12 +125,12 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
   }
 
   @Override
-  public AbstractModel<M, S, T> getModel() {
+  public DSLModel getModel() {
     return model;
   }
 
   @Override
-  public AbstractModel<M, S, T> getProof() {
+  public DSLModel getProof() {
     return proof;
   }
 
@@ -141,96 +152,11 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     return internal_functional_event_queue.size() == 0;
   }
 
-  /*
-   * It is true iff the proof model has executed an external event that has not
-   * been executed by the functional model
-   */
-  private boolean has_executed_external_event_in_proof = false;
-  /* The last external event processed by the proof model */
-  private ExternalEvent external_event_to_execute = null;
-
-  /**
-   * This function execute the smallest step possible:
-   * <ol>
-   * <li>
-   * If the proof model is not completely executed, it execute one step in the
-   * proof model</li>
-   * <li>
-   * If the proof model is stable, it then executes a step in the functional
-   * model if there is any</li>
-   * <li>
-   * Otherwise, it executes the first external event in the proof model if not
-   * already executed in the model. It will be executed in the functional model
-   * otherwise.</li>
-   * </ol>
-   * 
-   * @param external_events
-   */
-  public void processSmallestStep(GS internal_global_state,
-      LinkedList<ExternalEvent> external_events) {
-
-    if (proof != null && internal_proof_event_queue.size() != 0) {
-      proof_transitions_pull_list.clear();
-      processSingleEvent(proof, internal_global_state,
-          internal_proof_event_queue.remove(), internal_proof_event_queue);
-      return;
-    }
-
-    if (proof != null && external_proof_event_queue.size() != 0) {
-      proof_transitions_pull_list.clear();
-      processSingleEvent(proof, internal_global_state,
-          external_proof_event_queue.remove(), internal_proof_event_queue);
-      return;
-    }
-
-    if (internal_functional_event_queue.size() != 0) {
-      functionnal_transitions_pull_list.clear();
-
-      processSingleEvent(model, internal_global_state,
-          internal_functional_event_queue.remove(), external_proof_event_queue);
-
-      internal_functional_event_queue.addAll(external_proof_event_queue);
-
-      if (proof != null) {
-        external_proof_event_queue.addAll(temporary_commands_queue);
-        temporary_commands_queue.clear();
-      } else {
-        /*
-         * If the proof model is empty, we need to clear its queue that will
-         * otherwise never be emptied
-         */
-        external_proof_event_queue.clear();
-      }
-      return;
-    }
-
-    if (has_executed_external_event_in_proof || proof == null) {
-      functionnal_transitions_pull_list.clear();
-      commands_queue.clear();
-      external_event_to_execute = external_events.poll();
-      processSingleEvent(model, internal_global_state,
-          external_event_to_execute, external_proof_event_queue);
-      has_executed_external_event_in_proof = false;
-      internal_functional_event_queue.addAll(external_proof_event_queue);
-      if (proof != null) {
-        external_proof_event_queue.addAll(temporary_commands_queue);
-        temporary_commands_queue.clear();
-      }
-    } else {
-      proof_transitions_pull_list.clear();
-      external_event_to_execute = external_events.poll();
-      processSingleEvent(proof, internal_global_state,
-          external_event_to_execute, internal_proof_event_queue);
-      has_executed_external_event_in_proof = true;
-    }
-
-  }
-
   /* Used for the next function */
-  private LinkedHashMap<M, S> temporary_tag =
-      new LinkedHashMap<M, S>();
-  private LinkedList<SingleEvent> temporary_queue =
-      new LinkedList<SingleEvent>();
+  private LinkedHashMap<DSLStateMachine, DSLState> temporary_tag =
+      new LinkedHashMap<>();
+  private LinkedList<InternalEvent> temporary_queue =
+      new LinkedList<>();
 
   /**
    * Execute a single event (that can be either external or internal).
@@ -255,20 +181,21 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
    * @param event_list
    *          The list in which the generated internal events will be added.
    */
-  protected void processSingleEvent(AbstractModel<M, S, T> model,
-      AbstractGlobalState<M, S, T, ?> global_state,
+  protected void processSingleEvent(
+      DSLModel model,
+      AbstractGlobalState<DSLStateMachine, DSLState, DSLTransition, ?> global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
     temporary_tag.clear();
 
-    for (M state_machine : model) {
-      S current_state = global_state.getState(state_machine);
+    for (DSLStateMachine state_machine : model) {
+      DSLState current_state = global_state.getState(state_machine);
       assert current_state != null : "No state selected for the state machine "
           + state_machine.getName();
-      Iterator<T> transition_iterator =
+      Iterator<DSLTransition> transition_iterator =
           current_state.iteratorTransitions(event);
       while (transition_iterator.hasNext()) {
-        T transition = transition_iterator.next();
+        DSLTransition transition = transition_iterator.next();
 
         boolean evaluation;
 
@@ -284,6 +211,8 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
           temporary_tag.put(state_machine, transition.getDestination());
           processAction(transition.getActions().iterator(),
               global_state, event_list);
+
+          /* ONLY one transition should be true per automaton */
           break;
         }
       }
@@ -294,18 +223,19 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       } else {
         proof_transitions_pull_list.putAll(temporary_tag);
       }
-      for (Entry<M, S> entry : temporary_tag.entrySet()) {
+      for (Entry<DSLStateMachine, DSLState> entry : temporary_tag.entrySet()) {
         global_state.setState(entry.getKey(), entry.getValue());
       }
     }
     // Put the variables change event at the end of the event queue.
-    for (Entry<BooleanVariable, Boolean> entry : temporary_variable_change
+    for (Entry<EnumeratedVariable, Byte> entry : temporary_variable_change
         .entrySet()) {
       global_state.setVariableValue(entry.getKey(), entry.getValue());
     }
     temporary_variable_change.clear();
     event_list.addAll(temporary_queue);
     temporary_queue.clear();
+
     if (this.verbose) {
       System.out.print("-->"
           + ((event != null) ? event.toString() : "null")
@@ -342,8 +272,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
    * @param event_list
    *          The event list in which the new events will be added.
    */
-  private void processAction(Iterator<SingleEvent> single_event_iterator,
-      AbstractGlobalState<M, S, T, ?> global_state,
+  private void processAction(
+      Iterator<SingleEvent> single_event_iterator,
+      AbstractGlobalState<DSLStateMachine, DSLState, DSLTransition, ?> global_state,
       LinkedList<SingleEvent> event_list) {
 
     while (single_event_iterator.hasNext()) {
@@ -351,26 +282,17 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
 
       if (single_event instanceof VariableChange) {
         VariableChange variable_change = (VariableChange) single_event;
-
-        /*
-         * We put the variable change in a temporary queue to be processed at
-         * the end of processSingleEvent
-         */
-        if (!global_state.variableIsInitialized(variable_change
-            .getModifiedVariable())) {
-          temporary_variable_change.put(variable_change.getModifiedVariable(),
-              !variable_change.isNegated());
-          temporary_queue.add(variable_change);
-        } else if (global_state
-            .variableValueWillChanged(
-                variable_change.getModifiedVariable(),
-                !variable_change.isNegated())) {
-          temporary_variable_change.put(variable_change.getModifiedVariable(),
-              !variable_change.isNegated());
-          temporary_queue.add(variable_change);
-        }
+        throw new Error(
+            "VariableChange events are not allowed in the DSLGraphSimulator:"
+                + variable_change);
       } else if (single_event instanceof SynchronisationEvent) {
         event_list.add(single_event);
+      } else if (single_event instanceof Assignment) {
+        EnumeratedVariable variable = ((Assignment) single_event).getVariable();
+        Byte value = ((Assignment) single_event).getValue();
+
+        temporary_variable_change.put(variable, value);
+        temporary_queue.add(new EnumeratedVariableChange(variable));
       } else if (single_event instanceof ComputerCommandFunction) {
 
         commands_queue.add(single_event);
@@ -380,12 +302,10 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
               .getACTFCI((ComputerCommandFunction) single_event);
 
           for (Pair<Formula, LinkedList<ExternalEvent>> condition_with_act : list) {
-
             if (condition_with_act.getFirst().eval(
                 global_state.getValuation())) {
               ACT_FCI_queue.addAll(condition_with_act.getSecond());
             }
-
           }
         }
         if (proof != null) {
@@ -422,8 +342,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
 
   /**
    * Execute the model m, starting from the given CompactGlobalState, on the
-   * event e
-   * and using the internal event queue `single_event_queue`.
+   * event e and using the internal event queue `single_event_queue`.
    * 
    * @param m
    *          The model to run.
@@ -434,7 +353,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
    * @param single_event_queue
    *          The queue to use for the internal events.
    */
-  protected void execute(AbstractModel<M, S, T> m, GS starting_state,
+  protected void execute(DSLModel m, GS starting_state,
       SingleEvent e,
       LinkedList<SingleEvent> single_event_queue) {
 
@@ -595,10 +514,11 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     }
 
     /* Verification of 4) */
-    for (M machine : model) {
-      Iterator<T> transition_iterator = machine.iteratorTransitions();
+    for (DSLStateMachine machine : model) {
+      Iterator<DSLTransition> transition_iterator = machine
+          .iteratorTransitions();
       while (transition_iterator.hasNext()) {
-        T transition = transition_iterator.next();
+        DSLTransition transition = transition_iterator.next();
 
         for (SingleEvent event : transition.getActions()) {
           /* Verification of 4) */
@@ -618,10 +538,11 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       return true;
     }
 
-    for (M machine : proof) {
-      Iterator<T> transition_iterator = machine.iteratorTransitions();
+    for (DSLStateMachine machine : proof) {
+      Iterator<DSLTransition> transition_iterator = machine
+          .iteratorTransitions();
       while (transition_iterator.hasNext()) {
-        T transition = transition_iterator.next();
+        DSLTransition transition = transition_iterator.next();
 
         for (SingleEvent event : transition.getEvents()) {
           if (event instanceof ExternalEvent) {
@@ -638,8 +559,8 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
         for (SingleEvent event : transition.getActions()) {
           if (event instanceof VariableChange) {
             /* Verification of 1) */
-            BooleanVariable var = ((VariableChange) event)
-                .getModifiedVariable();
+            BooleanVariable var =
+                ((VariableChange) event).getModifiedVariable();
             if (model.containsVariable(var)) {
               System.err.println(
                   "The proof model does write the variable " + var +
@@ -674,9 +595,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
   public LinkedHashSet<ExternalEvent> getPossibleEvent(GS global_state) {
     LinkedHashSet<ExternalEvent> list_events =
         new LinkedHashSet<ExternalEvent>();
-    for (M state_machine : getModel()) {
-      S current_state = global_state.getState(state_machine);
-      for (T transition : current_state) {
+    for (DSLStateMachine state_machine : getModel()) {
+      DSLState current_state = global_state.getState(state_machine);
+      for (DSLTransition transition : current_state) {
         Events events = transition.getEvents();
         for (SingleEvent single_event : events) {
           if (single_event instanceof ExternalEvent) {
@@ -696,9 +617,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
      * events of the functional
      */
     if (proof != null) {
-      for (M state_machine : getProof()) {
-        S current_state = global_state.getState(state_machine);
-        for (T transition : current_state) {
+      for (DSLStateMachine state_machine : getProof()) {
+        DSLState current_state = global_state.getState(state_machine);
+        for (DSLTransition transition : current_state) {
           Events events = transition.getEvents();
           for (SingleEvent single_event : events) {
 
@@ -719,5 +640,25 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       }
     }
     return list_events;
+  }
+
+  /**
+   * @return The initial global state.
+   */
+  public DSLGlobalState getInitialGlobalState() {
+    DSLGlobalState global_state = new DSLGlobalState(getNumberVariables());
+    for (DSLStateMachine m : model) {
+      global_state.setState(m, m.getInitial_state());
+    }
+    for (DSLStateMachine m : proof) {
+      global_state.setState(m, m.getInitial_state());
+    }
+    for (Entry<EnumeratedVariable, Byte> pair : model.initial_values.entrySet()) {
+      global_state.setVariableValue(pair.getKey(), pair.getValue());
+    }
+    for (Entry<EnumeratedVariable, Byte> pair : proof.initial_values.entrySet()) {
+      global_state.setVariableValue(pair.getKey(), pair.getValue());
+    }
+    return global_state;
   }
 }

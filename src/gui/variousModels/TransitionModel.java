@@ -9,6 +9,10 @@ import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
 
+import domainSpecificLanguage.graph.DSLModel;
+import domainSpecificLanguage.graph.DSLStateMachine;
+import domainSpecificLanguage.graph.DSLTransition;
+import abstractGraph.AbstractTransition;
 import utils.Pair;
 
 @SuppressWarnings("serial")
@@ -25,8 +29,8 @@ public class TransitionModel extends AbstractTableModel {
   private static final int GUARD = 4;
   private static final int ACTIONS = 5;
 
-  private HashMap<Integer, Pair<String, Transition>> transitions =
-      new HashMap<Integer, Pair<String, Transition>>();
+  private HashMap<Integer, Pair<String, AbstractTransition<?>>> transitions =
+      new HashMap<Integer, Pair<String, AbstractTransition<?>>>();
 
   public TransitionModel() {
   }
@@ -39,9 +43,26 @@ public class TransitionModel extends AbstractTableModel {
     for (StateMachine machine : m) {
       Iterator<Transition> it = machine.iteratorTransitions();
       while (it.hasNext()) {
-        Transition transition = it.next();
+        AbstractTransition<?> transition = it.next();
         transitions.put(new Integer(transitions.size()),
-            new Pair<String, Transition>(machine.getName(), transition));
+            new Pair<String, AbstractTransition<?>>(machine.getName(),
+                transition));
+      }
+    }
+  }
+
+  public void addModel(DSLModel m) {
+    if (m == null) {
+      return;
+    }
+
+    for (DSLStateMachine machine : m) {
+      Iterator<DSLTransition> it = machine.iteratorTransitions();
+      while (it.hasNext()) {
+        AbstractTransition<?> transition = it.next();
+        transitions.put(new Integer(transitions.size()),
+            new Pair<String, AbstractTransition<?>>(machine.getName(),
+                transition));
       }
     }
   }
@@ -63,9 +84,9 @@ public class TransitionModel extends AbstractTableModel {
 
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
-    Pair<String, Transition> pair = transitions.get(rowIndex);
+    Pair<String, AbstractTransition<?>> pair = transitions.get(rowIndex);
     String state_machine = pair.getFirst();
-    Transition transition = pair.getSecond();
+    AbstractTransition<?> transition = pair.getSecond();
     if (transition == null) {
       return "ERROR";
     }

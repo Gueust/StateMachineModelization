@@ -1,6 +1,5 @@
 package domainSpecificLanguage.graph;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.GenericToString;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractTransition;
@@ -62,7 +61,6 @@ public class DSLTransition extends AbstractTransition<DSLState> {
 
   @Override
   public boolean evalCondition(AbstractGlobalState<?, DSLState, ?, ?> env) {
-    // TODO Auto-generated method stub
-    throw new NotImplementedException();
+    return condition.eval(env.getValuation());
   }
 }

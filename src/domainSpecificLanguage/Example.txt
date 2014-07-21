@@ -1,7 +1,7 @@
 /* This file is an example for the DSL syntax. 
  */
 // Comments are allowed using the block or inl ine C style comments.
-enumeration POSITION_AIGUILLE = { gauche, droite, inconnu};
+enumeration POSITION_AIGUILLE = { gauche, droite, inconnu };
 
 variables
   POSITION_AIGUILLE position(inconnu);

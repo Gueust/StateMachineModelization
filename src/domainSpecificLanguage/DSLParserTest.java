@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
+import utils.IOUtils;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.parser.FSM_LanguageLexer;
 import domainSpecificLanguage.parser.FSM_LanguageParser;
@@ -18,14 +19,8 @@ import domainSpecificLanguage.parser.FSM_builder;
 
 public class DSLParserTest {
 
-  static String readFile(String path, Charset encoding)
-      throws IOException {
-    byte[] encoded = Files.readAllBytes(Paths.get(path));
-    return new String(encoded, encoding);
-  }
-
   public static void main(String args[]) throws IOException {
-    String content = readFile("src/domainSpecificLanguage/Example.txt",
+    String content = IOUtils.readFile("src/domainSpecificLanguage/Example.txt",
         StandardCharsets.UTF_8);
 
     ANTLRInputStream input = new ANTLRInputStream(content);
