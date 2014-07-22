@@ -239,7 +239,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           + possible_external_events.size());
 
       for (ExternalEvent e : possible_external_events) {
-        System.out.print("*** The event to eat : " + e + "\n");
         GS next_state = simulator.execute(state, e);
 
         next_state.last_processed_external_event = e;
