@@ -50,13 +50,14 @@ public class LaunchProofFromAEFDFormat {
      */
     // launcheModelChecking("PN/PN à SAL.txt", null);
     // launcheModelChecking("PN/PN à SAL.txt", "PN/PN à SAL Preuve.txt");
-    launcheModelChecking("PN/PN a SAL Cas2.txt",
-        "PN/PN a SAL Cas2 Preuve.txt");
+    // launcheModelChecking("PN/PN a SAL Cas2.txt",
+    // "PN/PN a SAL Cas2 Preuve.txt");
     // launcheModelChecking("PN/PN a SAL Cas2.txt",
     // null);
     // launcheModelChecking("PN/PN a SAL Cas3.txt",
     // "PN/PN a SAL Cas3 Preuve.txt");
 
+    launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
     /*
      * GraphFactoryAEFD factory = new GraphFactoryAEFD();
@@ -177,7 +178,7 @@ public class LaunchProofFromAEFDFormat {
     }
   }
 
-  public static void launcheModelChecking(
+  public static void launchModelChecking(
       String functional_model,
       String proof_model) throws IOException {
 
@@ -191,8 +192,7 @@ public class LaunchProofFromAEFDFormat {
     if (proof_model != null) {
       proof = graph_factory.buildModel(proof_model, proof_model);
       proof.build();
-    }
-    else {
+    } else {
       proof = null;
     }
 

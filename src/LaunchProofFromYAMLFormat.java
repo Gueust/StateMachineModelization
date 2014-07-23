@@ -46,7 +46,7 @@ public class LaunchProofFromYAMLFormat {
     String proof_model = GeneratorFromTemplate
         .load("PN/PN_JB_1_voie_preuve.yaml");
 
-    launcheModelChecking(functional_model, proof_model);
+    launchModelChecking(functional_model, proof_model);
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
@@ -145,7 +145,7 @@ public class LaunchProofFromYAMLFormat {
     }
   }
 
-  public static void launcheModelChecking(
+  public static void launchModelChecking(
       String functional_model,
       String proof_model) throws IOException {
 
