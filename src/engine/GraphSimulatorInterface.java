@@ -18,8 +18,6 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T,
 
   public AbstractModel<M, S, T> getProof();
 
-  public GraphSimulatorInterface<GS, M, S, T> clone();
-
   /**
    * Execute one external event completely.
    * It MUST NOT modify the GlobalState given as parameter.
