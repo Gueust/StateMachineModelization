@@ -6,6 +6,17 @@ import abstractGraph.conditions.cnf.Literal;
 
 public class CustomToString {
 
+  public static final CustomToString INSTANCE = new CustomToString();
+  protected String NOT;
+  protected String OR;
+  protected String AND;
+
+  protected CustomToString() {
+    NOT = "NON";
+    OR = "OU";
+    AND = "ET";
+  }
+
   public String toString(Formula formula) {
     if (formula instanceof Literal) {
       return toString((Literal) formula);
@@ -25,6 +36,8 @@ public class CustomToString {
       return toString((True) formula);
     } else if (formula instanceof False) {
       return toString((False) formula);
+    } else if (formula instanceof EnumerationEqualityFormula) {
+      return toString((EnumerationEqualityFormula) formula);
     } else {
       throw new Error("Invalid: " + formula.getClass());
     }
@@ -32,7 +45,7 @@ public class CustomToString {
 
   public String toString(Literal formula) {
     if (formula.isNegated()) {
-      return Formula.NOT + " " + this.toString(formula.getVariable());
+      return NOT + " " + this.toString(formula.getVariable());
     } else {
       return this.toString(formula.getVariable());
     }
@@ -45,7 +58,7 @@ public class CustomToString {
       if (is_first) {
         s += this.toString(l);
       } else {
-        s += " " + Formula.OR + " " + this.toString(l);
+        s += " " + OR + " " + this.toString(l);
       }
       is_first = false;
     }
@@ -64,26 +77,38 @@ public class CustomToString {
   public String toString(AndFormula formula) {
     Formula p = formula.getFirst();
     Formula q = formula.getSecond();
-    return parenthesisAND(p) + " " + Formula.AND + " "
+    return parenthesisAND(p) + " " + AND + " "
         + parenthesisAND(q);
   }
 
   public String toString(OrFormula formula) {
     Formula p = formula.getFirst();
     Formula q = formula.getSecond();
-    return this.toString(p) + " " + Formula.OR + " " + this.toString(q);
+    return this.toString(p) + " " + OR + " " + this.toString(q);
   }
 
   public String toString(NotFormula formula) {
     if (formula.getF() instanceof BooleanVariable) {
-      return "(" + Formula.NOT + " " + this.toString(formula.getF()) + ")";
+      return "(" + NOT + " " + this.toString(formula.getF()) + ")";
     } else {
-      return "(" + Formula.NOT + " (" + this.toString(formula.getF()) + ") )";
+      return "(" + NOT + " (" + this.toString(formula.getF()) + ") )";
     }
   }
 
   public String toString(EnumeratedVariable formula) {
     return formula.getVarname();
+  }
+
+  public String toString(True formula) {
+    return formula.toString();
+  }
+
+  public String toString(False formula) {
+    return formula.toString();
+  }
+
+  private String toString(EnumerationEqualityFormula formula) {
+    return formula.toString();
   }
 
   private String parenthesisAND(Formula f) {
@@ -96,11 +121,4 @@ public class CustomToString {
     return left;
   }
 
-  public String toString(True formula) {
-    return formula.toString();
-  }
-
-  public String toString(False formula) {
-    return formula.toString();
-  }
 }

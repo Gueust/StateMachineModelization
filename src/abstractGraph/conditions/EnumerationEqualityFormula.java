@@ -37,7 +37,14 @@ public class EnumerationEqualityFormula extends Formula {
 
   @Override
   public String toString() {
-    return variable.getVarname() + " is " + variable.getOptionFromByte(value);
+    String middle_string;
+    if (is_not) {
+      middle_string = " is not ";
+    } else {
+      middle_string = " is ";
+    }
+    return variable.getVarname() + middle_string
+        + variable.getOptionFromByte(value);
   }
 
 }

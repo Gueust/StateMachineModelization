@@ -145,7 +145,7 @@ public abstract class Formula {
       new CustomToString();
 
   /**
-   * Allow custum printing of formulas
+   * Allow custom printing of formulas
    * 
    * @param c
    *          A customizer that will print the object.
