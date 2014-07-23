@@ -48,14 +48,15 @@ public class LaunchProofFromAEFDFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    // launcheModelChecking("PN/PN à SAL.txt", null);
-    // launcheModelChecking("PN/PN à SAL.txt", "PN/PN à SAL Preuve.txt");
-    // launcheModelChecking("PN/PN a SAL Cas2.txt",
-    // "PN/PN a SAL Cas2 Preuve.txt");
-    // launcheModelChecking("PN/PN a SAL Cas2.txt",
+    // launcheModelChecking("examples/PN à SAL.txt", null);
+    // launcheModelChecking("examples/PN à SAL.txt",
+    // "examples/PN à SAL Preuve.txt");
+    // launcheModelChecking("examples/PN a SAL+TPL.txt",
+    // "examples/PN a SAL+TPL Preuve.txt");
+    // launcheModelChecking("examples/PN a SAL Cas2.txt",
     // null);
-    // launcheModelChecking("PN/PN a SAL Cas3.txt",
-    // "PN/PN a SAL Cas3 Preuve.txt");
+    // launcheModelChecking("examples/PN a SAL Cas3.txt",
+    // "examples/PN a SAL Cas3 Preuve.txt");
 
     launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
