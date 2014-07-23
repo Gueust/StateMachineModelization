@@ -45,6 +45,8 @@ which uses:
 - log4j-1.2.13.jar
 
 - graphviz-2.38 is used in a test to display the activation graph.
+- mapdb-1.0.3.jar can be used to have a HashMap backed up with disk memory
+during the model checking.
 
 - snakeyaml-1.13.jar is used when using yaml files
 The final arborescence is:
