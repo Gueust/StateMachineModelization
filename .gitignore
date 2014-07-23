@@ -11,7 +11,7 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /bin
-*.cnf
+lib/graphviz-2.38/
 
 # Generated file (using ANTLR v4 to generate a parser from a grammar)
 BooleanExpressionParser.java

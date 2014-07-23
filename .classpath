@@ -11,6 +11,5 @@
 	<classpathentry kind="lib" path="lib/POI HSSF/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/POI HSSF/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/POI HSSF/poi-3.10-FINAL-20140208.jar"/>
-	<classpathentry kind="lib" path="lib/mapdb-1.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
