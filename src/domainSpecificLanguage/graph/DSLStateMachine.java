@@ -95,10 +95,11 @@ public class DSLStateMachine extends
     return states.get(state_name);
   }
 
-  @Override
-  public String toString() {
+  public String toString(boolean is_proof) {
     StringBuilder string_builder = new StringBuilder();
-    string_builder.append("machine " + getName() +
+    String keyword = is_proof ? "proof" : "machine";
+
+    string_builder.append(keyword + " " + getName() +
         "(" + initial_state.getId() + ")\n");
     for (DSLState state : states.values()) {
       for (DSLTransition transition : state) {
@@ -108,6 +109,12 @@ public class DSLStateMachine extends
     string_builder.append("end");
 
     return string_builder.toString();
+  }
+
+  @Override
+  public String toString() {
+    return toString(false);
+
   }
 
 }

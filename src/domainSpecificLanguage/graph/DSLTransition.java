@@ -49,8 +49,8 @@ public class DSLTransition extends AbstractTransition<DSLState> {
     DSLToString customizer = DSLToString.INSTANCE;
 
     return from + " -> " + to
-        + " on "
-        + GenericToString.printCollection(events.getEvents())
+        + " : on "
+        + GenericToString.printCollection(events.getCollection())
         + " when "
         + ((condition != null) ? condition.toString(customizer) : " true") +
         " do " + actions + ";";

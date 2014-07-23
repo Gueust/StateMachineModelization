@@ -121,18 +121,18 @@ public class DSLModel extends
       string_builder
           .append(beginning + "\n" + variablesToString("  ") + "end\n\n");
     }
-    if (external_events.size() != 0) {
-      string_builder.append("external_events\n  " +
+    if (external_events.size() != 0 && !is_proof) {
+      string_builder.append("external events\n  " +
           GenericToString.printCollection(external_events) + ";\nend\n\n");
     }
-    if (command_events.size() != 0) {
-      string_builder.append("command_events\n  " +
+    if (command_events.size() != 0 && !is_proof) {
+      string_builder.append("commands\n  " +
           GenericToString.printCollection(command_events) + ";\nend\n\n");
     }
     if (internal_events.size() != 0) {
       String beginning;
       if (is_proof) {
-        beginning = "proof internal_events";
+        beginning = "proof internal events";
       } else {
         beginning = "internal_events";
       }
@@ -142,7 +142,7 @@ public class DSLModel extends
 
     if (state_machines.size() != 0) {
       for (DSLStateMachine state_machine : state_machines) {
-        string_builder.append(state_machine + "\n");
+        string_builder.append(state_machine.toString(is_proof) + "\n");
       }
       string_builder.append("\n");
     }
