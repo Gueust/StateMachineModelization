@@ -51,6 +51,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   public HashMap<String, ExternalEvent> external_events;
   /* All the commands that the model can generate */
   private HashMap<String, CommandEvent> commands_events;
+
   private HashMap<String, SynchronisationEvent> synchronisation_events;
   private HashMap<String, VariableChange> variable_modification_events;
   private HashMap<String, EnumeratedVariable> existingVariables;
@@ -257,6 +258,14 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   @Override
   public Collection<EnumeratedVariable> getExistingVariables() {
     return existingVariables.values();
+  }
+
+  public HashMap<String, CommandEvent> getCommands_events() {
+    return commands_events;
+  }
+
+  public HashMap<String, SynchronisationEvent> getSynchronisation_events() {
+    return synchronisation_events;
   }
 
   /**

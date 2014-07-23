@@ -80,7 +80,7 @@ public class Events implements Iterable<SingleEvent> {
     return events.iterator();
   }
 
-  public Set<SingleEvent> getEvents() {
+  public Set<SingleEvent> getCollection() {
     return events;
   }
 }

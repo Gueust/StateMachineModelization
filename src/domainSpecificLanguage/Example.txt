@@ -19,12 +19,12 @@ internal events
 end
 
 commands
-
+  cmd_1;
 end
 
 machine Machine_1(inconnu)
-    inconnu -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
-    gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
+    inconnu -> droite : on aiguille_contrôlée_droite, toto1 when position is not droite do position := droite, cmd_1;
+    gauche -> droite : on aiguille_contrôlée_droite when not position_droite do position := droite;
     inconnu -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
     droite -> gauche : on aiguille_contrôlée_gauche when position is droite or position is inconnu do position := gauche;
 end
@@ -38,7 +38,7 @@ machine Machine_2(inconnu)
     inconnu -> droite : on toto1 when position is not droite do position := droite;
     gauche -> droite : on aiguille_contrôlée_droite when position is not droite do position := droite;
     inconnu -> gauche : on position when position is droite or position is inconnu do position := gauche;
-    droite -> gauche : on toto3 when position is droite or position is inconnu do position := gauche;
+    droite -> gauche : on toto3 when position is droite or position is inconnu do toto2;
 end
 
 
