@@ -24,7 +24,6 @@ import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import domainSpecificLanguage.Template;
-import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
 
 public class DSLModel extends
     AbstractModel<DSLStateMachine, DSLState, DSLTransition> {
