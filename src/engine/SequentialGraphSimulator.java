@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.ExternalEvent;
@@ -175,11 +175,17 @@ public class SequentialGraphSimulator extends
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();
     commands_queue.clear();
+    if (proof == null) {
+      external_proof_event_queue.clear();
+    }
 
     GlobalState copied_starting_state = starting_state.clone();
 
     LinkedList<SingleEvent> transfert_list = new LinkedList<SingleEvent>();
     SingleEvent curr_event = event;
+    if (curr_event != null) {
+      external_proof_event_queue.add(curr_event);
+    }
 
     do {
       transfert_list.clear();
@@ -188,7 +194,6 @@ public class SequentialGraphSimulator extends
           transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
-      external_proof_event_queue.add(curr_event);
       external_proof_event_queue.addAll(transfert_list);
       external_proof_event_queue.addAll(temporary_commands_queue);
       temporary_commands_queue.clear();

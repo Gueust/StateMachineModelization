@@ -24,7 +24,7 @@ import abstractGraph.conditions.valuation.Valuation;
  * 
  * The formulas can be:
  * <ol>
- * <li> the constant true, or false formula. </li>
+ * <li>the constant true, or false formula.</li>
  * <li>The and of a formula, the conjunction (and) or disjunction (or) of 2
  * formulas.</li>
  * <li>The equality between a enumerated variable (i.e. a variable having its

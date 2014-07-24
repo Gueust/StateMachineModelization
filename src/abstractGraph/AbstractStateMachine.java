@@ -100,4 +100,29 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
    */
   public abstract S getState(String state_name);
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result
+        + ((state_machine_name == null) ? 0 : state_machine_name.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AbstractStateMachine other = (AbstractStateMachine) obj;
+    if (state_machine_name == null) {
+      if (other.state_machine_name != null)
+        return false;
+    } else if (!state_machine_name.equals(other.state_machine_name))
+      return false;
+    return true;
+  }
 }

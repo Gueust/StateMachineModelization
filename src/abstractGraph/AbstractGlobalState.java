@@ -295,7 +295,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     for (Entry<M, S> entry : other_state.state_machines_current_state
         .entrySet()) {
       if (state_machines_current_state.get(entry.getKey()) == null) {
-        System.out.println("The machine " + entry.getKey()
+        System.out.println("The machine " + entry.getKey().getName()
             + " does not exist in the first model.");
       }
     }

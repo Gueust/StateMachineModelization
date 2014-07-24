@@ -110,8 +110,10 @@ public class SimulationWindow extends JFrame {
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        assert (initial_CTLs != null);
         global_state = simulator.init(initial_CTLs);
         SimulationWindow main_window = new SimulationWindow(simulator);
+        main_window.initial_CTLs = initial_CTLs;
         main_window.global_state = global_state;
         main_window.pack();
         main_window.setLocationRelativeTo(null);
@@ -738,6 +740,8 @@ public class SimulationWindow extends JFrame {
         .getModel();
     listModel.removeAllElements();
     for (T one_data : data) {
+      assert (listModel != null);
+      assert (one_data != null);
       listModel.addElement(one_data.toString());
     }
   }

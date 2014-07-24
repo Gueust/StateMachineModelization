@@ -127,6 +127,12 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     return ACT_FCI_queue;
   }
 
+  /**
+   * A LinkedList that will define the scope of external event to fetch during
+   * the simulation.
+   * 
+   * @param external_event_list
+   */
   public void setRestrainedExternalEventList(
       LinkedList<ExternalEvent> external_event_list) {
     restrained_external_event_list = external_event_list;
@@ -192,6 +198,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       internal_functional_event_queue.addAll(external_proof_event_queue);
 
       if (proof != null) {
+        for (SingleEvent single_event : temporary_commands_queue) {
+          assert (single_event != null);
+        }
         external_proof_event_queue.addAll(temporary_commands_queue);
         temporary_commands_queue.clear();
       } else {
@@ -213,6 +222,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       has_executed_external_event_in_proof = false;
       internal_functional_event_queue.addAll(external_proof_event_queue);
       if (proof != null) {
+        for (SingleEvent single_event : temporary_commands_queue) {
+          assert (single_event != null);
+        }
         external_proof_event_queue.addAll(temporary_commands_queue);
         temporary_commands_queue.clear();
       }
@@ -304,6 +316,9 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       global_state.setVariableValue(entry.getKey(), entry.getValue());
     }
     temporary_variable_change.clear();
+    for (SingleEvent e : temporary_commands_queue) {
+      assert (e != null);
+    }
     event_list.addAll(temporary_queue);
     temporary_queue.clear();
     if (this.verbose) {
@@ -360,17 +375,36 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
             .getModifiedVariable())) {
           temporary_variable_change.put(variable_change.getModifiedVariable(),
               !variable_change.isNegated());
+          assert (variable_change != null);
+
+          /*
+           * Remove the next line to remove the propagation of the variable in
+           * the initialization.
+           */
           temporary_queue.add(variable_change);
         } else if (global_state
             .variableValueWillChanged(
                 variable_change.getModifiedVariable(),
                 !variable_change.isNegated())) {
+          /*
+           * The variable will generate an event only if its value changed.
+           */
           temporary_variable_change.put(variable_change.getModifiedVariable(),
               !variable_change.isNegated());
+          assert (variable_change != null);
           temporary_queue.add(variable_change);
         }
+
+        /*
+         * Case the single event is a synchronous event.
+         */
       } else if (single_event instanceof SynchronisationEvent) {
+        assert (single_event != null);
         event_list.add(single_event);
+
+        /*
+         * Case the single event is a FCI. It will generate external event
+         */
       } else if (single_event instanceof ComputerCommandFunction) {
 
         commands_queue.add(single_event);

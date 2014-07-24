@@ -54,6 +54,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
   /** The states to explore */
   private Set<GS> unvisited_states = new LinkedHashSet<GS>();
+  private Set<GS> unsafe_states = new LinkedHashSet<GS>();
 
   /**
    * The states that are excluded from the exploration by the postulate states
@@ -150,7 +151,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
     /* The state is already known. */
     if (isVisited(state)) { // || illegal_states.contains(state)){
-
       return null;
     }
 
@@ -188,9 +188,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    *          - unvisited_states and visited_states have never one item in
    *          common.
    *          - all states added in visited_states must be legal. To ensure this
-   *          invariant, we verify it for the states added to unvisited_states,
-   *          except for the initialization that is checked before beginning the
-   *          proof.
+   *          invariant, we verify it for the states added to unvisited_states
+   *          are legal.
    * @param simulator
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
@@ -222,6 +221,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     while (unvisited_states.size() != 0) {
       Iterator<GS> it = unvisited_states.iterator();
       GS state = it.next();
+      assert (state.isLegal());
+
       it.remove();
 
       addVisited(state);
@@ -231,6 +232,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           + unvisited_states.size());
       System.err.println("Total number of illegal states found:" +
           number_illegal_states);
+      System.err.println("Total number of unsafe states found:" +
+          unsafe_states.size());
 
       LinkedHashSet<ExternalEvent> possible_external_events =
           simulator.getPossibleEvent(state);
@@ -240,6 +243,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
+        assert (state.isLegal());
 
         next_state.last_processed_external_event = e;
         next_state.previous_global_state = state;
@@ -254,7 +258,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           System.out.println("A FULL trace of external event is: ");
           System.out.println("***********************************");
           System.out.println(printFullTrace(next_state));
-          return next_state;
+          unsafe_states.add(next_state);
         }
       }
     }
@@ -263,9 +267,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("Total number of illegal nodes found:" +
         number_illegal_states);
     System.err.println("Total number of explored node: " + i);
-
-    System.err.flush();
-    System.out.flush();
+    System.err.println("Total number of unsafe node: " + unsafe_states.size());
 
     return null;
   }

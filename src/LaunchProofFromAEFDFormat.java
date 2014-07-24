@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import utils.Logging;
 import utils.Monitoring;
@@ -31,6 +32,7 @@ import abstractGraph.events.ExternalEvent;
  * mais aussi directement sur la console.
  *
  */
+
 public class LaunchProofFromAEFDFormat {
 
   public static void main(String[] args) throws Exception {
@@ -48,17 +50,23 @@ public class LaunchProofFromAEFDFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    // launcheModelChecking("examples/PN à SAL.txt", null);
-    // launcheModelChecking("examples/PN à SAL.txt",
+    // launchModelChecking("examples/PN à SAL.txt", null);
+    // launchModelChecking("examples/PN à SAL.txt",
     // "examples/PN à SAL Preuve.txt");
-    // launcheModelChecking("examples/PN a SAL+TPL.txt",
+    // launchModelChecking("examples/PN a SAL+TPL.txt",
     // "examples/PN a SAL+TPL Preuve.txt");
-    // launcheModelChecking("examples/PN a SAL Cas2.txt",
+    // launchModelChecking("examples/PN a SAL Cas2.txt",
+
+    launchModelChecking("compteur essieux.txt",
+        "compteur essieux preuve.txt");
+    // launchModelChecking("PN/PN a SAL Cas2.txt",
+    // "PN/PN a SAL Cas2 Preuve.txt");
+    // launchModelChecking("PN/PN a SAL Cas2.txt",
     // null);
-    // launcheModelChecking("examples/PN a SAL Cas3.txt",
+    // launchModelChecking("examples/PN a SAL Cas3.txt",
     // "examples/PN a SAL Cas3 Preuve.txt");
 
-    launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
+    // launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
     /*
      * GraphFactoryAEFD factory = new GraphFactoryAEFD();
@@ -87,7 +95,7 @@ public class LaunchProofFromAEFDFormat {
     System.out.println("Execution took " + estimatedTime / 1000000000.0 + "s");
   }
 
-  public static void launcheModelCheckingWithProofTesting(
+  public static void launchModelCheckingWithProofTesting(
       String functional_model,
       String proof_model) throws IOException, InterruptedException {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
@@ -101,7 +109,7 @@ public class LaunchProofFromAEFDFormat {
     final SequentialGraphSimulator simulator =
         new SequentialGraphSimulator(model, proof);
     final SequentialGraphSimulator simulator_without_proof =
-        new SequentialGraphSimulator(model, proof);
+        new SequentialGraphSimulator(model);
 
     simulator.setVerbose(false);
     simulator_without_proof.setVerbose(false);
@@ -179,7 +187,8 @@ public class LaunchProofFromAEFDFormat {
     }
   }
 
-  public static void launchModelChecking(
+  public static Set<GlobalState> launchModelChecking(
+
       String functional_model,
       String proof_model) throws IOException {
 
@@ -240,6 +249,8 @@ public class LaunchProofFromAEFDFormat {
     } else {
       System.err.println("A state is not safe:\n" + result);
     }
+    return model_checker.getVisited_states();
+
   }
 
   private static void launchNurieuxWithRestrainedEventList(

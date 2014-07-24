@@ -40,8 +40,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- * Model m = factory.buildModel();
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -328,6 +328,7 @@ public class GraphFactoryAEFD {
     for (int i = 0; i < array_of_events.length; i++) {
       String event_string = array_of_events[i].trim();
       if (event_string.lastIndexOf(' ') != -1
+          && !event_string.startsWith("DTP_")
           && !event_string.startsWith("NON ")) {
         throw new UnsupportedOperationException(
             "When parsing the single event : " + event_string);
@@ -452,6 +453,9 @@ public class GraphFactoryAEFD {
     }
     switch (prefix) {
     case "CMD":
+    case "ATP":
+    case "DTP":
+    case "FCI":
     case "MSG":
     case "CTL":
     case "FTP":
