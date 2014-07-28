@@ -39,11 +39,13 @@ import org.jdesktop.swingx.JXTable;
 
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.ExternalEvent;
+import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
 import graph.GlobalState;
 import graph.Model;
 import graph.State;
 import graph.StateMachine;
+import graph.Transition;
 import gui.variousModels.SortedListModel;
 import gui.variousModels.TextAreaRenderer;
 import gui.variousModels.TransitionModel;
@@ -66,6 +68,7 @@ public class SimulationWindow extends JFrame {
   private HashMap<String, Boolean> initial_CTLs;
   private GlobalState global_state = new GlobalState();
   private JMenuItem mntmRestartSimulation;
+  private JMenuItem mntmLaunchExploration;
 
   JButton btnSimulate;
   JButton btnEatExternalEvents;
@@ -126,9 +129,6 @@ public class SimulationWindow extends JFrame {
 
       }
     });
-
-    JMenuItem mntmInitializeSimulation = new JMenuItem("Initialize simulation");
-    mnFile.add(mntmInitializeSimulation);
 
     JPanel fifo_panel = new JPanel();
     JPanel global_state_panel = new JPanel();
@@ -662,13 +662,33 @@ public class SimulationWindow extends JFrame {
       }
     });
 
+    JMenuItem mntmInitializeSimulation = new JMenuItem("Initialize Simulation");
+    menuBar.add(mntmInitializeSimulation);
+
     mntmInitializeSimulation
         .addActionListener(new InitializeSimulation(
             btnSimulate, btnEatExternalEvents, mntmRestartSimulation));
 
+    mntmLaunchExploration = new JMenuItem("Launch Exploration");
+    mntmLaunchExploration.setEnabled(false);
+    mnFile.add(mntmLaunchExploration);
+
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setPreferredSize(new Dimension(1200, 630));
     pack();
+
+    mntmLaunchExploration.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+            new ModelChecker<GlobalState, StateMachine, State, Transition>();
+        model_checker.addInitialState(SimulationWindow.this.global_state);
+        SimulationWindow.this.simulator.setVerbose(false);
+        model_checker.verify(SimulationWindow.this.simulator);
+
+      }
+    });
   }
 
   private class InitializeSimulation implements ActionListener {
@@ -701,6 +721,7 @@ public class SimulationWindow extends JFrame {
       eat.setEnabled(true);
       next.setEnabled(true);
       mntmRestartSimulation.setEnabled(true);
+      mntmLaunchExploration.setEnabled(true);
     }
   }
 
