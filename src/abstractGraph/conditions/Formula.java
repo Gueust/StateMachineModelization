@@ -87,9 +87,8 @@ public abstract class Formula {
    */
   public abstract boolean eval(AbstractValuation valuation);
 
-  @Override
-  final public boolean equals(Object o) {
-    return equalsBooleanFormula(this, (Formula) o);
+  final public boolean equals(Formula o) {
+    return equalsBooleanFormula(this, o);
   }
 
   private static final boolean equalsBooleanFormula(Formula f1, Formula f2) {
