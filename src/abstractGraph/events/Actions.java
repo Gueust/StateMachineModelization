@@ -41,6 +41,19 @@ public class Actions implements Iterable<SingleEvent> {
   }
 
   @Override
+  public Iterator<SingleEvent> iterator() {
+    return events.iterator();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((events == null) ? 0 : events.hashCode());
+    return result;
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -68,11 +81,6 @@ public class Actions implements Iterable<SingleEvent> {
       }
     }
     return true;
-  }
-
-  @Override
-  public Iterator<SingleEvent> iterator() {
-    return events.iterator();
   }
 
 }
