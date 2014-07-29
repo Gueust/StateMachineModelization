@@ -50,8 +50,9 @@ public class ModelCheckerTesting {
 
   @Test
   public void modelCheckerTesting() throws IOException {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new SingleWritingChecker());
+    Verifier<StateMachine, State, Transition> verifier = new Verifier<>();
+    verifier.addVerification(
+        new SingleWritingChecker<StateMachine, State, Transition>());
 
     String[] files = {
         "Three_ctl.yaml",

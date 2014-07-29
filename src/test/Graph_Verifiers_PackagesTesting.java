@@ -4,6 +4,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import graph.State;
+import graph.StateMachine;
+import graph.Transition;
 
 import java.io.IOException;
 
@@ -22,6 +25,10 @@ import abstractGraph.verifiers.WrittenAtLeastOnceChecker;
  * Test all verification units.
  */
 public class Graph_Verifiers_PackagesTesting {
+
+  private class MyVerifier extends Verifier<StateMachine, State, Transition> {
+
+  }
 
   /**
    * Load a model from the resource/$thisClassName/
@@ -51,7 +58,8 @@ public class Graph_Verifiers_PackagesTesting {
    * @param results
    *          results[i] is the answer for files[i].
    */
-  private void generalTest(Verifier verifier, String[] files, Boolean[] results) {
+  private void generalTest(MyVerifier verifier, String[] files,
+      Boolean[] results) {
     assertTrue(files.length == results.length);
 
     int i = 0;
@@ -97,8 +105,9 @@ public class Graph_Verifiers_PackagesTesting {
    */
   @Test
   public void SingleWritingChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new SingleWritingChecker());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new SingleWritingChecker<StateMachine, State, Transition>());
 
     String[] files = {
         "Graph_with_no_variable.txt",
@@ -138,8 +147,9 @@ public class Graph_Verifiers_PackagesTesting {
    */
   @Test
   public void WrittenAtLeastOnceChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new WrittenAtLeastOnceChecker());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new WrittenAtLeastOnceChecker<StateMachine, State, Transition>());
 
     String[] files = {
         "Graph_with_no_variable.txt",
@@ -194,8 +204,9 @@ public class Graph_Verifiers_PackagesTesting {
    */
   @Test
   public void DeterminismChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new DeterminismChecker());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new DeterminismChecker<StateMachine, State, Transition>());
 
     String[] files = {
         "Determinism_without_SAT_solving.txt",
@@ -238,8 +249,9 @@ public class Graph_Verifiers_PackagesTesting {
    */
   @Test
   public void CoherentVariablesWriting() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new CoherentVariablesWriting());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new CoherentVariablesWriting<StateMachine, State, Transition>());
 
     String[] files = {
         /* All files from the DeterminismChecker should be ok */
@@ -316,8 +328,9 @@ public class Graph_Verifiers_PackagesTesting {
    */
   @Test
   public void NoUselessVariablesChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new NoUselessVariables());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new NoUselessVariables<StateMachine, State, Transition>());
 
     String[] files = {
         "Graph_with_no_variable.txt",
@@ -341,8 +354,9 @@ public class Graph_Verifiers_PackagesTesting {
 
   @Test
   public void InitializationPropertyChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new InitializationProperties());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new InitializationProperties<StateMachine, State, Transition>());
 
     String[] files = {
         "Graph_without_initialisation_error.txt",
@@ -363,8 +377,9 @@ public class Graph_Verifiers_PackagesTesting {
 
   @Test
   public void TautologyFromStateZeroChecker() {
-    Verifier verifier = new Verifier();
-    verifier.addVerification(new TautologyFromStateZero());
+    MyVerifier verifier = new MyVerifier();
+    verifier
+        .addVerification(new TautologyFromStateZero<StateMachine, State, Transition>());
 
     String[] files = {
         "Graph_without_tautology_at_state_zero1.txt",
