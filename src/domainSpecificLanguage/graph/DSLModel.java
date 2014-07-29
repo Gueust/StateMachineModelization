@@ -170,7 +170,7 @@ public class DSLModel extends
    *          </ol>
    * @return true if the models are ok
    */
-  private boolean checkCompatibility() {
+  boolean checkCompatibility() {
 
     /* Verification of 4) */
     for (DSLStateMachine state_machine : state_machines) {
