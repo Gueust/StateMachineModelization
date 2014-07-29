@@ -490,9 +490,13 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
           for (String act_event : pair_condition_external_event.getValue()) {
             ExternalEvent event = external_events.get(act_event);
             if (event == null) {
-              throw new Error("The event " + act_event
-                  + " loaded from the file"
-                  + file_name + " does not exist in the model");
+              /*
+               * throw new Error("The event " + act_event
+               * + " loaded from the file "
+               * + file_name + " does not exist in the model");
+               * TODO put back this exception. It was removed for a test
+               */
+              event = new ExternalEvent(act_event);
             }
             ACT_list.add(event);
           }

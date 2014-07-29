@@ -670,6 +670,8 @@ public class SimulationWindow extends JFrame {
             btnSimulate, btnEatExternalEvents, mntmRestartSimulation));
 
     mntmLaunchExploration = new JMenuItem("Launch Exploration");
+    mntmLaunchExploration
+        .setToolTipText("Will launch the exploration from the ongoing global state.  It's enabled after the initialization is done.");
     mntmLaunchExploration.setEnabled(false);
     mnFile.add(mntmLaunchExploration);
 

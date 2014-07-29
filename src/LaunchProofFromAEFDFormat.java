@@ -53,8 +53,8 @@ public class LaunchProofFromAEFDFormat {
     // launchModelChecking("examples/PN à SAL.txt", null);
     // launchModelChecking("examples/PN à SAL.txt",
     // "examples/PN à SAL Preuve.txt");
-    launchModelChecking("examples/PN à SAL+TPL.txt",
-        "examples/PN à SAL+TPL Preuve.txt");
+    // launchModelChecking("examples/PN à SAL+TPL.txt",
+    // "examples/PN à SAL+TPL Preuve.txt");
     // launchModelChecking("examples/PN a SAL Cas2.txt",
 
     // launchModelChecking("compteur essieux.txt",
@@ -82,13 +82,12 @@ public class LaunchProofFromAEFDFormat {
      * "\n ");
      */
     // Cette partie du code permet de lancer Nurieux
-    /*
-     * launchNurieuxWithRestrainedEventList("Graph_with_corrected_CTL.txt",
-     * "Preuve_3423_3431_without_CTL.txt",
-     * // "Nurieux/Liste_evenement_externe.txt",
-     * "Nurieux/Liste_evenement_externe3423_3431.txt",
-     * "Nurieux/liste_FCI.yaml");
-     */
+
+    launchNurieuxWithRestrainedEventList("Nurieux_corrected.txt",
+        "Preuve_3423_3431_without_CTL.txt",
+        // "Nurieux/Liste_evenement_externe.txt",
+        "Nurieux/Liste_evenement_externe3423_3431.txt",
+        "Nurieux/liste_FCI.yaml");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
@@ -292,6 +291,7 @@ public class LaunchProofFromAEFDFormat {
       event_read = reader.readLine();
     }
     reader.close();
+
     LinkedList<ExternalEvent> external_event_list = new LinkedList<ExternalEvent>();
     HashMap<String, String> all_CTL_list = model.regroupCTL();
     HashMap<String, Boolean> restrained_ctl_value_list = new HashMap<String, Boolean>();
@@ -306,7 +306,7 @@ public class LaunchProofFromAEFDFormat {
     }
     for (String ctl_name : all_CTL_list.keySet()) {
       if (ctl_name.contains("KTS") || ctl_name.contains("Zone")
-          || ctl_name.contains("KLMG")) {
+          || ctl_name.contains("KLMG") || ctl_name.contains("TINT")) {
         restrained_ctl_value_list.put(ctl_name, true);
         all_ctl_value_list.put(ctl_name, true);
       } else {
@@ -318,7 +318,22 @@ public class LaunchProofFromAEFDFormat {
         new SequentialGraphSimulator(model, proof);
     simulator.setRestrainedExternalEventList(external_event_list);
     simulator.setVerbose(false);
+
+    /* Read a sequence of event to initialize the model with */
+    reader = new BufferedReader(new FileReader(
+        "Nurieux/fichier_initialisation_3423_3431.txt"));
+    LinkedList<ExternalEvent> initialization_event = new LinkedList<ExternalEvent>();
+    event_read = reader.readLine();
+    while (event_read != null) {
+      initialization_event.add(new ExternalEvent(event_read.trim()));
+      event_read = reader.readLine();
+    }
+    reader.close();
+
     GlobalState global_state_list = simulator.init(all_ctl_value_list);
+    global_state_list = simulator.executeAll(global_state_list,
+        initialization_event);
+
     // GlobalState global_state_list =
     // simulator.init(restrained_ctl_value_list);
 
