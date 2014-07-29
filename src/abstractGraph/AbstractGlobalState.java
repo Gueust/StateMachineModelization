@@ -1,10 +1,8 @@
 package abstractGraph;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
-import utils.Pair;
 import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;

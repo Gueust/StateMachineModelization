@@ -17,12 +17,14 @@ import abstractGraph.AbstractModel;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Enumeration;
+import abstractGraph.events.Assignment;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
 import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
+import abstractGraph.events.VariableChange;
 import domainSpecificLanguage.Template;
 
 public class DSLModel extends
@@ -239,8 +241,31 @@ public class DSLModel extends
 
   @Override
   public HashMap<EnumeratedVariable, LinkedList<DSLStateMachine>> getWritingStateMachines() {
-    // TODO Auto-generated method stub
-    return null;
+    HashMap<EnumeratedVariable, LinkedList<DSLStateMachine>> result =
+        new HashMap<>();
+
+    for (DSLStateMachine machine : this) {
+      for (DSLState state : machine) {
+        for (DSLTransition transition : state) {
+          for (SingleEvent event : transition.getActions()) {
+            assert (!(event instanceof VariableChange));
+
+            if (event instanceof Assignment) {
+              EnumeratedVariable variable = ((Assignment) event).getVariable();
+
+              LinkedList<DSLStateMachine> writing_sm =
+                  result.get(variable);
+              if (writing_sm == null) {
+                writing_sm = new LinkedList<DSLStateMachine>();
+                result.put(variable, writing_sm);
+              }
+              writing_sm.add(machine);
+            }
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**

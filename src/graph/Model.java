@@ -242,14 +242,6 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return writing_state_machines.entrySet().iterator();
   }
 
-  /**
-   * This function is reserved to specific uses that require to access internal
-   * data of the model. In particular, it can be useful to write new
-   * {@link AbstractVerificationUnit}.
-   * 
-   * @return The HashMap linking for every VariableChange, the list of the state
-   *         machines that are modifying its value.
-   */
   @Override
   public HashMap<EnumeratedVariable, LinkedList<StateMachine>> getWritingStateMachines() {
     return writing_state_machines;

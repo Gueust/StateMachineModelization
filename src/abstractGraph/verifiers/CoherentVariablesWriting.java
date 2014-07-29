@@ -17,6 +17,7 @@ import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
 
 /**
+ * NOTE: this verification unit is only done for Models (and not DSLModels).
  * 
  * This verification units checks the following property:
  * let v be a variable, let M be the state machine that is writing on it.

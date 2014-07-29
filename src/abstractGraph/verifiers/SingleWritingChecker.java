@@ -29,6 +29,7 @@ public class SingleWritingChecker<M extends AbstractStateMachine<S, T>, S extend
     HashMap<EnumeratedVariable, LinkedList<M>> written_variables =
         m.getWritingStateMachines();
 
+    assert (written_variables != null);
     for (EnumeratedVariable variable : m.getExistingVariables()) {
 
       LinkedList<M> writing_state_machine = written_variables.get(variable);

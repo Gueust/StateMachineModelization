@@ -1,5 +1,7 @@
 package domainSpecificLanguage.parser;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -7,11 +9,16 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utils.IOUtils;
+import utils.Pair;
 import abstractGraph.conditions.AndFormula;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Enumeration;
@@ -90,6 +97,29 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
   public DSLModel getProof() {
     return proof_model;
+  }
+
+  public Pair<DSLModel, DSLModel> parseFile(String file_name)
+      throws IOException {
+    String content = IOUtils.readFile(file_name, StandardCharsets.UTF_8);
+
+    ANTLRInputStream input = new ANTLRInputStream(content);
+
+    /* Create a lexer that feeds off of input CharStream */
+    FSM_LanguageLexer lexer = new FSM_LanguageLexer(input);
+
+    /* Create a buffer of tokens pulled from the lexer */
+    CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+    /* Create a parser that feeds off the tokens buffer */
+    FSM_LanguageParser parser = new FSM_LanguageParser(tokens);
+    /* begin parsing at booleanExpression rule */
+    ParseTree tree = parser.model();
+
+    /* Then we build the functional and proof models */
+    visit(tree);
+
+    return new Pair<DSLModel, DSLModel>(getModel(), getProof());
   }
 
   private void clear() {

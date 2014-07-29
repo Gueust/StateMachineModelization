@@ -12,6 +12,7 @@ import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SynchronisationEvent;
+import abstractGraph.verifiers.AbstractVerificationUnit;
 
 public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     implements Iterable<M> {
@@ -76,6 +77,14 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
 
   public abstract boolean containsExternalEvent(ExternalEvent external_event);
 
+  /**
+   * This function is reserved to specific uses that require to access internal
+   * data of the model. In particular, it can be useful to write new
+   * {@link AbstractVerificationUnit}.
+   * 
+   * @return The HashMap linking for every EnumeratedVariable, the list of the
+   *         state machines that are modifying its value.
+   */
   public abstract HashMap<EnumeratedVariable, LinkedList<M>> getWritingStateMachines();
 
   /**
