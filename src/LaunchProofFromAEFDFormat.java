@@ -53,18 +53,18 @@ public class LaunchProofFromAEFDFormat {
     // launchModelChecking("examples/PN à SAL.txt", null);
     // launchModelChecking("examples/PN à SAL.txt",
     // "examples/PN à SAL Preuve.txt");
-    // launchModelChecking("examples/PN a SAL+TPL.txt",
-    // "examples/PN a SAL+TPL Preuve.txt");
+    launchModelChecking("examples/PN à SAL+TPL.txt",
+        "examples/PN à SAL+TPL Preuve.txt");
     // launchModelChecking("examples/PN a SAL Cas2.txt",
 
-    launchModelChecking("compteur essieux.txt",
-        "compteur essieux preuve.txt");
+    // launchModelChecking("compteur essieux.txt",
+    // "compteur essieux preuve.txt");
     // launchModelChecking("PN/PN a SAL Cas2.txt",
     // "PN/PN a SAL Cas2 Preuve.txt");
     // launchModelChecking("PN/PN a SAL Cas2.txt",
     // null);
-    // launchModelChecking("examples/PN a SAL Cas3.txt",
-    // "examples/PN a SAL Cas3 Preuve.txt");
+    // launchModelChecking("PN/PN a SAL Cas3.txt",
+    // "PN/PN a SAL Cas3 Preuve.txt");
 
     // launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
@@ -242,7 +242,9 @@ public class LaunchProofFromAEFDFormat {
 
     // simulator.generateAllInitialStates(model_checker);
 
-    GlobalState result = model_checker.verify(simulator);
+    GlobalState result = model_checker.verify(simulator, true);
+
+    model_checker.displayTree();
 
     if (result == null) {
       System.err.println("Success of the proof");

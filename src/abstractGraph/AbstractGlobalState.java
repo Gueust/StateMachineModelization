@@ -1,8 +1,10 @@
 package abstractGraph;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
+import utils.Pair;
 import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
@@ -19,8 +21,14 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
   protected boolean is_legal_state = true, is_safe_state = true;
   protected boolean isNotP7 = true;
 
+  /*
+   * The following attributes are used by the model checker to build the tree
+   * and display it
+   */
   public ExternalEvent last_processed_external_event = null;
   public AbstractGlobalState<M, S, T, ?> previous_global_state = null;
+  public LinkedHashSet<Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>> children_states =
+      new LinkedHashSet<>();
 
   public AbstractGlobalState(V variables_values) {
     this.variables_values = variables_values;

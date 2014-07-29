@@ -11,6 +11,7 @@ import java.util.Set;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
+import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
@@ -48,6 +49,9 @@ import abstractGraph.events.SingleEvent;
  *          The transitions used in the model.
  */
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+
+  /** The first states that are visited */
+  private GS initial_state;
 
   /** The already explored states */
   private Set<GS> visited_states = new LinkedHashSet<GS>();
@@ -183,6 +187,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   /**
+   * @see #verify(GraphSimulatorInterface, boolean)
+   */
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
+    return verify(simulator, false);
+  }
+
+  /**
    * @details
    *          Properties to verify:
    *          - unvisited_states and visited_states have never one item in
@@ -191,10 +202,15 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    *          invariant, we verify it for the states added to unvisited_states
    *          are legal.
    * @param simulator
+   * @param build_tree
+   *          Setting it to true will make the model checker build the full
+   *          trace tree for display ({@link #displayTree()}. This will consume
+   *          more memory, so it should not be used if not needed.
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator,
+      boolean build_tree) {
     assert (unvisited_states != null);
 
     number_illegal_states = 0;
@@ -217,6 +233,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("Initial states size : " + unvisited_states.size());
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
+
+    initial_state = unvisited_states.iterator().next();
 
     while (unvisited_states.size() != 0) {
       Iterator<GS> it = unvisited_states.iterator();
@@ -243,10 +261,12 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
-        assert (state.isLegal());
 
         next_state.last_processed_external_event = e;
         next_state.previous_global_state = state;
+        state.children_states
+            .add(new Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>(
+                next_state, e));
 
         i++;
         System.err.flush();
@@ -272,6 +292,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return null;
   }
 
+  /**
+   * Open a window which displays the tree of all the traces explored by the
+   * model checker.
+   */
+  public void displayTree() {
+    new DisplayExecutionTree<>(initial_state);
+  }
+
   @SuppressWarnings("unchecked")
   public String printFullTrace(GS state) {
     StringBuilder string_builder = new StringBuilder();
@@ -291,7 +319,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     return string_builder.toString();
   }
 
-  private GS verifyUsingSplitting(GraphSimulatorInterface<GS, M, S, T> simulator) {
+  GS verifyUsingSplitting(GraphSimulatorInterface<GS, M, S, T> simulator) {
     AbstractModel<M, S, T> model = simulator.getModel();
     AbstractModel<M, S, T> proof = simulator.getProof();
     if (proof == null) {
