@@ -27,8 +27,6 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    */
   public ExternalEvent last_processed_external_event = null;
   public AbstractGlobalState<M, S, T, ?> previous_global_state = null;
-  public LinkedHashSet<Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>> children_states =
-      new LinkedHashSet<>();
 
   public AbstractGlobalState(V variables_values) {
     this.variables_values = variables_values;

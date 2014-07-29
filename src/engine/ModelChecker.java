@@ -11,7 +11,6 @@ import java.util.Set;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
@@ -69,6 +68,18 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
   private int i = 0;
 
+  public void ModelChercker() {
+    DB db = DBMaker
+        .newMemoryDirectDB()
+        .transactionDisable()
+        .asyncWriteEnable()
+        .asyncWriteFlushDelay(100)
+        .make();
+
+    visited_states = db.getTreeSet("Visited states");
+
+  }
+
   /**
    * Initialize the initial states as the ones contained in `init`.
    * It does not take the given collection but creates and underlying HashMap
@@ -78,9 +89,11 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * 
    * @param init
    */
-  public void model_checker(Collection<GS> init) {
+  public void addAllInitialStates(Collection<GS> init) {
     unvisited_states.clear();
-    unvisited_states.addAll(init);
+    for (GS state : init) {
+      addInitialState(state);
+    }
   }
 
   /**
@@ -94,7 +107,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    *          An initial state to visit.
    */
   public void addInitialState(GS init) {
-    unvisited_states.add(init);
+    if (init.isLegal()) {
+      unvisited_states.add(init);
+    }
   }
 
   protected void setDiskBackUpMemory() {
@@ -187,13 +202,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   }
 
   /**
-   * @see #verify(GraphSimulatorInterface, boolean)
-   */
-  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
-    return verify(simulator, false);
-  }
-
-  /**
    * @details
    *          Properties to verify:
    *          - unvisited_states and visited_states have never one item in
@@ -209,8 +217,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
-  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator,
-      boolean build_tree) {
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
     number_illegal_states = 0;
@@ -264,9 +271,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
         next_state.last_processed_external_event = e;
         next_state.previous_global_state = state;
-        state.children_states
-            .add(new Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>(
-                next_state, e));
 
         i++;
         System.err.flush();
@@ -296,7 +300,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * Open a window which displays the tree of all the traces explored by the
    * model checker.
    */
-  public void displayTree() {
+  protected void displayTree() {
     new DisplayExecutionTree<>(initial_state);
   }
 

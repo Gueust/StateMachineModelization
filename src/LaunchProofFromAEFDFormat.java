@@ -245,9 +245,7 @@ public class LaunchProofFromAEFDFormat {
 
     // simulator.generateAllInitialStates(model_checker);
 
-    GlobalState result = model_checker.verify(simulator, true);
-
-    model_checker.displayTree();
+    GlobalState result = model_checker.verify(simulator);
 
     if (result == null) {
       System.err.println("Success of the proof");
