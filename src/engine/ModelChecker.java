@@ -49,6 +49,17 @@ import abstractGraph.events.SingleEvent;
  */
 public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
+  /**
+   * Prints the number of visited, unvisited and unsafe states at when exploring
+   * every states. Otherwise, it is done every hundred turns.
+   */
+  private final static boolean VERY_VERBOSE = false;
+  /**
+   * When finding an unsafe state, prints the initial state, the unsafe state
+   * and the trace leading to it
+   */
+  private final static boolean PRINT_TRACE_UNSAFE = false;
+
   /** The first states that are visited */
   private GS initial_state;
 
@@ -74,10 +85,11 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         .transactionDisable()
         .asyncWriteEnable()
         .asyncWriteFlushDelay(100)
+        // .compressionEnable()
         .make();
 
     visited_states = db.getTreeSet("Visited states");
-
+    unvisited_states = db.getTreeSet("Unvisited states");
   }
 
   /**
@@ -243,7 +255,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
     initial_state = unvisited_states.iterator().next();
 
+    int c = 0;
     while (unvisited_states.size() != 0) {
+      c++;
+
       Iterator<GS> it = unvisited_states.iterator();
       GS state = it.next();
       assert (state.isLegal());
@@ -251,20 +266,20 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
       it.remove();
 
       addVisited(state);
-      System.err.println("Number of visited states: "
-          + visited_states.size());
-      System.err.println("Number of unvisited states "
-          + unvisited_states.size());
-      System.err.println("Total number of illegal states found:" +
-          number_illegal_states);
-      System.err.println("Total number of unsafe states found:" +
-          unsafe_states.size());
+
+      if (VERY_VERBOSE || c % 100 == 0) {
+        System.err.println("Number of visited states: "
+            + visited_states.size());
+        System.err.println("Number of unvisited states "
+            + unvisited_states.size());
+        System.err.println("Total number of illegal states found:" +
+            number_illegal_states);
+        System.err.println("Total number of unsafe states found:" +
+            unsafe_states.size());
+      }
 
       LinkedHashSet<ExternalEvent> possible_external_events =
           simulator.getPossibleEvent(state);
-
-      System.err.println("Eploring N° " + i + ".\nCreating "
-          + possible_external_events.size());
 
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
@@ -277,11 +292,14 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         System.out.flush();
 
         if (processGS(next_state) != null) {
-          System.out.println("The model checker detected a dangerous state !");
-          System.out.println("***********************************");
-          System.out.println("A FULL trace of external event is: ");
-          System.out.println("***********************************");
-          System.out.println(printFullTrace(next_state));
+          if (PRINT_TRACE_UNSAFE) {
+            System.out
+                .println("The model checker detected a dangerous state !");
+            System.out.println("***********************************");
+            System.out.println("A FULL trace of external event is: ");
+            System.out.println("***********************************");
+            System.out.println(printFullTrace(next_state));
+          }
           unsafe_states.add(next_state);
         }
       }

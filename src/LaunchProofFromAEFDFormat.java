@@ -63,8 +63,8 @@ public class LaunchProofFromAEFDFormat {
     // "PN/PN a SAL Cas2 Preuve.txt");
     // launchModelChecking("PN/PN a SAL Cas2.txt",
     // null);
-    // launchModelChecking("PN/PN a SAL Cas3.txt",
-    // "PN/PN a SAL Cas3 Preuve.txt");
+    launchModelChecking("PN/PN a SAL Cas3.txt",
+        "PN/PN a SAL Cas3 Preuve.txt");
 
     // launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
@@ -83,11 +83,11 @@ public class LaunchProofFromAEFDFormat {
      */
     // Cette partie du code permet de lancer Nurieux
 
-    launchNurieuxWithRestrainedEventList("Nurieux_corrected.txt",
-        "Preuve_3423_3431_without_CTL.txt",
-        // "Nurieux/Liste_evenement_externe.txt",
-        "Nurieux/Liste_evenement_externe3423_3431.txt",
-        "Nurieux/liste_FCI.yaml");
+    // launchNurieuxWithRestrainedEventList("Nurieux_corrected.txt",
+    // "Preuve_3423_3431_without_CTL.txt",
+    // // "Nurieux/Liste_evenement_externe.txt",
+    // "Nurieux/Liste_evenement_externe3423_3431.txt",
+    // "Nurieux/liste_FCI.yaml");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
@@ -256,7 +256,7 @@ public class LaunchProofFromAEFDFormat {
 
   }
 
-  private static void launchNurieuxWithRestrainedEventList(
+  protected static void launchNurieuxWithRestrainedEventList(
       String functional_model,
       String proof_model,
       String restrained_event_file,
