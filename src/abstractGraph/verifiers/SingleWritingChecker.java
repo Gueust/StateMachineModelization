@@ -1,37 +1,37 @@
-package graph.verifiers;
-
-import graph.Model;
-import graph.StateMachine;
+package abstractGraph.verifiers;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.EnumeratedVariable;
 
 /**
  * Check that all the variables in the graphs are written at most once
  */
-public class SingleWritingChecker extends AbstractVerificationUnit {
-  private HashMap<EnumeratedVariable, LinkedList<StateMachine>> counter_example_written_more_than_once =
-      new HashMap<EnumeratedVariable, LinkedList<StateMachine>>();
+public class SingleWritingChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
+  private HashMap<EnumeratedVariable, LinkedList<M>> counter_example_written_more_than_once =
+      new HashMap<EnumeratedVariable, LinkedList<M>>();
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose) {
 
     boolean is_error = false;
 
     counter_example_written_more_than_once.clear();
 
-    HashMap<EnumeratedVariable, LinkedList<StateMachine>> written_variables =
+    HashMap<EnumeratedVariable, LinkedList<M>> written_variables =
         m.getWritingStateMachines();
-    Iterator<EnumeratedVariable> variables = m.iteratorExistingVariables();
 
-    while (variables.hasNext()) {
-      EnumeratedVariable variable = variables.next();
-      LinkedList<StateMachine> writing_state_machine =
-          written_variables.get(variable);
+    for (EnumeratedVariable variable : m.getExistingVariables()) {
+
+      LinkedList<M> writing_state_machine = written_variables.get(variable);
 
       if (writing_state_machine != null) {
         if (writing_state_machine.size() > 1) {
@@ -54,7 +54,7 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     return checkAll(m, verbose);
   }
 
@@ -74,23 +74,23 @@ public class SingleWritingChecker extends AbstractVerificationUnit {
   }
 
   private String myPrint(
-      HashMap<EnumeratedVariable, LinkedList<StateMachine>> input) {
+      HashMap<EnumeratedVariable, LinkedList<M>> input) {
     StringBuffer result = new StringBuffer();
 
-    Iterator<Entry<EnumeratedVariable, LinkedList<StateMachine>>> iterator = input
+    Iterator<Entry<EnumeratedVariable, LinkedList<M>>> iterator = input
         .entrySet()
         .iterator();
-    LinkedList<StateMachine> states_machines_list;
+    LinkedList<M> states_machines_list;
 
     while (iterator.hasNext()) {
-      Entry<EnumeratedVariable, LinkedList<StateMachine>> entry = iterator
+      Entry<EnumeratedVariable, LinkedList<M>> entry = iterator
           .next();
       EnumeratedVariable variable = entry.getKey();
       states_machines_list = entry.getValue();
 
       result.append(
           "The variable " + variable + " in the states machine: \n");
-      for (StateMachine stateMachine : states_machines_list) {
+      for (M stateMachine : states_machines_list) {
         result.append(stateMachine.getName() + " ; ");
       }
     }

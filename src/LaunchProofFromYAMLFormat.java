@@ -7,7 +7,6 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 import graph.templates.GeneratorFromTemplate;
-import graph.verifiers.Verifier;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -18,6 +17,7 @@ import java.util.Map.Entry;
 import utils.Logging;
 import utils.Monitoring;
 import abstractGraph.events.ExternalEvent;
+import abstractGraph.verifiers.Verifier;
 
 /**
  * Ce fichier permet de lancer l'exploration sur un fonctionnel + preuve à
@@ -71,8 +71,10 @@ public class LaunchProofFromYAMLFormat {
 
     simulator.setVerbose(false);
     simulator_without_proof.setVerbose(false);
-    Verifier.verifyModel(model);
-    Verifier.verifyModel(proof);
+
+    Verifier<StateMachine, State, Transition> verifier = new Verifier<>();
+    verifier.verifyModel(model);
+    verifier.verifyModel(proof);
 
     final ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
         new ModelChecker<>();
@@ -166,8 +168,10 @@ public class LaunchProofFromYAMLFormat {
     SequentialGraphSimulator simulator =
         new SequentialGraphSimulator(model, proof);
     simulator.setVerbose(false);
-    Verifier.verifyModel(model);
-    Verifier.verifyModel(proof);
+
+    Verifier<StateMachine, State, Transition> verifier = new Verifier<>();
+    verifier.verifyModel(model);
+    verifier.verifyModel(proof);
 
     ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
         new ModelChecker<>();

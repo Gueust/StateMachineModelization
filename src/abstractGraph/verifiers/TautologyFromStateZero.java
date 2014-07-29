@@ -1,10 +1,6 @@
-package graph.verifiers;
+package abstractGraph.verifiers;
 
 import engine.SequentialGraphSimulator;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,6 +8,10 @@ import java.util.LinkedList;
 import org.sat4j.specs.TimeoutException;
 
 import solver.SAT4JSolver;
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.NotFormula;
 import abstractGraph.conditions.OrFormula;
@@ -28,7 +28,8 @@ import abstractGraph.events.Events;
  * 
  * It requires that the InitializationProperties checker is called first.
  */
-public class TautologyFromStateZero extends AbstractVerificationUnit {
+public class TautologyFromStateZero<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
 
   /*
    * The solver used to solve the SAT instances. It can be used multiple times
@@ -42,19 +43,20 @@ public class TautologyFromStateZero extends AbstractVerificationUnit {
    * - the concerned state
    * Because we use a single solver, we need to save the solution.
    */
-  private LinkedList<StateMachine> counter_example_machines =
-      new LinkedList<StateMachine>();
-  private LinkedList<State> counter_example_states = new LinkedList<State>();
+  private LinkedList<M> counter_example_machines =
+      new LinkedList<M>();
+  private LinkedList<S> counter_example_states = new LinkedList<S>();
   private LinkedList<Formula> counter_example_formula =
       new LinkedList<Formula>();
   private LinkedList<String> solution_details =
       new LinkedList<String>();
 
   /**
-   * Serves for both the {@link #check(Model, boolean)} and
-   * {@link #checkAll(Model, boolean)} functions.
+   * Serves for both the {@link #check(AbstractModel, boolean)} and
+   * {@link #checkAll(AbstractModel, boolean)} functions.
    */
-  private boolean checkFunction(Model m, boolean verbose, boolean check_all) {
+  private boolean checkFunction(AbstractModel<M, S, T> m, boolean verbose,
+      boolean check_all) {
 
     boolean result = true;
 
@@ -64,12 +66,12 @@ public class TautologyFromStateZero extends AbstractVerificationUnit {
     solution_details.clear();
 
     /* For all StateMachines */
-    Iterator<StateMachine> it = m.iterator();
+    Iterator<M> it = m.iterator();
     while (it.hasNext()) {
-      StateMachine machine = it.next();
+      M machine = it.next();
 
       /* We get the state 0 */
-      State state = machine.getState("0");
+      S state = machine.getState("0");
       if (state == null) {
         throw new Error("There is no state 0 within " + machine.getName());
       }
@@ -77,7 +79,7 @@ public class TautologyFromStateZero extends AbstractVerificationUnit {
       Formula union = True.FALSE;
 
       /* We build the union of the guards */
-      for (Transition transition : state) {
+      for (T transition : state) {
         /* We check that the transition is labeled with ACT_INIT */
         Events events = transition.getEvents();
         if (!events.containsEvent(SequentialGraphSimulator.ACT_INIT)) {
@@ -122,17 +124,17 @@ public class TautologyFromStateZero extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     return checkFunction(m, verbose, false);
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose) {
     return checkFunction(m, verbose, true);
   }
 
-  private String errorMessage(StateMachine counter_example_machine,
-      State counter_example_t1, Formula formula,
+  private String errorMessage(M counter_example_machine,
+      S counter_example_t1, Formula formula,
       String solution_details) {
     return "In the state machine "
         + counter_example_machine.getName()

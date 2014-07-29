@@ -4,18 +4,19 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.verifiers.CoherentVariablesWriting;
-import graph.verifiers.DeterminismChecker;
-import graph.verifiers.InitializationProperties;
-import graph.verifiers.NoUselessVariables;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.TautologyFromStateZero;
-import graph.verifiers.Verifier;
-import graph.verifiers.WrittenAtLeastOnceChecker;
 
 import java.io.IOException;
 
 import org.junit.Test;
+
+import abstractGraph.verifiers.CoherentVariablesWriting;
+import abstractGraph.verifiers.DeterminismChecker;
+import abstractGraph.verifiers.InitializationProperties;
+import abstractGraph.verifiers.NoUselessVariables;
+import abstractGraph.verifiers.SingleWritingChecker;
+import abstractGraph.verifiers.TautologyFromStateZero;
+import abstractGraph.verifiers.Verifier;
+import abstractGraph.verifiers.WrittenAtLeastOnceChecker;
 
 /**
  * Test all verification units.
@@ -115,7 +116,7 @@ public class Graph_Verifiers_PackagesTesting {
   }
 
   /**
-   * Testing of {@link graph.verifiers.WrittenAtLeastOnceChecker}.
+   * Testing of {@link abstractGraph.verifiers.WrittenAtLeastOnceChecker}.
    * 
    * @details This test uses different files representing simple graphs:
    *          <ol>

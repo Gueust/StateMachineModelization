@@ -2,7 +2,6 @@ package graph;
 
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.FonctionCommandeInformatique;
-import graph.verifiers.AbstractVerificationUnit;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -28,6 +27,7 @@ import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
+import abstractGraph.verifiers.AbstractVerificationUnit;
 
 /**
  * A set of state machines interacting with each other.

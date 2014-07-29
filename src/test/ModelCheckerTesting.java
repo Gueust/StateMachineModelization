@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import abstractGraph.verifiers.SingleWritingChecker;
+import abstractGraph.verifiers.Verifier;
 import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
 import engine.SplitProof;
@@ -16,8 +18,6 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 import graph.templates.GeneratorFromTemplate;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.Verifier;
 
 public class ModelCheckerTesting {
 

@@ -1,6 +1,4 @@
-package graph.verifiers;
-
-import graph.Model;
+package abstractGraph.verifiers;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,7 +22,8 @@ import abstractGraph.events.Events;
  * It will not consider 2 not exclusive transitions going to the same state and
  * labeled with the same action as an error.
  */
-public class DeterminismChecker extends AbstractVerificationUnit {
+public class DeterminismChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
 
   /*
    * The solver used to solve the SAT instances. It can be used multiple times
@@ -39,29 +38,29 @@ public class DeterminismChecker extends AbstractVerificationUnit {
    * Then the machines where the counter example if found.
    * Because we use a single solver, we need to save the solution.
    */
-  private LinkedList<AbstractTransition<?>>
+  private LinkedList<T>
       list_counter_example_t1 = new LinkedList<>(),
       list_counter_example_t2 = new LinkedList<>();
-  private LinkedList<AbstractStateMachine<?, ?>> list_counter_example_machine =
+  private LinkedList<M> list_counter_example_machine =
       new LinkedList<>();
   private LinkedList<String> solution_details =
       new LinkedList<>();
 
-  private boolean identicalActionFields(AbstractTransition<?> t1,
-      AbstractTransition<?> t2) {
+  private boolean identicalActionFields(T t1,
+      T t2) {
     return t1.getActions().equals(t2.getActions());
   }
 
-  private boolean identicalTarget(AbstractTransition<?> t1,
-      AbstractTransition<?> t2) {
+  private boolean identicalTarget(T t1,
+      T t2) {
     return t1.getDestination().equals(t2.getDestination());
   }
 
   /**
-   * Serves for both the {@link #check(Model, boolean)} and
-   * {@link #checkAll(Model, boolean)} functions.
+   * Serves for both the {@link #check(AbstractModel, boolean)} and
+   * {@link #checkAll(AbstractModel, boolean)} functions.
    */
-  private boolean checkFunction(AbstractModel<?, ?, ?> m, boolean verbose,
+  private boolean checkFunction(AbstractModel<M, S, T> m, boolean verbose,
       boolean check_all) {
 
     boolean result = true;
@@ -72,30 +71,26 @@ public class DeterminismChecker extends AbstractVerificationUnit {
     solution_details.clear();
 
     /* For all StateMachines */
-    @SuppressWarnings("unchecked")
-    Iterator<AbstractStateMachine<?, ?>> it =
-        (Iterator<AbstractStateMachine<?, ?>>) m.iterator();
+    Iterator<M> it = m.iterator();
     while (it.hasNext()) {
-      AbstractStateMachine<?, ?> machine = it.next();
+      M machine = it.next();
 
       /* For all states within the given state machine */
-      @SuppressWarnings("unchecked")
-      Iterator<AbstractState<?>> it_states =
-          (Iterator<AbstractState<?>>) machine.iterator();
+      Iterator<S> it_states = machine.iterator();
       while (it_states.hasNext()) {
-        AbstractState<?> state = it_states.next();
-        AbstractTransition<?>[] transitions = state.toArray();
+        S state = it_states.next();
+        T[] transitions = state.toArray();
         if (transitions == null) {
           continue;
         }
         /* For all couple of different transitions */
         for (int i = 0; i < transitions.length; i++) {
-          AbstractTransition<?> t1 = transitions[i];
+          T t1 = transitions[i];
           Formula t1_formula = t1.getCondition();
           Events t1_events = t1.getEvents();
 
           for (int j = i + 1; j < transitions.length; j++) {
-            AbstractTransition<?> t2 = transitions[j];
+            T t2 = transitions[j];
             Formula t2_formula = t2.getCondition();
             Events t2_events = t2.getEvents();
 
@@ -147,19 +142,19 @@ public class DeterminismChecker extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     return checkFunction(m, verbose, false);
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose) {
     return checkFunction(m, verbose, true);
   }
 
   private String errorMessage(
-      AbstractStateMachine<?, ?> counter_example_machine,
-      AbstractTransition<?> counter_example_t1,
-      AbstractTransition<?> counter_example_t2,
+      M counter_example_machine,
+      T counter_example_t1,
+      T counter_example_t2,
       String solution_details) {
     return "In the state machine "
         + counter_example_machine.getName() +

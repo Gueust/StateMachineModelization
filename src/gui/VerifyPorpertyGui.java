@@ -2,8 +2,6 @@ package gui;
 
 import graph.GraphFactoryAEFD;
 import graph.Model;
-import graph.verifiers.AbstractVerificationUnit;
-import graph.verifiers.Verifier;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +18,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import abstractGraph.verifiers.AbstractVerificationUnit;
+import abstractGraph.verifiers.Verifier;
 import utils.TeeOutputStream;
 
 public class VerifyPorpertyGui implements ActionListener {

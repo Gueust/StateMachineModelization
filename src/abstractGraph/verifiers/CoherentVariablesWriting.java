@@ -1,4 +1,4 @@
-package graph.verifiers;
+package abstractGraph.verifiers;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,15 +6,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.Actions;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.VariableChange;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 
 /**
  * 
@@ -38,15 +38,16 @@ import graph.Transition;
  * </ol>
  * 
  */
-public class CoherentVariablesWriting extends AbstractVerificationUnit {
+public class CoherentVariablesWriting<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
 
   /* These are empty iff the model verifies this verifier. */
-  private LinkedList<State> counter_example_states = new LinkedList<>();
+  private LinkedList<AbstractState<?>> counter_example_states = new LinkedList<>();
   private LinkedList<EnumeratedVariable> counter_example_variable = new LinkedList<>();
-  private LinkedList<StateMachine> counter_example_machines = new LinkedList<>();
+  private LinkedList<M> counter_example_machines = new LinkedList<>();
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     return checkAll(m, verbose);
   }
 
@@ -67,7 +68,8 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
    *          The list of the written variables to verify.
    * @return true if the state machine respects the contract.
    */
-  private boolean checkOneStateMachine(StateMachine machine,
+  @SuppressWarnings("unchecked")
+  private boolean checkOneStateMachine(M machine,
       LinkedList<EnumeratedVariable> written_variables,
       boolean verbose) throws Error {
 
@@ -75,12 +77,13 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
       return true;
     }
 
-    HashMap<State, HashMap<EnumeratedVariable, Byte>> value_associated =
-        new HashMap<State, HashMap<EnumeratedVariable, Byte>>();
+    HashMap<AbstractState<?>, HashMap<EnumeratedVariable, Byte>> value_associated =
+        new HashMap<>();
     // Initialization of the variables written by this machines
-    Iterator<State> it_states = machine.iterator();
+    Iterator<AbstractState<?>> it_states =
+        (Iterator<AbstractState<?>>) machine.iterator();
     while (it_states.hasNext()) {
-      State state = it_states.next();
+      AbstractState<?> state = it_states.next();
       HashMap<EnumeratedVariable, Byte> state_variables = new HashMap<EnumeratedVariable, Byte>();
 
       Iterator<EnumeratedVariable> it_vars = written_variables.iterator();
@@ -106,15 +109,16 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
      * For every variable, the initial states to propagate are the one with an
      * incoming transition writing this variable
      */
-    HashMap<BooleanVariable, HashSet<State>> states_to_propagate =
-        new HashMap<BooleanVariable, HashSet<State>>();
+    HashMap<BooleanVariable, HashSet<AbstractState<?>>> states_to_propagate =
+        new HashMap<>();
     /*
      * Setting the truth values known directly with the written of variables
      * (VariableChange)
      */
-    Iterator<Transition> it_trans = machine.iteratorTransitions();
+    Iterator<AbstractTransition<?>> it_trans =
+        (Iterator<AbstractTransition<?>>) machine.iteratorTransitions();
     while (it_trans.hasNext()) {
-      Transition transition = it_trans.next();
+      AbstractTransition<?> transition = it_trans.next();
       Actions actions = transition.getActions();
       Iterator<SingleEvent> it_actions = actions.iterator();
       while (it_actions.hasNext()) {
@@ -122,16 +126,16 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
         if (event instanceof VariableChange) {
           VariableChange vc_event = (VariableChange) event;
           BooleanVariable variable = vc_event.getModifiedVariable();
-          State state = transition.getDestination();
+          AbstractState<?> state = transition.getDestination();
 
           /*
            * If the HasSet associated to this variable does not exist, it is
            * created
            */
-          HashSet<State> states_to_propagate_for_this_variable =
+          HashSet<AbstractState<?>> states_to_propagate_for_this_variable =
               states_to_propagate.get(variable);
           if (states_to_propagate_for_this_variable == null) {
-            states_to_propagate_for_this_variable = new HashSet<State>();
+            states_to_propagate_for_this_variable = new HashSet<>();
             states_to_propagate.put(variable,
                 states_to_propagate_for_this_variable);
           }
@@ -194,7 +198,7 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
     while (it_vars.hasNext()) {
       EnumeratedVariable variable = it_vars.next();
 
-      HashSet<State> states_to_propagate_var =
+      HashSet<AbstractState<?>> states_to_propagate_var =
           states_to_propagate.get(variable);
       if (states_to_propagate_var.isEmpty()) {
         throw new Error("The state machine " + machine.getName()
@@ -202,12 +206,12 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
             + " but no writtenn has been found.");
       }
 
-      HashSet<State> visited_states = new HashSet<State>();
+      HashSet<AbstractState<?>> visited_states = new HashSet<>();
       // System.out.println("We do the proof for variable: " + variable);
 
       while (!states_to_propagate_var.isEmpty()) {
         /* We remove from the to-visit list and set to visited */
-        State state = states_to_propagate_var.iterator().next();
+        AbstractState<?> state = states_to_propagate_var.iterator().next();
         states_to_propagate_var.remove(state);
         visited_states.add(state);
 
@@ -221,10 +225,10 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
          * We visit the states linked to the current one if they have not
          * already been visited.
          */
-        it_trans = state.iterator();
+        it_trans = (Iterator<AbstractTransition<?>>) state.iterator();
         while (it_trans.hasNext()) {
-          Transition transition = it_trans.next();
-          State destination = transition.getDestination();
+          AbstractTransition<?> transition = it_trans.next();
+          AbstractState<?> destination = transition.getDestination();
 
           /*
            * If the transition write the variable, then we do not check for
@@ -280,24 +284,24 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
    * Creates the Hashmap associating to every state machine the variables it is
    * writing.
    */
-  private HashMap<StateMachine, LinkedList<EnumeratedVariable>> writtenVariables(
-      HashMap<EnumeratedVariable, LinkedList<StateMachine>> writting_state_machines) {
+  private HashMap<M, LinkedList<EnumeratedVariable>> writtenVariables(
+      HashMap<EnumeratedVariable, LinkedList<M>> hashMap) {
 
-    HashMap<StateMachine, LinkedList<EnumeratedVariable>> written_variables =
-        new HashMap<StateMachine, LinkedList<EnumeratedVariable>>();
+    HashMap<M, LinkedList<EnumeratedVariable>> written_variables =
+        new HashMap<M, LinkedList<EnumeratedVariable>>();
 
-    Iterator<Entry<EnumeratedVariable, LinkedList<StateMachine>>> it_var_statemachine =
-        writting_state_machines.entrySet().iterator();
+    Iterator<Entry<EnumeratedVariable, LinkedList<M>>> it_var_statemachine =
+        hashMap.entrySet().iterator();
 
     while (it_var_statemachine.hasNext()) {
-      Entry<EnumeratedVariable, LinkedList<StateMachine>> entry =
+      Entry<EnumeratedVariable, LinkedList<M>> entry =
           it_var_statemachine.next();
       EnumeratedVariable variable = entry.getKey();
-      LinkedList<StateMachine> sm = entry.getValue();
+      LinkedList<M> sm = entry.getValue();
 
-      Iterator<StateMachine> sm_iterator = sm.iterator();
+      Iterator<M> sm_iterator = sm.iterator();
       while (sm_iterator.hasNext()) {
-        StateMachine machine = sm_iterator.next();
+        M machine = sm_iterator.next();
 
         LinkedList<EnumeratedVariable> written_vars = written_variables
             .get(machine);
@@ -313,7 +317,8 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) throws Error {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose)
+      throws Error {
 
     counter_example_states.clear();
     counter_example_variable.clear();
@@ -321,12 +326,13 @@ public class CoherentVariablesWriting extends AbstractVerificationUnit {
 
     boolean result = true;
 
-    HashMap<StateMachine, LinkedList<EnumeratedVariable>> written_variables =
+    HashMap<M, LinkedList<EnumeratedVariable>> written_variables =
         writtenVariables(m.getWritingStateMachines());
 
-    Iterator<StateMachine> it_state_machines = m.iterator();
+    Iterator<M> it_state_machines =
+        (Iterator<M>) m.iterator();
     while (it_state_machines.hasNext()) {
-      StateMachine machine = it_state_machines.next();
+      M machine = it_state_machines.next();
 
       if (!checkOneStateMachine(machine, written_variables.get(machine),
           verbose)) {

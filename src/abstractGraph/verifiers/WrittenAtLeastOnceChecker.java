@@ -1,34 +1,34 @@
-package graph.verifiers;
-
-import graph.Model;
-import graph.StateMachine;
+package abstractGraph.verifiers;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.EnumeratedVariable;
 
-public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
+public class WrittenAtLeastOnceChecker<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
 
   private HashSet<EnumeratedVariable> counter_example_not_writen = new HashSet<>();
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose) {
 
     boolean is_error = false;
 
     counter_example_not_writen.clear();
 
-    HashMap<EnumeratedVariable, LinkedList<StateMachine>> written_variables =
+    HashMap<EnumeratedVariable, LinkedList<M>> written_variables =
         m.getWritingStateMachines();
-    Iterator<EnumeratedVariable> variables = m.iteratorExistingVariables();
 
-    while (variables.hasNext()) {
-      EnumeratedVariable variable = variables.next();
+    for (EnumeratedVariable variable : m.getExistingVariables()) {
+
       if (!variable.getVarname().startsWith("CTL")) {
-        LinkedList<StateMachine> writing_state_machine =
+        LinkedList<M> writing_state_machine =
             written_variables.get(variable);
 
         if (writing_state_machine != null) {
@@ -55,7 +55,7 @@ public class WrittenAtLeastOnceChecker extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     return checkAll(m, verbose);
   }
 

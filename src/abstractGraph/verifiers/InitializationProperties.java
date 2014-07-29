@@ -1,13 +1,13 @@
-package graph.verifiers;
+package abstractGraph.verifiers;
 
 import engine.SequentialGraphSimulator;
-import graph.Model;
-import graph.State;
-import graph.StateMachine;
-import graph.Transition;
 
 import java.util.HashSet;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.SingleEvent;
 
@@ -19,16 +19,17 @@ import abstractGraph.events.SingleEvent;
  * <li>there are only CTLs as variables in the condition of these
  * transitions</li>
  */
-public class InitializationProperties extends AbstractVerificationUnit {
-  private HashSet<StateMachine> state_machine_without_state_0 =
-      new HashSet<StateMachine>();
-  private HashSet<StateMachine> state_machine_with_act_init_error =
-      new HashSet<StateMachine>();
-  private HashSet<StateMachine> state_machine_with_ctl_error =
-      new HashSet<StateMachine>();
+public class InitializationProperties<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    extends AbstractVerificationUnit<M, S, T> {
+  private HashSet<M> state_machine_without_state_0 =
+      new HashSet<M>();
+  private HashSet<M> state_machine_with_act_init_error =
+      new HashSet<M>();
+  private HashSet<M> state_machine_with_ctl_error =
+      new HashSet<M>();
 
   @Override
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     boolean result = checkProperty(m, false);
     if (result && verbose) {
       System.out.print(successMessage());
@@ -39,7 +40,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
   }
 
   @Override
-  public boolean checkAll(Model m, boolean verbose) {
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose) {
     boolean result = checkProperty(m, true);
     if (result && verbose) {
       System.out.print(successMessage());
@@ -49,16 +50,16 @@ public class InitializationProperties extends AbstractVerificationUnit {
     return result;
   }
 
-  private boolean checkProperty(Model m, boolean check_all) {
+  private boolean checkProperty(AbstractModel<M, S, T> m, boolean check_all) {
 
     state_machine_with_act_init_error.clear();
     state_machine_with_ctl_error.clear();
     state_machine_without_state_0.clear();
 
-    for (StateMachine state_machine : m) {
+    for (M state_machine : m) {
       if (checkInitialStateExistence(state_machine)) {
-        State state = state_machine.getState("0");
-        for (Transition transition : state) {
+        S state = state_machine.getState("0");
+        for (T transition : state) {
           checkTransition(state_machine, transition, !check_all);
         }
       }
@@ -69,7 +70,7 @@ public class InitializationProperties extends AbstractVerificationUnit {
 
   }
 
-  private boolean checkInitialStateExistence(StateMachine state_machine) {
+  private boolean checkInitialStateExistence(M state_machine) {
     if (state_machine.getState("0") == null) {
       state_machine_without_state_0.add(state_machine);
       return false;
@@ -77,8 +78,8 @@ public class InitializationProperties extends AbstractVerificationUnit {
     return true;
   }
 
-  private boolean checkTransition(StateMachine state_machine,
-      Transition transition, boolean stop_at_first_error) {
+  private boolean checkTransition(M state_machine,
+      T transition, boolean stop_at_first_error) {
     transition.getEvents()
         .containsEvent(SequentialGraphSimulator.ACT_INIT);
     for (SingleEvent event : transition.getEvents()) {
@@ -105,10 +106,10 @@ public class InitializationProperties extends AbstractVerificationUnit {
     return true;
   }
 
-  private String extractStateMachineName(Iterable<StateMachine> machines) {
+  private String extractStateMachineName(Iterable<M> machines) {
     String result = "";
     boolean first = true;
-    for (StateMachine state_machine : machines) {
+    for (M state_machine : machines) {
       String state_machine_name = state_machine.getName();
       if (first) {
         result += state_machine_name;

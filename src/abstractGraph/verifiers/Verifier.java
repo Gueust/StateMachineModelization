@@ -1,9 +1,13 @@
-package graph.verifiers;
+package abstractGraph.verifiers;
 
 import graph.Model;
 
 import java.util.LinkedList;
 
+import abstractGraph.AbstractModel;
+import abstractGraph.AbstractState;
+import abstractGraph.AbstractStateMachine;
+import abstractGraph.AbstractTransition;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -11,45 +15,49 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * single coherent test on a model.
  * 
  */
-public class Verifier {
+public class Verifier<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
-  protected LinkedList<AbstractVerificationUnit> verification_units;
+  protected LinkedList<AbstractVerificationUnit<M, S, T>> verification_units;
 
   /*
    * To be able to create a default verifier filled with all the useful
    * verifiers
    */
-  static class DefaultVerifier extends Verifier {
+  static class DefaultVerifier<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+      extends Verifier<M, S, T> {
     public DefaultVerifier() {
       super();
-      addVerification(new SingleWritingChecker());
-      addVerification(new InitializationProperties());
-      addVerification(new TautologyFromStateZero());
-      addVerification(new DeterminismChecker());
+      addVerification(new SingleWritingChecker<M, S, T>());
+      addVerification(new InitializationProperties<M, S, T>());
+      addVerification(new TautologyFromStateZero<M, S, T>());
+      addVerification(new DeterminismChecker<M, S, T>());
     }
   }
 
-  static class WarningVerifier extends Verifier {
+  static class WarningVerifier<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+      extends Verifier<M, S, T> {
     public WarningVerifier() {
       super();
-      addVerification(new CoherentVariablesWriting());
-      addVerification(new NoUselessVariables());
-      addVerification(new WrittenAtLeastOnceChecker());
+      addVerification(new CoherentVariablesWriting<M, S, T>());
+      // addVerification(new NoUselessVariables<M, S, T>());
+      addVerification(new WrittenAtLeastOnceChecker<M, S, T>());
     }
   }
 
-  public static final Verifier DEFAULT_VERIFIER =
-      new DefaultVerifier();
+  public static <M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> Verifier<M, S, T> getDefaultVerifier() {
+    return new DefaultVerifier<M, S, T>();
+  }
 
-  public static final Verifier WARNING_VERIFIER =
-      new WarningVerifier();
+  public static <M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> Verifier<M, S, T> getWarningVerifier() {
+    return new WarningVerifier<M, S, T>();
+  }
 
   public Verifier() {
-    verification_units = new LinkedList<AbstractVerificationUnit>();
+    verification_units = new LinkedList<AbstractVerificationUnit<M, S, T>>();
 
   }
 
-  public void addVerification(AbstractVerificationUnit unit) {
+  public void addVerification(AbstractVerificationUnit<M, S, T> unit) {
     verification_units.add(unit);
   }
 
@@ -60,12 +68,12 @@ public class Verifier {
    *          True prints the results of the intermediary verifications.
    * @return True if the model verifies all the registered verification units.
    */
-  public boolean check(Model m, boolean verbose) {
+  public boolean check(AbstractModel<M, S, T> m, boolean verbose) {
     if (verbose) {
       printHeader(m);
     }
     boolean result = true;
-    for (AbstractVerificationUnit unit : verification_units) {
+    for (AbstractVerificationUnit<M, S, T> unit : verification_units) {
       boolean tmp = unit.check(m, verbose);
       result = result & tmp;
     }
@@ -77,7 +85,7 @@ public class Verifier {
    * 
    * {@inheritDoc #check(Model, boolean)}
    */
-  public boolean check(Model m) {
+  public boolean check(AbstractModel<M, S, T> m) {
     return check(m, true);
   }
 
@@ -92,13 +100,13 @@ public class Verifier {
    * @throws NotImplementedException
    *           This function is not mandatory.
    */
-  public boolean checkAll(Model m, boolean verbose)
+  public boolean checkAll(AbstractModel<M, S, T> m, boolean verbose)
       throws NotImplementedException {
     if (verbose) {
       printHeader(m);
     }
     boolean result = true;
-    for (AbstractVerificationUnit unit : verification_units) {
+    for (AbstractVerificationUnit<M, S, T> unit : verification_units) {
       boolean tmp = unit.checkAll(m, verbose);
       result = result & tmp;
     }
@@ -113,11 +121,12 @@ public class Verifier {
    * @throws NotImplementedException
    *           This function is not mandatory.
    */
-  public boolean checkAll(Model m) throws NotImplementedException {
+  public boolean checkAll(AbstractModel<M, S, T> m)
+      throws NotImplementedException {
     return checkAll(m, true);
   }
 
-  private void printHeader(Model m) {
+  private void printHeader(AbstractModel<M, S, T> m) {
     System.out.println("Checking of the " + m.getModelName() + " model.");
   }
 
@@ -127,12 +136,12 @@ public class Verifier {
    * @param model
    * @param verbose
    */
-  public static void verifyModel(Model model, boolean verbose) {
+  public void verifyModel(AbstractModel<M, S, T> model, boolean verbose) {
 
     if (model == null) {
       return;
     }
-    Verifier default_verifier = Verifier.DEFAULT_VERIFIER;
+    Verifier<M, S, T> default_verifier = getDefaultVerifier();
 
     boolean is_ok = !default_verifier.checkAll(model, verbose);
     System.out.println();
@@ -144,7 +153,7 @@ public class Verifier {
     }
     System.out.println();
 
-    Verifier warning_verifier = Verifier.WARNING_VERIFIER;
+    Verifier<M, S, T> warning_verifier = getWarningVerifier();
     if (!warning_verifier.check(model, verbose)) {
       System.out
           .println("*** Some additionnal properties are not verified ***");
@@ -159,7 +168,7 @@ public class Verifier {
    * @param model
    *          The model on which to run the structural verifications.
    */
-  public static void verifyModel(Model model) {
+  public void verifyModel(AbstractModel<M, S, T> model) {
     verifyModel(model, true);
   }
 }

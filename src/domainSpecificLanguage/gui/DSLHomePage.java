@@ -27,6 +27,13 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.gui.TreeViewer;
 
+import abstractGraph.verifiers.CoherentVariablesWriting;
+import abstractGraph.verifiers.DeterminismChecker;
+import abstractGraph.verifiers.InitializationProperties;
+import abstractGraph.verifiers.NoUselessVariables;
+import abstractGraph.verifiers.SingleWritingChecker;
+import abstractGraph.verifiers.TautologyFromStateZero;
+import abstractGraph.verifiers.WrittenAtLeastOnceChecker;
 import utils.IOUtils;
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
 import domainSpecificLanguage.engine.DSLGraphSimulator;
@@ -35,13 +42,6 @@ import domainSpecificLanguage.parser.FSM_LanguageLexer;
 import domainSpecificLanguage.parser.FSM_LanguageParser;
 import domainSpecificLanguage.parser.FSM_builder;
 import engine.GraphSimulatorInterface;
-import graph.verifiers.CoherentVariablesWriting;
-import graph.verifiers.DeterminismChecker;
-import graph.verifiers.InitializationProperties;
-import graph.verifiers.NoUselessVariables;
-import graph.verifiers.SingleWritingChecker;
-import graph.verifiers.TautologyFromStateZero;
-import graph.verifiers.WrittenAtLeastOnceChecker;
 import gui.actions.LaunchExplorationAction;
 import gui.actions.LinkFileChoserToTextArea;
 
