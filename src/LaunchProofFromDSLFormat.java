@@ -80,7 +80,8 @@ public class LaunchProofFromDSLFormat {
     if (result == null) {
       System.err.println("Success of the proof");
     } else {
-      System.err.println("A state is not safe:\n" + result);
+      System.err.println("A state is not safe:\n"
+          + simulator.globalStateToString(result));
     }
   }
 }

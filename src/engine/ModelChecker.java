@@ -223,6 +223,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     number_explored_nodes = 0;
   }
 
+  private GraphSimulatorInterface<GS, M, S, T> simulator;
+
   /**
    * @details
    *          Properties to verify:
@@ -241,6 +243,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    */
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
+
+    this.simulator = simulator;
 
     visited_states.clear();
     number_illegal_states = 0;
@@ -334,13 +338,15 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     StringBuilder string_builder = new StringBuilder();
 
     GS current = state;
-    string_builder.insert(0, "\nTo the final state:\n\n" + current + "\n");
+    string_builder.insert(0, "\nTo the final state:\n\n"
+        + simulator.globalStateToString(current) + "\n");
     do {
       if (current.last_processed_external_event != null) {
         string_builder.insert(0, current.last_processed_external_event + "\n");
       } else {
         string_builder
-            .insert(0, "\nFrom the initial state:\n" + current + "\n");
+            .insert(0, "\nFrom the initial state:\n"
+                + simulator.globalStateToString(current) + "\n");
       }
       current = (GS) current.previous_global_state;
     } while (current != null);

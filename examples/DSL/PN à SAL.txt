@@ -23,24 +23,24 @@ errors
 end
 
 machine GRAPH_IND_Zone1_Libre(libre)
-  libre -> occupee : on CTL_Zone1_Libre when true do IND_Zone1_Libre := true;
-  occupee -> libre : on CTL_Zone1_Occupee when true do IND_Zone1_Libre := false;
+  occupee -> libre : on CTL_Zone1_Libre when true do IND_Zone1_Libre := true;
+  libre -> occupee : on CTL_Zone1_Occupee when true do IND_Zone1_Libre := false;
 end
 machine GRAPH_IND_Zone3_Libre(libre)
-  libre -> occupee : on CTL_Zone3_Libre when true do IND_Zone3_Libre := true;
-  occupee -> libre : on CTL_Zone3_Occupee when true do IND_Zone3_Libre := false;
+  occupee -> libre : on CTL_Zone3_Libre when true do IND_Zone3_Libre := true;
+  libre -> occupee : on CTL_Zone3_Occupee when true do IND_Zone3_Libre := false;
 end
-machine GRAPH_IND_PdAn_I_V1_Actif(libre)
-  libre -> occupee : on CTL_PdAn_I_V1_Actif when true do IND_PdAn_I_V1_Actif := true;
-  occupee -> libre : on CTL_PdAn_I_V1_Inactif when true do IND_PdAn_I_V1_Actif := false;
+machine GRAPH_IND_PdAn_I_V1_Actif(haute)
+  haute -> basse : on CTL_PdAn_I_V1_Actif when true do IND_PdAn_I_V1_Actif := true;
+  basse -> haute : on CTL_PdAn_I_V1_Inactif when true do IND_PdAn_I_V1_Actif := false;
 end
 machine GRAPH_IND_Zone5_1_Libre(libre)
-  libre -> occupee : on CTL_Zone5_1_Libre when true do IND_Zone5_1_Libre := true;
-  occupee -> libre : on CTL_Zone5_1_Occupee when true do IND_Zone5_1_Libre := false;
+  occupee -> libre : on CTL_Zone5_1_Libre when true do IND_Zone5_1_Libre := true;
+  libre -> occupee : on CTL_Zone5_1_Occupee when true do IND_Zone5_1_Libre := false;
 end
 machine GRAPH_IND_Zone5_Libre(libre)
-  libre -> occupee : on CTL_Zone5_Libre when true do IND_Zone5_Libre := true;
-  occupee -> libre : on CTL_Zone5_Occupee when true do IND_Zone5_Libre := false;
+  occupee -> libre : on CTL_Zone5_Libre when true do IND_Zone5_Libre := true;
+  libre -> occupee : on CTL_Zone5_Occupee when true do IND_Zone5_Libre := false;
 end
 
 machine AxL_I_V1(1)
@@ -60,28 +60,20 @@ machine CSR_CBR(1)
   1 -> 2 : on IND_An_I_V1_Actif, IND_Zone5_1_Libre when (not IND_An_I_V1_Actif) and IND_Zone5_1_Libre do IND_CSR_Actif := false, IND_CBR_Actif := false;
 end
 
-proof variables
-  bool IND_AP_An_I_V1_Actif(true);
-  bool IND_AP_CSR_Actif(true);
-end
-
 proof AP_Zone5(libre)
   occupee -> libre : on IND_Zone5_Libre when IND_Zone5_Libre and IND_Zone5_1_Libre do ;
   occupee -> 9 : on IND_Zone5_Libre when IND_Zone5_Libre and (not IND_Zone5_1_Libre) do P_6;
   libre -> 2 : on IND_Zone5_Libre when (not IND_Zone5_Libre) and (not IND_Zone3_Libre) do ;
   libre -> 9 : on IND_Zone5_Libre when (not IND_Zone5_Libre) and IND_Zone3_Libre do P_6;
 end
-proof AP_CSR_I_V1(1)
-  3 -> 1 : on CTL_PdAn_I_V1_Actif when true do IND_AP_An_I_V1_Actif := true, IND_AP_CSR_Actif := true;
-  2 -> 3 : on IND_Zone5_1_Libre, IND_Zone5_Libre when IND_Zone5_1_Libre and IND_Zone5_Libre and (not IND_PdAn_I_V1_Actif) and IND_Zone1_Libre and IND_Zone3_Libre do IND_AP_An_I_V1_Actif := false, IND_AP_CSR_Actif := false;
-  1 -> 2 : on IND_Zone5_1_Libre when (not IND_Zone5_1_Libre) and (not IND_PdAn_I_V1_Actif) and IND_Zone1_Libre and IND_Zone3_Libre do IND_AP_An_I_V1_Actif := false;
-  1 -> 2 : on IND_PdAn_I_V1_Actif when (not IND_PdAn_I_V1_Actif) and ((not IND_Zone1_Libre) or (not IND_Zone3_Libre) or (not IND_Zone5_Libre)) and (not IND_An_I_V1_Actif) do IND_AP_An_I_V1_Actif := true;
-  1 -> 9 : on IND_AP_An_I_V1_Actif, IND_An_I_V1_Actif, IND_AP_CSR_Actif, IND_CSR_Actif when IND_AP_An_I_V1_Actif and (not IND_An_I_V1_Actif) or IND_AP_CSR_Actif and (not IND_CSR_Actif) do P_5;
+proof AP_CSR_I_V1(barriere_basse)
+  barriere_basse -> 9 : on * when (not IND_CBR_Actif and not IND_CSR_Actif) do P_5;
+  barriere_basse -> barriere_haute : on * when not IND_PdAn_I_V1_Actif and IND_Zone1_Libre and IND_Zone3_Libre and IND_Zone5_Libre and IND_Zone5_1_Libre do ;
+  barriere_haute -> barriere_basse : on CTL_PdAn_I_V1_Actif when true do ;
 end
-proof AP_Zone1(libre)
-  occupee -> libre : on IND_Zone1_Libre when IND_Zone1_Libre and (not IND_Zone3_Libre) do ;
-  occupee -> 9 : on IND_Zone1_Libre when IND_Zone1_Libre and IND_Zone3_Libre do P_6;
-  libre -> 2 : on IND_Zone1_Libre when true do ;
+
+proof AP_Zone1(0)
+  0 -> 9 : on IND_Zone1_Libre when IND_Zone1_Libre and IND_Zone3_Libre do P_6;
 end
 proof AP_Zone5_1(1)
   1 -> 9 : on IND_Zone5_1_Libre when (not IND_Zone5_1_Libre) and IND_Zone5_Libre do P_6;
@@ -89,14 +81,20 @@ end
 proof AP_PdAn_I(1)
   3 -> 1 : on IND_Zone1_Libre when IND_Zone1_Libre do ;
   2 -> 3 : on IND_PdAn_I_V1_Actif when IND_PdAn_I_V1_Actif do ;
-  2 -> 9 : on IND_Zone1_Libre when IND_Zone1_Libre do P_6;
+  2 -> 9 : on IND_Zone1_Libre when true do P_6;
+  2 -> 9 : on IND_Zone3_Libre when not IND_Zone3_Libre do P_6;
   1 -> 2 : on IND_Zone1_Libre when (not IND_Zone1_Libre) do ;
+  /* 1 -> 9 : on IND_PdAn_I_V1_Actif when true do P_6; */
 end
 proof AP_Zone3(1)
   2 -> 1 : on IND_Zone3_Libre when IND_Zone3_Libre and (not IND_Zone5_Libre) do ;
   2 -> 9 : on IND_Zone3_Libre when IND_Zone3_Libre and IND_Zone5_Libre do P_6;
   1 -> 2 : on IND_Zone3_Libre when (not IND_Zone3_Libre) and (not IND_Zone1_Libre) do ;
   1 -> 9 : on IND_Zone3_Libre when (not IND_Zone3_Libre) and IND_Zone1_Libre do P_6;
+end
+
+proof 5_1_implique_5(1)
+    1 -> 1 : on * when not IND_Zone5_1_Libre and IND_Zone5_Libre do P_6;
 end
 
 

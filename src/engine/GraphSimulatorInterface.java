@@ -37,4 +37,12 @@ public interface GraphSimulatorInterface<GS extends AbstractGlobalState<M, S, T,
    */
   public LinkedHashSet<ExternalEvent> getPossibleEvent(GS global_state);
 
+  /**
+   * 
+   * @param global_state
+   *          A global state fitting the current graph simulator.
+   * @return A string description of the given global_state.
+   */
+  public String globalStateToString(GS global_state);
+
 }

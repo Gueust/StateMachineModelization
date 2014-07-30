@@ -27,6 +27,14 @@ public class BooleanVariable extends EnumeratedVariable {
     this.identifier = identifier;
   }
 
+  public String getOptionFromByte(byte value) {
+    if (value == TRUE) {
+      return "true";
+    } else {
+      return "false";
+    }
+  }
+
   @Override
   public boolean eval(AbstractValuation valuation) {
     return valuation.getValue(this);

@@ -51,8 +51,8 @@ public class LaunchProofFromAEFDFormat {
      * souhaité
      */
     // launchModelChecking("examples/PN à SAL.txt", null);
-    // launchModelChecking("examples/PN à SAL.txt",
-    // "examples/PN à SAL Preuve.txt");
+    launchModelChecking("examples/PN à SAL.txt",
+        "examples/PN à SAL Preuve.txt");
     // launchModelChecking("examples/PN à SAL+TPL.txt",
     // "examples/PN à SAL+TPL Preuve.txt");
     // launchModelChecking("examples/PN a SAL Cas2.txt",
@@ -63,8 +63,8 @@ public class LaunchProofFromAEFDFormat {
     // "PN/PN a SAL Cas2 Preuve.txt");
     // launchModelChecking("PN/PN a SAL Cas2.txt",
     // null);
-    launchModelChecking("PN/PN a SAL Cas3.txt",
-        "PN/PN a SAL Cas3 Preuve.txt");
+    // launchModelChecking("PN/PN à SAL Cas3.txt",
+    // "PN/PN à SAL Cas3 Preuve.txt");
 
     // launchModelChecking("../Compteur essieu/CompteurEssieux.txt", null);
     // Cette partie du code permet de lancer Noisy
@@ -238,9 +238,6 @@ public class LaunchProofFromAEFDFormat {
 
     GlobalState global_state = simulator.init(initialization_variables);
     System.out.println(global_state);
-    // System.out.println("Size of a GS: " + (global_state == null)
-    // + ObjectSizeFetcher.deepSizeOf(global_state));
-    // System.exit(-1);
     model_checker.addInitialState(global_state);
 
     // simulator.generateAllInitialStates(model_checker);

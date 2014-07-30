@@ -181,6 +181,6 @@ Action
 AP_PdAn_I
 2
 9
-IND_Zone1_Libre Evenement
-IND_Zone1_Libre Condition
+IND_Zone1_Libre OU IND_Zone3_Libre Evenement
+Condition
 P_6; Action

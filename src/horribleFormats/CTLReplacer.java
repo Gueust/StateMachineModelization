@@ -8,11 +8,11 @@ import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import parserAEFDFormat.Fichier6lignes;
@@ -43,7 +43,7 @@ public class CTLReplacer {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
     Model model = graph_factory.buildModel(file_name, file_name);
     model.build();
-    HashMap<EnumeratedVariable, LinkedList<StateMachine>> writing_state_machine =
+    HashMap<EnumeratedVariable, Collection<StateMachine>> writing_state_machine =
         model.getWritingStateMachines();
     Boolean beginning = true;
     BufferedWriter writer = new BufferedWriter(new FileWriter(

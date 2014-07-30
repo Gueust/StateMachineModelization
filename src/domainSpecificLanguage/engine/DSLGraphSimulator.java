@@ -1,6 +1,7 @@
 package domainSpecificLanguage.engine;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -65,33 +66,49 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
       new LinkedList<SingleEvent>();
 
   /** This is the model to execute */
-  protected DSLModel model;
+  protected DSLModel functional_model;
 
   /** This is the model of the proof */
   protected DSLModel proof;
 
   protected boolean verbose = true;
 
+  /** This is the union of the variables of both models */
+  HashSet<EnumeratedVariable> variables;
+
   public DSLGraphSimulator(DSLModel model, DSLModel proof) {
-    this.model = model;
+    this.functional_model = model;
     this.proof = proof;
+
+    variables = new HashSet<>();
+    variables.addAll(model.variables);
+    variables.addAll(proof.variables);
 
     checkCompatibility();
   }
 
   public DSLGraphSimulator(DSLModel model) {
-    this.model = model;
+    this.functional_model = model;
+
+    variables = new HashSet<>();
+    variables.addAll(model.variables);
+
     checkCompatibility();
   }
 
+  @Override
+  public String globalStateToString(GS global_state) {
+    return ((DSLGlobalState) global_state).toString(variables);
+  }
+
   public int getNumberVariables() {
-    return model.variables.size() + proof.variables.size();
+    return functional_model.variables.size() + proof.variables.size();
   }
 
   @Override
   public DSLGraphSimulator<GS> clone() {
     DSLGraphSimulator<GS> result =
-        new DSLGraphSimulator<>(this.model, this.proof);
+        new DSLGraphSimulator<>(this.functional_model, this.proof);
     result.setVerbose(this.verbose);
     return result;
   }
@@ -126,7 +143,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
 
   @Override
   public DSLModel getModel() {
-    return model;
+    return functional_model;
   }
 
   @Override
@@ -207,6 +224,16 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
               + e.toString());
         }
 
+        if (state_machine.getName().equals("AP_CSR_I_V1") &&
+            transition.getDestination().getId().equals("9")) {
+          System.err.println("Evaluation de la transition a cause de " + event
+              + ": " + evaluation);
+          System.err.println(transition.getCondition());
+          // assert (false);
+          System.err.println(((DSLGlobalState) global_state)
+              .toString(variables));
+        }
+
         if (evaluation) {
           temporary_tag.put(state_machine, transition.getDestination());
           processAction(transition.getActions().iterator(),
@@ -218,7 +245,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
       }
       // Update the states machines tags in the global state after saving the
       // list of transitions pull.
-      if (model == this.model) {
+      if (model == this.functional_model) {
         functionnal_transitions_pull_list.putAll(temporary_tag);
       } else {
         proof_transitions_pull_list.putAll(temporary_tag);
@@ -296,9 +323,10 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
       } else if (single_event instanceof ComputerCommandFunction) {
 
         commands_queue.add(single_event);
-        if (!(model.getACTFCI((ComputerCommandFunction) single_event) == null)) {
+        if (!(functional_model
+            .getACTFCI((ComputerCommandFunction) single_event) == null)) {
 
-          LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> list = model
+          LinkedList<Pair<Formula, LinkedList<ExternalEvent>>> list = functional_model
               .getACTFCI((ComputerCommandFunction) single_event);
 
           for (Pair<Formula, LinkedList<ExternalEvent>> condition_with_act : list) {
@@ -447,7 +475,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
 
     do {
       transfert_list.clear();
-      processSingleEvent(model, copied_starting_state, curr_event,
+      processSingleEvent(functional_model, copied_starting_state, curr_event,
           transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
@@ -509,12 +537,12 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
    * @return true if the models are ok
    */
   private boolean checkCompatibility() {
-    if (model == null) {
+    if (functional_model == null) {
       throw new Error("The functionnal model within the simulator is null");
     }
 
     /* Verification of 4) */
-    for (DSLStateMachine machine : model) {
+    for (DSLStateMachine machine : functional_model) {
       Iterator<DSLTransition> transition_iterator = machine
           .iteratorTransitions();
       while (transition_iterator.hasNext()) {
@@ -561,7 +589,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
             /* Verification of 1) */
             BooleanVariable var =
                 ((VariableChange) event).getModifiedVariable();
-            if (model.containsVariable(var)) {
+            if (functional_model.containsVariable(var)) {
               System.err.println(
                   "The proof model does write the variable " + var +
                       " which is also present in the functional model.");
@@ -569,7 +597,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
             }
           } else if (event instanceof SynchronisationEvent) {
             /* Verification of 2) */
-            if (model
+            if (functional_model
                 .containsSynchronisationEvent((SynchronisationEvent) event)) {
               System.err
                   .println(
@@ -647,13 +675,14 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
    */
   public DSLGlobalState getInitialGlobalState() {
     DSLGlobalState global_state = new DSLGlobalState(getNumberVariables());
-    for (DSLStateMachine m : model) {
+    for (DSLStateMachine m : functional_model) {
       global_state.setState(m, m.getInitial_state());
     }
     for (DSLStateMachine m : proof) {
       global_state.setState(m, m.getInitial_state());
     }
-    for (Entry<EnumeratedVariable, Byte> pair : model.initial_values.entrySet()) {
+    for (Entry<EnumeratedVariable, Byte> pair : functional_model.initial_values
+        .entrySet()) {
       global_state.setVariableValue(pair.getKey(), pair.getValue());
     }
     for (Entry<EnumeratedVariable, Byte> pair : proof.initial_values.entrySet()) {

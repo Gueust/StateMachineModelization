@@ -166,7 +166,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       var = proof_variables.get(name);
     }
     if (var == null) {
-      raiseError("The variable used at " + getDetails(token)
+      raiseError("The variable " + name + " used at " + getDetails(token)
           + " has not been defined previously.");
     }
     return var;
@@ -487,8 +487,9 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
       HashSet<EnumeratedVariable> all_DSLVariables = new HashSet<>();
       formula.allVariables(all_DSLVariables);
       for (EnumeratedVariable variable : all_DSLVariables) {
-        transition.addSingleEvent(all_single_events.get(variable.getVarname()));
-        ;
+        SingleEvent event = all_single_events.get(variable.getVarname());
+        assert (event != null);
+        transition.addSingleEvent(event);
       }
     }
 

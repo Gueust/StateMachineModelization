@@ -85,6 +85,11 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     return result;
   }
 
+  @Override
+  public String globalStateToString(GS global_state) {
+    return global_state.toString();
+  }
+
   public LinkedHashMap<M, S> getFunctionnalTransitionsPullList() {
     return functionnal_transitions_pull_list;
   }
