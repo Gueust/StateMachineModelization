@@ -224,16 +224,6 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
               + e.toString());
         }
 
-        if (state_machine.getName().equals("AP_CSR_I_V1") &&
-            transition.getDestination().getId().equals("9")) {
-          System.err.println("Evaluation de la transition a cause de " + event
-              + ": " + evaluation);
-          System.err.println(transition.getCondition());
-          // assert (false);
-          System.err.println(((DSLGlobalState) global_state)
-              .toString(variables));
-        }
-
         if (evaluation) {
           temporary_tag.put(state_machine, transition.getDestination());
           processAction(transition.getActions().iterator(),
