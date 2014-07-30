@@ -3,6 +3,7 @@ package engine;
 import genericLabeledGraph.Edge;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
@@ -53,43 +54,45 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * Prints the number of visited, unvisited and unsafe states at when exploring
    * every states. Otherwise, it is done every hundred turns.
    */
-  private final static boolean VERY_VERBOSE = false;
+  protected final static boolean VERY_VERBOSE = false;
   /**
    * When finding an unsafe state, prints the initial state, the unsafe state
    * and the trace leading to it
    */
-  private final static boolean PRINT_TRACE_UNSAFE = false;
-
-  /** The first states that are visited */
-  private GS initial_state;
+  protected final static boolean PRINT_TRACE_UNSAFE = true;
 
   /** The already explored states */
-  private Set<GS> visited_states = new LinkedHashSet<GS>();
+  protected Set<GS> visited_states = new HashSet<GS>();
 
   /** The states to explore */
-  private Set<GS> unvisited_states = new LinkedHashSet<GS>();
-  private Set<GS> unsafe_states = new LinkedHashSet<GS>();
+  protected Set<GS> unvisited_states = new HashSet<GS>();
 
   /**
    * The states that are excluded from the exploration by the postulate states
    * machines. When a state is not to explore, isP6() of a simulator is true.
    */
-  // private HashSet<GS> illegal_states = new HashSet<GS>();
-  private int number_illegal_states = 0;
+  protected HashSet<GS> unsafe_states = new HashSet<GS>();
+  protected int number_illegal_states = 0;
+  protected int number_of_functional_warning = 0;
+  protected int number_explored_nodes = 0;
 
-  private int i = 0;
-
-  public void ModelChercker() {
-    DB db = DBMaker
-        .newMemoryDirectDB()
-        .transactionDisable()
-        .asyncWriteEnable()
-        .asyncWriteFlushDelay(100)
-        // .compressionEnable()
-        .make();
-
-    visited_states = db.getTreeSet("Visited states");
-    unvisited_states = db.getTreeSet("Unvisited states");
+  public ModelChecker() {
+    /**
+     * Not used. To be able to use a database, the GlobalState class must be
+     * serializable.
+     */
+    /*
+     * DB db = DBMaker
+     * .newMemoryDirectDB()
+     * .transactionDisable()
+     * .asyncWriteEnable()
+     * .asyncWriteFlushDelay(100)
+     * // .compressionEnable()
+     * .make();
+     * 
+     * visited_states = db.getHashSet("Visited states");
+     * unvisited_states = db.getHashSet("Unvisited states");
+     */
   }
 
   /**
@@ -124,6 +127,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     }
   }
 
+  /**
+   * Not used. To be able to use a database, the GlobalState class must be
+   * serializable.
+   */
   protected void setDiskBackUpMemory() {
     visited_states = null;
     unvisited_states = null;
@@ -146,21 +153,17 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
   }
 
-  private boolean isVisited(GS state) {
+  protected boolean isVisited(GS state) {
     return visited_states.contains(state);
   }
 
-  private void addVisited(GS state) {
+  protected void addVisited(GS state) {
     if (state.isLegal()) {
       visited_states.add(state);
     } else {
       System.err.println("You have added an ilegal initial state to the" +
           " model checker");
     }
-  }
-
-  private void clearVisited() {
-    visited_states.clear();
   }
 
   /**
@@ -170,13 +173,12 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * @return null is everything went fine. The error state (i.e. not safe or
    *         error) otherwise.
    */
-  private GS processGS(GS state) {
+  protected GS processGS(GS state) {
     assert state != null;
 
     /* The state is illegal */
     if (!state.isLegal()) {
       number_illegal_states++;
-      // illegal_states.add(state);
       return null;
     }
 
@@ -191,7 +193,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     }
 
     /* The state is unsafe ! We return it (i.e. mark it as an error) */
-    if (!state.isSafe() || !state.isNotP7()) {
+    if (!state.isSafe()) {
+      unsafe_states.add(state);
+      return state;
+    }
+
+    if (!state.isNotP7()) {
+      number_of_functional_warning++;
       return state;
     }
 
@@ -209,8 +217,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     /* We reset all the data to empty data */
     unvisited_states.clear();
     visited_states.clear();
+
     number_illegal_states = 0;
-    i = 0;
+    number_of_functional_warning = 0;
+    number_explored_nodes = 0;
   }
 
   /**
@@ -232,9 +242,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
+    visited_states.clear();
     number_illegal_states = 0;
-    clearVisited();
-    i = 0;
+    number_of_functional_warning = 0;
+    number_explored_nodes = 0;
 
     /*
      * We need to check that all the initial states are legal before adding
@@ -253,8 +264,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
 
-    initial_state = unvisited_states.iterator().next();
-
     int c = 0;
     while (unvisited_states.size() != 0) {
       c++;
@@ -272,9 +281,9 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
             + visited_states.size());
         System.err.println("Number of unvisited states "
             + unvisited_states.size());
-        System.err.println("Total number of illegal states found:" +
+        System.err.println("Total number of illegal nodes found:" +
             number_illegal_states);
-        System.err.println("Total number of unsafe states found:" +
+        System.err.println("Total number of unsafe nodes found:" +
             unsafe_states.size());
       }
 
@@ -287,7 +296,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         next_state.last_processed_external_event = e;
         next_state.previous_global_state = state;
 
-        i++;
+        number_explored_nodes++;
         System.err.flush();
         System.out.flush();
 
@@ -300,7 +309,10 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
             System.out.println("***********************************");
             System.out.println(printFullTrace(next_state));
           }
-          unsafe_states.add(next_state);
+
+          if (!next_state.isSafe()) {
+            return next_state;
+          }
         }
       }
     }
@@ -308,18 +320,13 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         + visited_states.size());
     System.err.println("Total number of illegal nodes found:" +
         number_illegal_states);
-    System.err.println("Total number of explored node: " + i);
+    System.err.println("Total number of explored node: "
+        + number_explored_nodes);
     System.err.println("Total number of unsafe node: " + unsafe_states.size());
+    System.err.println("Total number of functional warnings (P7) nodes: "
+        + number_of_functional_warning);
 
     return null;
-  }
-
-  /**
-   * Open a window which displays the tree of all the traces explored by the
-   * model checker.
-   */
-  protected void displayTree() {
-    new DisplayExecutionTree<>(initial_state);
   }
 
   @SuppressWarnings("unchecked")
