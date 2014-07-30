@@ -63,6 +63,6 @@ public class DSLTransition extends AbstractTransition<DSLState> {
 
   @Override
   public boolean evalCondition(AbstractGlobalState<?, DSLState, ?, ?> env) {
-    return condition.eval(env.getValuation());
+    return getCondition().eval(env.getValuation());
   }
 }
