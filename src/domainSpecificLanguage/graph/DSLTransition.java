@@ -46,7 +46,7 @@ public class DSLTransition extends AbstractTransition<DSLState> {
 
   @Override
   public String toString() {
-    DSLToString customizer = DSLToString.INSTANCE;
+    DSLFormulaToString customizer = DSLFormulaToString.INSTANCE;
 
     return from + " -> " + to
         + " : on "
