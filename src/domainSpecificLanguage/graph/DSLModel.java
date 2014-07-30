@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -240,8 +241,8 @@ public class DSLModel extends
   }
 
   @Override
-  public HashMap<EnumeratedVariable, LinkedList<DSLStateMachine>> getWritingStateMachines() {
-    HashMap<EnumeratedVariable, LinkedList<DSLStateMachine>> result =
+  public HashMap<EnumeratedVariable, Collection<DSLStateMachine>> getWritingStateMachines() {
+    HashMap<EnumeratedVariable, Collection<DSLStateMachine>> result =
         new HashMap<>();
 
     for (DSLStateMachine machine : this) {
@@ -253,10 +254,10 @@ public class DSLModel extends
             if (event instanceof Assignment) {
               EnumeratedVariable variable = ((Assignment) event).getVariable();
 
-              LinkedList<DSLStateMachine> writing_sm =
-                  result.get(variable);
+              LinkedHashSet<DSLStateMachine> writing_sm =
+                  (LinkedHashSet<DSLStateMachine>) result.get(variable);
               if (writing_sm == null) {
-                writing_sm = new LinkedList<DSLStateMachine>();
+                writing_sm = new LinkedHashSet<DSLStateMachine>();
                 result.put(variable, writing_sm);
               }
               writing_sm.add(machine);

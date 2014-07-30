@@ -42,7 +42,8 @@ public class LaunchProofFromDSLFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    launchModelChecking("src/domainSpecificLanguage/Example.txt");
+    // launchModelChecking("src/domainSpecificLanguage/Example.txt");
+    launchModelChecking("examples/DSL/PN à SAL.txt");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();

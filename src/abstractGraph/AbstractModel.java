@@ -85,7 +85,7 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
    * @return The HashMap linking for every EnumeratedVariable, the list of the
    *         state machines that are modifying its value.
    */
-  public abstract HashMap<EnumeratedVariable, LinkedList<M>> getWritingStateMachines();
+  public abstract HashMap<EnumeratedVariable, Collection<M>> getWritingStateMachines();
 
   /**
    * Some commands are set to generate external events that will be executed

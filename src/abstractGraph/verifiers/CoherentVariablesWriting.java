@@ -1,5 +1,6 @@
 package abstractGraph.verifiers;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -71,7 +72,7 @@ public class CoherentVariablesWriting<M extends AbstractStateMachine<S, T>, S ex
    */
   @SuppressWarnings("unchecked")
   private boolean checkOneStateMachine(M machine,
-      LinkedList<EnumeratedVariable> written_variables,
+      Collection<EnumeratedVariable> written_variables,
       boolean verbose) throws Error {
 
     if (written_variables == null || written_variables.isEmpty()) {
@@ -285,26 +286,26 @@ public class CoherentVariablesWriting<M extends AbstractStateMachine<S, T>, S ex
    * Creates the Hashmap associating to every state machine the variables it is
    * writing.
    */
-  private HashMap<M, LinkedList<EnumeratedVariable>> writtenVariables(
-      HashMap<EnumeratedVariable, LinkedList<M>> hashMap) {
+  private HashMap<M, Collection<EnumeratedVariable>> writtenVariables(
+      HashMap<EnumeratedVariable, Collection<M>> hashMap) {
 
-    HashMap<M, LinkedList<EnumeratedVariable>> written_variables =
-        new HashMap<M, LinkedList<EnumeratedVariable>>();
+    HashMap<M, Collection<EnumeratedVariable>> written_variables =
+        new HashMap<>();
 
-    Iterator<Entry<EnumeratedVariable, LinkedList<M>>> it_var_statemachine =
+    Iterator<Entry<EnumeratedVariable, Collection<M>>> it_var_statemachine =
         hashMap.entrySet().iterator();
 
     while (it_var_statemachine.hasNext()) {
-      Entry<EnumeratedVariable, LinkedList<M>> entry =
+      Entry<EnumeratedVariable, Collection<M>> entry =
           it_var_statemachine.next();
       EnumeratedVariable variable = entry.getKey();
-      LinkedList<M> sm = entry.getValue();
+      Collection<M> sm = entry.getValue();
 
       Iterator<M> sm_iterator = sm.iterator();
       while (sm_iterator.hasNext()) {
         M machine = sm_iterator.next();
 
-        LinkedList<EnumeratedVariable> written_vars = written_variables
+        Collection<EnumeratedVariable> written_vars = written_variables
             .get(machine);
         if (written_vars == null) {
           written_vars = new LinkedList<EnumeratedVariable>();
@@ -327,7 +328,7 @@ public class CoherentVariablesWriting<M extends AbstractStateMachine<S, T>, S ex
 
     boolean result = true;
 
-    HashMap<M, LinkedList<EnumeratedVariable>> written_variables =
+    HashMap<M, Collection<EnumeratedVariable>> written_variables =
         writtenVariables(m.getWritingStateMachines());
 
     Iterator<M> it_state_machines =

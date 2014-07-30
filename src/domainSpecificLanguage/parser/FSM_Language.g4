@@ -17,6 +17,7 @@ model_alternatives :
     | commands_declaration
     | external_events
     | internal_events
+    | errors_declaration
     | machine
     | proof_machine
     | 'sub' sub 'end' 
@@ -46,6 +47,8 @@ external_events : 'external events' (list_of_ID ';')* 'end';
 internal_events : ('internal events' | 'proof internal events') 
             (list_of_ID ';')* 'end';
 
+
+errors_declaration : 'errors' (list_of_ID ';')* 'end';
 
 commands_declaration : 'commands' (list_of_ID ';')* 'end';
 

@@ -27,7 +27,6 @@ import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
-import abstractGraph.verifiers.AbstractVerificationUnit;
 
 /**
  * A set of state machines interacting with each other.
@@ -57,7 +56,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   private HashMap<String, EnumeratedVariable> existingVariables;
 
   /** Store for every VariableChange the state machines that modifies it. */
-  private HashMap<EnumeratedVariable, LinkedList<StateMachine>> writing_state_machines;
+  private HashMap<EnumeratedVariable, Collection<StateMachine>> writing_state_machines;
 
   /**
    * Create a new empty model named `name`.
@@ -88,7 +87,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
       synchronisation_events = new HashMap<>();
       variable_modification_events = new HashMap<>();
       existingVariables = new HashMap<>();
-      writing_state_machines = new HashMap<EnumeratedVariable, LinkedList<StateMachine>>();
+      writing_state_machines = new HashMap<>();
     } else {
       external_events.clear();
       commands_events.clear();
@@ -125,7 +124,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
                 ((VariableChange) event).getModifiedVariable();
 
             LinkedList<StateMachine> list =
-                writing_state_machines.get(modified_var);
+                (LinkedList<StateMachine>) writing_state_machines
+                    .get(modified_var);
             if (list == null) {
               list = new LinkedList<StateMachine>();
               writing_state_machines.put(modified_var, list);
@@ -238,12 +238,12 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * @return An iterator over the couple (VariableChange => List of state
    *         machines writing on it)
    */
-  public Iterator<Entry<EnumeratedVariable, LinkedList<StateMachine>>> writingRightsIterator() {
+  public Iterator<Entry<EnumeratedVariable, Collection<StateMachine>>> writingRightsIterator() {
     return writing_state_machines.entrySet().iterator();
   }
 
   @Override
-  public HashMap<EnumeratedVariable, LinkedList<StateMachine>> getWritingStateMachines() {
+  public HashMap<EnumeratedVariable, Collection<StateMachine>> getWritingStateMachines() {
     return writing_state_machines;
   }
 

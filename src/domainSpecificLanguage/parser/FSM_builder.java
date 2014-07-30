@@ -32,6 +32,7 @@ import abstractGraph.events.CommandEvent;
 import abstractGraph.events.EnumeratedVariableChange;
 import abstractGraph.events.ExternalEvent;
 import abstractGraph.events.InternalEvent;
+import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
@@ -47,6 +48,7 @@ import domainSpecificLanguage.parser.FSM_LanguageParser.BracketExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Commands_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.Domain_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.EnumerationEqualityExprContext;
+import domainSpecificLanguage.parser.FSM_LanguageParser.Errors_declarationContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.External_eventsContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.FalseExprContext;
 import domainSpecificLanguage.parser.FSM_LanguageParser.IdExprContext;
@@ -82,6 +84,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   Map<String, CommandEvent> commands_event = new HashMap<>();
   Map<String, SingleEvent> all_single_events = new HashMap<>();
   Map<String, Enumeration> enumerations = new HashMap<>();
+  Map<String, ModelCheckerEvent> errors = new HashMap<>();
+
   Map<EnumeratedVariable, Enumeration> enumerated_DSLVariable = new HashMap<>();
 
   Map<String, DSLStateMachine> functional_state_machines =
@@ -148,13 +152,13 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
   private EnumeratedVariable getDSLVariable(String name, Token token) {
     if (external_events.containsKey(name)) {
       raiseError("The DSLVariable " + name + " defined at " + getDetails(token)
-          + " has already been defined as an external event.");
+          + " has been defined as an external event, and not as a variable.");
     } else if (internal_events.containsKey(name)) {
       raiseError("The DSLVariable " + name + " defined at " + getDetails(token)
-          + " has already been defined as an internal event.");
+          + " has been defined as an internal event, and not as a variable.");
     } else if (commands_event.containsKey(name)) {
       raiseError("The DSLVariable " + name + " defined at " + getDetails(token)
-          + " has already been defined as a command.");
+          + " has been defined as a command, and not as a variable.");
     }
 
     EnumeratedVariable var = variables.get(name);
@@ -736,6 +740,32 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     throw new NotImplementedException();
   }
 
+  private void checkExistence(String event_name, Token token) {
+    if (proof_internal_events.containsKey(event_name) ||
+        internal_events.containsKey(event_name)) {
+      raiseError("The keyword " + event_name + " defined at "
+          + getDetails(token)
+          + " has already been defined as an internal event.");
+    } else if (external_events.containsKey(event_name)) {
+      raiseError("The keyword " + event_name + " defined at "
+          + getDetails(token)
+          + " has already been defined.");
+    } else if (variables.containsKey(event_name) ||
+        proof_variables.containsKey(event_name)) {
+      raiseError("The keyword " + event_name + " defined at "
+          + getDetails(token)
+          + " has already been defined as a DSLVariable.");
+    } else if (commands_event.containsKey(event_name)) {
+      raiseError("The keyword " + event_name + " defined at "
+          + getDetails(token)
+          + " has already been defined as a command.");
+    } else if (errors.containsKey(event_name)) {
+      raiseError("The keyword " + event_name + " defined at "
+          + getDetails(token)
+          + " has already been defined as an error message.");
+    }
+  }
+
   /**
    * Store the events in the private set `external_events`.
    * 
@@ -751,25 +781,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
         String event_name = terminal_node.getText();
 
         Token token = terminal_node.getSymbol();
-        if (proof_internal_events.containsKey(event_name) ||
-            internal_events.containsKey(event_name)) {
-          raiseError("The external event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as an internal event.");
-        } else if (external_events.containsKey(event_name)) {
-          raiseError("The external event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined.");
-        } else if (variables.containsKey(event_name) ||
-            proof_variables.containsKey(event_name)) {
-          raiseError("The external event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as a DSLVariable.");
-        } else if (commands_event.containsKey(event_name)) {
-          raiseError("The external event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as a command.");
-        }
+
+        checkExistence(event_name, token);
 
         ExternalEvent event = new ExternalEvent(event_name);
         external_events.put(event_name, event);
@@ -793,25 +806,7 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
 
         Token token = terminal_node.getSymbol();
 
-        if (proof_internal_events.containsKey(event_name) ||
-            internal_events.containsKey(event_name)) {
-          raiseError("The internal event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as an internal event.");
-        } else if (external_events.containsKey(event_name)) {
-          raiseError("The internal event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as an external event.");
-        } else if (variables.containsKey(event_name) ||
-            proof_variables.containsKey(event_name)) {
-          raiseError("The internal event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as a DSLVariable.");
-        } else if (commands_event.containsKey(event_name)) {
-          raiseError("The external event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as a command.");
-        }
+        checkExistence(event_name, token);
 
         InternalEvent event = new InternalEvent(event_name);
         if (visiting_proof_internal_event) {
@@ -820,7 +815,6 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           internal_events.put(event_name, event);
         }
         all_single_events.put(event_name, event);
-
       }
     }
     return null;
@@ -834,37 +828,35 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     for (List_of_IDContext internal_list : ctx.list_of_ID()) {
       for (TerminalNode terminal_node : internal_list.ID()) {
         String event_name = terminal_node.getText();
-        if (commands_event.containsKey(event_name)) {
-          raiseError("Declaring an already existing event at "
-              + getDetails(terminal_node.getSymbol()));
-        }
 
         Token token = terminal_node.getSymbol();
 
-        if (proof_internal_events.containsKey(event_name) ||
-            internal_events.containsKey(event_name)) {
-          raiseError("The command event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as an internal event.");
-        } else if (external_events.containsKey(event_name)) {
-          raiseError("The command event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as an external event.");
-        } else if (variables.containsKey(event_name) ||
-            proof_variables.containsKey(event_name)) {
-          raiseError("The command event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined as a DSLVariable.");
-        } else if (commands_event.containsKey(event_name)) {
-          raiseError("The command event " + event_name + " defined at "
-              + getDetails(token)
-              + " has already been defined.");
-        }
+        checkExistence(event_name, token);
 
         CommandEvent event = new CommandEvent(event_name);
         commands_event.put(event_name, event);
         all_single_events.put(event_name, event);
+      }
+    }
+    return null;
+  }
 
+  @Override
+  public Object visitErrors_declaration(Errors_declarationContext ctx) {
+    if (ctx.list_of_ID() == null) {
+      return null;
+    }
+    for (List_of_IDContext internal_list : ctx.list_of_ID()) {
+      for (TerminalNode terminal_node : internal_list.ID()) {
+        String event_name = terminal_node.getText();
+
+        Token token = terminal_node.getSymbol();
+
+        checkExistence(event_name, token);
+
+        ModelCheckerEvent event = new ModelCheckerEvent(event_name);
+        errors.put(event_name, event);
+        all_single_events.put(event_name, event);
       }
     }
     return null;
@@ -986,4 +978,5 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     }
     return new Assignment(dsl_variable, value);
   }
+
 }

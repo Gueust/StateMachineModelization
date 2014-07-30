@@ -5,11 +5,11 @@ import genericLabeledGraph.Node;
 import graphVizBinding.GraphViz;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import abstractGraph.AbstractModel;
@@ -45,11 +45,11 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
    * modifies some variables or generate SYN's that are eaten by graph B.
    */
   private void createGraphOfGraphs() {
-    HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine =
+    HashMap<EnumeratedVariable, Collection<M>> writing_state_machine =
         model.getWritingStateMachines();
     @SuppressWarnings("unchecked")
-    HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine_proof =
-        (HashMap<EnumeratedVariable, LinkedList<M>>) proof
+    HashMap<EnumeratedVariable, Collection<M>> writing_state_machine_proof =
+        (HashMap<EnumeratedVariable, Collection<M>>) proof
             .getWritingStateMachines()
             .clone();
     /*
@@ -87,7 +87,7 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
    * @param current_model
    */
   private void buildOutgoingLinksFromModel(
-      HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine,
+      HashMap<EnumeratedVariable, Collection<M>> writing_state_machine,
       LinkedHashMap<String, LinkedHashSet<M>> syn_event_in_graphs,
       AbstractModel<M, S, T> current_model) {
     for (M state_machine : current_model) {
@@ -128,10 +128,10 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
   }
 
   private void addWritingStateMachineInGraph(
-      HashMap<EnumeratedVariable, LinkedList<M>> writing_state_machine,
+      HashMap<EnumeratedVariable, Collection<M>> writing_state_machine,
       M state_machine,
       VariableChange variable_change) {
-    LinkedList<M> writers =
+    Collection<M> writers =
         writing_state_machine.get(variable_change.getModifiedVariable());
     if (writers == null) {
       return;
@@ -140,7 +140,7 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
       throw new IllegalArgumentException("The variable " + variable_change
           + " is written by more than one graph.");
     } else {
-      addInActivationGraph(writers.getFirst(),
+      addInActivationGraph(writers.iterator().next(),
           state_machine, variable_change);
     }
   }

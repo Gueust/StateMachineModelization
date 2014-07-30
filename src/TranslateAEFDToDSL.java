@@ -6,8 +6,8 @@ public class TranslateAEFDToDSL {
 
   public static void main(String[] args) throws IOException {
     System.out.println(
-        AEFDToDSL.translate("PN/PN à SAL.txt",
-            "PN/PN à SAL Preuve.txt"));
+        AEFDToDSL.translate("examples/PN à SAL.txt",
+            "examples/PN à SAL Preuve.txt"));
 
   }
 

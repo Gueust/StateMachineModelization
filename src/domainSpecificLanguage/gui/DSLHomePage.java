@@ -277,8 +277,6 @@ public class DSLHomePage extends JFrame {
 
     JButton btnSimulation = new JButton("Simulation");
 
-    JButton btnRemoveProofModel = new JButton("Remove proof model");
-
     JButton btnExploration = new JButton("Exploration");
 
     JCheckBox chckbxVerboseExploration = new JCheckBox("Verbose exploration");
@@ -307,8 +305,6 @@ public class DSLHomePage extends JFrame {
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(btnLoadFunctionalModel,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(btnRemoveProofModel,
-                                GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(btnExploration,
                                 GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                             .addComponent(chckbxVerboseExploration,
@@ -333,11 +329,7 @@ public class DSLHomePage extends JFrame {
                     .addComponent(btnLoadFunctionalModel,
                         GroupLayout.PREFERRED_SIZE, 42,
                         GroupLayout.PREFERRED_SIZE)
-                    .addGap(107)
-                    .addComponent(btnRemoveProofModel,
-                        GroupLayout.PREFERRED_SIZE, 41,
-                        GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addGap(154)
                     .addComponent(txtrFciFile, GroupLayout.PREFERRED_SIZE, 42,
                         GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(ComponentPlacement.RELATED)

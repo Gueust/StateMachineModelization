@@ -1,8 +1,8 @@
 package abstractGraph.verifiers;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
@@ -22,13 +22,13 @@ public class WrittenAtLeastOnceChecker<M extends AbstractStateMachine<S, T>, S e
 
     counter_example_not_writen.clear();
 
-    HashMap<EnumeratedVariable, LinkedList<M>> written_variables =
+    HashMap<EnumeratedVariable, Collection<M>> written_variables =
         m.getWritingStateMachines();
 
     for (EnumeratedVariable variable : m.getExistingVariables()) {
 
       if (!variable.getVarname().startsWith("CTL")) {
-        LinkedList<M> writing_state_machine =
+        Collection<M> writing_state_machine =
             written_variables.get(variable);
 
         if (writing_state_machine != null) {
