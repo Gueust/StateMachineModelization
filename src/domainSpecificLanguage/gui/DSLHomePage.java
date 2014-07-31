@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import javax.swing.GroupLayout;
@@ -22,11 +21,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.gui.TreeViewer;
-
 import abstractGraph.verifiers.CoherentVariablesWriting;
 import abstractGraph.verifiers.DeterminismChecker;
 import abstractGraph.verifiers.InitializationProperties;
@@ -34,19 +28,26 @@ import abstractGraph.verifiers.NoUselessVariables;
 import abstractGraph.verifiers.SingleWritingChecker;
 import abstractGraph.verifiers.TautologyFromStateZero;
 import abstractGraph.verifiers.WrittenAtLeastOnceChecker;
-import utils.IOUtils;
+import utils.Monitoring;
+import utils.Pair;
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
 import domainSpecificLanguage.engine.DSLGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
-import domainSpecificLanguage.parser.FSM_LanguageLexer;
-import domainSpecificLanguage.parser.FSM_LanguageParser;
+import domainSpecificLanguage.graph.DSLState;
+import domainSpecificLanguage.graph.DSLStateMachine;
+import domainSpecificLanguage.graph.DSLTransition;
 import domainSpecificLanguage.parser.FSM_builder;
+import domainSpecificLanguage.verifiers.DSLVerifier;
 import engine.GraphSimulatorInterface;
-import gui.actions.LaunchExplorationAction;
+import engine.ModelChecker;
 import gui.actions.LinkFileChoserToTextArea;
 
 @SuppressWarnings("serial")
 public class DSLHomePage extends JFrame {
+
+  private JFileChooser FCI_file_chooser;
+  private JFileChooser functional_file_chooser;
+  private JCheckBox chckbxVerboseExploration;
 
   public DSLHomePage() throws HeadlessException {
     ToolTipManager.sharedInstance().setInitialDelay(100);
@@ -279,7 +280,7 @@ public class DSLHomePage extends JFrame {
 
     JButton btnExploration = new JButton("Exploration");
 
-    JCheckBox chckbxVerboseExploration = new JCheckBox("Verbose exploration");
+    chckbxVerboseExploration = new JCheckBox("Verbose exploration");
     chckbxVerboseExploration
         .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
     chckbxVerboseExploration.setSelected(true);
@@ -383,16 +384,12 @@ public class DSLHomePage extends JFrame {
     FileNameExtensionFilter filter_yaml =
         new FileNameExtensionFilter("yaml files", "yaml");
 
-    JFileChooser functional_file_chooser = new JFileChooser();
+    functional_file_chooser = new JFileChooser();
     functional_file_chooser.setFileFilter(filter);
 
-    JFileChooser FCI_file_chooser = new JFileChooser();
+    FCI_file_chooser = new JFileChooser();
     FCI_file_chooser.setSelectedFile(null);
     FCI_file_chooser.setFileFilter(filter_yaml);
-
-    JFileChooser proof_file_chooser = new JFileChooser();
-    proof_file_chooser.setSelectedFile(null);
-    proof_file_chooser.setFileFilter(filter);
 
     JFileChooser log_file_chooser = new JFileChooser();
     String default_log_file_name = "verification_log.txt";
@@ -402,7 +399,7 @@ public class DSLHomePage extends JFrame {
     log_file_chooser.setFileFilter(filter);
 
     btnLoadFunctionalModel.addActionListener(new LinkFileChoserToTextArea(
-        functional_file_chooser, txtrFunctionalModel, proof_file_chooser));
+        functional_file_chooser, txtrFunctionalModel, null));
 
     btnChangeLogFile.addActionListener(new LinkFileChoserToTextArea(
         log_file_chooser, txtrVerificationLog, functional_file_chooser));
@@ -410,106 +407,134 @@ public class DSLHomePage extends JFrame {
     btnLoadFciFile.addActionListener(new LinkFileChoserToTextArea(
         FCI_file_chooser, txtrFciFile, FCI_file_chooser));
 
-    // btnVerifyProperties.addActionListener(new VerifyPorpertyGui(
-    // property_hashmap, chckbxCheckAll, log_file_chooser,
-    // functional_file_chooser, proof_file_chooser, this));
-    btnSimulation.addActionListener(new LaunchSimulationAction(
-        functional_file_chooser, proof_file_chooser, FCI_file_chooser, this));
-    btnExploration.addActionListener(new LaunchExplorationAction(
-        functional_file_chooser, proof_file_chooser, FCI_file_chooser, this,
-        chckbxVerboseExploration));
+    btnVerifyProperties.addActionListener(new LaunchVerificationAction(this));
+    btnSimulation.addActionListener(new LaunchSimulationAction(this));
+    btnExploration.addActionListener(new LaunchExplorationAction(this));
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }
 
-  public class RemoveProof implements ActionListener {
-    JFileChooser proof_file_chooser;
-    JTextArea text_area;
+  private Pair<DSLModel, DSLModel> loadModel() {
 
-    public RemoveProof(JFileChooser proof_file_chooser, JTextArea text_area) {
-      this.proof_file_chooser = proof_file_chooser;
-      this.text_area = text_area;
+    FSM_builder builder = new FSM_builder();
+
+    if (functional_file_chooser.getSelectedFile() != null) {
+      try {
+        return builder.parseFile(functional_file_chooser
+            .getSelectedFile()
+            .getAbsolutePath()
+            .toString());
+      } catch (IOException e) {
+        throw new Error(e.toString());
+      }
+    } else {
+      JOptionPane.showMessageDialog(this,
+          "There is no functional model loaded",
+          "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return null;
+    }
+  }
+
+  private class LaunchVerificationAction implements ActionListener {
+    private DSLHomePage dsl_home_page;
+
+    public LaunchVerificationAction(DSLHomePage dsl_home_page) {
+      this.dsl_home_page = dsl_home_page;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+
+      Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
+
+      DSLVerifier verifier = new DSLVerifier();
+      verifier.verifyModel(pair.first);
+      verifier.verifyModel(pair.second);
+    }
+
+  }
+
+  private class LaunchSimulationAction implements ActionListener {
+    private DSLHomePage dsl_home_page;
+
+    public LaunchSimulationAction(DSLHomePage dsl_home_page) {
+      this.dsl_home_page = dsl_home_page;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      proof_file_chooser.setSelectedFile(null);
-      text_area.setText("Proof model");
-      text_area.setToolTipText("");
+      DSLGraphSimulator<DSLGlobalState> simulator;
 
+      Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
+      if (pair != null) {
+        simulator =
+            new DSLGraphSimulator<DSLGlobalState>(pair.first, pair.second);
+
+        simulator.setVerbose(chckbxVerboseExploration.isSelected());
+        dsl_home_page.dispose();
+        DSLSimulationWindow main_window = new DSLSimulationWindow(simulator);
+        main_window.setLocationRelativeTo(null);
+        main_window.setVisible(true);
+      }
+    }
+  }
+
+  private class LaunchExplorationAction implements ActionListener {
+
+    private DSLHomePage dsl_home_page;
+
+    public LaunchExplorationAction(DSLHomePage dsl_home_page) {
+      this.dsl_home_page = dsl_home_page;
     }
 
-  }
+    public void actionPerformed(ActionEvent e) {
 
-}
-
-class LaunchSimulationAction implements ActionListener {
-  private JFileChooser functional_file_chooser;
-  private JFrame frame;
-
-  public LaunchSimulationAction(JFileChooser functional_file_chooser,
-      JFileChooser proof_file_chooser, JFileChooser FCI_file_chooser,
-      JFrame frame) {
-    this.functional_file_chooser = functional_file_chooser;
-    this.frame = frame;
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    DSLModel functional_model = null;
-    DSLModel proof_model = null;
-    DSLGraphSimulator<DSLGlobalState> simulator;
-    if (functional_file_chooser.getSelectedFile() != null) {
-      String content = null;
-      try {
-        content = IOUtils.readFile(
-            functional_file_chooser
-                .getSelectedFile()
-                .getAbsolutePath()
-                .toString(),
-            StandardCharsets.UTF_8);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-        System.exit(-1);
+      if (functional_file_chooser.getSelectedFile() == null) {
+        JOptionPane.showMessageDialog(dsl_home_page,
+            "There is no functional model loaded",
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
       }
 
-      ANTLRInputStream input = new ANTLRInputStream(content);
+      Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
+      if (pair != null) {
+        DSLGraphSimulator<DSLGlobalState> simulator =
+            new DSLGraphSimulator<DSLGlobalState>(pair.first, pair.second);
 
-      /* Create a lexer that feeds off of input CharStream */
-      FSM_LanguageLexer lexer = new FSM_LanguageLexer(input);
+        simulator.setVerbose(chckbxVerboseExploration.isSelected());
 
-      /* Create a buffer of tokens pulled from the lexer */
-      CommonTokenStream tokens = new CommonTokenStream(lexer);
+        long startTime = System.nanoTime();
 
-      /* Create a parser that feeds off the tokens buffer */
-      FSM_LanguageParser parser = new FSM_LanguageParser(tokens);
-      /* begin parsing at booleanExpression rule */
-      ParseTree tree = parser.model();
+        final ModelChecker<DSLGlobalState, DSLStateMachine, DSLState, DSLTransition> model_checker =
+            new ModelChecker<>();
 
-      /* If view_tree is true, we print the debug tree window */
-      TreeViewer viewer = new TreeViewer(null, tree);
-      viewer.open();
+        DSLGlobalState global_state = simulator.getInitialGlobalState();
+        System.out.println(global_state);
+        model_checker.addInitialState(global_state);
 
-      FSM_builder builder = new FSM_builder();
-      builder.visit(tree);
-      functional_model = builder.getModel();
-      proof_model = builder.getProof();
+        DSLGlobalState result = model_checker.verify(simulator);
 
-      simulator =
-          new DSLGraphSimulator<DSLGlobalState>(functional_model, proof_model);
+        System.out.println("Result : " + result);
 
-      frame.dispose();
-      DSLSimulationWindow main_window = new DSLSimulationWindow(simulator);
-      main_window.setLocationRelativeTo(frame);
-      main_window.setVisible(true);
+        long estimatedTime = System.nanoTime() - startTime;
+        Monitoring.printFullPeakMemoryUsage();
+        System.out
+            .println("Execution took " + estimatedTime / 1000000000.0 + "s");
 
-    } else {
-      JOptionPane.showMessageDialog(frame,
-          "There is no functional model loaded",
-          "Error",
-          JOptionPane.ERROR_MESSAGE);
+        if (result != null) {
+          JOptionPane.showMessageDialog(dsl_home_page,
+              "Proof failed.",
+              "Error",
+              JOptionPane.ERROR_MESSAGE);
+        } else {
+          JOptionPane.showMessageDialog(dsl_home_page,
+              "Proof success.",
+              "Success",
+              JOptionPane.PLAIN_MESSAGE);
+        }
+      }
     }
-
   }
-
 }

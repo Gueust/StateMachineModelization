@@ -25,7 +25,9 @@ public class LinkFileChoserToTextArea implements ActionListener {
     int returnVal = file_chooser.showOpenDialog(null);
     if (returnVal == JFileChooser.APPROVE_OPTION) {
       String file_name = file_chooser.getSelectedFile().getName();
-      linked_file_chooser.setCurrentDirectory(file_chooser.getSelectedFile());
+      if (linked_file_chooser != null) {
+        linked_file_chooser.setCurrentDirectory(file_chooser.getSelectedFile());
+      }
       jtext_area.setText(file_name);
       jtext_area.setToolTipText(file_name);
     }
