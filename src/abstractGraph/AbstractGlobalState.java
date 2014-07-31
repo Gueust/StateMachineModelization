@@ -1,8 +1,10 @@
 package abstractGraph;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
+import utils.Pair;
 import utils.javaAgent.ObjectSizeFetcher;
 import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
@@ -25,6 +27,7 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
    */
   public ExternalEvent last_processed_external_event = null;
   public AbstractGlobalState<M, S, T, ?> previous_global_state = null;
+  public LinkedHashSet<Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>> children_states;
 
   public AbstractGlobalState(V variables_values) {
     this.variables_values = variables_values;

@@ -1,5 +1,6 @@
 import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
+import engine.traceTree.ModelCheckerDisplayer;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -34,6 +35,8 @@ import abstractGraph.verifiers.Verifier;
  */
 
 public class LaunchProofFromAEFDFormat {
+
+  private static final boolean DISPLAY_TREE = false;
 
   public static void main(String[] args) throws Exception {
 
@@ -215,8 +218,13 @@ public class LaunchProofFromAEFDFormat {
     verifier.verifyModel(model);
     verifier.verifyModel(proof);
 
-    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
-        new ModelChecker<>();
+    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker;
+    if (DISPLAY_TREE) {
+      model_checker = new ModelCheckerDisplayer<>();
+    } else {
+      model_checker =
+          new ModelChecker<>();
+    }
     // model_checker.setDiskBackUpMemory();
 
     /* The all CTL true initial state */
