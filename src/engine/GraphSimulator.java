@@ -46,6 +46,8 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
       new LinkedList<SingleEvent>();
   protected LinkedList<ExternalEvent> ACT_FCI_queue =
       new LinkedList<ExternalEvent>();
+  protected LinkedList<ExternalEvent> XTECH_commands =
+      new LinkedList<ExternalEvent>();
   protected LinkedHashMap<M, S> functionnal_transitions_pull_list =
       new LinkedHashMap<M, S>();
   protected LinkedHashMap<M, S> proof_transitions_pull_list =
@@ -452,6 +454,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
           throw new IllegalArgumentException("The argument "
               + single_event.getName() + " isn't defined in the model.\n");
         }
+
       } else {
         throw new Error("Unknown action Event " + single_event.getClass()
             + " : " + single_event);
