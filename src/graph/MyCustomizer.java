@@ -19,7 +19,6 @@ public class MyCustomizer extends CustomToString {
     BooleanVariable variable = ((Literal) l).getVariable();
     boolean is_negated = ((Literal) l).isNegated();
     if (is_negated) {
-
       return GenerateFormulaAEFD.getOppositeName(variable.toString());
     } else {
       return variable.toString();

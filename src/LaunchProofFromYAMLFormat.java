@@ -42,7 +42,7 @@ public class LaunchProofFromYAMLFormat {
     long startTime = System.nanoTime();
 
     String functional_model = GeneratorFromTemplate
-        .load("PN/PN_JB_1_voie.yaml");
+        .load("Zone_P6_3411_3421.yaml");
     String proof_model = GeneratorFromTemplate
         .load("PN/PN_JB_1_voie_preuve.yaml");
 
