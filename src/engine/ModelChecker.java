@@ -304,14 +304,6 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         System.err.flush();
         System.out.flush();
 
-        BooleanVariable test = (BooleanVariable) simulator
-            .getModel()
-            .getVariable(
-                "IND_KIt3423_3431_Controle");
-        if (next_state.getVariableValue(test)) {
-          throw new Error();
-        }
-
         if (processGS(next_state) != null) {
           if (PRINT_TRACE_UNSAFE) {
             System.out
