@@ -27,6 +27,7 @@ public class Literal extends Formula {
   public Literal(BooleanVariable variable, boolean is_negated) {
     this.variable = variable;
     this.is_negated = is_negated;
+    assert (this.variable != null);
   }
 
   /**
@@ -66,6 +67,7 @@ public class Literal extends Formula {
   @Override
   public String toString() {
     if (is_negated) {
+      assert (variable != null);
       return Formula.NOT + " " + variable.toString();
     } else {
       return variable.toString();

@@ -30,7 +30,7 @@ public class AEFDToDSL {
     StringBuilder string_builder = new StringBuilder();
 
     /* We load the model */
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory.buildModel(functional_file, functional_file);
     model.build();

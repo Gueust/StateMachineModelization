@@ -31,6 +31,7 @@ import abstractGraph.verifiers.Verifier;
 
 public class LaunchProofFromAEFDFormat {
 
+  /** Display the execution trace */
   private static final boolean DISPLAY_TREE = false;
 
   public static void main(String[] args) throws Exception {
@@ -72,7 +73,7 @@ public class LaunchProofFromAEFDFormat {
   public static void launchModelCheckingWithProofTesting(
       String functional_model,
       String proof_model) throws IOException, InterruptedException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -168,7 +169,7 @@ public class LaunchProofFromAEFDFormat {
       String functional_model,
       String proof_model) throws IOException {
 
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -230,7 +231,6 @@ public class LaunchProofFromAEFDFormat {
       System.err.println("A state is not safe:\n" + result);
     }
     return model_checker.getVisited_states();
-
   }
 
 }

@@ -57,7 +57,7 @@ public class LaunchExplorationAction implements ActionListener {
           JOptionPane.ERROR_MESSAGE);
       return;
     }
-    GraphFactoryAEFD factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
     try {
       functional_model = loadFile(factory, functional_file_chooser,
           "functional model");

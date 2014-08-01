@@ -17,8 +17,15 @@ public class AEFDFormulaFactory extends FormulaFactory {
    * @see FormulaFactory#FormulaFactory(boolean)
    */
   public AEFDFormulaFactory(boolean united_model_mode) {
+    this(united_model_mode, null);
+  }
+
+  /**
+   * @see FormulaFactory#FormulaFactory(boolean)
+   */
+  public AEFDFormulaFactory(boolean united_model_mode, String database_file) {
     super(united_model_mode);
-    generator_of_formula = new GenerateFormulaAEFD(this);
+    generator_of_formula = new GenerateFormulaAEFD(this, database_file);
   }
 
   /**

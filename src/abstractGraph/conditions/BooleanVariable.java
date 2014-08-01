@@ -24,6 +24,7 @@ public class BooleanVariable extends EnumeratedVariable {
    */
   public BooleanVariable(String s, int identifier) {
     super(s, identifier);
+    assert (s != null);
     this.identifier = identifier;
   }
 

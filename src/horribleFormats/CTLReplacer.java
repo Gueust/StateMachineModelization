@@ -40,7 +40,7 @@ public class CTLReplacer {
    */
   public CTLReplacer(String file_name, String target_name, boolean isProof)
       throws IOException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
     Model model = graph_factory.buildModel(file_name, file_name);
     model.build();
     HashMap<EnumeratedVariable, Collection<StateMachine>> writing_state_machine =

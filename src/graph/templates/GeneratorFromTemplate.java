@@ -122,7 +122,7 @@ public class GeneratorFromTemplate {
     out.close();
 
     if (verify_instanciation) {
-      GraphFactoryAEFD factory = new GraphFactoryAEFD();
+      GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
       Model result = factory.buildModel(output_path,
           "Merge instanciated model");
       result.build();

@@ -36,7 +36,7 @@ public class SequentialGraphSimulatorTesting {
    * @throws IOException
    */
   private Model loadFile(String name) throws IOException {
-    GraphFactoryAEFD test = new GraphFactoryAEFD();
+    GraphFactoryAEFD test = new GraphFactoryAEFD(null);
     Model model = test.buildModel("src/test/resources/" + class_name + "/"
         + name, "Testing model");
     return model;
@@ -273,7 +273,7 @@ public class SequentialGraphSimulatorTesting {
       String model_file_name,
       String proof_file_name) throws IOException {
 
-    GraphFactoryAEFD factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
 
     Model model = factory.buildModel("src/test/resources/" + class_name + "/"
         + model_file_name, "Testing model");

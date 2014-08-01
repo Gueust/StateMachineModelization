@@ -123,7 +123,7 @@ public class HAF {
 
   public static void toHAF(String filename, String destination)
       throws IOException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory.buildModel(filename, filename);
     model.build();

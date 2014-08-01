@@ -63,7 +63,7 @@ public class VerifyPorpertyGui implements ActionListener {
       System.setErr(ps_err);
     }
 
-    GraphFactoryAEFD factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
     Model model, proof;
 
     if (functional_file_chooser.getSelectedFile() == null) {

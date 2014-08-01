@@ -80,7 +80,7 @@ public class ModelCheckerTesting {
     String proof_model;
     Model model;
     SequentialGraphSimulator simulator;
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
     model = graph_factory
         .buildModel(functional_model, functional_model);
     model.build();
@@ -105,7 +105,7 @@ public class ModelCheckerTesting {
     String proof_model = GeneratorFromTemplate
         .load("preuve4voie.yaml");
 
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory.buildModel(functional_model, functional_model);
     model.build();

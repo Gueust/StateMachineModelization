@@ -49,8 +49,11 @@ public class Events implements Iterable<SingleEvent> {
    *           If the event already exists.
    */
   public void addEvent(SingleEvent event) throws KeyAlreadyExistsException {
+    assert (event != null);
     if (containsEvent(event)) {
-      throw new KeyAlreadyExistsException();
+      throw new KeyAlreadyExistsException("The event " + event
+          + event.getClass()
+          + " already exist in " + events);
     } else {
       events.add(event);
     }

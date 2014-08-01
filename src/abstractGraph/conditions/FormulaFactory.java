@@ -91,6 +91,8 @@ public abstract class FormulaFactory {
   private int identifier_factory = 0;
 
   public final BooleanVariable getVariable(String variable_name) {
+    assert (variable_name != null);
+
     BooleanVariable temp_variable = existing_variables.get(variable_name);
 
     if (temp_variable == null) {

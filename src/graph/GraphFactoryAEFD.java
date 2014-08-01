@@ -40,15 +40,15 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
 public class GraphFactoryAEFD {
 
   /** The formula factory to parse the condition formulas */
-  private AEFDFormulaFactory factory = new AEFDFormulaFactory(true);
+  private AEFDFormulaFactory factory;
 
   /** List all the state machines of the model */
   private HashMap<String, StateMachine> state_machines;
@@ -75,8 +75,13 @@ public class GraphFactoryAEFD {
   /**
    * Create the factory that loads the given file. The natural function called
    * next is {@link #buildModel(String, String)}
+   * 
+   * @param variables_database_file
+   *          The path for the database of the pair of variables.
+   *          If null, a default internal suffix list will be used.
    */
-  public GraphFactoryAEFD() {
+  public GraphFactoryAEFD(String variables_database_file) {
+    factory = new AEFDFormulaFactory(true, variables_database_file);
   }
 
   /*
@@ -406,6 +411,7 @@ public class GraphFactoryAEFD {
       }
       if (!event_string.equals("")) {
         SingleEvent new_action = actionFactory(event_string);
+        assert (new_action != null);
         actions.add(new_action);
       }
 

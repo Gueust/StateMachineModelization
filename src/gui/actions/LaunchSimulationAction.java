@@ -34,7 +34,7 @@ public class LaunchSimulationAction implements ActionListener {
     Model proof_model = null;
     SequentialGraphSimulator simulator;
     if (functional_file_chooser.getSelectedFile() != null) {
-      GraphFactoryAEFD factory = new GraphFactoryAEFD();
+      GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
       try {
         functional_model = loadFile(factory, functional_file_chooser,
             "functional model");

@@ -18,6 +18,7 @@ public class VariableChange extends InternalEvent {
 
   public VariableChange(Literal literal) {
     super(literal.toString());
+    assert (literal != null);
     l = literal;
   }
 

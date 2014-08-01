@@ -56,7 +56,7 @@ public class LaunchProofFromYAMLFormat {
   public static void launcheModelCheckingWithProofTesting(
       String functional_model,
       String proof_model) throws IOException, InterruptedException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
@@ -151,7 +151,7 @@ public class LaunchProofFromYAMLFormat {
       String functional_model,
       String proof_model) throws IOException {
 
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD();
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory
         .buildModel(functional_model, functional_model);
