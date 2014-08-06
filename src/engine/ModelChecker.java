@@ -361,7 +361,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
       throw new IllegalArgumentException("The proof model must be not null");
     }
 
-    SplitProof<M, S, T> splitter = new SplitProof<M, S, T>(model, proof);
+    BuildActivationGraph<M, S, T> splitter = new BuildActivationGraph<M, S, T>(model, proof);
 
     for (M state_machine_to_prove : proof) {
       Set<M> frontier = new LinkedHashSet<>();
@@ -372,7 +372,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
         M state_machine = frontier.iterator().next();
         visited.add(state_machine);
 
-        for (Edge<SplitProof<M, S, T>.MyNode, SingleEvent> edge : splitter.nodes
+        for (Edge<BuildActivationGraph<M, S, T>.MyNode, SingleEvent> edge : splitter.nodes
             .get(state_machine)) {
 
           M new_to_visit = edge.to.data;

@@ -26,17 +26,17 @@ import abstractGraph.events.VariableChange;
  * A class that allows the split of the graphs in small groups to optimize the
  * proof.
  */
-public class SplitProof<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
   private AbstractModel<M, S, T> model;
   private AbstractModel<M, S, T> proof;
 
   public HashMap<M, MyNode> nodes = new HashMap<>();
 
-  public SplitProof(GraphSimulatorInterface<?, M, S, T> simulator) {
+  public BuildActivationGraph(GraphSimulatorInterface<?, M, S, T> simulator) {
     this(simulator.getModel(), simulator.getProof());
   }
 
-  public SplitProof(AbstractModel<M, S, T> model, AbstractModel<M, S, T> proof) {
+  public BuildActivationGraph(AbstractModel<M, S, T> model, AbstractModel<M, S, T> proof) {
     this.model = model;
     this.proof = proof;
     createGraphOfGraphs();
@@ -143,7 +143,8 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
       EnumeratedVariable variable) {
     SingleEvent single_event = new EnumeratedVariableChange(variable);
     Collection<M> writers =
-        writing_state_machine.get(single_event);
+        writing_state_machine.get(variable);
+
     if (writers == null) {
       return;
     }
@@ -220,8 +221,11 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
 
     String type = ".png";
     File out = new File(file_name + type);   // Linux
-    // System.out.println("Graphe" + "\n" + gv.getDotSource());
-    gv.writeGraphToFile(gv.getGraph(type), out);
+
+    int tmp = gv.writeGraphToFile(gv.getGraph(type), out);
+    if (tmp == -1) {
+      throw new Error();
+    }
   }
 
   class MyNode extends Node<M, MyNode, SingleEvent> {

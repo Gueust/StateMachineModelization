@@ -38,11 +38,10 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
    */
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
 
-    SplitProof<M, S, T> split_engine = new SplitProof<>(simulator);
+    BuildActivationGraph<M, S, T> split_engine = new BuildActivationGraph<>(simulator);
 
     split_engine.printToImage("tmp");
 
-    System.out.println(split_engine.nodes);
     return null;
   }
 
