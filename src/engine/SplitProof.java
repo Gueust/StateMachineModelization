@@ -32,6 +32,10 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
 
   public HashMap<M, MyNode> nodes = new HashMap<>();
 
+  public SplitProof(GraphSimulatorInterface<?, M, S, T> simulator) {
+    this(simulator.getModel(), simulator.getProof());
+  }
+
   public SplitProof(AbstractModel<M, S, T> model, AbstractModel<M, S, T> proof) {
     this.model = model;
     this.proof = proof;
@@ -101,8 +105,14 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
                   state_machine, ((Assignment) event).getVariable());
             } else if (event instanceof ModelCheckerEvent) {
             } else {
-              for (M writer : syn_event_in_graphs.get(event
-                  .getName())) {
+              LinkedHashSet<M> automata_using_this_event =
+                  syn_event_in_graphs.get(event.getName());
+
+              if (automata_using_this_event == null) {
+                continue;
+              }
+
+              for (M writer : automata_using_this_event) {
                 addInActivationGraph(writer, state_machine, event);
               }
             }
@@ -164,12 +174,14 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
       for (S state : state_machine) {
         for (T transition : state) {
           for (SingleEvent action : transition.getActions()) {
+
             if (action instanceof VariableChange) {
             } else if (action instanceof Assignment) {
             } else if (action instanceof ModelCheckerEvent) {
             } else {
               LinkedHashSet<M> liste_state_machine =
                   syn_event_in_graphs.get(action.getName());
+
               if (liste_state_machine == null) {
                 liste_state_machine = new LinkedHashSet<M>();
                 syn_event_in_graphs
@@ -206,14 +218,20 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
 
     gv.add(gv.end_graph());
 
-    String type = "png";
+    String type = ".png";
     File out = new File(file_name + type);   // Linux
+    // System.out.println("Graphe" + "\n" + gv.getDotSource());
     gv.writeGraphToFile(gv.getGraph(type), out);
   }
 
   class MyNode extends Node<M, MyNode, SingleEvent> {
     public MyNode(M data) {
       super(data);
+    }
+
+    @Override
+    public String toString() {
+      return "MyNode [transitions=" + transitions + "]";
     }
   }
 
