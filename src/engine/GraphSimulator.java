@@ -454,7 +454,10 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
           throw new IllegalArgumentException("The argument "
               + single_event.getName() + " isn't defined in the model.\n");
         }
-
+      } else if (single_event instanceof ExternalEvent) {
+        assert (single_event != null);
+        System.out.print("External event detected as command. \n");
+        XTECH_commands.add((ExternalEvent) single_event);
       } else {
         throw new Error("Unknown action Event " + single_event.getClass()
             + " : " + single_event);
