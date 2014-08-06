@@ -1,0 +1,72 @@
+variables
+  bool v1(true), v2(false), v3(true), v4(false);
+  bool v1_and_v2(false);
+  bool v3_or_v4(true);
+end
+
+external events
+  CTL_v1_Vrai, CTL_v1_Faux,
+  CTL_v2_Vrai, CTL_v2_Faux,
+  CTL_v3_Vrai, CTL_v3_Faux,
+  CTL_v4_Vrai, CTL_v4_Faux;
+end
+
+commands
+  CMD_Active, CMD_Inactive;
+end
+
+errors
+  P_5, P_6, P_7;
+end
+
+machine CTL_v1(vrai)
+  vrai -> faux : on CTL_v1_Faux when true do v1 := false;
+  faux -> vrai: on CTL_v1_Vrai when true do v1 := true;
+end
+
+machine CTL_v2(faux)
+  vrai -> faux : on CTL_v2_Faux when true do v2 := false;
+  faux -> vrai : on CTL_v2_Vrai when true do v2 := true;
+end
+
+machine CTL_v3(vrai)
+  vrai -> faux : on CTL_v3_Faux when true do v3 := false;
+  faux -> vrai : on CTL_v3_Vrai when true do v3 := true;
+end
+
+machine CTL_v4(faux)
+  vrai -> faux : on CTL_v4_Faux when true do v4 := false;
+  faux -> vrai : on CTL_v4_Vrai when true do v4 := true;
+end
+
+machine ET(init)
+  init -> init : on * when v1 and v2 do v1_and_v2 := true;
+  init -> init : on * when not(v1 and v2) do v1_and_v2 := false;
+end
+
+machine OU(init)
+  init -> init : on * when v3 or v4 do v3_or_v4 := true;
+  init -> init : on * when not(v3 or v4 ) do v3_or_v4 := false;
+end
+
+machine Commande(init)
+  init -> init : on * when v1_and_v2 and v3_or_v4 do CMD_Active;
+  init -> init : on * when not(v1_and_v2 and v3_or_v4) do CMD_Inactive;
+end
+
+
+proof preuve_ET(1)
+    1 -> 1 : on * when v1 and v2 and not v1_and_v2 do P_6;
+    1 -> 1 : on * when not (v1 and v2) and v1_and_v2 do P_6;
+end
+
+proof preuve_OU(1)
+    1 -> 1 : on * when (v3 or v4) and not v3_or_v4 do P_6;
+    1 -> 1 : on * when not (v3 or v4) and v3_or_v4 do P_6;
+end
+
+proof preuve_globale(1)
+    1 -> 1 : on CMD_Active when not (v1_and_v2 and v3_or_v4) do P_6;
+end
+
+
