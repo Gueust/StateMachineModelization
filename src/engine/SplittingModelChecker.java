@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import abstractGraph.AbstractGlobalState;
@@ -35,8 +36,11 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
    * 
    * {@see ModelChecker#verify(GraphSimulatorInterface)}
    * 
+   * @throws IOException
+   * 
    */
-  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
+  public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator)
+      throws IOException {
 
     BuildActivationGraph<M, S, T> split_engine = new BuildActivationGraph<>(simulator);
 

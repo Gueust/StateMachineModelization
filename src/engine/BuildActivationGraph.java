@@ -5,6 +5,7 @@ import genericLabeledGraph.Node;
 import graphVizBinding.GraphViz;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +37,8 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
     this(simulator.getModel(), simulator.getProof());
   }
 
-  public BuildActivationGraph(AbstractModel<M, S, T> model, AbstractModel<M, S, T> proof) {
+  public BuildActivationGraph(AbstractModel<M, S, T> model,
+      AbstractModel<M, S, T> proof) {
     this.model = model;
     this.proof = proof;
     createGraphOfGraphs();
@@ -204,7 +206,7 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
     node.add(new MyEdge(node, nodes.get(destination_state_machine), label));
   }
 
-  public void printToImage(String file_name) {
+  public void printToImage(String file_name) throws IOException {
     GraphViz gv = new GraphViz();
     gv.addln(gv.start_graph());
 
@@ -219,13 +221,9 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
 
     gv.add(gv.end_graph());
 
-    String type = ".png";
-    File out = new File(file_name + type);   // Linux
+    String type = "png";
+    gv.writeGraphToFile(file_name, type);
 
-    int tmp = gv.writeGraphToFile(gv.getGraph(type), out);
-    if (tmp == -1) {
-      throw new Error();
-    }
   }
 
   class MyNode extends Node<M, MyNode, SingleEvent> {

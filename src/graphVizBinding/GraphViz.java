@@ -29,8 +29,10 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -136,28 +138,25 @@ public class GraphViz
    *          Type of the output image to be produced, e.g.: gif, dot, fig, pdf,
    *          ps, svg, png.
    * @return A byte array containing the image of the graph.
+   * @throws IOException
    */
-  public byte[] getGraph(String dot_source, String type) {
+  public byte[] getGraph(String dot_source, String type) throws IOException {
     File dot;
     byte[] img_stream = null;
 
-    try {
-      dot = writeDotSourceToFile(dot_source);
-      if (dot != null)
-      {
-        img_stream = get_img_stream(dot, type);
-        if (dot.delete() == false)
-          System.err.println("Warning: " + dot.getAbsolutePath()
-              + " could not be deleted!");
-        return img_stream;
-      }
-      return null;
-    } catch (java.io.IOException ioe) {
-      return null;
+    dot = writeDotSourceToFile(dot_source);
+    if (dot != null) {
+      img_stream = get_img_stream(dot, type);
+      if (dot.delete() == false)
+        System.err.println("Warning: " + dot.getAbsolutePath()
+            + " could not be deleted!");
+      return img_stream;
     }
+    return null;
+
   }
 
-  public byte[] getGraph(String type) {
+  public byte[] getGraph(String type) throws IOException {
     return getGraph(getDotSource(), type);
   }
 
@@ -169,10 +168,21 @@ public class GraphViz
    * @param file
    *          Name of the file to where we want to write.
    * @return Success: 1, Failure: -1
+   * @throws IOException
    */
-  private int writeGraphToFile(byte[] img, String file) {
+  private void writeGraphToFile(byte[] img, String file) throws IOException {
     File to = new File(file);
-    return writeGraphToFile(img, to);
+    writeToFile(img, to);
+  }
+
+  public void writeGraphToFile(String file_name, String extension)
+      throws IOException {
+    File out = new File(file_name + "." + extension);   // Linux
+    writeGraphToFile(out, extension);
+  }
+
+  public void writeGraphToFile(File file, String extension) throws IOException {
+    writeToFile(getGraph(extension), file);
   }
 
   /**
@@ -183,16 +193,17 @@ public class GraphViz
    * @param to
    *          A File object to where we want to write.
    * @return Success: 1, Failure: -1
+   * @throws IOException
    */
-  public int writeGraphToFile(byte[] img, File to) {
-    try {
-      FileOutputStream fos = new FileOutputStream(to);
-      fos.write(img);
-      fos.close();
-    } catch (java.io.IOException ioe) {
-      return -1;
-    }
-    return 1;
+  private void writeToFile(byte[] img, File to) throws IOException {
+    // try {
+    FileOutputStream fos = new FileOutputStream(to);
+    fos.write(img);
+    fos.close();
+    // } catch (java.io.IOException ioe) {
+    // return -1;
+    // }
+    // return 1;
   }
 
   /**
@@ -216,6 +227,10 @@ public class GraphViz
           GraphViz.TEMP_DIR));
       Runtime rt = Runtime.getRuntime();
 
+      if (!type.equals("png")) {
+        throw new IllegalArgumentException(
+            "Only png files are accepted for now.");
+      }
       // patch by Mike Chenault
       String[] args = { DOT, "-T" + type, dot.getAbsolutePath(), "-o",
           img.getAbsolutePath() };
@@ -255,19 +270,22 @@ public class GraphViz
    *          Source of the graph (in dot language).
    * @return The file (as a File object) that contains the source of the graph.
    */
-  private File writeDotSourceToFile(String str) throws java.io.IOException {
+  private File writeDotSourceToFile(String str) throws IOException {
     File temp;
     try {
       temp = File.createTempFile("graph_", ".dot.tmp", new File(
           GraphViz.TEMP_DIR));
+      System.out.println(temp);
+
       FileWriter fout = new FileWriter(temp);
       fout.write(str);
       fout.close();
     } catch (Exception e) {
       System.err
           .println("Error: I/O error while writing the dot source to temp file!");
-      return null;
+      throw e;
     }
+
     return temp;
   }
 

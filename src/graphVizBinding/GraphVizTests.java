@@ -2,14 +2,14 @@ package graphVizBinding;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 
 public class GraphVizTests {
 
   @Test
-  public void test() {
+  public void test() throws IOException {
     GraphViz gv = new GraphViz();
     gv.addln(gv.start_graph());
     gv.addln("A -> B;");
@@ -22,7 +22,7 @@ public class GraphVizTests {
         "}");
 
     String type = "png";
-    File out = new File("./testGraphViz." + type);   // Linux
-    gv.writeGraphToFile(gv.getGraph(type), out);
+
+    gv.writeGraphToFile("testGraphViz", type);
   }
 }
