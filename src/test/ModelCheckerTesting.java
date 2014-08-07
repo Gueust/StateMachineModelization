@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import abstractGraph.verifiers.SingleWritingChecker;
 import abstractGraph.verifiers.Verifier;
+import engine.BuildActivationGraph;
 import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
-import engine.SplitProof;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
 import graph.Model;
@@ -112,8 +112,8 @@ public class ModelCheckerTesting {
     Model proof = graph_factory.buildModel(proof_model, proof_model);
     proof.build();
 
-    SplitProof<StateMachine, State, Transition> splitter =
-        new SplitProof<>(model, proof);
+    BuildActivationGraph<StateMachine, State, Transition> splitter =
+        new BuildActivationGraph<>(model, proof);
     splitter.printToImage("./activation_graph.");
   }
 }
