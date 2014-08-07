@@ -103,4 +103,6 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
     return result;
   }
 
+  public abstract AbstractModel<M, S, T> newInstance();
+
 }

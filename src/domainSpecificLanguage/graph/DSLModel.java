@@ -308,4 +308,9 @@ public class DSLModel extends
     return state_machines.contains(state_machine);
   }
 
+  @Override
+  public DSLModel newInstance() {
+    return new DSLModel();
+  }
+
 }

@@ -361,7 +361,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
       throw new IllegalArgumentException("The proof model must be not null");
     }
 
-    BuildActivationGraph<M, S, T> splitter = new BuildActivationGraph<M, S, T>(model, proof);
+    BuildActivationGraph<M, S, T> splitter = new BuildActivationGraph<M, S, T>(
+        model, proof);
 
     for (M state_machine_to_prove : proof) {
       Set<M> frontier = new LinkedHashSet<>();

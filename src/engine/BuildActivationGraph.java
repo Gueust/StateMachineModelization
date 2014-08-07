@@ -4,7 +4,6 @@ import genericLabeledGraph.Edge;
 import genericLabeledGraph.Node;
 import graphVizBinding.GraphViz;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +30,7 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
   private AbstractModel<M, S, T> model;
   private AbstractModel<M, S, T> proof;
 
-  public HashMap<M, MyNode> nodes = new HashMap<>();
+  public HashMap<M, MyNode> nodes = new HashMap<M, MyNode>();
 
   public BuildActivationGraph(GraphSimulatorInterface<?, M, S, T> simulator) {
     this(simulator.getModel(), simulator.getProof());

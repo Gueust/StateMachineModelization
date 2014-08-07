@@ -507,4 +507,9 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     return state_machines.containsKey(state_machine);
   }
 
+  @Override
+  public Model newInstance() {
+    return new Model("default");
+  }
+
 }

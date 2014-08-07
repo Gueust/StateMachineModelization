@@ -6,14 +6,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import engine.BuildActivationGraph.MyNode;
 
-public class SplitProof<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class SplitProof<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
   HashMap<M, MyNode> nodes;
   AbstractModel<M, S, T> model;
@@ -29,7 +28,7 @@ public class SplitProof<GS extends AbstractGlobalState<M, S, T, ?>, M extends Ab
     this.proof = proof;
   }
 
-  public void Split() {
+  public LinkedHashSet<LinkedHashSet<M>> Split() {
     for (M state_machine : proof) {
       if (!proof_state_machine_found.contains(state_machine)) {
         proof_state_machine_found.add(state_machine);
@@ -38,6 +37,7 @@ public class SplitProof<GS extends AbstractGlobalState<M, S, T, ?>, M extends Ab
         list_of_list_state_machine.add(list_state_machine);
       }
     }
+    return list_of_list_state_machine;
   }
 
   public LinkedHashSet<M> Split(M state_machine) {
