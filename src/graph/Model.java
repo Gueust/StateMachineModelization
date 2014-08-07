@@ -501,4 +501,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     }
   }
 
+  @Override
+  public boolean containsStateMachine(
+      StateMachine state_machine) {
+    return state_machines.containsKey(state_machine);
+  }
+
 }

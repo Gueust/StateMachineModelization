@@ -303,4 +303,9 @@ public class DSLModel extends
     return result;
   }
 
+  @Override
+  public boolean containsStateMachine(DSLStateMachine state_machine) {
+    return state_machines.contains(state_machine);
+  }
+
 }

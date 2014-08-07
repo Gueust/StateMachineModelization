@@ -29,7 +29,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,22 +40,23 @@ import java.io.InputStreamReader;
  * <dd>
  * 
  * <dt>Description:
- * <dd> With this Java class you can simply call dot
- * from your Java programs
+ * <dd>With this Java class you can simply call dot from your Java programs
  * <dt>Example usage:
  * <dd>
+ * 
  * <pre>
  * GraphViz gv = new GraphViz();
  * gv.addln(gv.start_graph());
- * gv.addln("A -> B;");
- * gv.addln("A -> C;");
+ * gv.addln(&quot;A -&gt; B;&quot;);
+ * gv.addln(&quot;A -&gt; C;&quot;);
  * gv.addln(gv.end_graph());
  * System.out.println(gv.getDotSource());
  * 
- * String type = "gif";
- * File out = new File("out." + type); // out.gif in this example
- * gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
+ * String type = &quot;gif&quot;;
+ * File out = new File(&quot;out.&quot; + type); // out.gif in this example
+ * gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), type), out);
  * </pre>
+ * 
  * </dd>
  * 
  * </dl>
@@ -195,6 +195,7 @@ public class GraphViz
    * @return Success: 1, Failure: -1
    * @throws IOException
    */
+
   private void writeToFile(byte[] img, File to) throws IOException {
     // try {
     FileOutputStream fos = new FileOutputStream(to);
@@ -204,6 +205,7 @@ public class GraphViz
     // return -1;
     // }
     // return 1;
+
   }
 
   /**

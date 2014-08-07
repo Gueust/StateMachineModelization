@@ -67,6 +67,7 @@ end
 
 proof preuve_globale(1)
     1 -> 1 : on CMD_Active when not (v1_and_v2 and v3_or_v4) do P_6;
+    1 -> 1 : on CMD_Inactive when (v1_and_v2 and v3_or_v4) do P_6;
 end
 
 
