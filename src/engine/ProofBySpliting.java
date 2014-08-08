@@ -10,11 +10,14 @@ import abstractGraph.AbstractModel;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
+import domainSpecificLanguage.graph.DSLModel;
 import engine.BuildActivationGraph.MyNode;
+import graph.Model;
 
 public class ProofBySpliting<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
 
-  HashSet<GraphSimulator<GS, M, S, T>> simulators = new HashSet<GraphSimulator<GS, M, S, T>>();
+  HashSet<GraphSimulatorInterface<GS, M, S, T>> simulators = new HashSet<GraphSimulatorInterface<GS, M, S, T>>();
 
   public ProofBySpliting(AbstractModel<M, S, T> model,
       AbstractModel<M, S, T> proof)
@@ -35,7 +38,8 @@ public class ProofBySpliting<GS extends AbstractGlobalState<M, S, T, ?>, M exten
     }
   }
 
-  public GraphSimulator<GS, M, S, T> prove(
+  @SuppressWarnings("unchecked")
+  public GraphSimulatorInterface<GS, M, S, T> prove(
       LinkedHashSet<M> liste_state_machine,
       AbstractModel<M, S, T> model,
       AbstractModel<M, S, T> proof) throws InstantiationException,
@@ -54,10 +58,19 @@ public class ProofBySpliting<GS extends AbstractGlobalState<M, S, T, ?>, M exten
     }
     sub_model.build();
     sub_proof.build();
-    return new GraphSimulator<GS, M, S, T>(model, proof);
+    if (model instanceof Model) {
+      SequentialGraphSimulator tmp = new SequentialGraphSimulator(
+          (Model) sub_model, (Model) sub_proof);
+      tmp.setVerbose(false);
+      return (GraphSimulatorInterface<GS, M, S, T>) tmp;
+    } else if (model instanceof DSLModel) {
+      return (GraphSimulatorInterface<GS, M, S, T>) new DSLSequentialGraphSimulator<>(
+          (DSLModel) sub_model, (DSLModel) sub_proof);
+    }
+    throw new Error();
   }
 
-  public HashSet<GraphSimulator<GS, M, S, T>> getSimulators() {
+  public HashSet<GraphSimulatorInterface<GS, M, S, T>> getSimulators() {
     return simulators;
   }
 

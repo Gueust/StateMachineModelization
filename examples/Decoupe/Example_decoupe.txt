@@ -56,18 +56,18 @@ end
 
 
 proof preuve_ET(1)
-    1 -> 1 : on * when v1 and v2 and not v1_and_v2 do P_6;
-    1 -> 1 : on * when not (v1 and v2) and v1_and_v2 do P_6;
+    1 -> 1 : on * when v1 and v2 and not v1_and_v2 do P_5;
+    1 -> 1 : on * when not (v1 and v2) and v1_and_v2 do P_5;
 end
 
 proof preuve_OU(1)
-    1 -> 1 : on * when (v3 or v4) and not v3_or_v4 do P_6;
-    1 -> 1 : on * when not (v3 or v4) and v3_or_v4 do P_6;
+    1 -> 1 : on * when (v3 or v4) and not v3_or_v4 do P_5;
+    1 -> 1 : on * when not (v3 or v4) and v3_or_v4 do P_5;
 end
 
 proof preuve_globale(1)
-    1 -> 1 : on CMD_Active when not (v1_and_v2 and v3_or_v4) do P_6;
-    1 -> 1 : on CMD_Inactive when (v1_and_v2 and v3_or_v4) do P_6;
+    1 -> 1 : on CMD_Active when not (v1_and_v2 and v3_or_v4) do P_5;
+    1 -> 1 : on CMD_Inactive when (v1_and_v2 and v3_or_v4) do P_5;
 end
 
 

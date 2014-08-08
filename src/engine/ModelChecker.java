@@ -268,6 +268,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
 
+    GS error_state = null;
     int c = 0;
     while (unvisited_states.size() != 0) {
       c++;
@@ -315,7 +316,8 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
           }
 
           if (!next_state.isSafe()) {
-            return next_state;
+            error_state = next_state;
+            // return next_state;
           }
         }
       }
@@ -330,7 +332,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("Total number of functional warnings (P7) nodes: "
         + number_of_functional_warning);
 
-    return null;
+    return error_state;
   }
 
   @SuppressWarnings("unchecked")

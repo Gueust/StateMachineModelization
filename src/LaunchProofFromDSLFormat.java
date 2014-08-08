@@ -1,5 +1,5 @@
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
@@ -59,8 +59,8 @@ public class LaunchProofFromDSLFormat {
     DSLModel model = pair.first;
     DSLModel proof = pair.second;
 
-    final DSLGraphSimulator<DSLGlobalState> simulator =
-        new DSLGraphSimulator<>(model, proof);
+    final DSLSequentialGraphSimulator<DSLGlobalState> simulator =
+        new DSLSequentialGraphSimulator<>(model, proof);
 
     simulator.setVerbose(false);
 

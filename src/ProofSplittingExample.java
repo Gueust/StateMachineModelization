@@ -1,19 +1,19 @@
 import java.io.IOException;
 
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
 import domainSpecificLanguage.graph.DSLTransition;
 import domainSpecificLanguage.parser.FSM_builder;
 import domainSpecificLanguage.verifiers.DSLVerifier;
-import engine.ModelChecker;
 import engine.SplittingModelChecker;
 
 public class ProofSplittingExample {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException,
+      InstantiationException, IllegalAccessException {
     String example_file = "examples/Decoupe/Example_decoupe.txt";
 
     FSM_builder builder = new FSM_builder();
@@ -24,8 +24,8 @@ public class ProofSplittingExample {
     System.out.println(functionnal_model);
     System.out.println(proof_model.toString(true));
 
-    final DSLGraphSimulator<DSLGlobalState> simulator =
-        new DSLGraphSimulator<>(functionnal_model, proof_model);
+    final DSLSequentialGraphSimulator<DSLGlobalState> simulator =
+        new DSLSequentialGraphSimulator<>(functionnal_model, proof_model);
 
     simulator.setVerbose(false);
 

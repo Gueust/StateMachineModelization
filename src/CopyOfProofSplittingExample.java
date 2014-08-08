@@ -1,18 +1,3 @@
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map.Entry;
-
-import abstractGraph.events.ExternalEvent;
-import abstractGraph.verifiers.Verifier;
-import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
-import domainSpecificLanguage.graph.DSLModel;
-import domainSpecificLanguage.graph.DSLState;
-import domainSpecificLanguage.graph.DSLStateMachine;
-import domainSpecificLanguage.graph.DSLTransition;
-import domainSpecificLanguage.parser.FSM_builder;
-import domainSpecificLanguage.verifiers.DSLVerifier;
-import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
 import engine.SplittingModelChecker;
 import graph.GlobalState;
@@ -21,6 +6,10 @@ import graph.Model;
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;
+
+import java.io.IOException;
+
+import abstractGraph.verifiers.Verifier;
 
 public class CopyOfProofSplittingExample {
 

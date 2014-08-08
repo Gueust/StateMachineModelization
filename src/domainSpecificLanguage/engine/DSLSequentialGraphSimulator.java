@@ -9,17 +9,11 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
-import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.graph.DSLModel;
-import domainSpecificLanguage.graph.DSLState;
-import domainSpecificLanguage.graph.DSLStateMachine;
-import domainSpecificLanguage.graph.DSLTransition;
-import engine.GraphSimulatorInterface;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
+import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
-import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.events.Assignment;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
@@ -31,6 +25,12 @@ import abstractGraph.events.ModelCheckerEvent;
 import abstractGraph.events.SingleEvent;
 import abstractGraph.events.SynchronisationEvent;
 import abstractGraph.events.VariableChange;
+import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
+import domainSpecificLanguage.graph.DSLModel;
+import domainSpecificLanguage.graph.DSLState;
+import domainSpecificLanguage.graph.DSLStateMachine;
+import domainSpecificLanguage.graph.DSLTransition;
+import engine.GraphSimulatorInterface;
 
 /**
  * A simulator for a couple (functional model, proof model).
@@ -38,7 +38,7 @@ import abstractGraph.events.VariableChange;
  * 
  * @details This class is NOT thread safe.
  */
-public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, DSLState, DSLTransition, ?>>
+public class DSLSequentialGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, DSLState, DSLTransition, ?>>
     implements
     GraphSimulatorInterface<GS, DSLStateMachine, DSLState, DSLTransition> {
 
@@ -71,12 +71,12 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
   /** This is the model of the proof */
   protected DSLModel proof;
 
-  protected boolean verbose = true;
+  protected boolean verbose = false;
 
   /** This is the union of the variables of both models */
   HashSet<EnumeratedVariable> variables;
 
-  public DSLGraphSimulator(DSLModel model, DSLModel proof) {
+  public DSLSequentialGraphSimulator(DSLModel model, DSLModel proof) {
     this.functional_model = model;
     this.proof = proof;
 
@@ -87,7 +87,7 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
     checkCompatibility();
   }
 
-  public DSLGraphSimulator(DSLModel model) {
+  public DSLSequentialGraphSimulator(DSLModel model) {
     this.functional_model = model;
 
     variables = new HashSet<>();
@@ -106,9 +106,9 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
   }
 
   @Override
-  public DSLGraphSimulator<GS> clone() {
-    DSLGraphSimulator<GS> result =
-        new DSLGraphSimulator<>(this.functional_model, this.proof);
+  public DSLSequentialGraphSimulator<GS> clone() {
+    DSLSequentialGraphSimulator<GS> result =
+        new DSLSequentialGraphSimulator<>(this.functional_model, this.proof);
     result.setVerbose(this.verbose);
     return result;
   }
@@ -449,34 +449,39 @@ public class DSLGraphSimulator<GS extends AbstractGlobalState<DSLStateMachine, D
   public GS executeSimulator(GS starting_state,
       ExternalEvent event) {
 
-    @SuppressWarnings("unchecked")
-    GS copied_starting_state = (GS) starting_state.clone();
-
     functionnal_transitions_pull_list.clear();
     proof_transitions_pull_list.clear();
     commands_queue.clear();
-
-    if (proof != null) {
-      execute(proof, copied_starting_state, event, internal_proof_event_queue);
+    if (proof == null) {
+      external_proof_event_queue.clear();
     }
+
+    @SuppressWarnings("unchecked")
+    GS copied_starting_state = (GS) starting_state.clone();
 
     LinkedList<SingleEvent> transfert_list = new LinkedList<SingleEvent>();
     SingleEvent curr_event = event;
+    if (curr_event != null) {
+      external_proof_event_queue.add(curr_event);
+    }
 
     do {
       transfert_list.clear();
+
       processSingleEvent(functional_model, copied_starting_state, curr_event,
           transfert_list);
       internal_functional_event_queue.addAll(transfert_list);
 
-      if (proof != null) {
-        transfert_list.addAll(temporary_commands_queue);
-        temporary_commands_queue.clear();
-        executeProofCompletely(copied_starting_state, transfert_list);
-      }
+      external_proof_event_queue.addAll(transfert_list);
+      external_proof_event_queue.addAll(temporary_commands_queue);
+      temporary_commands_queue.clear();
 
       curr_event = internal_functional_event_queue.poll();
     } while (curr_event != null);
+
+    if (proof != null) {
+      executeProofCompletely(copied_starting_state, external_proof_event_queue);
+    }
     return copied_starting_state;
   }
 

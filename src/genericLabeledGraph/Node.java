@@ -3,6 +3,7 @@ package genericLabeledGraph;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -18,8 +19,18 @@ public class Node<D, N, L> implements Iterable<Edge<N, L>> {
   public final LinkedHashMap<L, LinkedList<Edge<N, L>>> transitions =
       new LinkedHashMap<>();
 
+  public final LinkedHashSet<N> fathers = new LinkedHashSet<>();
+
   public Node(D data) {
     this.data = data;
+  }
+
+  public void addFather(N father) {
+    fathers.add(father);
+  }
+
+  public LinkedHashSet<N> getFathers() {
+    return fathers;
   }
 
   public void add(Edge<N, L> hedge) {

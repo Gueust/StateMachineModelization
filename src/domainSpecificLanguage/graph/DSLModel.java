@@ -202,7 +202,7 @@ public class DSLModel extends
   @Override
   public void build() {
     // TODO Auto-generated method stub
-    throw new NotImplementedException();
+    // throw new NotImplementedException();
   }
 
   @Override

@@ -31,7 +31,7 @@ import abstractGraph.verifiers.WrittenAtLeastOnceChecker;
 import utils.Monitoring;
 import utils.Pair;
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
@@ -464,12 +464,12 @@ public class DSLHomePage extends JFrame {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      DSLGraphSimulator<DSLGlobalState> simulator;
+      DSLSequentialGraphSimulator<DSLGlobalState> simulator;
 
       Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
       if (pair != null) {
         simulator =
-            new DSLGraphSimulator<DSLGlobalState>(pair.first, pair.second);
+            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first, pair.second);
 
         simulator.setVerbose(chckbxVerboseExploration.isSelected());
         dsl_home_page.dispose();
@@ -500,8 +500,8 @@ public class DSLHomePage extends JFrame {
 
       Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
       if (pair != null) {
-        DSLGraphSimulator<DSLGlobalState> simulator =
-            new DSLGraphSimulator<DSLGlobalState>(pair.first, pair.second);
+        DSLSequentialGraphSimulator<DSLGlobalState> simulator =
+            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first, pair.second);
 
         simulator.setVerbose(chckbxVerboseExploration.isSelected());
 

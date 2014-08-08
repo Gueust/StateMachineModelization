@@ -36,7 +36,7 @@ import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingx.JXTable;
 
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
@@ -60,7 +60,7 @@ public class DSLSimulationWindow extends JFrame {
   private JList<String> variables_list;
   private JXTable table;
   private JScrollPane table_scroll_pane;
-  private DSLGraphSimulator<DSLGlobalState> simulator;
+  private DSLSequentialGraphSimulator<DSLGlobalState> simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
   private DSLGlobalState initial_global_state;
   private DSLGlobalState global_state;
@@ -69,7 +69,7 @@ public class DSLSimulationWindow extends JFrame {
   JButton btnSimulate;
   JButton btnEatExternalEvents;
 
-  public DSLSimulationWindow(final DSLGraphSimulator<DSLGlobalState> simulator)
+  public DSLSimulationWindow(final DSLSequentialGraphSimulator<DSLGlobalState> simulator)
       throws HeadlessException {
     this.simulator = simulator;
     global_state = new DSLGlobalState(simulator.getNumberVariables());

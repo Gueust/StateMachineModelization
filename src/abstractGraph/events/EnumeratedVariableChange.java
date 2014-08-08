@@ -1,10 +1,10 @@
 package abstractGraph.events;
 
 import abstractGraph.conditions.EnumeratedVariable;
-import domainSpecificLanguage.engine.DSLGraphSimulator;
+import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 
 /**
- * Only used by the {@link DSLGraphSimulator}.
+ * Only used by the {@link DSLSequentialGraphSimulator}.
  * 
  * @author 9009183R
  * 

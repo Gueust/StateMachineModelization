@@ -202,7 +202,9 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
 
     MyNode node = nodes.get(source_state_machine);
     assert (node != null);
-    node.add(new MyEdge(node, nodes.get(destination_state_machine), label));
+    MyNode son = nodes.get(destination_state_machine);
+    node.add(new MyEdge(node, son, label));
+    son.addFather(node);
   }
 
   public void printToImage(String file_name) throws IOException {
