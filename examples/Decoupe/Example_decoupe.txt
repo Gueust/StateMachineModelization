@@ -62,7 +62,7 @@ end
 
 proof preuve_OU(1)
     1 -> 1 : on * when (v3 or v4) and not v3_or_v4 do P_5;
-    1 -> 1 : on * when not (v3 or v4) and v3_or_v4 do P_5;
+    1 -> 1 : on * when not (v3 or v4) and v3_or_v4 do P_5; 
 end
 
 proof preuve_globale(1)

@@ -72,14 +72,20 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
         simulator);
 
     split_engine.printToImage("tmp");
+
     ProofBySpliting<GS, M, S, T> split_proof = new ProofBySpliting<>(simulator
         .getModel(),
         simulator.getProof());
+    int i = 0;
     for (GraphSimulatorInterface<GS, M, S, T> sub_simulator : split_proof
         .getSimulators()) {
       model_checker.reset();
       model_checker.addAllInitialStates(unvisited_states);
       System.out.print("Proof with those graphs : \n");
+
+      i++;
+      split_engine.printToImage("tmp_" + i, sub_simulator);
+
       Iterator<M> machine_iterator = sub_simulator.getProof().iterator();
       while (machine_iterator.hasNext()) {
         System.out.print(machine_iterator.next().getName() + "\n");
@@ -94,6 +100,8 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
       } else {
         System.out.print("Proof FAIL \n");
       }
+      System.out.flush();
+      System.err.flush();
     }
     return null;
   }

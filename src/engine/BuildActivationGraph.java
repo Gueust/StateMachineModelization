@@ -208,6 +208,11 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
   }
 
   public void printToImage(String file_name) throws IOException {
+    printToImage(file_name, null);
+  }
+
+  public void printToImage(String file_name,
+      GraphSimulatorInterface<?, M, S, T> simulator) throws IOException {
     GraphViz gv = new GraphViz();
     gv.addln(gv.start_graph());
 
@@ -215,8 +220,31 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
       String state_machine_name = node.data.getName();
       for (Edge<MyNode, SingleEvent> edge : node) {
         String target_name = edge.to.data.getName();
-        gv.addln(state_machine_name + " -> " + target_name + " [label=\""
-            + edge.label + "\"];");
+        M state_machine = node.data;
+        M target_machine = edge.to.data;
+
+        if (simulator != null &&
+            (simulator.getModel().containsStateMachine(state_machine) ||
+            simulator.getProof().containsStateMachine(state_machine)
+            )) {
+          if (simulator.getModel().containsStateMachine(target_machine) ||
+              simulator.getProof().containsStateMachine(target_machine)) {
+            gv.addln("edge [color=red];");
+            gv.addln(target_name + "[color=red];");
+          } else {
+            gv.addln("edge [color=black];");
+          }
+          gv.addln(state_machine_name + "[color=red];");
+
+          gv.addln(state_machine_name + " -> "
+              + target_name + " [label=\""
+              + edge.label + "\"];");
+
+        } else {
+          gv.addln("edge [color=black];");
+          gv.addln(state_machine_name + " -> " + target_name + " [label=\""
+              + edge.label + "\"];");
+        }
       }
     }
 

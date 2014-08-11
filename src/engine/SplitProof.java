@@ -33,8 +33,18 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
       proof_state_machine_found.add(state_machine);
       LinkedHashSet<M> list_state_machine = new LinkedHashSet<M>();
       list_state_machine = Split(state_machine);
-
-      list_of_list_state_machine.add(list_state_machine);
+      boolean already_taken = false;
+      for (LinkedHashSet<M> machines : list_of_list_state_machine) {
+        if (machines.containsAll(list_state_machine)) {
+          already_taken = true;
+          break;
+        } else if (list_state_machine.containsAll(machines)) {
+          list_of_list_state_machine.remove(machines);
+        }
+      }
+      if (!already_taken) {
+        list_of_list_state_machine.add(list_state_machine);
+      }
     }
     return list_of_list_state_machine;
   }

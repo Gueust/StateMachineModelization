@@ -13,7 +13,8 @@ import abstractGraph.verifiers.Verifier;
 
 public class CopyOfProofSplittingExample {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException,
+      InstantiationException, IllegalAccessException {
 
     String functional_model = "examples/PN à SAL.txt";
     String proof_model = "examples/PN à SAL Preuve.txt";
