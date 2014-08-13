@@ -319,26 +319,26 @@ IND_CSR_Actif; IND_CBR_Actif; Action
 CSR_CBR
 1
 2
-IND_An_I_V1_Inactif OU IND_Zone5_1_Libre Evenement
-IND_An_I_V1_Inactif ET IND_Zone5_1_Libre Condition
+IND_An_I_V1_Inactif OU IND_An_P_V1_Inactif  OU IND_Zone5_1_Libre Evenement
+IND_An_I_V1_Inactif ET IND_Zone5_1_Libre ET IND_An_P_V1_Inactif Condition
 IND_CSR_Inactif; IND_CBR_Inactif; Action
 CSR_CBR
 2
 3
-IND_An_I_V1_Actif OU IND_Zone5_1_Occupee Evenement
+IND_An_I_V1_Actif OU IND_An_P_V1_Actif OU IND_Zone5_1_Occupee  Evenement
 Condition
 IND_CSR_Actif; DTP_CBR(9s); Action
 CSR_CBR
 3
 1
 FTP_CBR Evenement
-IND_An_I_V1_Inactif ET IND_Zone5_1_Libre Condition
+Condition
 IND_CBR_Actif; Action
 CSR_CBR
 3
 2
-IND_An_I_V1_Inactif OU IND_Zone5_1_Libre Evenement
-IND_An_I_V1_Inactif ET IND_Zone5_1_Libre Condition
+IND_An_I_V1_Inactif OU IND_An_P_V1_Inactif OU IND_Zone5_1_Libre Evenement
+IND_An_I_V1_Inactif ET IND_Zone5_1_Libre ET IND_An_P_V1_Inactif Condition
 IND_CSR_Inactif;  ATP_CBR; Action
 AxL_I_V1
 3

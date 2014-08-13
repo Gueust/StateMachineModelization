@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 10:43:25 on 13/08/14
+## File last modified by Fizzim: 16:19:32 on 13/08/14
 <version>
    14.03.5
 </version>
@@ -1524,6 +1524,10 @@
 <SCounter>
 0
 262
+</SCounter>
+<SCounter>
+0
+263
 </SCounter>
 <TCounter>
 136
@@ -12068,16 +12072,16 @@ fzm_globalTable
       </Descr>
    </attributes>
    <x0>
-   688
+   746
    </x0>
    <y0>
-   187
+   186
    </y0>
    <x1>
-   818
+   876
    </x1>
    <y1>
-   317
+   316
    </y1>
    <reset>
    false
@@ -12331,10 +12335,10 @@ fzm_globalTable
    120.0
    </startPtY>
    <endPtX>
-   720.0
+   778.0
    </endPtX>
    <endPtY>
-   195.0
+   194.0
    </endPtY>
    <startCtrlPtX>
    628.0
@@ -12343,10 +12347,10 @@ fzm_globalTable
    121.0
    </startCtrlPtY>
    <endCtrlPtY>
-   675.0
+   733.0
    </endCtrlPtY>
    <endCtrlPtY>
-   115.0
+   114.0
    </endCtrlPtY>
    <startStateIndex>
    0
@@ -12509,7 +12513,7 @@ fzm_globalTable
             ABS
             </status>
          <value>
-         IND_Zone7_Occupee ET IND_Zone9_Occupee ET IND_Zone1_Libre
+         IND_Zone7_Libre ET IND_Zone9_Occupee ET IND_Zone1_Libre
             <status>
             LOCAL
             </status>
@@ -12567,7 +12571,7 @@ fzm_globalTable
          <value>
          
             <status>
-            GLOBAL_VAR
+            LOCAL
             </status>
          </value>
          <vis>
@@ -12630,10 +12634,10 @@ fzm_globalTable
    241.0
    </startPtY>
    <endPtX>
-   688.0
+   746.0
    </endPtX>
    <endPtY>
-   240.0
+   239.0
    </endPtY>
    <startCtrlPtX>
    427.0
@@ -12642,10 +12646,10 @@ fzm_globalTable
    206.0
    </startCtrlPtY>
    <endCtrlPtY>
-   542.0
+   600.0
    </endCtrlPtY>
    <endCtrlPtY>
-   212.0
+   211.0
    </endCtrlPtY>
    <startStateIndex>
    35
@@ -13361,10 +13365,10 @@ fzm_globalTable
    1
    </endState>
    <startPtX>
-   696.0
+   754.0
    </startPtX>
    <startPtY>
-   284.0
+   283.0
    </startPtY>
    <endPtX>
    278.0
@@ -13373,10 +13377,10 @@ fzm_globalTable
    285.0
    </endPtY>
    <startCtrlPtX>
-   588.0
+   646.0
    </startCtrlPtX>
    <startCtrlPtY>
-   323.0
+   322.0
    </startCtrlPtY>
    <endCtrlPtY>
    402.0
@@ -31076,28 +31080,28 @@ fzm_globalTable
    2
    </endState>
    <startPtX>
-   775.0
+   833.0
    </startPtX>
    <startPtY>
-   313.0
+   312.0
    </startPtY>
    <endPtX>
-   720.0
+   778.0
    </endPtX>
    <endPtY>
-   308.0
+   307.0
    </endPtY>
    <startCtrlPtX>
-   803.0
+   861.0
    </startCtrlPtX>
    <startCtrlPtY>
-   392.0
+   391.0
    </startCtrlPtY>
    <endCtrlPtY>
-   679.0
+   737.0
    </endCtrlPtY>
    <endCtrlPtY>
-   381.0
+   380.0
    </endCtrlPtY>
    <startStateIndex>
    7
@@ -32950,7 +32954,7 @@ fzm_globalTable
          <value>
          
             <status>
-            LOCAL
+            GLOBAL_VAR
             </status>
          </value>
          <vis>
