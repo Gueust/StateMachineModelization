@@ -87,7 +87,11 @@ public class LaunchExplorationAction implements ActionListener {
     long startTime = System.nanoTime();
 
     model_checker.reset();
-    simulator.generateAllInitialStates(model_checker);
+    try {
+      simulator.generateAllInitialStates(model_checker, null);
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
 
     GlobalState result = model_checker.verify(simulator);
 

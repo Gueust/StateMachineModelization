@@ -29,7 +29,7 @@ public class ModelCheckerTesting {
     for (i = 0; i < files.length; i++) {
       model_checker = new ModelChecker<>();
       SequentialGraphSimulator simulator = generateSimulator(files[i], null);
-      simulator.generateAllInitialStates(model_checker);
+      simulator.generateAllInitialStates(model_checker, null);
       System.out.println("Number of generated states: "
           + model_checker.getUnvisited_states().size());
       model_checker.verify(simulator);

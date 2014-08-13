@@ -114,7 +114,11 @@ public class SimulationWindow extends JFrame {
       @Override
       public void actionPerformed(ActionEvent e) {
         assert (initial_CTLs != null);
-        global_state = simulator.init(initial_CTLs);
+        try {
+          global_state = simulator.init(initial_CTLs, null);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
         SimulationWindow main_window = new SimulationWindow(simulator);
         main_window.initial_CTLs = initial_CTLs;
         main_window.global_state = global_state;
@@ -717,7 +721,11 @@ public class SimulationWindow extends JFrame {
       System.out.print(CTLs);
       initial_CTLs = (HashMap<String, Boolean>) CTLs.clone();
 
-      global_state = simulator.init(CTLs);
+      try {
+        global_state = simulator.init(CTLs, null);
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
       updateLists();
 
       eat.setEnabled(true);

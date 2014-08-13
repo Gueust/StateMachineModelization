@@ -90,9 +90,9 @@ public class LaunchProofFromYAMLFormat {
           true);
     }
 
-    simulator.generateAllInitialStates(model_checker);
+    simulator.generateAllInitialStates(model_checker, null);
     simulator_without_proof
-        .generateAllInitialStates(model_checker_without_proof);
+        .generateAllInitialStates(model_checker_without_proof, null);
 
     // simulator.init(initialization_variables);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
@@ -193,7 +193,7 @@ public class LaunchProofFromYAMLFormat {
           value);
     }
 
-    GlobalState global_state = simulator.init(initialization_variables);
+    GlobalState global_state = simulator.init(initialization_variables, null);
     System.out.println(global_state);
     // System.out.println("Size of a GS: " + (global_state == null)
     // + ObjectSizeFetcher.deepSizeOf(global_state));

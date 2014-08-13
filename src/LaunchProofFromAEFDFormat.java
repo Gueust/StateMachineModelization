@@ -32,7 +32,7 @@ import abstractGraph.verifiers.Verifier;
 public class LaunchProofFromAEFDFormat {
 
   /** Display the execution trace */
-  private static final boolean DISPLAY_TREE = true;
+  private static final boolean DISPLAY_TREE = false;
 
   public static void main(String[] args) throws Exception {
 
@@ -49,18 +49,15 @@ public class LaunchProofFromAEFDFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    // launchModelChecking("examples/PN à SAL.txt", null);
+    // launchModelChecking("examples/PN à SAL.txt", null ,
+    // "examples/init_file.txt");
     // launchModelChecking("examples/PN à SAL.txt",
-    // "examples/PN à SAL Preuve.txt");
-    launchModelChecking("examples/PN à SAL+TPL.txt",
-        "examples/PN à SAL+TPL Preuve.txt");
-    // launchModelChecking("examples/PN a SAL Cas2.txt",
+    // "examples/PN à SAL Preuve.txt", "examples/init_file.txt");
+    // launchModelChecking("examples/PN à SAL+TPL.txt",
+    // "examples/PN à SAL+TPL Preuve.txt", "examples/init_file.txt");
 
-    // launchModelChecking("compteur essieux.txt",
-    // "compteur essieux preuve.txt");
-    // null);
-    // launchModelChecking("PN/PN à SAL Cas3.txt",
-    // "PN/PN à SAL Cas3 Preuve.txt");
+    launchModelChecking("examples/PN à SAL Cas3.txt",
+        "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
@@ -69,7 +66,8 @@ public class LaunchProofFromAEFDFormat {
 
   public static void launchModelCheckingWithProofTesting(
       String functional_model,
-      String proof_model) throws IOException, InterruptedException {
+      String proof_model,
+      String init_file) throws IOException, InterruptedException {
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
     Model model = graph_factory
@@ -104,9 +102,9 @@ public class LaunchProofFromAEFDFormat {
           true);
     }
 
-    simulator.generateAllInitialStates(model_checker);
+    simulator.generateAllInitialStates(model_checker, init_file);
     simulator_without_proof
-        .generateAllInitialStates(model_checker_without_proof);
+        .generateAllInitialStates(model_checker_without_proof, init_file);
 
     // simulator.init(initialization_variables);
     // model_checker.configureInitialGlobalStates(simulator.getGlobalState());
@@ -162,9 +160,9 @@ public class LaunchProofFromAEFDFormat {
   }
 
   public static Set<GlobalState> launchModelChecking(
-
       String functional_model,
-      String proof_model) throws IOException {
+      String proof_model,
+      String init_file) throws IOException {
 
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
@@ -214,7 +212,8 @@ public class LaunchProofFromAEFDFormat {
           value);
     }
 
-    GlobalState global_state = simulator.init(initialization_variables);
+    GlobalState global_state = simulator.init(initialization_variables,
+        init_file);
     System.out.println(global_state);
     model_checker.addInitialState(global_state);
 

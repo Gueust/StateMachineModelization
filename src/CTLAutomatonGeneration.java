@@ -1,6 +1,4 @@
 import graph.GraphFactoryAEFD;
-import graph.conditions.aefdParser.AEFDFormulaFactory;
-import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 /*
  * Ce fichier permet de générer des automates à CTL automatiquement à partir

@@ -6,6 +6,10 @@ import graph.State;
 import graph.StateMachine;
 import graph.Transition;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -214,12 +218,16 @@ public class SequentialGraphSimulator extends
   /**
    * Generate all the initial states that can be generated using all the
    * possible combination of CTLs.
+   * 
+   * @throws IOException
    */
   public void generateAllInitialStates(
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker,
+      String init_file) throws IOException {
     HashMap<String, String> CTL_list = getModel().regroupCTL();
 
-    generateAllInitialStates(CTL_list, new HashMap<String, Boolean>(),
+    generateAllInitialStates(CTL_list, init_file,
+        new HashMap<String, Boolean>(),
         model_checker);
   }
 
@@ -236,8 +244,13 @@ public class SequentialGraphSimulator extends
    * @param external_values
    *          The list of the couple (CTL, value for this CTL).
    *          It must only contains CTLs and it must not contain opposite CTLs.
+   * @param init_file
+   *          The file where to find the list of the initialization events. One
+   *          per line.
+   * @throws IOException
    */
-  public GlobalState init(HashMap<String, Boolean> external_values) {
+  public GlobalState init(HashMap<String, Boolean> external_values,
+      String init_file) throws IOException {
 
     GlobalState global_state = new GlobalState();
 
@@ -261,7 +274,23 @@ public class SequentialGraphSimulator extends
     }
 
     /* We execute ACT_INIT */
-    global_state = execute(global_state, ACT_INIT);
+    if (init_file == null) {
+      global_state = execute(global_state, ACT_INIT);
+    } else {
+      BufferedReader buff = new BufferedReader(new FileReader(init_file));
+
+      LinkedList<ExternalEvent> result = new LinkedList<>();
+
+      String line;
+      while ((line = buff.readLine()) != null) {
+        ExternalEvent event = new ExternalEvent(line.trim());
+        result.add(event);
+      }
+
+      buff.close();
+
+      global_state = executeAll(global_state, result);
+    }
 
     /* We delete the CTLs from the valuation */
     for (BooleanVariable variable : to_delete_from_valuation) {
@@ -284,12 +313,14 @@ public class SequentialGraphSimulator extends
 
   private void generateAllInitialStates(Set<String> set,
       HashMap<String, Boolean> fixed_ctls,
+      String init_file,
       GlobalState current_state,
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker)
+      throws IOException {
 
     /* Terminal case */
     if (set.isEmpty()) {
-      GlobalState gs = init(fixed_ctls);
+      GlobalState gs = init(fixed_ctls, init_file);
       if (gs.isLegal()) {
         System.out.print(i++ + "\n");
         model_checker.addInitialState(gs);
@@ -303,12 +334,12 @@ public class SequentialGraphSimulator extends
     ctl_iterator.remove();
 
     fixed_ctls.put(ctl_name, true);
-    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls, init_file,
         current_state,
         model_checker);
 
     fixed_ctls.put(ctl_name, false);
-    generateAllInitialStates(new HashSet<String>(set), fixed_ctls,
+    generateAllInitialStates(new HashSet<String>(set), fixed_ctls, init_file,
         current_state,
         model_checker);
   }
@@ -316,13 +347,17 @@ public class SequentialGraphSimulator extends
   /**
    * Generate all the initial states that can be generated using all the
    * possible combination of CTL_list and fixing the fixed_CTL_list
+   * 
+   * @throws IOException
    */
   public void generateAllInitialStates(
       HashMap<String, String> CTL_list,
+      String init_file,
       HashMap<String, Boolean> fixed_CTL_list,
-      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker) {
+      ModelChecker<GlobalState, StateMachine, State, Transition> model_checker)
+      throws IOException {
 
-    generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list,
+    generateAllInitialStates(CTL_list.keySet(), fixed_CTL_list, init_file,
         emptyGlobalState(),
         model_checker);
   }

@@ -15,7 +15,6 @@ import java.util.Date;
 import utils.Logging;
 import utils.Monitoring;
 import utils.Pair;
-import abstractGraph.verifiers.Verifier;
 
 /*
  * Ce fichier permet de lancer l'exploration sur un fonctionnel + preuve à

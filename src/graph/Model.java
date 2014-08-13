@@ -1,6 +1,5 @@
 package graph;
 
-import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.FonctionCommandeInformatique;
 
