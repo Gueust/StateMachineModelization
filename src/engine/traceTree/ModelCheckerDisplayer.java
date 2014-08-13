@@ -47,7 +47,10 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
    *         null if no such state exists.
    */
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
+
     assert (unvisited_states != null);
+
+    this.simulator = simulator;
 
     visited_states.clear();
     number_illegal_states = 0;
@@ -77,6 +80,7 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
 
+    GS error_state = null;
     int c = 0;
     while (unvisited_states.size() != 0) {
       c++;
@@ -106,6 +110,7 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
       for (ExternalEvent e : possible_external_events) {
         GS next_state = simulator.execute(state, e);
 
+        /** Specific part building the tree */
         next_state.last_processed_external_event = e;
         next_state.previous_global_state = state;
         if (state.children_states == null) {
@@ -114,7 +119,7 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
         state.children_states
             .add(new Pair<AbstractGlobalState<M, S, T, ?>, ExternalEvent>(
                 next_state, e));
-
+        /** End of the specific part */
         number_explored_nodes++;
         System.err.flush();
         System.out.flush();
@@ -130,7 +135,8 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
           }
 
           if (!next_state.isSafe()) {
-            return next_state;
+            error_state = next_state;
+            // return next_state;
           }
         }
       }
@@ -146,8 +152,6 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
         + number_of_functional_warning);
 
     new DisplayExecutionTree<>(initial_state);
-
-    return null;
+    return error_state;
   }
-
 }

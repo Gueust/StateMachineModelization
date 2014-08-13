@@ -22,7 +22,6 @@ import abstractGraph.conditions.BooleanVariable;
 import abstractGraph.conditions.Formula;
 import abstractGraph.conditions.FormulaFactory;
 import abstractGraph.conditions.NotFormula;
-import abstractGraph.conditions.cnf.Literal;
 import abstractGraph.events.Actions;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
@@ -49,6 +48,7 @@ public class GraphFactoryAEFD {
 
   /** The formula factory to parse the condition formulas */
   private AEFDFormulaFactory factory;
+  private GenerateFormulaAEFD formula_generator;
 
   /** List all the state machines of the model */
   private HashMap<String, StateMachine> state_machines;
@@ -82,6 +82,8 @@ public class GraphFactoryAEFD {
    */
   public GraphFactoryAEFD(String variables_database_file) {
     factory = new AEFDFormulaFactory(true, variables_database_file);
+
+    formula_generator = factory.generator_of_formula;
   }
 
   /*
@@ -206,6 +208,7 @@ public class GraphFactoryAEFD {
       result.addStateMachine(sm);
     }
     result.formulaFactory = factory;
+    result.formula_generator = factory.generator_of_formula;
     /* Required to generated internal data */
     result.build();
 
@@ -405,7 +408,7 @@ public class GraphFactoryAEFD {
         throw new UnsupportedOperationException(
             "When parsing the action : " + event_string);
       } else if (event_string.startsWith("NON ")) {
-        event_string = GenerateFormulaAEFD.getOppositeName(event_string
+        event_string = formula_generator.getOppositeName(event_string
             .substring(4, event_string.length())
             .trim());
       }
@@ -482,7 +485,7 @@ public class GraphFactoryAEFD {
       break;
     default:
       if (prefix.startsWith("NON ")) {
-        event_name = GenerateFormulaAEFD.getOppositeName(event_name.substring(
+        event_name = formula_generator.getOppositeName(event_name.substring(
             4,
             event_name.length()).trim());
         new_event = eventFactory(event_name);
@@ -579,7 +582,8 @@ public class GraphFactoryAEFD {
         initial_transition_order.values().iterator();
     while (iterator.hasNext()) {
       InitialTransition transition = iterator.next();
-      writer.write(writeTransition(transition.state_machine, transition.t));
+      writer.write(writeTransition(transition.state_machine, transition.t,
+          formula_generator));
 
       if (iterator.hasNext()) {
         writer.write("\r\n");
@@ -589,15 +593,16 @@ public class GraphFactoryAEFD {
     writer.close();
   }
 
-  static MyCustomizer customizer = new MyCustomizer();
-
   /**
    * Return the 6 lines format of a transition.
    * Should not be used.
    */
   @Deprecated
-  static public String writeTransition(StateMachine state_machine,
-      Transition transition) {
+  public static String writeTransition(StateMachine state_machine,
+      Transition transition, GenerateFormulaAEFD formula_generator) {
+
+    MyCustomizer customizer = new MyCustomizer(formula_generator);
+
     StringBuffer result = new StringBuffer();
 
     result.append(state_machine.getName());
@@ -606,7 +611,9 @@ public class GraphFactoryAEFD {
     result.append("\r\n");
     result.append(transition.getDestination().getId());
     result.append("\r\n");
-    String temp = concatenateEventsWithOU(transition.getEvents());
+    String temp = concatenateEventsWithOU(transition.getEvents(),
+        formula_generator);
+    assert (temp != null);
     if (temp != null && !temp.equals("")) {
       result.append(temp + " Evenement");
     } else {
@@ -617,7 +624,9 @@ public class GraphFactoryAEFD {
       temp = "";
     } else {
       temp = transition.getCondition().toString(customizer);
+      assert temp != null : transition.getCondition().toString();
     }
+
     if (!temp.equals("")) {
       result.append(temp + " Condition");
     } else {
@@ -634,7 +643,11 @@ public class GraphFactoryAEFD {
     return result.toString();
   }
 
-  static private String concatenateEventsWithOU(Events events) {
+  private static String concatenateEventsWithOU(Events events,
+      GenerateFormulaAEFD formula_generator) {
+
+    MyCustomizer customizer = new MyCustomizer(formula_generator);
+
     StringBuilder sb = new StringBuilder();
     boolean first = true;
     for (SingleEvent single_event : events) {
@@ -693,87 +706,8 @@ public class GraphFactoryAEFD {
     return factory;
   }
 
-  public static String generateAutomateForCTL(String CTL_pos, String CTL_neg) {
-
-    /*
-     * New fresh variables are created, but since it is only written as a
-     * string, it does not change anything
-     */
-    FormulaFactory factory = new AEFDFormulaFactory(true);
-
-    String variable_name =
-        CTL_pos.substring(CTL_pos.indexOf('_') + 1, CTL_pos.length());
-    variable_name = variable_name.substring(0, variable_name.lastIndexOf('_'));
-
-    String positive_suffix =
-        CTL_pos.substring(CTL_pos.lastIndexOf('_') + 1, CTL_pos.length());
-    String negative_suffix =
-        CTL_neg.substring(CTL_neg.lastIndexOf('_') + 1, CTL_neg.length());
-
-    String IND_actif_name = "IND_" + variable_name + "_" + positive_suffix;
-    String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
-
-    StateMachine machine = new StateMachine("GRAPH_" + IND_actif_name);
-    assert ("GRAPH_CTL_RPD_3422b_Excite" != "GRAPH_" + IND_actif_name);
-
-    State init_state = machine.addState("0");
-    State positive_state = machine.addState("1");
-    State negative_state = machine.addState("2");
-
-    Events events;
-    Actions actions;
-    Formula condition;
-    BooleanVariable variable = factory.getVariable(IND_actif_name);
-
-    /* Transition from 0 to 1 */
-    events = new Events();
-    events.addEvent(SequentialGraphSimulator.ACT_INIT);
-    condition = factory.parse(CTL_pos);
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable)));
-    machine.addTransition(init_state, positive_state,
-        events, condition, actions);
-
-    /* Transition from 0 to 2 */
-    events = new Events();
-    events.addEvent(SequentialGraphSimulator.ACT_INIT);
-    condition = factory.parse(CTL_neg);
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable, true)));
-    machine.addTransition(init_state, negative_state,
-        events, condition, actions);
-
-    /* Transition from 1 to 2 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_neg));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable, true)));
-    machine.addTransition(positive_state, negative_state,
-        events, null, actions);
-
-    /* Transition from 2 to 1 */
-    events = new Events();
-    events.addEvent(new ExternalEvent(CTL_pos));
-    actions = new Actions();
-    actions.add(new VariableChange(new Literal(variable)));
-    machine.addTransition(negative_state, positive_state,
-        events, null, actions);
-
-    StringBuffer buffer = new StringBuffer();
-
-    boolean first = true;
-    Iterator<Transition> trans_it = machine.iteratorTransitions();
-    while (trans_it.hasNext()) {
-      if (first) {
-        first = false;
-      } else {
-        buffer.append("\r\n");
-      }
-      buffer.append(GraphFactoryAEFD.writeTransition(machine, trans_it
-          .next()));
-    }
-
-    return buffer.toString();
+  public String generateAutomateForCTL(String CTL_pos, String CTL_neg) {
+    return formula_generator.generateAutomateForCTL(CTL_pos, CTL_neg);
   }
 
   /**
@@ -785,7 +719,8 @@ public class GraphFactoryAEFD {
    * @param CTL_neg
    * @return
    */
-  public static String generateAutomateP6ForCTL(String CTL_pos, String CTL_neg) {
+  protected String generateAutomateP6ForCTL(String CTL_pos,
+      String CTL_neg, GenerateFormulaAEFD formula_generator) {
 
     FormulaFactory factory = new AEFDFormulaFactory(true);
 
@@ -869,8 +804,8 @@ public class GraphFactoryAEFD {
       } else {
         buffer.append("\r\n");
       }
-      buffer.append(GraphFactoryAEFD.writeTransition(machine, trans_it
-          .next()));
+      buffer.append(this.writeTransition(machine, trans_it
+          .next(), formula_generator));
     }
 
     return buffer.toString();

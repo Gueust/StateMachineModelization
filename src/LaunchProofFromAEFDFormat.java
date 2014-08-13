@@ -32,7 +32,7 @@ import abstractGraph.verifiers.Verifier;
 public class LaunchProofFromAEFDFormat {
 
   /** Display the execution trace */
-  private static final boolean DISPLAY_TREE = false;
+  private static final boolean DISPLAY_TREE = true;
 
   public static void main(String[] args) throws Exception {
 
@@ -52,15 +52,12 @@ public class LaunchProofFromAEFDFormat {
     // launchModelChecking("examples/PN à SAL.txt", null);
     // launchModelChecking("examples/PN à SAL.txt",
     // "examples/PN à SAL Preuve.txt");
-    // launchModelChecking("examples/PN à SAL+TPL.txt",
-    // "examples/PN à SAL+TPL Preuve.txt");
+    launchModelChecking("examples/PN à SAL+TPL.txt",
+        "examples/PN à SAL+TPL Preuve.txt");
     // launchModelChecking("examples/PN a SAL Cas2.txt",
 
     // launchModelChecking("compteur essieux.txt",
     // "compteur essieux preuve.txt");
-    // launchModelChecking("PN/PN a SAL Cas2.txt",
-    // "PN/PN a SAL Cas2 Preuve.txt");
-    // launchModelChecking("PN/PN a SAL Cas2.txt",
     // null);
     // launchModelChecking("PN/PN à SAL Cas3.txt",
     // "PN/PN à SAL Cas3 Preuve.txt");
@@ -222,6 +219,8 @@ public class LaunchProofFromAEFDFormat {
     model_checker.addInitialState(global_state);
 
     // simulator.generateAllInitialStates(model_checker);
+
+    assert (simulator != null);
 
     GlobalState result = model_checker.verify(simulator);
 

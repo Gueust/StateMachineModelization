@@ -20,6 +20,7 @@ public class PairLoader extends AbstractParseTreeVisitor<Object>
     for (PairContext pair_ctx : ctx.pair()) {
       result.add((Pair<String, String>) visitPair(pair_ctx));
     }
+
     return result;
 
   }

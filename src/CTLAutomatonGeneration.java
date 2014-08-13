@@ -1,4 +1,6 @@
 import graph.GraphFactoryAEFD;
+import graph.conditions.aefdParser.AEFDFormulaFactory;
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 /*
  * Ce fichier permet de générer des automates à CTL automatiquement à partir
@@ -13,7 +15,10 @@ public class CTLAutomatonGeneration {
      * Il est indispensable d'écrire d'abord le CTL actif, puis la version
      * inactive.
      */
-    System.out.println(GraphFactoryAEFD.generateAutomateForCTL(
+    GraphFactoryAEFD factory =
+        new GraphFactoryAEFD(null);
+
+    System.out.println(factory.generateAutomateForCTL(
         "CTL_PdAn_I_V1_Actif",
         "CTL_PdAn_I_V1_Inactif"));
 

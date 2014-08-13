@@ -1,5 +1,6 @@
 package graph;
 
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import graph.templates.FonctionCommandeInformatique;
 
@@ -45,6 +46,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
    * variables are equals if and only if they are the same object).
    */
   protected FormulaFactory formulaFactory;
+  protected GenerateFormulaAEFD formula_generator;
 
   /* All the external events that can trigger the model */
   public HashMap<String, ExternalEvent> external_events;
@@ -384,7 +386,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
 
     while (!list_of_ctl_names.isEmpty()) {
       String ctl_name = list_of_ctl_names.iterator().next();
-      String ctl_opposite_name = GenerateFormulaAEFD.getOppositeName(ctl_name);
+      String ctl_opposite_name = formula_generator.getOppositeName(ctl_name);
 
       if (list_of_ctl_names.contains(ctl_opposite_name)) {
         list_of_ctl_names.remove(ctl_opposite_name);
@@ -392,9 +394,9 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
         has_error = true;
         list_of_ctl_without_opposite.add(ctl_name);
       }
-      if (GenerateFormulaAEFD.isPositive(ctl_name)) {
+      if (formula_generator.isPositive(ctl_name)) {
         pairs_of_ctl.put(ctl_name, ctl_opposite_name);
-      } else if (GenerateFormulaAEFD.isNegative(ctl_name)) {
+      } else if (formula_generator.isNegative(ctl_name)) {
         pairs_of_ctl.put(ctl_opposite_name, ctl_name);
       } else {
         throw new Error("The CTL " + ctl_name

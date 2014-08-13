@@ -2,6 +2,8 @@ package graph.templates;
 
 import graph.GraphFactoryAEFD;
 import graph.Model;
+import graph.conditions.aefdParser.AEFDFormulaFactory;
+import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -77,8 +79,10 @@ public class GeneratorFromTemplate {
           throw new Error("The data within 'inputs' must be pairs.");
         }
 
+        GraphFactoryAEFD factory = new GraphFactoryAEFD(null);
+
         String graph =
-            GraphFactoryAEFD.generateAutomateForCTL(list.get(0), list.get(1));
+            factory.generateAutomateForCTL(list.get(0), list.get(1));
 
         if (first) {
           first = false;

@@ -84,7 +84,6 @@ proof AP_PdAn_I(1)
   2 -> 9 : on IND_Zone1_Libre when true do P_6;
   2 -> 9 : on IND_Zone3_Libre when not IND_Zone3_Libre do P_6;
   1 -> 2 : on IND_Zone1_Libre when (not IND_Zone1_Libre) do ;
-  /* 1 -> 9 : on IND_PdAn_I_V1_Actif when true do P_6; */
 end
 proof AP_Zone3(1)
   2 -> 1 : on IND_Zone3_Libre when IND_Zone3_Libre and (not IND_Zone5_Libre) do ;
@@ -96,5 +95,3 @@ end
 proof 5_1_implique_5(1)
     1 -> 1 : on * when not IND_Zone5_1_Libre and IND_Zone5_Libre do P_6;
 end
-
-

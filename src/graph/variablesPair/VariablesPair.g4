@@ -10,9 +10,7 @@ package graph.variablesPair;
 
 pairs
 :
-  (
-    pair
-  )* EOF
+  pair* EOF
 ;
 
 pair
@@ -27,7 +25,7 @@ ID
     | 'a' .. 'z'
     | '0' .. '9'
     | '_'
-    | [éôàè'*]
+    | [éôàè'*%]
   )+
 ;
 

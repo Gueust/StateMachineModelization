@@ -223,7 +223,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     number_explored_nodes = 0;
   }
 
-  private GraphSimulatorInterface<GS, M, S, T> simulator;
+  protected GraphSimulatorInterface<GS, M, S, T> simulator;
 
   /**
    * @details
@@ -339,6 +339,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
   public String printFullTrace(GS state) {
     StringBuilder string_builder = new StringBuilder();
 
+    assert (simulator != null);
     GS current = state;
     string_builder.insert(0, "\nTo the final state:\n\n"
         + simulator.globalStateToString(current) + "\n");

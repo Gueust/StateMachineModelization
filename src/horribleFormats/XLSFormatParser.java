@@ -76,42 +76,9 @@ public class XLSFormatParser {
           + actions);
     }
     fileInputStream.close();
-    String string_to_write = result.toString();
-    /* Replacing some occurences */
-    string_to_write = string_to_write.replaceAll("ACT_Init[a-zA-Z0-9_]*",
-        "ACT_Init");
-    string_to_write = string_to_write
-        .replaceAll("Occupe(?=[^e])", "Occupee");
-    string_to_write = string_to_write
-        .replaceAll("_Decondamnee", "_Decondamne");
-    string_to_write = string_to_write
-        .replaceAll("_Condamnee", "_Condamne");
-    string_to_write = string_to_write
-        .replaceAll("_Controlee", "_Controle");
-    string_to_write = string_to_write
-        .replaceAll("_Restituee", "_non_Prise");
-    string_to_write = string_to_write
-        .replaceAll("_non_Libere", "_en_Action");
-    string_to_write = string_to_write
-        .replaceAll("_non_en_Action", "_Libere");
-    string_to_write = string_to_write
-        .replaceAll("_Non_", "_non_");
-    string_to_write = string_to_write
-        .replaceAll("VER_[a-zA-Z0-9_]* ", "true ");
-    string_to_write = string_to_write
-        .replaceAll("VER_[a-zA-Z0-9_]*\\)", "true)");
 
-    out.write(string_to_write);
+    out.write(result.toString());
     out.close();
 
-    @SuppressWarnings("unused")
-    CTLReplacer ctl_replacer = new CTLReplacer(output_file_name,
-        "Graph_with_corrected_CTL.txt", false);
-    ctl_replacer = new CTLReplacer("Nurieux/NurieuxTestJLPreuv_Auto.txt",
-        "Proof_with_corrected_CTL.txt", true);
-    ctl_replacer = new CTLReplacer("Nurieux/Preuv_Auto_3411_3421.txt",
-        "Proof_with_corrected_CTL_3411_3421.txt", true);
-
   }
-
 }

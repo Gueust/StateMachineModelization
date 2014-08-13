@@ -3,6 +3,7 @@ package horribleFormats;
 import graph.GraphFactoryAEFD;
 import graph.Model;
 import graph.StateMachine;
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 
 import java.io.BufferedWriter;
@@ -28,6 +29,11 @@ import abstractGraph.conditions.EnumeratedVariable;
 public class CTLReplacer {
   LinkedHashMap<String, String> pairs_of_ctl = new LinkedHashMap<String, String>();
 
+  public CTLReplacer(String file_name, String target_name, boolean isProof)
+      throws IOException {
+    this(file_name, target_name, isProof, null);
+  }
+
   /**
    * rewrite in the file target_name the model from file_name with replacing all
    * the CTL found in the field condition by their IND and create the associated
@@ -38,9 +44,16 @@ public class CTLReplacer {
    * @param isProof
    * @throws IOException
    */
-  public CTLReplacer(String file_name, String target_name, boolean isProof)
+  public CTLReplacer(String file_name, String target_name, boolean isProof,
+      String pairs_of_variables)
       throws IOException {
-    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
+
+    GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(pairs_of_variables);
+    GenerateFormulaAEFD generator =
+        ((AEFDFormulaFactory) graph_factory.getFactory()).generator_of_formula;
+
+    assert generator != null;
+
     Model model = graph_factory.buildModel(file_name, file_name);
     model.build();
     HashMap<EnumeratedVariable, Collection<StateMachine>> writing_state_machine =
@@ -93,15 +106,13 @@ public class CTLReplacer {
           }
 
           while (ctl_name.trim().endsWith(")") || ctl_name.trim().endsWith("(")) {
-            ctl_name = ctl_name.substring(0, ctl_name.length() - 2);
+            ctl_name = ctl_name.substring(0, ctl_name.length() - 1);
           }
 
-          if (GenerateFormulaAEFD.isPositive(ctl_name)) {
-            pairs_of_ctl.put(ctl_name, GenerateFormulaAEFD
-                .getOppositeName(ctl_name));
-          } else if (GenerateFormulaAEFD
-              .isNegative(ctl_name)) {
-            pairs_of_ctl.put(GenerateFormulaAEFD
+          if (generator.isPositive(ctl_name)) {
+            pairs_of_ctl.put(ctl_name, generator.getOppositeName(ctl_name));
+          } else if (generator.isNegative(ctl_name)) {
+            pairs_of_ctl.put(generator
                 .getOppositeName(ctl_name),
                 ctl_name);
           }
@@ -111,7 +122,7 @@ public class CTLReplacer {
           if (writing_state_machine.containsKey(new BooleanVariable(
               new_ctl_name, -2))) {
             pairs_of_ctl.remove(ctl_name);
-            pairs_of_ctl.remove(GenerateFormulaAEFD
+            pairs_of_ctl.remove(generator
                 .getOppositeName(ctl_name));
           }
           condition = condition.replaceAll(ctl_name,
@@ -122,6 +133,7 @@ public class CTLReplacer {
       writer.write((condition.trim() + " Condition").trim() + "\n"
           + (parser.getAction().trim() + " Action").trim());
     }
+
     if (!isProof) {
       if (pairs_of_ctl.size() != 0) {
         writer.write("\n");
@@ -147,11 +159,10 @@ public class CTLReplacer {
             writer.write("\n");
           }
 
-          String result = GraphFactoryAEFD.generateAutomateForCTL(entry
+          String result = graph_factory.generateAutomateForCTL(entry
               .getKey(),
               entry.getValue());
           writer.write(result);
-
         }
       }
 
@@ -171,11 +182,12 @@ public class CTLReplacer {
           } else {
             writer.write("\n");
           }
+
           writer.write(
-              GraphFactoryAEFD
+              graph_factory
                   .generateAutomateForCTL(
                       variable.getVarname().replaceAll("IND_", "CTL_"),
-                      GenerateFormulaAEFD
+                      generator
                           .getOppositeName(variable.getVarname())
                           .replaceAll("IND_", "CTL_")));
         }

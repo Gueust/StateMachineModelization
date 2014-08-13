@@ -1,5 +1,6 @@
 package gui;
 
+import graph.conditions.aefdParser.AEFDFormulaFactory;
 import graph.conditions.aefdParser.GenerateFormulaAEFD;
 import gui.actions.CancelAction;
 
@@ -120,13 +121,15 @@ public class InitializationSelector extends JDialog {
    */
   public HashMap<String, Boolean> getSelected() {
     HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+    GenerateFormulaAEFD generator =
+        new GenerateFormulaAEFD(new AEFDFormulaFactory(true), null);
     for (JToggleButton button : buttons) {
       if (button.isSelected()) {
         String CTL_name = button.getText();
-        if (GenerateFormulaAEFD.isPositive(CTL_name)) {
+        if (generator.isPositive(CTL_name)) {
           result.put(CTL_name, true);
         } else {
-          result.put(GenerateFormulaAEFD.getOppositeName(CTL_name), false);
+          result.put(generator.getOppositeName(CTL_name), false);
         }
       }
     }

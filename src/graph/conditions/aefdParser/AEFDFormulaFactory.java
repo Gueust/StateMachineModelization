@@ -11,7 +11,7 @@ import abstractGraph.conditions.cnf.Literal;
 
 public class AEFDFormulaFactory extends FormulaFactory {
 
-  private GenerateFormulaAEFD generator_of_formula;
+  public GenerateFormulaAEFD generator_of_formula;
 
   /**
    * @see FormulaFactory#FormulaFactory(boolean)
