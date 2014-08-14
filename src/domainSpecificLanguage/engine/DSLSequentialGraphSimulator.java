@@ -82,18 +82,15 @@ public class DSLSequentialGraphSimulator<GS extends AbstractGlobalState<DSLState
 
     variables = new HashSet<>();
     variables.addAll(model.variables);
-    variables.addAll(proof.variables);
+    if (proof != null) {
+      variables.addAll(proof.variables);
+    }
 
     checkCompatibility();
   }
 
   public DSLSequentialGraphSimulator(DSLModel model) {
-    this.functional_model = model;
-
-    variables = new HashSet<>();
-    variables.addAll(model.variables);
-
-    checkCompatibility();
+    this(model, null);
   }
 
   @Override

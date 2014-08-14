@@ -7,7 +7,6 @@ import graph.StateMachine;
 import graph.Transition;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,10 +32,26 @@ public class SequentialGraphSimulator extends
 
   public SequentialGraphSimulator(Model model, Model proof) {
     super(model, proof);
+
+    /*
+     * We number the state machines such that every one has a unique identifier
+     * from 0, N-1 where N is the total number of state machines
+     */
+    int counter = 0;
+    for (StateMachine machine : getModel()) {
+      machine.setUniqueIdentifier(counter);
+      counter++;
+    }
+    if (proof != null) {
+      for (StateMachine machine : proof) {
+        machine.setUniqueIdentifier(counter);
+        counter++;
+      }
+    }
   }
 
   public SequentialGraphSimulator(Model model) {
-    super(model);
+    this(model, null);
   }
 
   @Override
