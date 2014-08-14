@@ -325,7 +325,7 @@ IND_CSR_Inactif; IND_CBR_Inactif; Action
 CSR_CBR
 2
 3
-IND_An_I_V1_Actif OU IND_An_P_V1_Actif OU IND_Zone5_1_Occupee  Evenement
+IND_An_I_V1_Actif OU IND_An_P_V1_Actif OU IND_Zone5_1_Occupee Evenement
 Condition
 IND_CSR_Actif; DTP_CBR(9s); Action
 CSR_CBR
