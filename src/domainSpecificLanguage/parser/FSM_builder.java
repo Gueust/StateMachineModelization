@@ -180,6 +180,15 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
     return variables.size() + proof_variables.size();
   }
 
+  /**
+   * @return The next unique integer id for the state machine (needed by the
+   *         compact global state which stores the values of the variables in an
+   *         array).
+   */
+  private int getNextStateMachine() {
+    return functional_state_machines.size() + proof_state_machines.size();
+  }
+
   private EnumeratedVariable createDSLVariable(String name, Token token,
       Enumeration enumeration) {
     if (variables.containsKey(name)) {
@@ -334,7 +343,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + getDetails(token) + " has already been defined.");
     }
 
-    DSLStateMachine machine = new DSLStateMachine(machine_name);
+    DSLStateMachine machine =
+        new DSLStateMachine(machine_name, getNextStateMachine());
     current_state_machine = machine;
     functional_state_machines.put(machine_name, machine);
 
@@ -366,7 +376,8 @@ public class FSM_builder extends AbstractParseTreeVisitor<Object>
           + getDetails(token) + " has already been defined.");
     }
 
-    DSLStateMachine machine = new DSLStateMachine(machine_name);
+    DSLStateMachine machine =
+        new DSLStateMachine(machine_name, getNextStateMachine());
     current_state_machine = machine;
     proof_state_machines.put(machine_name, machine);
 

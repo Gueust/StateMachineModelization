@@ -78,7 +78,7 @@ public class AEFDToDSL {
         new LinkedHashSet<CommandEvent>(model.getCommands_events().values());
 
     for (StateMachine machine : model) {
-      DSLStateMachine dsl_machine = new DSLStateMachine(machine.getName());
+      DSLStateMachine dsl_machine = new DSLStateMachine(machine.getName(), -1);
       dsl_model.addStateMachine(dsl_machine);
       for (State state : machine) {
         for (Transition transition : state) {

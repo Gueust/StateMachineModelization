@@ -650,7 +650,7 @@ public class GenerateFormulaAEFD extends
     }
 
     // assert (IND_actif_name.lastIndexOf("__") == -1) : IND_actif_name;
-    StateMachine machine = new StateMachine("GRAPH_" + IND_actif_name);
+    StateMachine machine = new StateMachine("GRAPH_" + IND_actif_name, -1);
     assert ("GRAPH_CTL_RPD_3422b_Excite" != "GRAPH_" + IND_actif_name);
 
     State init_state = machine.addState("0");

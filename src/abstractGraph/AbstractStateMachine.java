@@ -22,13 +22,36 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
     implements Iterable<S> {
 
   protected String state_machine_name;
+  /* The unique identifier of the Variable throughout a simulator. */
+  protected int identifier;
 
-  public AbstractStateMachine(String name) {
+  /**
+   * 
+   * @param name
+   * @param identifier
+   *          The identifier for the state machine. It should be unique
+   *          throughout a simulator (both functional and proof model).
+   */
+  public AbstractStateMachine(String name, int identifier) {
     this.state_machine_name = name;
+    this.identifier = identifier;
   }
 
   public String getName() {
     return state_machine_name;
+  }
+
+  public int getUniqueIdentifier() {
+    return identifier;
+  }
+
+  /**
+   * Only users knowing how to keep data integrity should use this function.
+   * 
+   * @param value
+   */
+  public void setUniqueIdentifier(int value) {
+    identifier = value;
   }
 
   /**

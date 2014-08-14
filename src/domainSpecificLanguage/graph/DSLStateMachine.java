@@ -23,8 +23,8 @@ public class DSLStateMachine extends
   protected LinkedHashSet<EnumeratedVariable> write_variables;
   protected DSLState initial_state;
 
-  public DSLStateMachine(String name) {
-    super(name);
+  public DSLStateMachine(String name, int identifier) {
+    super(name, identifier);
   }
 
   public DSLState getInitial_state() {

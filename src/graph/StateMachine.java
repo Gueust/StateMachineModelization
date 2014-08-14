@@ -21,8 +21,8 @@ public class StateMachine extends AbstractStateMachine<State, Transition> {
   protected LinkedHashSet<BooleanVariable> read_variables;
   protected LinkedHashSet<BooleanVariable> write_variables;
 
-  public StateMachine(String name) {
-    super(name);
+  public StateMachine(String name, int identifier) {
+    super(name, identifier);
     states = new HashMap<String, State>(10);
   }
 

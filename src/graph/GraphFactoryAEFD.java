@@ -287,12 +287,15 @@ public class GraphFactoryAEFD {
    *          The name of the machine.
    * @return The associated state machine.
    */
+  private int state_machine_identifier = 0;
+
   private StateMachine retrieveStateMachine(String name) {
     StateMachine result = state_machines.get(name);
     if (result != null) {
       return result;
     } else {
-      result = new StateMachine(name);
+      result = new StateMachine(name, state_machine_identifier);
+      state_machine_identifier++;
       state_machines.put(name, result);
       return result;
     }
@@ -736,7 +739,7 @@ public class GraphFactoryAEFD {
     String IND_actif_name = "IND_" + variable_name + "_" + positive_suffix;
     String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
 
-    StateMachine machine = new StateMachine("GRAPH_P6_" + IND_actif_name);
+    StateMachine machine = new StateMachine("GRAPH_P6_" + IND_actif_name, -1);
 
     State init_state = machine.addState("0");
     State positive_state = machine.addState("1");

@@ -10,7 +10,7 @@ public class EnumeratedVariable extends Formula {
   public static final boolean DEBUG_TO_STRING = false;
 
   protected String varname;
-  /* The unique identifier of the Variable throughout a model */
+  /* The unique identifier of the Variable throughout a simulator. */
   protected int identifier;
   private Enumeration enumeration;
 
