@@ -52,7 +52,10 @@ public class GenerateFormulaAEFD extends
    * This is used ONLY when we do not provied a file defining the pair of
    * variables.
    */
-  private static final String[] negative_suffix = { "_non_Bloque",
+  private static final String[] negative_suffix = {
+      "_Deverouillee",
+      "_non_Deployee",
+      "_non_Bloque",
       "_non_Condamne",
       "_non_Decondamne",
       "_non_Etabli",
@@ -81,7 +84,9 @@ public class GenerateFormulaAEFD extends
       "_non_cde",
       "_non_en_cours",
       "_pas_Init" };
-  private static final String[] positive_suffix = { "_Bloque",
+  private static final String[] positive_suffix = {
+      "_Verouillee",
+      "_Deployee", "_Bloque",
       "_Condamne", "_Decondamne",
       "_Etabli", "_Excite", "_Actif",
       "_Active",

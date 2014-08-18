@@ -39,8 +39,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- * Model m = factory.buildModel();
+ *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ *   Model m = factory.buildModel();
  * }
  * </pre>
  */

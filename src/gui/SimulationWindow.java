@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -784,9 +783,13 @@ public class SimulationWindow extends JFrame {
         (SortedListModel) list.getModel();
 
     for (StateMachine state_machine : model) {
-      State state = global_state.getState(state_machine);
-      listModel.addElement(state_machine.getName() + " --> "
-          + (state == null ? "??" : state.getId()));
+      if (global_state == null) {
+        listModel.addElement(state_machine.getName() + " --> ??");
+      } else {
+        State state = global_state.getState(state_machine);
+        listModel.addElement(state_machine.getName() + " --> "
+            + (state == null ? "??" : state.getId()));
+      }
     }
   }
 
@@ -804,17 +807,19 @@ public class SimulationWindow extends JFrame {
       try {
         listModel.addElement(variable + " = "
             + global_state.getStringValue(variable));
-      } catch (NoSuchElementException e) {
+      } catch (Exception e) {
         listModel.addElement(variable + " = " + "??");
       }
 
     }
 
     /* We also set the P5, P6 and P7 values */
-    listModel.addElement("is_safe(P5)" + " = " + global_state.isSafe());
-    listModel.addElement("is_legal(P6)" + " = " + global_state.isLegal());
-    listModel.addElement("is_functional(P7)" + " = " + global_state.isNotP7());
-
+    listModel.addElement("is_safe(P5)" + " = "
+        + (global_state == null ? "??" : global_state.isSafe()));
+    listModel.addElement("is_legal(P6)" + " = "
+        + (global_state == null ? "??" : global_state.isLegal()));
+    listModel.addElement("is_functional(P7)" + " = "
+        + (global_state == null ? "??" : global_state.isNotP7()));
   }
 
   private void fillInTransitionPull(JList<String> list,
