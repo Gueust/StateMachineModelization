@@ -4,6 +4,10 @@ import java.util.HashSet;
 
 import abstractGraph.conditions.valuation.AbstractValuation;
 
+/**
+ * @brief
+ *        A conjunction of two formulas.
+ */
 public class AndFormula extends Formula {
 
   Formula p;

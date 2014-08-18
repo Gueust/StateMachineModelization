@@ -4,11 +4,21 @@ import abstractGraph.conditions.cnf.CNFFormula;
 import abstractGraph.conditions.cnf.Clause;
 import abstractGraph.conditions.cnf.Literal;
 
+/**
+ * @brief A default printer of formulas.
+ * 
+ * @details
+ *          This class can easily be extended to get other printing options.
+ */
 public class CustomToString {
 
   public static final CustomToString INSTANCE = new CustomToString();
+
+  /** The string representing the "NOT" operand. */
   protected String NOT;
+  /** The string representing the "OR" operand. */
   protected String OR;
+  /** The string representing the "AND" operand. */
   protected String AND;
 
   protected CustomToString() {

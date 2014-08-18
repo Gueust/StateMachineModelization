@@ -227,6 +227,10 @@ public class SequentialGraphSimulator extends
     return copied_starting_state;
   }
 
+  /**
+   * Should NOT be used. Used only by the tests.
+   * We coould modify the tests to make this function private.
+   */
   public GlobalState emptyGlobalState() {
     return new GlobalState(total_number_state_machines);
   }

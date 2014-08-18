@@ -6,6 +6,9 @@ import java.util.Map.Entry;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
+/**
+ * @brief A set of values for an {@link EnumeratedVariable}.
+ */
 public class Enumeration {
 
   private String enumeration_name;

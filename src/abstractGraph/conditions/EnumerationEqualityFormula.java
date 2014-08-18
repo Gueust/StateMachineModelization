@@ -5,6 +5,12 @@ import java.util.HashSet;
 import domainSpecificLanguage.DSLGlobalState.CompactValuation;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
+/**
+ * @brief
+ *        A formula of the form (x $= v) or (x != v) where v is a possible value
+ *        for x.
+ * 
+ */
 public class EnumerationEqualityFormula extends Formula {
 
   private EnumeratedVariable variable;

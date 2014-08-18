@@ -4,6 +4,11 @@ import java.util.HashSet;
 
 import abstractGraph.conditions.valuation.AbstractValuation;
 
+/**
+ * @brief
+ *        A disjunction of 2 formulas.
+ * 
+ */
 public class OrFormula extends Formula {
 
   Formula p, q;

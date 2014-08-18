@@ -5,11 +5,14 @@ import java.util.HashSet;
 import abstractGraph.conditions.valuation.AbstractValuation;
 
 /**
- * Boolean variables can be seen as Enumerated variables.
- * The equivalence is done using the TRUE and FALSE constants that are the
- * enumerated values the booleans true and false.
+ * @brief
+ *        A variable having its value in {true, false}.
+ * 
+ * @details
+ *          Boolean variables can be seen as Enumerated variables.
+ *          The equivalence is done using the TRUE and FALSE constants that are
+ *          the enumerated values the booleans true and false.
  */
-
 public class BooleanVariable extends EnumeratedVariable {
 
   public static final byte TRUE = 1;

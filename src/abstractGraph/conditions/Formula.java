@@ -8,16 +8,6 @@ import abstractGraph.conditions.valuation.AbstractValuation;
 import abstractGraph.conditions.valuation.Valuation;
 
 /**
- * @package abstractGraph.conditions
- * 
- *          The root elements to use this package is the {@link FormulaFactory}
- *          class. This allows to create {@link Formula}s.
- *          
- *          To evaluate a formula, you first need to create a {@link Valuation}
- *          for the formula. In particular, to set the value for a variable,
- *          one need to retrieve the variables from the FormulaFactory.
- */
-/**
  * Boolean expression formula.
  * It includes the following operands: And, or, not. In particular it does not
  * have => or <=>.

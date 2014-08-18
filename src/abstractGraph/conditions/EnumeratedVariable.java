@@ -4,13 +4,18 @@ import java.util.HashSet;
 
 import abstractGraph.conditions.valuation.AbstractValuation;
 
+/**
+ * @brief
+ *        A variable having its value in a defined finite set of values.
+ * 
+ */
 public class EnumeratedVariable extends Formula {
 
-  /* Can be used to print the identifier of the variable */
+  /** Can be used to print the identifier of the variable */
   public static final boolean DEBUG_TO_STRING = false;
 
   protected String varname;
-  /* The unique identifier of the Variable throughout a simulator. */
+  /** The unique identifier of the Variable throughout a simulator. */
   protected int identifier;
   private Enumeration enumeration;
 
