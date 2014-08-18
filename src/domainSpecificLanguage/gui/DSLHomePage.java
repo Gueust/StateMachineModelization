@@ -283,7 +283,6 @@ public class DSLHomePage extends JFrame {
     chckbxVerboseExploration = new JCheckBox("Verbose exploration");
     chckbxVerboseExploration
         .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
-    chckbxVerboseExploration.setSelected(true);
 
     JTextArea txtrFciFile = new JTextArea();
     txtrFciFile.setWrapStyleWord(true);
@@ -469,7 +468,8 @@ public class DSLHomePage extends JFrame {
       Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
       if (pair != null) {
         simulator =
-            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first, pair.second);
+            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first,
+                pair.second);
 
         simulator.setVerbose(chckbxVerboseExploration.isSelected());
         dsl_home_page.dispose();
@@ -501,7 +501,8 @@ public class DSLHomePage extends JFrame {
       Pair<DSLModel, DSLModel> pair = dsl_home_page.loadModel();
       if (pair != null) {
         DSLSequentialGraphSimulator<DSLGlobalState> simulator =
-            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first, pair.second);
+            new DSLSequentialGraphSimulator<DSLGlobalState>(pair.first,
+                pair.second);
 
         simulator.setVerbose(chckbxVerboseExploration.isSelected());
 

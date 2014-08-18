@@ -277,7 +277,6 @@ public class HomePage extends JFrame {
     JCheckBox chckbxVerboseExploration = new JCheckBox("Verbose exploration");
     chckbxVerboseExploration
         .setToolTipText("If checked, the tool  will write the details of the execution of the exploration.");
-    chckbxVerboseExploration.setSelected(true);
 
     JTextArea txtrFciFile = new JTextArea();
     txtrFciFile.setWrapStyleWord(true);
