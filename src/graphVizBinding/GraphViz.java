@@ -277,7 +277,6 @@ public class GraphViz
     try {
       temp = File.createTempFile("graph_", ".dot.tmp", new File(
           GraphViz.TEMP_DIR));
-      System.out.println(temp);
 
       FileWriter fout = new FileWriter(temp);
       fout.write(str);

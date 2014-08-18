@@ -29,14 +29,14 @@ import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
 
 @SuppressWarnings("serial")
-public class DisplayExecutionTree<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+public class DisplayExecutionTree<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     extends JFrame {
 
   final private JTree tree;
   private DefaultMutableTreeNode root_node;
-  private final StateDisplayer<M, S, T> state_displayer;
+  private final StateDisplayer<GS, M, S, T> state_displayer;
 
-  DisplayExecutionTree(GraphSimulatorInterface<?, M, S, T> graph_simulator,
+  DisplayExecutionTree(GraphSimulatorInterface<GS, M, S, T> graph_simulator,
       AbstractGlobalState<M, S, T, ?> root_state) {
     super("Tree viewer");
     pack();

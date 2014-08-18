@@ -52,7 +52,7 @@ public class ProofBySpliting<GS extends AbstractGlobalState<M, S, T, ?>, M exten
       } else if (proof.containsStateMachine(state_machine)) {
         sub_proof.addStateMachine(state_machine);
       } else {
-        throw new Error("The state machine " + state_machine
+        throw new Error("The state machine " + state_machine.getName()
             + " can't be found in neither the proof nor the functional model.");
       }
     }

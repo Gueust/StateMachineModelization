@@ -1,5 +1,7 @@
 import engine.ModelChecker;
+import engine.ModelCheckerInterface;
 import engine.SequentialGraphSimulator;
+import engine.SplittingModelChecker;
 import engine.traceTree.ModelCheckerDisplayer;
 import graph.GlobalState;
 import graph.GraphFactoryAEFD;
@@ -13,7 +15,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import utils.Logging;
 import utils.Monitoring;
@@ -31,7 +32,9 @@ import abstractGraph.verifiers.Verifier;
 
 public class LaunchProofFromAEFDFormat {
 
-  /** Display the execution trace */
+  /** Split the proof to get faster. */
+  private static final boolean SPLIT_PROOF = true;
+  /** Display the execution trace. It implies SPLIT_PROOF = false */
   private static final boolean DISPLAY_TREE = false;
 
   public static void main(String[] args) throws Exception {
@@ -49,15 +52,13 @@ public class LaunchProofFromAEFDFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    // launchModelChecking("examples/PN à SAL.txt", null ,
-    // "examples/init_file.txt");
-    // launchModelChecking("examples/PN à SAL.txt",
-    // "examples/PN à SAL Preuve.txt", "examples/init_file.txt");
+    launchModelChecking("examples/PN à SAL.txt",
+        "examples/PN à SAL Preuve.txt", "examples/init_file.txt");
     // launchModelChecking("examples/PN à SAL+TPL.txt",
     // "examples/PN à SAL+TPL Preuve.txt", "examples/init_file.txt");
 
-    launchModelChecking("examples/PN à SAL Cas3.txt",
-        "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
+    // launchModelChecking("examples/PN à SAL Cas3.txt",
+    // "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();
@@ -159,10 +160,10 @@ public class LaunchProofFromAEFDFormat {
     }
   }
 
-  public static Set<GlobalState> launchModelChecking(
+  public static void launchModelChecking(
       String functional_model,
       String proof_model,
-      String init_file) throws IOException {
+      String init_file) throws Exception {
 
     GraphFactoryAEFD graph_factory = new GraphFactoryAEFD(null);
 
@@ -186,8 +187,10 @@ public class LaunchProofFromAEFDFormat {
     verifier.verifyModel(model);
     verifier.verifyModel(proof);
 
-    ModelChecker<GlobalState, StateMachine, State, Transition> model_checker;
-    if (DISPLAY_TREE) {
+    ModelCheckerInterface<GlobalState, StateMachine, State, Transition> model_checker;
+    if (SPLIT_PROOF) {
+      model_checker = new SplittingModelChecker<>();
+    } else if (DISPLAY_TREE) {
       model_checker = new ModelCheckerDisplayer<>();
     } else {
       model_checker =
@@ -214,7 +217,7 @@ public class LaunchProofFromAEFDFormat {
 
     GlobalState global_state = simulator.init(initialization_variables,
         init_file);
-    System.out.println(global_state);
+    System.out.println(simulator.globalStateToString(global_state));
     model_checker.addInitialState(global_state);
 
     // simulator.generateAllInitialStates(model_checker);
@@ -228,7 +231,6 @@ public class LaunchProofFromAEFDFormat {
     } else {
       System.err.println("A state is not safe:\n" + result);
     }
-    return model_checker.getVisited_states();
   }
 
 }

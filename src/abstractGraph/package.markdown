@@ -4,6 +4,7 @@
 This package contains the core and mainly abstracted classes to describe 
 state machines.
 
+@details
 The classes directly in this directory define the abstract classes for 
 the state machines.
 All verifiers (in the abstractGraph.verifiers package) and the model checkers
@@ -18,6 +19,7 @@ All verifiers (in the abstractGraph.verifiers package) and the model checkers
 The implementation for boolean formulas, and more generally for formulas found
 in the Condition fields.
 
+@details
 The main class is the {@link Formula} class. In addition to this, the Domain
 Specific language introduces the possibility to have enumerated variable.
 For instance, it allows the user to define a variable to have its value within

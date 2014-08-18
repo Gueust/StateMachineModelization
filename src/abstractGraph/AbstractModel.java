@@ -77,8 +77,7 @@ public abstract class AbstractModel<M extends AbstractStateMachine<S, T>, S exte
 
   public abstract boolean containsExternalEvent(ExternalEvent external_event);
 
-  public abstract boolean containsStateMachine(
-      M state_machine);
+  public abstract boolean containsStateMachine(M state_machine);
 
   /**
    * This function is reserved to specific uses that require to access internal

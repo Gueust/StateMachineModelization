@@ -39,8 +39,8 @@ import abstractGraph.events.VariableChange;
  * 
  * <pre>
  * {
- *   GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
- *   Model m = factory.buildModel();
+ * GraphFactoryAEFD factory = new GraphFactory(&quot;file_name.txt&quot;);
+ * Model m = factory.buildModel();
  * }
  * </pre>
  */
@@ -740,7 +740,9 @@ public class GraphFactoryAEFD {
     String IND_actif_name = "IND_" + variable_name + "_" + positive_suffix;
     String IND_inactif_name = "IND_" + variable_name + "_" + negative_suffix;
 
-    StateMachine machine = new StateMachine("GRAPH_P6_" + IND_actif_name, -1);
+    StateMachine machine =
+        new StateMachine("GRAPH_P6_" + IND_actif_name, state_machine_identifier);
+    state_machine_identifier++;
 
     State init_state = machine.addState("0");
     State positive_state = machine.addState("1");

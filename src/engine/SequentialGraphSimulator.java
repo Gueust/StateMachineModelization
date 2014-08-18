@@ -40,12 +40,10 @@ public class SequentialGraphSimulator extends
      * from 0, N-1 where N is the total number of state machines
      */
     for (StateMachine machine : getModel()) {
-      machine.setUniqueIdentifier(total_number_state_machines);
       total_number_state_machines++;
     }
     if (proof != null) {
       for (StateMachine machine : proof) {
-        machine.setUniqueIdentifier(total_number_state_machines);
         total_number_state_machines++;
       }
     }

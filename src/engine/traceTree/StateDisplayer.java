@@ -23,14 +23,14 @@ import engine.GraphSimulatorInterface;
  * 
  */
 @SuppressWarnings("serial")
-public class StateDisplayer<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+public class StateDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     extends JFrame {
 
   JTextPane textPane;
   public JButton btnNewButton;
-  private GraphSimulatorInterface<?, M, S, T> simulator;
+  private GraphSimulatorInterface<GS, M, S, T> simulator;
 
-  public StateDisplayer(GraphSimulatorInterface<?, M, S, T> graph_simulator) {
+  public StateDisplayer(GraphSimulatorInterface<GS, M, S, T> graph_simulator) {
 
     simulator = graph_simulator;
 
@@ -69,8 +69,9 @@ public class StateDisplayer<M extends AbstractStateMachine<S, T>, S extends Abst
 
   }
 
+  @SuppressWarnings("unchecked")
   public void setText(AbstractGlobalState<M, S, T, ?> state) {
-    textPane.setText(state.toString());
+    textPane.setText(simulator.globalStateToString((GS) state));
   }
 
 }

@@ -143,12 +143,20 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
     return variables_values.variableInitialized(variable);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
+  /** This should be used only for debug.
+   * See {@link GraphSimulatorInterface#globalStateToString(GS)} for a human
+   * readable version.
+   */
   public String toString() {
     String result = "";
 
-    result += "The values of the states are : "
-        + Arrays.toString(state_machines_current_state);
+    result += "The values of the states are : ";
+    for (int i = 0; i < state_machines_current_state.length; i++) {
+      result += ((S) state_machines_current_state[i]).getId();
+    }
+    result += "\n";
 
     result = result + "The value of the variables are : "
         + variables_values + ".\n";

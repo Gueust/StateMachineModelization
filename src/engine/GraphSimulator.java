@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
@@ -98,6 +97,14 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
 
   public GraphSimulator(AbstractModel<M, S, T> model) {
     this(model, null);
+  }
+
+  protected int getNumberStateMachines() {
+    return state_machines.size();
+  }
+
+  protected int getNumberVariables() {
+    return variables.size();
   }
 
   @Override

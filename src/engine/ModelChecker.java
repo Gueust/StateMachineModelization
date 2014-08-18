@@ -48,7 +48,8 @@ import abstractGraph.events.SingleEvent;
  * @param <T>
  *          The transitions used in the model.
  */
-public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
+public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
+    implements ModelCheckerInterface<GS, M, S, T> {
 
   /**
    * Prints the number of visited, unvisited and unsafe states at when exploring

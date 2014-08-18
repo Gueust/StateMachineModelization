@@ -70,6 +70,10 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
     super(name);
   }
 
+  public Model() {
+    this("No name");
+  }
+
   /**
    * This function is required to ensure the coherence of all the internal data
    * of the model. It has to be called after every modification of the structure
@@ -504,9 +508,8 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   @Override
-  public boolean containsStateMachine(
-      StateMachine state_machine) {
-    return state_machines.containsKey(state_machine);
+  public boolean containsStateMachine(StateMachine state_machine) {
+    return state_machines.containsValue(state_machine);
   }
 
   @Override

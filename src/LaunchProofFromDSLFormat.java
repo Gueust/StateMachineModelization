@@ -71,7 +71,7 @@ public class LaunchProofFromDSLFormat {
         new ModelChecker<>();
 
     DSLGlobalState global_state = simulator.getInitialGlobalState();
-    System.out.println(global_state);
+    System.out.println(simulator.globalStateToString(global_state));
     model_checker.addInitialState(global_state);
 
     DSLGlobalState result = model_checker.verify(simulator);
