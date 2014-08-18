@@ -151,7 +151,7 @@ public class ModelCheckerDisplayer<GS extends AbstractGlobalState<M, S, T, ?>, M
     System.err.println("Total number of functional warnings (P7) nodes: "
         + number_of_functional_warning);
 
-    new DisplayExecutionTree<>(initial_state);
+    new DisplayExecutionTree<>(simulator, initial_state);
     return error_state;
   }
 }

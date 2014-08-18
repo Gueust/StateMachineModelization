@@ -30,6 +30,8 @@ import abstractGraph.events.SingleEvent;
 public class SequentialGraphSimulator extends
     GraphSimulator<GlobalState, StateMachine, State, Transition> {
 
+  private int total_number_state_machines = 0;
+
   public SequentialGraphSimulator(Model model, Model proof) {
     super(model, proof);
 
@@ -37,15 +39,14 @@ public class SequentialGraphSimulator extends
      * We number the state machines such that every one has a unique identifier
      * from 0, N-1 where N is the total number of state machines
      */
-    int counter = 0;
     for (StateMachine machine : getModel()) {
-      machine.setUniqueIdentifier(counter);
-      counter++;
+      machine.setUniqueIdentifier(total_number_state_machines);
+      total_number_state_machines++;
     }
     if (proof != null) {
       for (StateMachine machine : proof) {
-        machine.setUniqueIdentifier(counter);
-        counter++;
+        machine.setUniqueIdentifier(total_number_state_machines);
+        total_number_state_machines++;
       }
     }
   }
@@ -227,7 +228,7 @@ public class SequentialGraphSimulator extends
   }
 
   public GlobalState emptyGlobalState() {
-    return new GlobalState();
+    return new GlobalState(total_number_state_machines);
   }
 
   /**
@@ -267,7 +268,7 @@ public class SequentialGraphSimulator extends
   public GlobalState init(HashMap<String, Boolean> external_values,
       String init_file) throws IOException {
 
-    GlobalState global_state = new GlobalState();
+    GlobalState global_state = emptyGlobalState();
 
     /* Initialization of the states of all the state machines */
     for (StateMachine machine : model) {

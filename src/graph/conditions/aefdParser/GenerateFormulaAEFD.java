@@ -2,7 +2,6 @@ package graph.conditions.aefdParser;
 
 import engine.SequentialGraphSimulator;
 import graph.GraphFactoryAEFD;
-import graph.MyCustomizer;
 import graph.State;
 import graph.StateMachine;
 import graph.Transition;

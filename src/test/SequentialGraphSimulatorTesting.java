@@ -88,54 +88,68 @@ public class SequentialGraphSimulatorTesting {
     Pair<GlobalState, SequentialGraphSimulator> pair = loadSimulator(file_name);
     GlobalState global_state = pair.getFirst();
     SequentialGraphSimulator simulator = pair.getSecond();
+    Model model = simulator.getModel();
 
     events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1" });
     global_state = simulator.executeAll(global_state, events);
     // Verify that the current state of the state machine is "0".
     assertInState("Error on " + file_name, global_state,
-        "Graph_with_no_external_event", "0");
+        model.getStateMachine("Graph_with_no_external_event"), "0");
 
     /* Test the file "Graph_testing_different_external_event.txt" */
     file_name = "Graph_testing_different_external_event.txt";
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1", "MSG_1", "ACT_1",
         "FTP_1" });
 
     global_state = simulator.executeAll(global_state, events);
-    assertInState("Error on " + file_name, global_state, "Page 1", "4");
+    System.err.println(model);
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "4");
 
     /* Test the file "Graph_with_propagation.txt" */
     file_name = "Graph_with_propagation.txt";
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
-    assertInState("Error on " + file_name, global_state, "Page 1", "1");
-    assertInState("Error on " + file_name, global_state, "Page 2", "1");
-    assertInState("Error on " + file_name, global_state, "Page 3", "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 2"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 3"), "1");
 
     /* Test the file "Graph_with_condition.txt" */
     file_name = "Graph_with_condition.txt";
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
-    assertInState("Error on " + file_name, global_state, "Page 1", "2");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "2");
 
     // Test the file "Graph_testing_variables_value.txt"
     file_name = "Graph_testing_variables_value.txt";
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
-    assertInState("Error on " + file_name, global_state, "Page 1", "1");
-    assertInState("Error on " + file_name, global_state, "Page 2", "1");
-    assertInState("Error on " + file_name, global_state, "Page 3", "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 2"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 3"), "1");
 
     // Verify that the value of the variables are corrects.
     // Retrieve the variable from the name
@@ -152,20 +166,25 @@ public class SequentialGraphSimulatorTesting {
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     simulator.getModel().loadFCI("src/test/resources/" + class_name + "/"
         + "liste_fci.yaml");
     events = convertToExternalEvent(new String[] { "CTL_1_Actif" });
     global_state = simulator.executeAll(global_state, events);
     System.out.println("Global Sate under test " + global_state);
-    assertInState("Error on " + file_name, global_state, "Page 1", "1");
-    assertInState("Error on " + file_name, global_state, "Page 2", "1");
-    assertInState("Error on " + file_name, global_state, "Page 3", "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 2"), "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 3"), "1");
 
     /* Test the file "Graph_P5.txt" */
     file_name = "Graph_P5.txt";
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
     assertTrue("Error on " + file_name, !global_state.isSafe());
@@ -175,6 +194,7 @@ public class SequentialGraphSimulatorTesting {
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
     assertTrue("Error on " + file_name, !global_state.isLegal());
@@ -184,6 +204,7 @@ public class SequentialGraphSimulatorTesting {
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
     assertTrue("Error on " + file_name, !global_state.isNotP7());
@@ -193,11 +214,15 @@ public class SequentialGraphSimulatorTesting {
     pair = loadSimulator(file_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
-    assertInState("Error on " + file_name, global_state, "Page 1", "0");
-    assertInState("Error on " + file_name, global_state, "Page 2", "0");
-    assertInState("Error on " + file_name, global_state, "Page 3", "1");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 1"), "0");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 2"), "0");
+    assertInState("Error on " + file_name, global_state, model
+        .getStateMachine("Page 3"), "1");
 
     /* Test the file Graph_with_safety_error.txt */
     file_name = "Graph_with_safety_error.txt";
@@ -205,6 +230,7 @@ public class SequentialGraphSimulatorTesting {
     pair = loadSimulator(file_name, proof_model_name);
     global_state = pair.getFirst();
     simulator = pair.getSecond();
+    model = simulator.getModel();
     events = convertToExternalEvent(new String[] { "CTL_1" });
     global_state = simulator.executeAll(global_state, events);
     assertTrue("Error on " + file_name,
@@ -213,16 +239,13 @@ public class SequentialGraphSimulatorTesting {
   }
 
   private void assertInState(String error_message,
-      AbstractGlobalState<?, ?, ?, ?> global_state,
-      String sm_name, String targeted_state) {
-    assertTrue(error_message, getState(global_state, sm_name).equals(
+      GlobalState global_state,
+      StateMachine sm, String targeted_state) {
+    assert (sm != null);
+    assert (targeted_state != null);
+    assertTrue(error_message, global_state.getState(sm).getId().equals(
         targeted_state));
 
-  }
-
-  private String getState(AbstractGlobalState<?, ?, ?, ?> global_state,
-      String automaton_name) {
-    return global_state.getState(automaton_name).getId();
   }
 
   private LinkedList<ExternalEvent> convertToExternalEvent(String[] events) {

@@ -10,10 +10,13 @@ import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import engine.GraphSimulatorInterface;
 
 /**
  * A window that display the content of the clicked state
@@ -22,10 +25,14 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 @SuppressWarnings("serial")
 public class StateDisplayer<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     extends JFrame {
+
   JTextPane textPane;
   public JButton btnNewButton;
+  private GraphSimulatorInterface<?, M, S, T> simulator;
 
-  public StateDisplayer() {
+  public StateDisplayer(GraphSimulatorInterface<?, M, S, T> graph_simulator) {
+
+    simulator = graph_simulator;
 
     textPane = new JTextPane();
     textPane.setEditable(false);

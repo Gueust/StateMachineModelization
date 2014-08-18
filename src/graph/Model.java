@@ -213,6 +213,7 @@ public class Model extends AbstractModel<StateMachine, State, Transition> {
   }
 
   public StateMachine getStateMachine(String name) {
+    buildIfNecessary();
     return state_machines.get(name);
   }
 

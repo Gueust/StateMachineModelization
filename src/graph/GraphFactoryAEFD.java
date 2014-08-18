@@ -240,7 +240,8 @@ public class GraphFactoryAEFD {
      * transitions in initial_transition_order
      */
     if (initial_transition_order.size() != number_of_transitions) {
-      System.out.println("Error 2 in the building of the model");
+      System.out.println("Error 2 in the building of the model : "
+          + initial_transition_order.size() + " vs " + number_of_transitions);
       System.exit(-1);
     }
 

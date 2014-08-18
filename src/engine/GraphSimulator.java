@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractModel;
@@ -15,6 +16,7 @@ import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.conditions.BooleanVariable;
+import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.conditions.Formula;
 import abstractGraph.events.CommandEvent;
 import abstractGraph.events.ComputerCommandFunction;
@@ -64,6 +66,11 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
   /** This is the model of the proof */
   protected AbstractModel<M, S, T> proof;
 
+  /** This is the union of the variables of both models */
+  LinkedHashSet<EnumeratedVariable> variables;
+  /** This is the union of the state machines of both models */
+  LinkedList<M> state_machines;
+
   protected boolean verbose = true;
 
   public GraphSimulator(AbstractModel<M, S, T> model,
@@ -71,12 +78,26 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
     this.model = model;
     this.proof = proof;
 
+    variables = new LinkedHashSet<>();
+    variables.addAll(model.getExistingVariables());
+    if (proof != null) {
+      variables.addAll(proof.getExistingVariables());
+    }
+    state_machines = new LinkedList<>();
+    for (M machine : model) {
+      state_machines.add(machine);
+    }
+    if (proof != null) {
+      for (M machine : proof) {
+        state_machines.add(machine);
+      }
+    }
+
     checkCompatibility();
   }
 
   public GraphSimulator(AbstractModel<M, S, T> model) {
-    this.model = model;
-    checkCompatibility();
+    this(model, null);
   }
 
   @Override
@@ -89,7 +110,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
 
   @Override
   public String globalStateToString(GS global_state) {
-    return global_state.toString();
+    return global_state.toString(state_machines, variables);
   }
 
   public LinkedHashMap<M, S> getFunctionnalTransitionsPullList() {

@@ -69,10 +69,10 @@ public class DSLSimulationWindow extends JFrame {
   JButton btnSimulate;
   JButton btnEatExternalEvents;
 
-  public DSLSimulationWindow(final DSLSequentialGraphSimulator<DSLGlobalState> simulator)
+  public DSLSimulationWindow(
+      final DSLSequentialGraphSimulator<DSLGlobalState> simulator)
       throws HeadlessException {
     this.simulator = simulator;
-    global_state = new DSLGlobalState(simulator.getNumberVariables());
     initial_global_state = simulator.getInitialGlobalState();
     global_state = initial_global_state.clone();
 

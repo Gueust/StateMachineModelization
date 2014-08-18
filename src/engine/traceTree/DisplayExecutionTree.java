@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import engine.GraphSimulatorInterface;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
@@ -33,11 +34,14 @@ public class DisplayExecutionTree<M extends AbstractStateMachine<S, T>, S extend
 
   final private JTree tree;
   private DefaultMutableTreeNode root_node;
-  private final StateDisplayer<M, S, T> state_displayer = new StateDisplayer<>();
+  private final StateDisplayer<M, S, T> state_displayer;
 
-  DisplayExecutionTree(AbstractGlobalState<M, S, T, ?> root_state) {
+  DisplayExecutionTree(GraphSimulatorInterface<?, M, S, T> graph_simulator,
+      AbstractGlobalState<M, S, T, ?> root_state) {
     super("Tree viewer");
     pack();
+
+    state_displayer = new StateDisplayer<>(graph_simulator);
 
     assert (root_state != null);
 

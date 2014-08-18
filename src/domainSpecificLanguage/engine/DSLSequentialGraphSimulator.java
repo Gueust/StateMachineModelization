@@ -1,7 +1,6 @@
 package domainSpecificLanguage.engine;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -74,16 +73,27 @@ public class DSLSequentialGraphSimulator<GS extends AbstractGlobalState<DSLState
   protected boolean verbose = false;
 
   /** This is the union of the variables of both models */
-  HashSet<EnumeratedVariable> variables;
+  LinkedHashSet<EnumeratedVariable> variables;
+  /** This is the union of the state machines of both models */
+  LinkedList<DSLStateMachine> state_machines;
 
   public DSLSequentialGraphSimulator(DSLModel model, DSLModel proof) {
     this.functional_model = model;
     this.proof = proof;
 
-    variables = new HashSet<>();
+    variables = new LinkedHashSet<>();
     variables.addAll(model.variables);
     if (proof != null) {
       variables.addAll(proof.variables);
+    }
+    state_machines = new LinkedList<>();
+    for (DSLStateMachine machine : functional_model) {
+      state_machines.add(machine);
+    }
+    if (proof != null) {
+      for (DSLStateMachine machine : proof) {
+        state_machines.add(machine);
+      }
     }
 
     checkCompatibility();
@@ -95,7 +105,7 @@ public class DSLSequentialGraphSimulator<GS extends AbstractGlobalState<DSLState
 
   @Override
   public String globalStateToString(GS global_state) {
-    return ((DSLGlobalState) global_state).toString(variables);
+    return global_state.toString(state_machines, variables);
   }
 
   public int getNumberVariables() {
@@ -666,7 +676,8 @@ public class DSLSequentialGraphSimulator<GS extends AbstractGlobalState<DSLState
    * @return The initial global state.
    */
   public DSLGlobalState getInitialGlobalState() {
-    DSLGlobalState global_state = new DSLGlobalState(getNumberVariables());
+    DSLGlobalState global_state = new DSLGlobalState(state_machines.size(),
+        getNumberVariables());
     for (DSLStateMachine m : functional_model) {
       global_state.setState(m, m.getInitial_state());
     }

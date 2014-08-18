@@ -132,6 +132,7 @@ public abstract class AbstractStateMachine<S extends AbstractState<T>, T extends
     return result;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

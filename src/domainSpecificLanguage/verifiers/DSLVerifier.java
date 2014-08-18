@@ -9,7 +9,6 @@ import domainSpecificLanguage.graph.DSLStateMachine;
 import domainSpecificLanguage.graph.DSLTransition;
 import abstractGraph.AbstractModel;
 import abstractGraph.verifiers.AbstractVerificationUnit;
-import abstractGraph.verifiers.CoherentVariablesWriting;
 import abstractGraph.verifiers.DeterminismChecker;
 import abstractGraph.verifiers.NoUselessVariables;
 import abstractGraph.verifiers.SingleWritingChecker;

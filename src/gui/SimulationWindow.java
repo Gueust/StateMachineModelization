@@ -66,7 +66,7 @@ public class SimulationWindow extends JFrame {
   private SequentialGraphSimulator simulator;
   private LinkedList<ExternalEvent> external_events = new LinkedList<ExternalEvent>();
   private HashMap<String, Boolean> initial_CTLs;
-  private GlobalState global_state = new GlobalState();
+  private GlobalState global_state;
   private JMenuItem mntmRestartSimulation;
   private JMenuItem mntmLaunchExploration;
 
