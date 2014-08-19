@@ -52,13 +52,15 @@ public class LaunchProofFromAEFDFormat {
      * Il suffit de commenter/décommenter les lignes afin de lancer le fichier
      * souhaité
      */
-    launchModelChecking("examples/PN à SAL.txt",
-        "examples/PN à SAL Preuve.txt", "examples/init_file.txt");
+    // launchModelChecking("examples/PN à SAL.txt",
+    // "examples/PN à SAL Preuve.txt", "examples/init_file.txt");
     // launchModelChecking("examples/PN à SAL+TPL.txt",
     // "examples/PN à SAL+TPL Preuve.txt", "examples/init_file.txt");
 
-    // launchModelChecking("examples/PN à SAL Cas3.txt",
-    // "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
+    launchModelChecking("examples/PN à SAL Cas3.txt",
+        "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
+    // launchModelChecking("examples/PN à SAL Cas4.txt",
+    // "examples/PN à SAL Cas4 Preuve.txt", "examples/init_file.txt");
 
     long estimatedTime = System.nanoTime() - startTime;
     Monitoring.printFullPeakMemoryUsage();

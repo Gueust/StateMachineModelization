@@ -2,6 +2,7 @@ package engine;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -34,12 +35,15 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
       LinkedHashSet<M> list_state_machine = new LinkedHashSet<M>();
       list_state_machine = Split(state_machine);
       boolean already_taken = false;
-      for (LinkedHashSet<M> machines : list_of_list_state_machine) {
-        if (machines.containsAll(list_state_machine)) {
+      Iterator<LinkedHashSet<M>> machines_iterator =
+          list_of_list_state_machine.iterator();
+      while (machines_iterator.hasNext()) {
+        LinkedHashSet<M> machine = machines_iterator.next();
+        if (machine.containsAll(list_state_machine)) {
           already_taken = true;
           break;
-        } else if (list_state_machine.containsAll(machines)) {
-          list_of_list_state_machine.remove(machines);
+        } else if (list_state_machine.containsAll(machine)) {
+          machines_iterator.remove();
         }
       }
       if (!already_taken) {
