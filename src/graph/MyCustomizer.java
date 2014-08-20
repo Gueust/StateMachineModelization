@@ -38,7 +38,7 @@ public class MyCustomizer extends CustomToString {
     boolean is_negated = ((Literal) l).isNegated();
     if (is_negated) {
       String result = generator.getOppositeName(variable.toString());
-      System.out.println("Oppositve of " + variable + " is " + result);
+      // System.out.println("Opposite of " + variable + " is " + result);
       assert result != null : "Impossible to find the opposite of "
           + variable.toString()
           + ". It is likely that you have creating a customizer without any "

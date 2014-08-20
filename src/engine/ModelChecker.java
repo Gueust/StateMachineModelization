@@ -242,6 +242,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * @return A GlobalShate in which the safety properties are not verified.
    *         null if no such state exists.
    */
+  @Override
   public GS verify(GraphSimulatorInterface<GS, M, S, T> simulator) {
     assert (unvisited_states != null);
 
@@ -269,6 +270,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     System.err.println("We are visiting at least " + unvisited_states.size()
         + " states");
 
+    long startTime = System.nanoTime();
     GS error_state = null;
     int c = 0;
     while (unvisited_states.size() != 0) {
@@ -291,6 +293,11 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
             number_illegal_states);
         System.err.println("Total number of unsafe nodes found:" +
             unsafe_states.size());
+
+        long estimatedTime = System.nanoTime() - startTime;
+        System.err.println("Time to visit the last 100 states " +
+            estimatedTime / 1000000000.0 + "s");
+        startTime = System.nanoTime();
       }
 
       LinkedHashSet<ExternalEvent> possible_external_events =
