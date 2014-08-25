@@ -303,7 +303,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
    *          The list in which the generated internal events will be added.
    */
   protected void processSingleEvent(AbstractModel<M, S, T> model,
-      AbstractGlobalState<M, S, T, ?> global_state,
+      GS global_state,
       SingleEvent event, LinkedList<SingleEvent> event_list) {
 
     temporary_tag.clear();
@@ -363,7 +363,7 @@ class GraphSimulator<GS extends AbstractGlobalState<M, S, T, ?>, M extends Abstr
               : " in functionnal model")
           + " -->\n"
           + "Internal FIFO " + event_list.toString() + "\n"
-          + global_state);
+          + globalStateToString(global_state));
     }
   }
 

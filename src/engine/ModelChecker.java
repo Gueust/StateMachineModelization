@@ -218,6 +218,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     /* We reset all the data to empty data */
     unvisited_states.clear();
     visited_states.clear();
+    unsafe_states.clear();
 
     number_illegal_states = 0;
     number_of_functional_warning = 0;
@@ -249,6 +250,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
     this.simulator = simulator;
 
     visited_states.clear();
+    unsafe_states.clear();
     number_illegal_states = 0;
     number_of_functional_warning = 0;
     number_explored_nodes = 0;

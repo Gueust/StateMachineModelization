@@ -778,7 +778,7 @@ public class SimulationWindow extends JFrame {
 
   private void fillInCurrentStates(JList<String> list, Model model,
       GlobalState global_state) {
-    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    // list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     SortedListModel listModel =
         (SortedListModel) list.getModel();
 

@@ -33,9 +33,9 @@ import abstractGraph.verifiers.Verifier;
 public class LaunchProofFromAEFDFormat {
 
   /** Split the proof to get faster. */
-  private static final boolean SPLIT_PROOF = true;
+  private static final boolean SPLIT_PROOF = false;
   /** Display the execution trace. It implies SPLIT_PROOF = false */
-  private static final boolean DISPLAY_TREE = false;
+  private static final boolean DISPLAY_TREE = true;
 
   public static void main(String[] args) throws Exception {
 
@@ -57,8 +57,9 @@ public class LaunchProofFromAEFDFormat {
     // launchModelChecking("examples/PN à SAL+TPL.txt",
     // "examples/PN à SAL+TPL Preuve.txt", "examples/init_file.txt");
 
-    launchModelChecking("examples/PN à SAL Cas3.txt",
-        "examples/PN à SAL Cas3 Preuve.txt", "examples/init_file.txt");
+    launchModelChecking("examples/PN à SAL Cas3 avec IND_DTP.txt",
+        "examples/PN à SAL Cas3 Preuve avec IND_DTP.txt",
+        "examples/init_file.txt");
     // launchModelChecking("examples/PN à SAL Cas4.txt",
     // "examples/PN à SAL Cas4 Preuve.txt", "examples/init_file.txt");
 

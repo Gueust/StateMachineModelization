@@ -529,13 +529,13 @@ Action
 AP_FTP_P_V1
 1
 1
-FTP_TPL_P_V1 OU ATP_TPL_P_V1 Evenement
+FTP_TPL_P_V1 Evenement
 Condition
 P_6; Action
 AP_FTP_I_V1
 1
 1
-FTP_TPL_I_V1 OU ATP_TPL_I_V1 Evenement
+FTP_TPL_I_V1 Evenement
 Condition
 P_6; Action
 AP_AxL_V1
@@ -607,6 +607,12 @@ P_6; Action
 AP_Zone9
 2
 2
-IND_PdAn_P_V1_Actif Evenement
+IND_PdAn_I_V1_Actif Evenement
 Condition
 P_6; Action
+AP_Zone9
+5
+5
+IND_Zone5_1_Occupee OU IND_FTP_I_V1_Inactif OU IND_FTP_P_V1_Inactif Evenement
+Condition
+IND_PreuveAval_Actif; Action

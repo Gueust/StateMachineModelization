@@ -19,13 +19,16 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
   AbstractModel<M, S, T> proof;
   LinkedHashSet<LinkedHashSet<M>> list_of_list_state_machine = new LinkedHashSet<LinkedHashSet<M>>();
   HashSet<M> proof_state_machine_found = new HashSet<M>();
+  HashSet<M> P6_graphs = new HashSet<M>();
 
   public SplitProof(HashMap<M, MyNode> nodes,
       AbstractModel<M, S, T> model,
-      AbstractModel<M, S, T> proof) {
+      AbstractModel<M, S, T> proof,
+      HashSet<M> P6_graphs) {
     this.nodes = nodes;
     this.model = model;
     this.proof = proof;
+    this.P6_graphs = P6_graphs;
 
   }
 
@@ -47,6 +50,7 @@ public class SplitProof<M extends AbstractStateMachine<S, T>, S extends Abstract
         }
       }
       if (!already_taken) {
+        list_state_machine.addAll(P6_graphs);
         list_of_list_state_machine.add(list_state_machine);
       }
     }

@@ -10,9 +10,13 @@ import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
+import engine.traceTree.ModelCheckerDisplayer;
 
 public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
     implements ModelCheckerInterface<GS, M, S, T> {
+
+  /** Display the execution trace. It implies SPLIT_PROOF = false */
+  private static final boolean DISPLAY_TREE = false;
 
   private ModelChecker<GS, M, S, T> model_checker;
 
@@ -21,7 +25,11 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
 
   public SplittingModelChecker() {
     super();
-    this.model_checker = new ModelChecker<GS, M, S, T>();
+    if (DISPLAY_TREE) {
+      model_checker = new ModelCheckerDisplayer<>();
+    } else {
+      model_checker = new ModelChecker<>();
+    }
   }
 
   /**
@@ -82,20 +90,33 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
         .getSimulators()) {
       model_checker.reset();
       model_checker.addAllInitialStates(unvisited_states);
+      System.out.flush();
+      System.err.flush();
       System.out.print("Proof with those graphs : \n");
-
+      System.out.flush();
+      System.err.flush();
       i++;
       split_engine.printToImage("tmp_" + i, sub_simulator);
 
       Iterator<M> machine_iterator = sub_simulator.getProof().iterator();
       while (machine_iterator.hasNext()) {
+        System.out.flush();
+        System.err.flush();
         System.out.print(machine_iterator.next().getName() + "\n");
       }
       machine_iterator = sub_simulator.getModel().iterator();
       while (machine_iterator.hasNext()) {
+        System.out.flush();
+        System.err.flush();
         System.out.print(machine_iterator.next().getName() + "\n");
+        System.out.flush();
+        System.err.flush();
       }
+      System.out.flush();
+      System.err.flush();
       GS final_state = model_checker.verify(sub_simulator);
+      System.err.flush();
+      System.out.flush();
       if (final_state == null) {
         System.out.print("Proof SUCCESS \n");
       } else {

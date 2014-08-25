@@ -20,13 +20,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import engine.GraphSimulatorInterface;
 import utils.Pair;
 import abstractGraph.AbstractGlobalState;
 import abstractGraph.AbstractState;
 import abstractGraph.AbstractStateMachine;
 import abstractGraph.AbstractTransition;
 import abstractGraph.events.ExternalEvent;
+import engine.GraphSimulatorInterface;
 
 @SuppressWarnings("serial")
 public class DisplayExecutionTree<GS extends AbstractGlobalState<M, S, T, ?>, M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>>
@@ -113,7 +113,7 @@ public class DisplayExecutionTree<GS extends AbstractGlobalState<M, S, T, ?>, M 
 
     getContentPane().add(new JScrollPane(tree));
     setLocationRelativeTo(null);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setPreferredSize(new Dimension(800, 600));
     setMinimumSize(new Dimension(300, 400));
     setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -219,16 +219,16 @@ class MonRenderer<M extends AbstractStateMachine<S, T>, S extends AbstractState<
         hasFocus);
 
     if (object.first.isLegal()) {
-      setForeground(Color.BLACK);
-      setIcon(normal_icon);
+      if (!object.first.isSafe() || !object.first.isNotP7()) {
+        setForeground(Color.RED);
+        setIcon(not_safe_icon);
+      } else {
+        setForeground(Color.BLACK);
+        setIcon(normal_icon);
+      }
     } else {
       setForeground(Color.GRAY);
       setIcon(impossible_state_icon);
-    }
-
-    if (!object.first.isSafe() || !object.first.isNotP7()) {
-      setForeground(Color.RED);
-      setIcon(not_safe_icon);
     }
     return result;
   }

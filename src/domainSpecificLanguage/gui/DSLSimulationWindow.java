@@ -1,5 +1,9 @@
 package domainSpecificLanguage.gui;
 
+import gui.variousModels.SortedListModel;
+import gui.variousModels.TextAreaRenderer;
+import gui.variousModels.TransitionModel;
+
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -35,16 +39,13 @@ import javax.swing.table.TableColumnModel;
 
 import org.jdesktop.swingx.JXTable;
 
+import abstractGraph.conditions.EnumeratedVariable;
+import abstractGraph.events.ExternalEvent;
 import domainSpecificLanguage.DSLGlobalState.DSLGlobalState;
 import domainSpecificLanguage.engine.DSLSequentialGraphSimulator;
 import domainSpecificLanguage.graph.DSLModel;
 import domainSpecificLanguage.graph.DSLState;
 import domainSpecificLanguage.graph.DSLStateMachine;
-import abstractGraph.conditions.EnumeratedVariable;
-import abstractGraph.events.ExternalEvent;
-import gui.variousModels.SortedListModel;
-import gui.variousModels.TextAreaRenderer;
-import gui.variousModels.TransitionModel;
 
 @SuppressWarnings("serial")
 public class DSLSimulationWindow extends JFrame {
@@ -670,7 +671,7 @@ public class DSLSimulationWindow extends JFrame {
 
   private void fillInCurrentStates(JList<String> list, DSLModel model,
       DSLGlobalState global_state) {
-    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    // list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     SortedListModel listModel =
         (SortedListModel) list.getModel();
 

@@ -152,8 +152,11 @@ public abstract class AbstractGlobalState<M extends AbstractStateMachine<S, T>, 
   public String toString() {
     String result = "";
 
+    assert (state_machines_current_state != null);
+
     result += "The values of the states are : ";
     for (int i = 0; i < state_machines_current_state.length; i++) {
+      assert state_machines_current_state[i] != null;
       result += ((S) state_machines_current_state[i]).getId();
     }
     result += "\n";

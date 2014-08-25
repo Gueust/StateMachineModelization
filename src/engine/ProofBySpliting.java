@@ -29,7 +29,7 @@ public class ProofBySpliting<GS extends AbstractGlobalState<M, S, T, ?>, M exten
     HashMap<M, MyNode> nodes = new HashMap<M, MyNode>();
     nodes.putAll(activation_graph_builder.nodes);
     SplitProof<M, S, T> split_proof = new SplitProof<M, S, T>(nodes, model,
-        proof);
+        proof, activation_graph_builder.getP6_graphs());
     LinkedHashSet<LinkedHashSet<M>> list_of_list_state_machine = split_proof
         .Split();
 

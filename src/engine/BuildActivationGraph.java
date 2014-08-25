@@ -29,6 +29,7 @@ import abstractGraph.events.VariableChange;
 public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extends AbstractState<T>, T extends AbstractTransition<S>> {
   private AbstractModel<M, S, T> model;
   private AbstractModel<M, S, T> proof;
+  private HashSet<M> P6_graphs = new HashSet<M>();
 
   public HashMap<M, MyNode> nodes = new HashMap<M, MyNode>();
 
@@ -180,6 +181,9 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
             if (action instanceof VariableChange) {
             } else if (action instanceof Assignment) {
             } else if (action instanceof ModelCheckerEvent) {
+              if (action.getName().startsWith("P_6")) {
+                P6_graphs.add(state_machine);
+              }
             } else {
               LinkedHashSet<M> liste_state_machine =
                   syn_event_in_graphs.get(action.getName());
@@ -217,24 +221,34 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
     gv.addln(gv.start_graph());
 
     for (MyNode node : nodes.values()) {
-      String state_machine_name = node.data.getName();
-      for (Edge<MyNode, SingleEvent> edge : node) {
-        String target_name = edge.to.data.getName();
-        M state_machine = node.data;
-        M target_machine = edge.to.data;
+      M state_machine = node.data;
+      String state_machine_name = "\"" + state_machine.getName() + "\"";
 
-        if (simulator != null &&
-            (simulator.getModel().containsStateMachine(state_machine) ||
-            simulator.getProof().containsStateMachine(state_machine)
-            )) {
-          if (simulator.getModel().containsStateMachine(target_machine) ||
-              simulator.getProof().containsStateMachine(target_machine)) {
+      boolean is_state_machine_selected =
+          simulator != null &&
+              (simulator.getModel().containsStateMachine(state_machine) ||
+              simulator.getProof().containsStateMachine(state_machine));
+
+      if (is_state_machine_selected) {
+        gv.addln(state_machine_name + "[color=red];");
+      }
+
+      for (Edge<MyNode, SingleEvent> edge : node) {
+        M target_machine = edge.to.data;
+        String target_name = "\"" + target_machine.getName() + "\"";
+
+        boolean is_target_machine_selected =
+            simulator != null &&
+                (simulator.getModel().containsStateMachine(target_machine) ||
+                simulator.getProof().containsStateMachine(target_machine));
+
+        if (is_state_machine_selected) {
+          if (is_target_machine_selected) {
             gv.addln("edge [color=red];");
             gv.addln(target_name + "[color=red];");
           } else {
             gv.addln("edge [color=black];");
           }
-          gv.addln(state_machine_name + "[color=red];");
 
           gv.addln(state_machine_name + " -> "
               + target_name + " [label=\""
@@ -242,7 +256,8 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
 
         } else {
           gv.addln("edge [color=black];");
-          gv.addln(state_machine_name + " -> " + target_name + " [label=\""
+          gv.addln(state_machine_name + " -> " + target_name
+              + " [label=\""
               + edge.label + "\"];");
         }
       }
@@ -253,6 +268,10 @@ public class BuildActivationGraph<M extends AbstractStateMachine<S, T>, S extend
     String type = "png";
     gv.writeGraphToFile(file_name, type);
 
+  }
+
+  public HashSet<M> getP6_graphs() {
+    return P6_graphs;
   }
 
   class MyNode extends Node<M, MyNode, SingleEvent> {

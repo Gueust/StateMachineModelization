@@ -14,6 +14,7 @@ import java.io.IOException;
 public class AEFDFormatToACIFERFormat {
 
   public static void main(String[] args) throws IOException {
-    HAF.toHAF("PN/PN a SAL cas2.txt", "formatACIFER.txt");
+    HAF.toHAF("examples/PN à SAL Cas3 avec IND_DTP.txt",
+        "PN à SAL Cas3 avec IND_DTP.dco");
   }
 }
