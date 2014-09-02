@@ -91,19 +91,34 @@ public class Fichier6lignes {
       if (!checkSuffix(event, "Evenement")) {
         System.out
             .println("Error, event expected when parsing the transition line "
-                + line_number);
+                + (line_number + 3));
+        System.exit(-1);
+      }
+      if (event.contains(";")) {
+        System.out
+            .println("Error, event contain the char \";\" line "
+                + (line_number + 3));
         System.exit(-1);
       }
       event = event.substring(0, event.length() - 9).trim();
 
       if (!checkSuffix(condition, "Condition")) {
-        System.out.println("Error, condition expected");
+        System.out.println("Error, condition expected line "
+            + (line_number + 4));
+        System.exit(-1);
+      }
+
+      if (condition.contains(";")) {
+        System.out
+            .println("Error, event contain the char \";\" line "
+                + (line_number + 3));
         System.exit(-1);
       }
       condition = condition.substring(0, condition.length() - 9).trim();
 
       if (!checkSuffix(action, "Action")) {
-        System.out.println("Error, action expected");
+        System.out.println("Error, action expected line "
+            + (line_number + 5));
         System.exit(-1);
       }
       action = action.substring(0, action.length() - 6).trim();
