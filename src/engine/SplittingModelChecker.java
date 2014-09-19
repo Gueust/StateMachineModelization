@@ -79,7 +79,7 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
 
     BuildActivationGraph<M, S, T> split_engine = new BuildActivationGraph<>(
         simulator);
-
+    boolean successproof = true;
     split_engine.printToImage("tmp");
 
     ProofBySpliting<GS, M, S, T> split_proof = new ProofBySpliting<>(simulator
@@ -121,9 +121,13 @@ public class SplittingModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M
         System.out.print("Proof SUCCESS \n");
       } else {
         System.out.print("Proof FAIL \n");
+        successproof = false;
       }
       System.out.flush();
       System.err.flush();
+    }
+    if (!successproof) {
+      System.out.print("**** One of the proofs failed ****");
     }
     return null;
   }
