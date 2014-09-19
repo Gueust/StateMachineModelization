@@ -55,7 +55,12 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
    * Prints the number of visited, unvisited and unsafe states at when exploring
    * every states. Otherwise, it is done every hundred turns.
    */
-  protected final static boolean VERY_VERBOSE = false;
+  protected boolean VERY_VERBOSE = false;
+
+  public void setVERY_VERBOSE(boolean vERY_VERBOSE) {
+    VERY_VERBOSE = vERY_VERBOSE;
+  }
+
   /**
    * When finding an unsafe state, prints the initial state, the unsafe state
    * and the trace leading to it
@@ -286,7 +291,7 @@ public class ModelChecker<GS extends AbstractGlobalState<M, S, T, ?>, M extends 
 
       addVisited(state);
 
-      if (VERY_VERBOSE || c % 100 == 0) {
+      if (VERY_VERBOSE /* || c % 100 == 0 */) {
         System.err.println("Number of visited states: "
             + visited_states.size());
         System.err.println("Number of unvisited states "

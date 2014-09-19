@@ -40,6 +40,7 @@ import abstractGraph.conditions.EnumeratedVariable;
 import abstractGraph.events.ExternalEvent;
 import engine.ModelChecker;
 import engine.SequentialGraphSimulator;
+import engine.SplittingModelChecker;
 import graph.GlobalState;
 import graph.Model;
 import graph.State;
@@ -68,6 +69,7 @@ public class SimulationWindow extends JFrame {
   private GlobalState global_state;
   private JMenuItem mntmRestartSimulation;
   private JMenuItem mntmLaunchExploration;
+  private JMenuItem mntmLaunchSplittedExploration;
 
   JButton btnSimulate;
   JButton btnEatExternalEvents;
@@ -678,6 +680,11 @@ public class SimulationWindow extends JFrame {
     mntmLaunchExploration.setEnabled(false);
     mnFile.add(mntmLaunchExploration);
 
+    mntmLaunchSplittedExploration = new JMenuItem("Launch Splitted exploration");
+    mnFile.add(mntmLaunchSplittedExploration);
+    mntmLaunchSplittedExploration
+        .setToolTipText("Will launch the exploration from the ongoing global state using the splitted proof.  It's enabled after the initialization is done.");
+    mntmLaunchSplittedExploration.setEnabled(false);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setPreferredSize(new Dimension(1200, 630));
     pack();
@@ -688,9 +695,28 @@ public class SimulationWindow extends JFrame {
       public void actionPerformed(ActionEvent e) {
         ModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
             new ModelChecker<GlobalState, StateMachine, State, Transition>();
+        model_checker.setVERY_VERBOSE(true);
         model_checker.addInitialState(SimulationWindow.this.global_state);
         SimulationWindow.this.simulator.setVerbose(false);
         model_checker.verify(SimulationWindow.this.simulator);
+
+      }
+    });
+
+    mntmLaunchSplittedExploration.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        SplittingModelChecker<GlobalState, StateMachine, State, Transition> model_checker =
+            new SplittingModelChecker<>();
+        model_checker.addInitialState(SimulationWindow.this.global_state);
+        SimulationWindow.this.simulator.setVerbose(false);
+        try {
+          model_checker.verify(SimulationWindow.this.simulator);
+        } catch (InstantiationException | IllegalAccessException | IOException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
 
       }
     });
@@ -727,10 +753,12 @@ public class SimulationWindow extends JFrame {
       }
       updateLists();
 
+      /* Enable the actions that can be done now that the system is initialized. */
       eat.setEnabled(true);
       next.setEnabled(true);
       mntmRestartSimulation.setEnabled(true);
       mntmLaunchExploration.setEnabled(true);
+      mntmLaunchSplittedExploration.setEnabled(true);
     }
   }
 
